@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SovereignWisdom — Indigenous Knowledge Encyclopedia | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0e;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;--gold:#d4a853;--tq:#2dd4a8;--wp:#9b6dff;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:8px;--amber:#c17f59}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.nav{position:sticky;top:0;z-index:100;background:rgba(10,10,14,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:10px 24px;display:flex;align-items:center;gap:16px}
+.nav-brand{display:flex;align-items:center;gap:8px;cursor:pointer}
+.nav-brand h1{font-family:'Libre Baskerville',serif;font-size:18px;color:var(--amber)}
+.nav-search{flex:1;max-width:500px;position:relative}
+.nav-search input{width:100%;padding:8px 16px 8px 36px;background:var(--bg2);border:1px solid var(--brd);border-radius:20px;color:var(--txt);font-size:13px;outline:none;font-family:'DM Sans',sans-serif}
+.nav-search::before{content:'⌕';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--txt3)}
+.nav-r{margin-left:auto;display:flex;gap:6px}
+.nb{padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.nb:hover{background:var(--bg3)}
+
+.main{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 260px;gap:24px;padding:24px}
+.article{min-width:0}
+.article-header{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--brd)}
+.article h1{font-family:'Libre Baskerville',serif;font-size:32px;line-height:1.3;margin-bottom:8px}
+.article .subtitle{font-size:16px;color:var(--txt2);margin-bottom:12px;font-style:italic}
+.article .meta{display:flex;gap:12px;font-size:11px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;flex-wrap:wrap}
+.meta-tag{padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700}
+.mt-v{background:rgba(45,212,168,0.1);color:var(--tq)}.mt-c{background:rgba(155,109,255,0.1);color:var(--wp)}.mt-s{background:rgba(212,168,83,0.1);color:var(--gold)}
+
+.toc{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:20px}
+.toc-title{font-size:12px;font-weight:700;margin-bottom:8px}
+.toc-item{display:block;padding:3px 0;font-size:12px;color:var(--tq);text-decoration:none;transition:color 0.15s}
+.toc-item:hover{color:var(--gold)}
+.toc-sub{padding-left:16px}
+
+.body{font-family:'Libre Baskerville',serif;font-size:15px;line-height:1.9;color:var(--txt)}
+.body p{margin-bottom:16px}
+.body h2{font-size:22px;margin:28px 0 12px;color:var(--amber);padding-bottom:6px;border-bottom:1px solid var(--brd);font-family:'Libre Baskerville',serif}
+.body h3{font-size:17px;margin:20px 0 8px;font-family:'DM Sans',sans-serif}
+.body a{color:var(--tq);text-decoration:none}.body a:hover{text-decoration:underline}
+.body blockquote{border-left:3px solid var(--gold);padding:12px 16px;margin:16px 0;background:var(--bg2);border-radius:0 var(--r) var(--r) 0;font-style:italic;color:var(--txt2);font-size:14px}
+.body .infobox{float:right;width:240px;margin:0 0 16px 20px;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden}
+.infobox-header{background:linear-gradient(135deg,rgba(193,127,89,0.12),rgba(212,168,83,0.08));padding:12px;text-align:center;font-weight:700;font-size:14px;font-family:'DM Sans',sans-serif}
+.infobox-img{width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:48px;background:var(--bg3)}
+.infobox-row{display:flex;justify-content:space-between;padding:6px 12px;font-size:11px;font-family:'DM Sans',sans-serif;border-bottom:1px solid var(--brd)}
+.infobox-row .label{color:var(--txt3)}.infobox-row .val{color:var(--txt);font-weight:500;text-align:right}
+
+.sidebar-r{position:sticky;top:80px;height:fit-content}
+.side-widget{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:14px}
+.side-widget .w-title{font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.side-link{display:block;font-size:12px;color:var(--tq);padding:3px 0;text-decoration:none}
+.side-link:hover{color:var(--gold)}
+.lang-grid{display:flex;flex-wrap:wrap;gap:3px}
+.lang{font-size:9px;padding:2px 6px;border-radius:3px;background:var(--bg3);color:var(--txt3);border:1px solid var(--brd);cursor:pointer;transition:all 0.15s}
+.lang:hover{border-color:var(--tq);color:var(--tq)}
+.lang.a{border-color:var(--tq);color:var(--tq);background:rgba(45,212,168,0.08)}
+
+@media(max-width:900px){.main{grid-template-columns:1fr}.sidebar-r{display:none}.body .infobox{float:none;width:100%;margin:0 0 16px 0}}
+</style>
+</head>
+<body>
+<div class="nav">
+  <div class="nav-brand"><span style="font-size:20px">📚</span><h1>SovereignWisdom</h1></div>
+  <div class="nav-search"><input placeholder="Search indigenous knowledge..." /></div>
+  <div class="nav-r">
+    <button class="nb">🌐 Languages</button>
+    <button class="nb">📝 Contribute</button>
+    <button class="nb">💎 Donate Ⓦ</button>
+  </div>
+</div>
+
+<div class="main">
+<div class="article">
+  <div class="article-header">
+    <h1>Indigenous Digital Sovereignty</h1>
+    <div class="subtitle">The movement to build indigenous-controlled digital infrastructure across the Americas</div>
+    <div class="meta">
+      <span>Last edited: Feb 21, 2026</span>
+      <span>847 contributors</span>
+      <span>Available in 14 languages</span>
+      <span class="meta-tag mt-v">✓ Verified</span>
+      <span class="meta-tag mt-c">⛓ On-Chain</span>
+      <span class="meta-tag mt-s">🛡 Sovereign</span>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <a class="toc-item">1. Overview</a>
+    <a class="toc-item">2. Historical Context</a>
+    <a class="toc-item">3. Core Infrastructure</a>
+    <a class="toc-item toc-sub">3.1 MameyNode Blockchain</a>
+    <a class="toc-item toc-sub">3.2 BDET Bank</a>
+    <a class="toc-item toc-sub">3.3 AI Fortress</a>
+    <a class="toc-item">4. Key Organizations</a>
+    <a class="toc-item">5. Impact & Reach</a>
+    <a class="toc-item">6. See Also</a>
+    <a class="toc-item">7. References</a>
+  </div>
+
+  <div class="body">
+    <div class="infobox">
+      <div class="infobox-header">Indigenous Digital Sovereignty</div>
+      <div class="infobox-img">🦅🌎🔒</div>
+      <div class="infobox-row"><span class="label">Type</span><span class="val">Self-determination movement</span></div>
+      <div class="infobox-row"><span class="label">Region</span><span class="val">Americas & Caribbean</span></div>
+      <div class="infobox-row"><span class="label">Population</span><span class="val">72+ million</span></div>
+      <div class="infobox-row"><span class="label">Nations</span><span class="val">574 tribal + hundreds more</span></div>
+      <div class="infobox-row"><span class="label">Countries</span><span class="val">19+</span></div>
+      <div class="infobox-row"><span class="label">Languages</span><span class="val">68+ indigenous</span></div>
+      <div class="infobox-row"><span class="label">Blockchain</span><span class="val">MameyNode v4.2</span></div>
+      <div class="infobox-row"><span class="label">Currency</span><span class="val">Wampum (Ⓦ)</span></div>
+      <div class="infobox-row"><span class="label">AI Engines</span><span class="val">42 sovereign</span></div>
+      <div class="infobox-row"><span class="label">Platforms</span><span class="val">296 services</span></div>
+      <div class="infobox-row"><span class="label">Key Org</span><span class="val">NCAI, FILAC, COICA</span></div>
+    </div>
+
+    <h2>Overview</h2>
+    <p><strong>Indigenous Digital Sovereignty</strong> refers to the right and capacity of indigenous peoples to control their own digital infrastructure, data governance, and technological development. The movement spans the Americas and Caribbean, representing over <a href="#">72 million indigenous people</a> and hundreds of sovereign nations.</p>
+    <p>Central to this movement is the <a href="#">Sovereign Digital Nation</a> framework, which provides a complete alternative to Big Tech platforms through 296 integrated services running on the <a href="#">MameyNode blockchain</a>, secured by post-quantum encryption, and connected via sovereign satellite telecommunications.</p>
+
+    <blockquote>"Digital sovereignty is the natural extension of the self-determination our peoples have practiced for millennia. We did not need colonial permission to build civilizations, and we do not need Big Tech's permission to build our digital future." — Cacike Soberano</blockquote>
+
+    <h2>Historical Context</h2>
+    <p>The push for indigenous digital sovereignty emerged from decades of experience with digital colonialism — the extraction of indigenous data, knowledge, and labor by technology corporations without consent or compensation. Key catalysts included the documentation of <a href="#">indigenous language data</a> being used to train commercial AI models, surveillance of indigenous activists through social media platforms, and the systematic exclusion of indigenous communities from the digital economy.</p>
+
+    <h2>Core Infrastructure</h2>
+    <h3>MameyNode Blockchain</h3>
+    <p><a href="#">MameyNode</a> is a sovereign blockchain designed specifically for indigenous governance. Unlike commercial blockchains, MameyNode uses a consensus mechanism modeled on traditional indigenous council decision-making. The chain processes 12,847 transactions per second with post-quantum cryptographic protection.</p>
+
+    <h3>BDET Bank</h3>
+    <p>The <a href="#">Banco Digital de Economía Taína (BDET)</a> serves as the financial backbone of the sovereign digital ecosystem. Operating on MameyNode, BDET provides free accounts, micro-lending, community insurance pools, and instant settlement across 24 integrated platforms. The native currency, <a href="#">Wampum (Ⓦ)</a>, is pegged to a basket of community-valued assets.</p>
+
+    <h2>Key Organizations</h2>
+    <p>The movement is supported by major indigenous organizations including the <a href="#">National Congress of American Indians</a> (NCAI, 574 tribal nations), <a href="#">FILAC</a> (19 Latin American countries), <a href="#">COICA</a> (9 Amazonian nations), and numerous national and regional indigenous organizations across the hemisphere.</p>
+
+    <h2>Impact & Reach</h2>
+    <p>As of February 2026, the sovereign ecosystem serves 24,847 active users across the Americas, with partnerships extending to organizations representing over 72 million indigenous people. The BDET Bank processes over Ⓦ 1.2 million daily across 24 platform integrations.</p>
+  </div>
+</div>
+
+<div class="sidebar-r">
+  <div class="side-widget" style="background:linear-gradient(135deg,rgba(193,127,89,0.06),rgba(212,168,83,0.04));border-color:rgba(193,127,89,0.15)">
+    <div class="w-title">📚 About SovereignWisdom</div>
+    <div style="font-size:11px;color:var(--txt2);line-height:1.5">Community-maintained encyclopedia of indigenous knowledge. Every edit verified on MameyNode blockchain. No ads. No tracking. Knowledge belongs to the people.</div>
+    <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--txt3)">
+      247,891 articles · 12,847 contributors · 14 languages
+    </div>
+  </div>
+  <div class="side-widget">
+    <div class="w-title">🌐 Available Languages</div>
+    <div class="lang-grid">
+      <span class="lang a">English</span><span class="lang">Español</span><span class="lang">Quechua</span><span class="lang">Aymara</span><span class="lang">Guaraní</span><span class="lang">Nahuatl</span><span class="lang">Maya</span><span class="lang">Mapudungun</span><span class="lang">Português</span><span class="lang">Français</span>
+    </div>
+  </div>
+  <div class="side-widget">
+    <div class="w-title">📖 Related Articles</div>
+    <a class="side-link">MameyNode Blockchain</a>
+    <a class="side-link">BDET Bank</a>
+    <a class="side-link">Wampum Currency</a>
+    <a class="side-link">AI Fortress Security</a>
+    <a class="side-link">Atabey Language Translator</a>
+    <a class="side-link">Sovereign Telecom Network</a>
+    <a class="side-link">NCAI Digital Sovereignty Center</a>
+    <a class="side-link">FILAC — Indigenous Development</a>
+  </div>
+  <div class="side-widget">
+    <div class="w-title">💎 Support SovereignWisdom</div>
+    <div style="font-size:11px;color:var(--txt2);margin-bottom:8px">Help keep indigenous knowledge free and sovereign</div>
+    <button style="width:100%;padding:8px;border-radius:6px;background:var(--gold);border:none;color:#0a0a0e;font-weight:700;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">💎 Donate Wampum</button>
+  </div>
+</div>
+</div>
+</body>
+</html>

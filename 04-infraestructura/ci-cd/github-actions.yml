@@ -1,0 +1,115 @@
+name: Red Soberana CI/CD
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: red-soberana
+
+jobs:
+  # ============ LINT & TEST ============
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install & Test API
+        run: |
+          cd backend/api
+          npm ci
+          npm test
+      - name: Lint Smart Contracts
+        run: |
+          npm install -g solhint
+          solhint 'backend/smart-contracts/**/*.sol'
+      - name: Validate HTML
+        run: |
+          for f in plataformas/*/index.html portal-soberano.html; do
+            python3 -c "
+          from html.parser import HTMLParser
+          p = HTMLParser()
+          p.feed(open('$f').read())
+          print('✅ $f')
+          "
+          done
+
+  # ============ BUILD IMAGES ============
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        service: [api, ai-fortress, atabey, portal]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: infra/docker/Dockerfile.${{ matrix.service }}
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/${{ matrix.service }}:${{ github.sha }}
+
+  # ============ DEPLOY SMART CONTRACTS ============
+  deploy-contracts:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to MameyNode
+        run: |
+          npm install -g hardhat
+          cd backend/smart-contracts
+          npx hardhat compile
+          npx hardhat deploy --network mameynode
+        env:
+          MAMEYNODE_RPC: ${{ secrets.MAMEYNODE_RPC }}
+          DEPLOYER_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+
+  # ============ DEPLOY K8S ============
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/k8s-set-context@v3
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Update image tags
+        run: |
+          cd infra/k8s
+          sed -i "s|soberano/api:latest|${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/api:${{ github.sha }}|g" sovereign-cluster.yaml
+          sed -i "s|soberano/ai-fortress:1.0|${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/ai-fortress:${{ github.sha }}|g" sovereign-cluster.yaml
+          sed -i "s|soberano/atabey:1.0|${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/atabey:${{ github.sha }}|g" sovereign-cluster.yaml
+      - name: Deploy to CloudSoberana
+        run: kubectl apply -f infra/k8s/sovereign-cluster.yaml
+      - name: Verify deployment
+        run: |
+          kubectl -n soberana rollout status deployment/api-soberana --timeout=300s
+          kubectl -n soberana rollout status deployment/ai-fortress --timeout=300s
+          echo "✅ Deployed to CloudSoberana"
+
+  # ============ NOTIFY ============
+  notify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Notify Red Soberana
+        run: |
+          STATUS=${{ needs.deploy.result }}
+          curl -X POST "${{ secrets.WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"text\":\"🌐 Deploy $STATUS · ${{ github.sha }} · Red Soberana\"}"

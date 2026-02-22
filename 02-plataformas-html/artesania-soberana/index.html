@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArtesaníaSoberana — Marketplace Artesanal | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0a0f;--bg2:#13121a;--bg3:#1b1a24;--bg4:#23222e;--gold:#d4a853;--gold-d:rgba(212,168,83,0.1);--tq:#2dd4a8;--wp:#9b6dff;--terra:#c17f59;--clay:#a0694f;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+.nav{position:sticky;top:0;z-index:100;background:rgba(11,10,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:10px 28px;display:flex;align-items:center;gap:16px}
+.nav-brand{display:flex;align-items:center;gap:8px;cursor:pointer}
+.nav-brand span{font-size:22px}
+.nav-brand h1{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--terra)}
+.nav-search{flex:1;max-width:480px;position:relative}
+.nav-search input{width:100%;padding:9px 16px 9px 36px;background:var(--bg2);border:1px solid var(--brd);border-radius:24px;color:var(--txt);font-size:13px;outline:none;font-family:'DM Sans',sans-serif}
+.nav-search input:focus{border-color:var(--terra)}
+.nav-search::before{content:'⌕';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--txt3);font-size:14px}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.nb{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.nb:hover{background:var(--bg3);color:var(--txt)}
+.nb.sell{border-color:var(--terra);color:var(--terra)}.nb.sell:hover{background:var(--terra);color:#0b0a0f}
+
+.cats{display:flex;gap:6px;padding:10px 28px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--brd)}
+.cats::-webkit-scrollbar{display:none}
+.cat{padding:6px 14px;border-radius:18px;font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.cat:hover{background:var(--bg3);color:var(--txt)}.cat.a{background:var(--terra);color:#0b0a0f;border-color:var(--terra)}
+
+.content{padding:20px 28px;max-width:1400px;margin:0 auto}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,rgba(193,127,89,0.08),rgba(160,105,79,0.04));border:1px solid rgba(193,127,89,0.15);border-radius:14px;padding:28px;margin-bottom:28px;display:flex;align-items:center;gap:24px}
+.hero-left{flex:1}
+.hero-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--tq);margin-bottom:6px}
+.hero h2{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--terra);margin-bottom:8px;line-height:1.2}
+.hero p{font-size:14px;color:var(--txt2);line-height:1.5;margin-bottom:14px}
+.hero-stats{display:flex;gap:20px}
+.hs{text-align:center}.hs .n{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)}.hs .l{font-size:10px;color:var(--txt3)}
+.hero-art{font-size:72px;display:flex;gap:8px}
+
+/* PRODUCT GRID */
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-h h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--terra)}
+.sec-h a{font-size:12px;color:var(--txt3);cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:32px}
+.prod{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all 0.2s}
+.prod:hover{border-color:rgba(193,127,89,0.3);transform:translateY(-3px)}
+.prod-img{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative}
+.prod-img::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 70%,rgba(0,0,0,0.3))}
+.prod-fav{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.5);border:none;color:#fff;cursor:pointer;font-size:12px;z-index:2;display:flex;align-items:center;justify-content:center}
+.prod-badge{position:absolute;top:8px;left:8px;padding:3px 8px;border-radius:4px;font-size:9px;font-weight:700;z-index:2;text-transform:uppercase;letter-spacing:0.5px}
+.pb-best{background:var(--gold);color:#0b0a0f}
+.pb-new{background:var(--tq);color:#0b0a0f}
+.pb-hand{background:var(--terra);color:#fff}
+.prod-body{padding:12px}
+.prod-shop{font-size:10px;color:var(--txt3);margin-bottom:2px;display:flex;align-items:center;gap:4px}
+.prod-name{font-size:14px;font-weight:600;margin-bottom:4px;line-height:1.3}
+.prod-price{display:flex;align-items:baseline;gap:6px}
+.prod-price .w{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;color:var(--gold)}
+.prod-price .usd{font-size:11px;color:var(--txt3)}
+.prod-rating{font-size:11px;color:var(--txt2);margin-top:4px}
+.prod-tags{display:flex;gap:3px;margin-top:6px;flex-wrap:wrap}
+.pt{font-size:8px;padding:2px 5px;border-radius:3px;background:var(--bg3);color:var(--txt3);border:1px solid var(--brd)}
+
+/* ARTISAN SPOTLIGHT */
+.artisan-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:32px}
+.artisan{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;transition:all 0.2s}
+.artisan:hover{border-color:var(--terra);transform:translateY(-2px)}
+.artisan .av{width:64px;height:64px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700}
+.artisan .a-name{font-weight:700;font-size:14px;margin-bottom:2px}
+.artisan .a-loc{font-size:11px;color:var(--txt3);margin-bottom:4px}
+.artisan .a-craft{font-size:11px;color:var(--terra)}
+.artisan .a-earned{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--gold);margin-top:8px}
+
+/* TRUST BAR */
+.trust{display:flex;gap:16px;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:16px;margin-bottom:28px;justify-content:space-around;flex-wrap:wrap}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt2)}
+.trust-item span{font-size:18px}
+
+@media(max-width:768px){.grid{grid-template-columns:1fr 1fr}.hero{flex-direction:column}.hero-art{font-size:48px}}
+@media(max-width:480px){.grid{grid-template-columns:1fr}.artisan-row{grid-template-columns:1fr 1fr}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-brand"><span>🏺</span><h1>ArtesaníaSoberana</h1></div>
+  <div class="nav-search"><input placeholder="Buscar artesanías, artesanos, técnicas..." /></div>
+  <div class="nav-r">
+    <button class="nb sell">🏺 Vender</button>
+    <button class="nb">🛒 Carrito</button>
+    <button class="nb">💎</button>
+    <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--tq));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;cursor:pointer">CA</div>
+  </div>
+</div>
+
+<div class="cats">
+  <button class="cat a">Todos</button>
+  <button class="cat">🏺 Cerámica</button>
+  <button class="cat">🧵 Textiles</button>
+  <button class="cat">💍 Joyería</button>
+  <button class="cat">🪵 Madera</button>
+  <button class="cat">🎨 Pintura</button>
+  <button class="cat">🧺 Cestería</button>
+  <button class="cat">🪶 Plumería</button>
+  <button class="cat">🪨 Piedra</button>
+  <button class="cat">👗 Ropa</button>
+  <button class="cat">🎭 Máscaras</button>
+  <button class="cat">🪈 Instrumentos</button>
+  <button class="cat">🕯 Velas</button>
+  <button class="cat">🧴 Cosmética Natural</button>
+  <button class="cat">🍫 Alimentos</button>
+</div>
+
+<div class="content">
+
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-badge">🌎 Marketplace Artesanal Indígena</div>
+      <h2>Cada Pieza Cuenta una Historia de Miles de Años</h2>
+      <p>Compra directo de artesanos indígenas de 19 países. 88% del pago va al artesano via BDET Bank. Certificado de autenticidad en blockchain MameyNode.</p>
+      <div class="hero-stats">
+        <div class="hs"><div class="n">4,291</div><div class="l">Artesanos</div></div>
+        <div class="hs"><div class="n">23,847</div><div class="l">Productos</div></div>
+        <div class="hs"><div class="n">19</div><div class="l">Países</div></div>
+        <div class="hs"><div class="n">88%</div><div class="l">Al Artesano</div></div>
+      </div>
+    </div>
+    <div class="hero-art">🏺🧵💍🎭</div>
+  </div>
+
+  <div class="trust">
+    <div class="trust-item"><span>🔒</span> Autenticidad verificada en blockchain</div>
+    <div class="trust-item"><span>💎</span> Pago via BDET · 88% artesano</div>
+    <div class="trust-item"><span>🌿</span> Materiales sostenibles</div>
+    <div class="trust-item"><span>📦</span> Envío con SoberanoFreight</div>
+    <div class="trust-item"><span>🛡</span> Protección al comprador</div>
+  </div>
+
+  <div class="sec-h"><h3>⭐ Lo Más Vendido</h3><a>Ver todos →</a></div>
+  <div class="grid">
+    <div class="prod">
+      <div class="prod-img" style="background:linear-gradient(135deg,#201510,#1a1008)">🏺<span class="prod-badge pb-best">Bestseller</span><button class="prod-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="prod-body">
+        <div class="prod-shop">🏺 Ana Lenca · Honduras <span style="color:var(--tq)">✓</span></div>
+        <div class="prod-name">Vasija Lenca Ceremonial — Barro Negro Pulido</div>
+        <div class="prod-price"><span class="w">Ⓦ 120</span><span class="usd">≈ $48 USD</span></div>
+        <div class="prod-rating">⭐ 4.98 (287 ventas) · Hecho a mano</div>
+        <div class="prod-tags"><span class="pt">Cerámica</span><span class="pt">Lenca</span><span class="pt">Honduras</span><span class="pt">Ceremonial</span></div>
+      </div>
+    </div>
+    <div class="prod">
+      <div class="prod-img" style="background:linear-gradient(135deg,#150a20,#200a15)">🧵<span class="prod-badge pb-best">Bestseller</span><button class="prod-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="prod-body">
+        <div class="prod-shop">🧵 Rosa Maya · Guatemala <span style="color:var(--tq)">✓</span></div>
+        <div class="prod-name">Huipil Bordado a Mano — Diseño Quetzal</div>
+        <div class="prod-price"><span class="w">Ⓦ 250</span><span class="usd">≈ $100 USD</span></div>
+        <div class="prod-rating">⭐ 5.0 (156 ventas) · 3 meses de trabajo</div>
+        <div class="prod-tags"><span class="pt">Textil</span><span class="pt">Maya</span><span class="pt">Guatemala</span><span class="pt">Bordado</span></div>
+      </div>
+    </div>
+    <div class="prod">
+      <div class="prod-img" style="background:linear-gradient(135deg,#0a1a15,#15200a)">💍<span class="prod-badge pb-hand">Hecho a Mano</span><button class="prod-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="prod-body">
+        <div class="prod-shop">💍 Taller Mapuche · Chile <span style="color:var(--tq)">✓</span></div>
+        <div class="prod-name">Collar Mapuche de Plata — Diseño Kultrun</div>
+        <div class="prod-price"><span class="w">Ⓦ 180</span><span class="usd">≈ $72 USD</span></div>
+        <div class="prod-rating">⭐ 4.96 (203 ventas) · Plata 925</div>
+        <div class="prod-tags"><span class="pt">Joyería</span><span class="pt">Mapuche</span><span class="pt">Chile</span><span class="pt">Plata</span></div>
+      </div>
+    </div>
+    <div class="prod">
+      <div class="prod-img" style="background:linear-gradient(135deg,#1a100a,#0a1a1a)">🎨<span class="prod-badge pb-new">Nuevo</span><button class="prod-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="prod-body">
+        <div class="prod-shop">🎨 Kené Shipibo · Perú <span style="color:var(--tq)">✓</span></div>
+        <div class="prod-name">Tela Pintada Shipibo — Patrón Kené Sagrado</div>
+        <div class="prod-price"><span class="w">Ⓦ 95</span><span class="usd">≈ $38 USD</span></div>
+        <div class="prod-rating">⭐ 4.99 (124 ventas) · Tintas naturales</div>
+        <div class="prod-tags"><span class="pt">Pintura</span><span class="pt">Shipibo</span><span class="pt">Perú</span><span class="pt">Kené</span></div>
+      </div>
+    </div>
+    <div class="prod">
+      <div class="prod-img" style="background:linear-gradient(135deg,#200a0a,#0a1520)">🎭<span class="prod-badge pb-hand">Hecho a Mano</span><button class="prod-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="prod-body">
+        <div class="prod-shop">🎭 Maestro Boruca · Costa Rica <span style="color:var(--tq)">✓</span></div>
+        <div class="prod-name">Máscara Boruca Tallada — Diablo Tradicional</div>
+        <div class="prod-price"><span class="w">Ⓦ 320</span><span class="usd">≈ $128 USD</span></div>
+        <div class="prod-rating">⭐ 5.0 (67 ventas) · Madera de balsa</div>
+        <div class="prod-tags"><span class="pt">Máscara</span><span class="pt">Boruca</span><span class="pt">Costa Rica</span><span class="pt">Madera</span></div>
+      </div>
+    </div>
+    <div class="prod">
+      <div class="prod-img" style="background:linear-gradient(135deg,#0a2010,#1a1510)">🧺<span class="prod-badge pb-best">Bestseller</span><button class="prod-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="prod-body">
+        <div class="prod-shop">🧺 Mola Kuna · Panamá <span style="color:var(--tq)">✓</span></div>
+        <div class="prod-name">Mola Kuna Original — Diseño Cosmológico</div>
+        <div class="prod-price"><span class="w">Ⓦ 85</span><span class="usd">≈ $34 USD</span></div>
+        <div class="prod-rating">⭐ 4.97 (342 ventas) · Técnica ancestral</div>
+        <div class="prod-tags"><span class="pt">Textil</span><span class="pt">Kuna</span><span class="pt">Panamá</span><span class="pt">Mola</span></div>
+      </div>
+    </div>
+    <div class="prod">
+      <div class="prod-img" style="background:linear-gradient(135deg,#15150a,#0a1520)">🪵<span class="prod-badge pb-new">Nuevo</span><button class="prod-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="prod-body">
+        <div class="prod-shop">🪵 Alebrije Zapotec · México <span style="color:var(--tq)">✓</span></div>
+        <div class="prod-name">Alebrije Tallado — Jaguar Espiritual Multicolor</div>
+        <div class="prod-price"><span class="w">Ⓦ 200</span><span class="usd">≈ $80 USD</span></div>
+        <div class="prod-rating">⭐ 4.95 (89 ventas) · Copal tallado</div>
+        <div class="prod-tags"><span class="pt">Madera</span><span class="pt">Zapotec</span><span class="pt">México</span><span class="pt">Alebrije</span></div>
+      </div>
+    </div>
+    <div class="prod">
+      <div class="prod-img" style="background:linear-gradient(135deg,#1a0a1a,#0a200a)">🪶<span class="prod-badge pb-hand">Hecho a Mano</span><button class="prod-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="prod-body">
+        <div class="prod-shop">🪶 Atrapasueños Ojibwe · Canadá <span style="color:var(--tq)">✓</span></div>
+        <div class="prod-name">Atrapasueños Ceremonial Ojibwe — Sauce y Plumas</div>
+        <div class="prod-price"><span class="w">Ⓦ 65</span><span class="usd">≈ $26 USD</span></div>
+        <div class="prod-rating">⭐ 4.92 (178 ventas) · Materiales naturales</div>
+        <div class="prod-tags"><span class="pt">Plumería</span><span class="pt">Ojibwe</span><span class="pt">Canadá</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-h"><h3>🌟 Artesanos Destacados</h3><a>Ver todos →</a></div>
+  <div class="artisan-row">
+    <div class="artisan">
+      <div class="av" style="background:linear-gradient(135deg,#ff6b6b,var(--wp))">AL</div>
+      <div class="a-name">Ana Lenca <span style="color:var(--tq);font-size:12px">✓</span></div>
+      <div class="a-loc">📍 Honduras</div>
+      <div class="a-craft">🏺 Cerámica · Barro negro</div>
+      <div class="a-earned">Ⓦ 3,200 este mes</div>
+    </div>
+    <div class="artisan">
+      <div class="av" style="background:linear-gradient(135deg,var(--wp),var(--terra))">RM</div>
+      <div class="a-name">Rosa Maya <span style="color:var(--tq);font-size:12px">✓</span></div>
+      <div class="a-loc">📍 Guatemala</div>
+      <div class="a-craft">🧵 Textiles · Huipiles</div>
+      <div class="a-earned">Ⓦ 4,800 este mes</div>
+    </div>
+    <div class="artisan">
+      <div class="av" style="background:linear-gradient(135deg,var(--tq),var(--gold))">TM</div>
+      <div class="a-name">Taller Mapuche <span style="color:var(--tq);font-size:12px">✓</span></div>
+      <div class="a-loc">📍 Chile</div>
+      <div class="a-craft">💍 Platería · Joyería</div>
+      <div class="a-earned">Ⓦ 5,100 este mes</div>
+    </div>
+    <div class="artisan">
+      <div class="av" style="background:linear-gradient(135deg,var(--gold),var(--terra))">KS</div>
+      <div class="a-name">Kené Shipibo <span style="color:var(--tq);font-size:12px">✓</span></div>
+      <div class="a-loc">📍 Perú</div>
+      <div class="a-craft">🎨 Pintura · Kené</div>
+      <div class="a-earned">Ⓦ 2,900 este mes</div>
+    </div>
+    <div class="artisan">
+      <div class="av" style="background:linear-gradient(135deg,var(--terra),#ff6b6b)">MB</div>
+      <div class="a-name">Maestro Boruca <span style="color:var(--tq);font-size:12px">✓</span></div>
+      <div class="a-loc">📍 Costa Rica</div>
+      <div class="a-craft">🎭 Máscaras · Madera</div>
+      <div class="a-earned">Ⓦ 6,400 este mes</div>
+    </div>
+    <div class="artisan">
+      <div class="av" style="background:linear-gradient(135deg,#34d399,var(--tq))">MK</div>
+      <div class="a-name">Mola Kuna <span style="color:var(--tq);font-size:12px">✓</span></div>
+      <div class="a-loc">📍 Panamá</div>
+      <div class="a-craft">🧵 Molas · Textiles</div>
+      <div class="a-earned">Ⓦ 3,700 este mes</div>
+    </div>
+  </div>
+
+  <div style="background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:20px;display:flex;justify-content:space-around;text-align:center;flex-wrap:wrap;gap:12px">
+    <div><div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--gold)">Ⓦ 847K</div><div style="font-size:10px;color:var(--txt3)">Pagado a Artesanos</div></div>
+    <div><div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--terra)">88%</div><div style="font-size:10px;color:var(--txt3)">Al Artesano</div></div>
+    <div><div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--tq)">100%</div><div style="font-size:10px;color:var(--txt3)">Autenticidad Blockchain</div></div>
+    <div><div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--wp)">0%</div><div style="font-size:10px;color:var(--txt3)">Comisiones Ocultas</div></div>
+  </div>
+
+</div>
+</body>
+</html>

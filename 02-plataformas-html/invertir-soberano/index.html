@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InvertirSoberano — Inversiones Soberanas | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060610;--bg2:#0c0c1a;--bg3:#141428;--bg4:#1c1c36;--gold:#d4a853;--gold-d:rgba(212,168,83,0.08);--tq:#2dd4a8;--tq-d:rgba(45,212,168,0.06);--wp:#9b6dff;--red:#ff4d6a;--green:#34d399;--green-d:rgba(52,211,153,0.08);--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#222238;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+.app{display:grid;grid-template-columns:240px 1fr 320px;min-height:100vh}
+
+/* SIDEBAR */
+.sb{background:var(--bg2);border-right:1px solid var(--brd);padding:16px;overflow-y:auto}
+.logo{display:flex;align-items:center;gap:8px;padding:8px;margin-bottom:20px}
+.logo span{font-size:22px}
+.logo h1{font-family:'Inter',sans-serif;font-size:16px;font-weight:800;color:var(--green)}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--txt2);transition:all 0.15s}
+.ni:hover{background:var(--bg3);color:var(--txt)}.ni.a{color:var(--green);font-weight:700}
+.sep{height:1px;background:var(--brd);margin:12px 0}
+.st{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);padding:4px 12px}
+
+.watchlist{margin-top:8px}
+.wl-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:6px;cursor:pointer;transition:background 0.15s;font-size:12px}
+.wl-item:hover{background:var(--bg3)}
+.wl-sym{font-weight:700;font-family:'IBM Plex Mono',monospace}
+.wl-change{font-family:'IBM Plex Mono',monospace;font-size:11px}
+.wl-up{color:var(--green)}.wl-down{color:var(--red)}
+
+/* MAIN */
+.mn{padding:24px;overflow-y:auto}
+
+/* PORTFOLIO HEADER */
+.port-header{margin-bottom:28px}
+.port-label{font-size:12px;color:var(--txt3);margin-bottom:4px}
+.port-value{font-family:'IBM Plex Mono',monospace;font-size:38px;font-weight:700;margin-bottom:4px}
+.port-change{font-family:'IBM Plex Mono',monospace;font-size:15px;display:flex;align-items:center;gap:6px;margin-bottom:16px}
+.port-tabs{display:flex;gap:4px}
+.pt{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;background:none;border:1px solid var(--brd);color:var(--txt3);font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.pt:hover{background:var(--bg3);color:var(--txt)}.pt.a{background:var(--green-d);color:var(--green);border-color:rgba(52,211,153,0.2)}
+
+/* CHART PLACEHOLDER */
+.chart{width:100%;height:200px;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:28px;position:relative;overflow:hidden}
+.chart svg{width:100%;height:100%}
+.chart-label{position:absolute;top:12px;left:12px;font-size:11px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+
+/* POSITIONS */
+.sec-h{font-size:16px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.positions{display:flex;flex-direction:column;gap:6px;margin-bottom:28px}
+.pos{display:grid;grid-template-columns:40px 1fr 100px 100px 80px;align-items:center;padding:12px;background:var(--bg2);border:1px solid var(--brd);border-radius:8px;cursor:pointer;transition:all 0.15s;gap:12px}
+.pos:hover{border-color:rgba(52,211,153,0.3)}
+.pos-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.pos-name .sym{font-weight:700;font-size:14px;font-family:'IBM Plex Mono',monospace}
+.pos-name .full{font-size:11px;color:var(--txt3)}
+.pos-val{text-align:right}
+.pos-val .price{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600}
+.pos-val .shares{font-size:10px;color:var(--txt3)}
+.pos-pnl{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600}
+.pos-act{display:flex;gap:4px;justify-content:flex-end}
+.pos-btn{padding:4px 10px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.pos-buy{background:var(--green-d);color:var(--green)}.pos-buy:hover{background:var(--green);color:#060610}
+.pos-sell{background:rgba(255,77,106,0.08);color:var(--red)}.pos-sell:hover{background:var(--red);color:#fff}
+
+/* RIGHT PANEL */
+.rp{background:var(--bg2);border-left:1px solid var(--brd);padding:16px;overflow-y:auto}
+.rp-title{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.news-item{padding:12px;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:border-color 0.15s}
+.news-item:hover{border-color:rgba(212,168,83,0.3)}
+.news-src{font-size:10px;color:var(--txt3);margin-bottom:2px;font-family:'IBM Plex Mono',monospace}
+.news-title{font-size:13px;font-weight:600;line-height:1.3;margin-bottom:4px}
+.news-time{font-size:10px;color:var(--txt3)}
+
+.rp-widget{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:14px}
+.rp-widget .w-title{font-size:12px;font-weight:700;margin-bottom:8px}
+.rp-stat{display:flex;justify-content:space-between;padding:4px 0;font-size:12px}
+.rp-stat .label{color:var(--txt3)}.rp-stat .val{font-family:'IBM Plex Mono',monospace;font-weight:600}
+
+@media(max-width:1024px){.rp{display:none}.app{grid-template-columns:240px 1fr}}
+@media(max-width:768px){.sb{display:none}.app{grid-template-columns:1fr}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sb">
+  <div class="logo"><span>📈</span><h1>InvertirSoberano</h1></div>
+  <div class="ni a"><span>📊</span> Portfolio</div>
+  <div class="ni"><span>🔍</span> Explorar</div>
+  <div class="ni"><span>📰</span> Noticias</div>
+  <div class="ni"><span>🔄</span> Transacciones</div>
+  <div class="ni"><span>💎</span> BDET Wallet</div>
+  <div class="ni"><span>🏦</span> Depósitos</div>
+  <div class="sep"></div>
+  <div class="st">Watchlist</div>
+  <div class="watchlist">
+    <div class="wl-item"><span class="wl-sym">WMP/USD</span><span class="wl-change wl-up">+12.4%</span></div>
+    <div class="wl-item"><span class="wl-sym">BTC/WMP</span><span class="wl-change wl-up">+3.2%</span></div>
+    <div class="wl-item"><span class="wl-sym">ETH/WMP</span><span class="wl-change wl-down">-1.8%</span></div>
+    <div class="wl-item"><span class="wl-sym">SOB-IDX</span><span class="wl-change wl-up">+8.7%</span></div>
+    <div class="wl-item"><span class="wl-sym">BDET-YLD</span><span class="wl-change wl-up">+5.2%</span></div>
+    <div class="wl-item"><span class="wl-sym">FARM-TKN</span><span class="wl-change wl-up">+15.1%</span></div>
+    <div class="wl-item"><span class="wl-sym">ART-NFT</span><span class="wl-change wl-down">-0.4%</span></div>
+  </div>
+  <div class="sep"></div>
+  <div class="st">Fondos Soberanos</div>
+  <div class="wl-item"><span class="wl-sym">🌎 Américas</span><span class="wl-change wl-up">+9.3%</span></div>
+  <div class="wl-item"><span class="wl-sym">🌳 Amazonía</span><span class="wl-change wl-up">+11.2%</span></div>
+  <div class="wl-item"><span class="wl-sym">🏔 Andino</span><span class="wl-change wl-up">+7.8%</span></div>
+  <div class="wl-item"><span class="wl-sym">🌊 Caribe</span><span class="wl-change wl-up">+6.5%</span></div>
+</div>
+
+<!-- MAIN -->
+<div class="mn">
+  <div class="port-header">
+    <div class="port-label">Valor Total del Portfolio</div>
+    <div class="port-value" style="color:var(--green)">Ⓦ 24,847.32</div>
+    <div class="port-change" style="color:var(--green)">▲ Ⓦ 2,341.50 (+10.41%) · Hoy</div>
+    <div class="port-tabs">
+      <button class="pt">1D</button><button class="pt">1S</button><button class="pt a">1M</button><button class="pt">3M</button><button class="pt">1A</button><button class="pt">Todo</button>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart">
+    <div class="chart-label">WMP/USD · 1 Mes</div>
+    <svg viewBox="0 0 800 200" preserveAspectRatio="none">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(52,211,153,0.3)"/><stop offset="100%" stop-color="rgba(52,211,153,0)"/></linearGradient></defs>
+      <path d="M0,160 C50,155 100,140 150,130 C200,120 250,100 300,110 C350,120 400,90 450,70 C500,50 550,60 600,40 C650,20 700,30 750,15 L800,10 L800,200 L0,200Z" fill="url(#g)"/>
+      <path d="M0,160 C50,155 100,140 150,130 C200,120 250,100 300,110 C350,120 400,90 450,70 C500,50 550,60 600,40 C650,20 700,30 750,15 L800,10" fill="none" stroke="#34d399" stroke-width="2"/>
+    </svg>
+  </div>
+
+  <!-- Positions -->
+  <div class="sec-h">📊 Tus Posiciones</div>
+  <div class="positions">
+    <div class="pos">
+      <div class="pos-icon" style="background:var(--gold-d)">💎</div>
+      <div class="pos-name"><div class="sym">WMP</div><div class="full">Wampum Token</div></div>
+      <div class="pos-val"><div class="price">Ⓦ 12,500</div><div class="shares">12,500 WMP</div></div>
+      <div class="pos-pnl" style="color:var(--green)">+Ⓦ 1,847 (+17.3%)</div>
+      <div class="pos-act"><button class="pos-btn pos-buy">Comprar</button><button class="pos-btn pos-sell">Vender</button></div>
+    </div>
+    <div class="pos">
+      <div class="pos-icon" style="background:rgba(155,109,255,0.1)">🏦</div>
+      <div class="pos-name"><div class="sym">BDET-YLD</div><div class="full">BDET Yield Bond</div></div>
+      <div class="pos-val"><div class="price">Ⓦ 5,200</div><div class="shares">52 bonds</div></div>
+      <div class="pos-pnl" style="color:var(--green)">+Ⓦ 312 (+6.4%)</div>
+      <div class="pos-act"><button class="pos-btn pos-buy">Comprar</button><button class="pos-btn pos-sell">Vender</button></div>
+    </div>
+    <div class="pos">
+      <div class="pos-icon" style="background:var(--green-d)">🌾</div>
+      <div class="pos-name"><div class="sym">FARM-TKN</div><div class="full">SoberanoFarm Token</div></div>
+      <div class="pos-val"><div class="price">Ⓦ 3,400</div><div class="shares">340 tokens</div></div>
+      <div class="pos-pnl" style="color:var(--green)">+Ⓦ 510 (+17.6%)</div>
+      <div class="pos-act"><button class="pos-btn pos-buy">Comprar</button><button class="pos-btn pos-sell">Vender</button></div>
+    </div>
+    <div class="pos">
+      <div class="pos-icon" style="background:var(--tq-d)">🏠</div>
+      <div class="pos-name"><div class="sym">HOUSE-TKN</div><div class="full">SoberanoHousing REIT</div></div>
+      <div class="pos-val"><div class="price">Ⓦ 2,100</div><div class="shares">21 shares</div></div>
+      <div class="pos-pnl" style="color:var(--green)">+Ⓦ 168 (+8.7%)</div>
+      <div class="pos-act"><button class="pos-btn pos-buy">Comprar</button><button class="pos-btn pos-sell">Vender</button></div>
+    </div>
+    <div class="pos">
+      <div class="pos-icon" style="background:rgba(255,165,0,0.08)">₿</div>
+      <div class="pos-name"><div class="sym">BTC</div><div class="full">Bitcoin (via BDET)</div></div>
+      <div class="pos-val"><div class="price">Ⓦ 1,647</div><div class="shares">0.015 BTC</div></div>
+      <div class="pos-pnl" style="color:var(--red)">-Ⓦ 96 (-5.5%)</div>
+      <div class="pos-act"><button class="pos-btn pos-buy">Comprar</button><button class="pos-btn pos-sell">Vender</button></div>
+    </div>
+  </div>
+
+  <div class="sec-h">🌎 Fondos Soberanos Comunitarios</div>
+  <div class="positions">
+    <div class="pos">
+      <div class="pos-icon" style="background:var(--gold-d)">🌎</div>
+      <div class="pos-name"><div class="sym">SOB-IDX</div><div class="full">Índice Soberano Américas</div></div>
+      <div class="pos-val"><div class="price">Ⓦ 847</div><div class="shares">Fondo diversificado</div></div>
+      <div class="pos-pnl" style="color:var(--green)">+8.7% YTD</div>
+      <div class="pos-act"><button class="pos-btn pos-buy">Invertir</button></div>
+    </div>
+    <div class="pos">
+      <div class="pos-icon" style="background:var(--green-d)">🌳</div>
+      <div class="pos-name"><div class="sym">AMZ-GRN</div><div class="full">Fondo Verde Amazonía</div></div>
+      <div class="pos-val"><div class="price">Ⓦ 500</div><div class="shares">Carbono + Conservación</div></div>
+      <div class="pos-pnl" style="color:var(--green)">+11.2% YTD</div>
+      <div class="pos-act"><button class="pos-btn pos-buy">Invertir</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="rp">
+  <div class="rp-widget" style="background:linear-gradient(135deg,rgba(52,211,153,0.06),rgba(212,168,83,0.04));border-color:rgba(52,211,153,0.15)">
+    <div class="w-title">💰 Poder de Compra</div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:700;color:var(--gold);margin-bottom:4px">Ⓦ 8,432.00</div>
+    <div style="font-size:11px;color:var(--txt3)">Disponible para invertir · BDET Bank</div>
+    <button style="width:100%;margin-top:10px;padding:8px;border-radius:6px;background:var(--green);border:none;color:#060610;font-weight:700;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Depositar Fondos</button>
+  </div>
+
+  <div class="rp-title">📰 Noticias del Mercado</div>
+  <div class="news-item"><div class="news-src">BDET Finance</div><div class="news-title">Wampum alcanza nuevo máximo: +12.4% en la última semana</div><div class="news-time">Hace 2 horas</div></div>
+  <div class="news-item"><div class="news-src">SoberanoFarm</div><div class="news-title">Token FARM sube 15% tras record de cosecha de quinoa en Bolivia</div><div class="news-time">Hace 5 horas</div></div>
+  <div class="news-item"><div class="news-src">Red Soberana</div><div class="news-title">NCAI confirma piloto con BDET Bank para 5 naciones tribales</div><div class="news-time">Hace 8 horas</div></div>
+  <div class="news-item"><div class="news-src">MameyNode</div><div class="news-title">v4.2 reduce gas fees 34% — más eficiente para micro-inversiones</div><div class="news-time">Hace 1 día</div></div>
+
+  <div class="rp-widget">
+    <div class="w-title">📊 Resumen Portfolio</div>
+    <div class="rp-stat"><span class="label">Valor Total</span><span class="val" style="color:var(--green)">Ⓦ 24,847</span></div>
+    <div class="rp-stat"><span class="label">Ganancia Total</span><span class="val" style="color:var(--green)">+Ⓦ 2,741</span></div>
+    <div class="rp-stat"><span class="label">Rendimiento</span><span class="val" style="color:var(--green)">+12.4%</span></div>
+    <div class="rp-stat"><span class="label">Posiciones</span><span class="val">7 activos</span></div>
+    <div class="rp-stat"><span class="label">Dividendos YTD</span><span class="val" style="color:var(--gold)">Ⓦ 342</span></div>
+  </div>
+
+  <div style="text-align:center;padding:12px;font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace">
+    🔒 Cifrado E2E · MameyNode<br>⚠️ Invertir conlleva riesgos
+  </div>
+</div>
+
+</div>
+</body>
+</html>

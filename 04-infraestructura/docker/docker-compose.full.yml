@@ -1,0 +1,187 @@
+version: '3.9'
+
+services:
+  # ===== DATABASES =====
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: soberano
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-soberano}
+      POSTGRES_DB: soberana
+    ports: ['5432:5432']
+    volumes: ['pgdata:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U soberano']
+      interval: 5s
+
+  redis:
+    image: redis:7-alpine
+    ports: ['6379:6379']
+    volumes: ['redisdata:/data']
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.6
+    ports: ['7700:7700']
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_KEY:-soberano-search}
+    volumes: ['meilidata:/meili_data']
+
+  # ===== BLOCKCHAIN =====
+  mameynode:
+    build: ./backend/mameynode
+    ports: ['8545:8545', '30303:30303']
+    volumes: ['chaindata:/data']
+
+  # ===== CORE SERVICES =====
+  api:
+    build: { context: ., dockerfile: Dockerfile.api }
+    ports: ['3000:3000']
+    environment: &env
+      DATABASE_URL: postgres://soberano:${DB_PASSWORD:-soberano}@postgres:5432/soberana
+      REDIS_URL: redis://redis:6379
+      MEILI_URL: http://meilisearch:7700
+      MAMEYNODE_RPC: http://mameynode:8545
+      JWT_SECRET: ${JWT_SECRET:-soberano-secret}
+    depends_on: [postgres, redis]
+
+  bdet-bank:
+    build: { context: ./backend/bdet-bank }
+    ports: ['4000:4000']
+    environment: *env
+    depends_on: [postgres, redis, mameynode]
+
+  social-media:
+    build: { context: ./backend/social-media }
+    ports: ['4001:4001']
+    environment: *env
+    depends_on: [postgres, redis, meilisearch]
+
+  # ===== PLATFORM SERVICES =====
+  soberano-doctor:
+    build: { context: ./backend/platforms/soberano-doctor }
+    ports: ['4002:4002']
+    environment: *env
+
+  pupitresoberano:
+    build: { context: ./backend/platforms/pupitresoberano }
+    ports: ['4003:4003']
+    environment: *env
+
+  soberano-uber:
+    build: { context: ./backend/platforms/soberano-uber }
+    ports: ['4004:4004']
+    environment: *env
+
+  soberano-eats:
+    build: { context: ./backend/platforms/soberano-eats }
+    ports: ['4005:4005']
+    environment: *env
+
+  voto-soberano:
+    build: { context: ./backend/platforms/voto-soberano }
+    ports: ['4006:4006']
+    environment: *env
+    depends_on: [mameynode]
+
+  justicia-soberano:
+    build: { context: ./backend/platforms/justicia-soberano }
+    ports: ['4007:4007']
+    environment: *env
+
+  soberano-servicios:
+    build: { context: ./backend/platforms/soberano-servicios }
+    ports: ['4010:4010']
+    environment: *env
+
+  correo-soberano:
+    build: { context: ./backend/platforms/correo-soberano }
+    ports: ['4011:4011']
+    environment: *env
+
+  busqueda-soberana:
+    build: { context: ./backend/platforms/busqueda-soberana }
+    ports: ['4012:4012']
+    environment: *env
+    depends_on: [meilisearch]
+
+  mapa-soberano:
+    build: { context: ./backend/platforms/mapa-soberano }
+    ports: ['4013:4013']
+    environment: *env
+
+  nube-soberana:
+    build: { context: ./backend/platforms/nube-soberana }
+    ports: ['4014:4014']
+    environment: *env
+
+  soberano-farm:
+    build: { context: ./backend/platforms/soberano-farm }
+    ports: ['4015:4015']
+    environment: *env
+
+  radio-soberana:
+    build: { context: ./backend/platforms/radio-soberana }
+    ports: ['4016:4016']
+    environment: *env
+
+  cooperativa-soberana:
+    build: { context: ./backend/platforms/cooperativa-soberana }
+    ports: ['4017:4017']
+    environment: *env
+
+  turismo-soberano:
+    build: { context: ./backend/platforms/turismo-soberano }
+    ports: ['4018:4018']
+    environment: *env
+
+  soberano-freelance:
+    build: { context: ./backend/platforms/soberano-freelance }
+    ports: ['4019:4019']
+    environment: *env
+
+  soberano-pos:
+    build: { context: ./backend/platforms/soberano-pos }
+    ports: ['4020:4020']
+    environment: *env
+
+  soberano-id:
+    build: { context: ./backend/platforms/soberano-id }
+    ports: ['4009:4009']
+    environment: *env
+    depends_on: [mameynode]
+
+  censo-soberano:
+    build: { context: ./backend/platforms/censo-soberano }
+    ports: ['4008:4008']
+    environment: *env
+
+  # ===== MONITORING =====
+  prometheus:
+    image: prom/prometheus:v2.48.1
+    ports: ['9090:9090']
+    volumes: ['./infra/monitoring:/etc/prometheus']
+
+  grafana:
+    image: grafana/grafana:10.2.3
+    ports: ['3001:3000']
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-soberano}
+
+  # ===== REVERSE PROXY =====
+  traefik:
+    image: traefik:v3.0
+    ports: ['80:80', '443:443', '8080:8080']
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./infra/traefik:/etc/traefik
+      - letsencrypt:/letsencrypt
+
+volumes:
+  pgdata:
+  redisdata:
+  meilidata:
+  chaindata:
+  letsencrypt:
+
+# Zero taxes. Zero ads. Zero tracking.
+# Soberanía siempre.

@@ -1,0 +1,133 @@
+openapi: 3.0.3
+info:
+  title: Red Soberana API
+  version: 4.2.0
+  description: |
+    296 sovereign platforms for indigenous peoples.
+    Zero taxes. Free education. Free healthcare.
+    BDET — Blockchain Digital Exchange Trading Bank.
+  contact:
+    email: api@soberano.bo
+servers:
+  - url: https://api.soberano.bo/v1
+    description: Production
+  - url: https://staging-api.soberano.bo/v1
+    description: Staging
+
+paths:
+  /auth/register:
+    post:
+      summary: Create sovereign identity
+      tags: [Auth]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, nation]
+              properties:
+                email: { type: string }
+                password: { type: string }
+                nation: { type: string }
+                country: { type: string }
+                language: { type: string, default: es }
+      responses:
+        201:
+          description: Registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  sovereignId: { type: string }
+
+  /auth/login:
+    post:
+      summary: Authenticate
+      tags: [Auth]
+      responses:
+        200:
+          description: Login success
+
+  /bdet/balance:
+    get:
+      summary: Get wallet balance
+      tags: [BDET Bank]
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Balance
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balances: { type: object }
+                  taxRate: { type: string, example: "0%" }
+
+  /bdet/payment:
+    post:
+      summary: Send payment
+      tags: [BDET Bank]
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Payment processed
+
+  /exchange/rates:
+    get:
+      summary: Get exchange rates
+      tags: [Exchange]
+      responses:
+        200:
+          description: Current rates for 14 pairs
+
+  /exchange/convert:
+    post:
+      summary: Convert currency
+      tags: [Exchange]
+      security: [{ bearerAuth: [] }]
+
+  /trading/order:
+    post:
+      summary: Place trade order
+      tags: [Trading]
+      security: [{ bearerAuth: [] }]
+
+  /trading/orderbook/{pair}:
+    get:
+      summary: Get order book
+      tags: [Trading]
+      parameters:
+        - name: pair
+          in: path
+          required: true
+          schema: { type: string, example: WMP-USD }
+
+  /atabey/translate:
+    post:
+      summary: Translate text (20 languages)
+      tags: [Atabey]
+
+  /atabey/languages:
+    get:
+      summary: List supported languages
+      tags: [Atabey]
+
+  /chain/status:
+    get:
+      summary: MameyNode blockchain status
+      tags: [Blockchain]
+
+  /fiscal/allocation:
+    get:
+      summary: Current fiscal allocation (0% tax)
+      tags: [Fiscal]
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

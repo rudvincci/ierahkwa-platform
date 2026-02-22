@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MúsicaSoberana — Streaming Soberano | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060609;--bg2:#0e0e14;--bg3:#16161e;--bg4:#1e1e28;--gold:#d4a853;--gold-d:rgba(212,168,83,0.12);--tq:#2dd4a8;--wp:#9b6dff;--red:#ff4d6a;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#222230;--r:8px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden}
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:1fr 84px;height:100vh}
+
+/* SIDEBAR */
+.sb{background:var(--bg2);padding:12px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--brd) transparent;border-right:1px solid var(--brd)}
+.logo{display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:16px}
+.logo span{font-size:24px}
+.logo h1{font-family:'Syne',sans-serif;font-size:17px;background:linear-gradient(135deg,var(--gold),var(--tq));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--txt2);transition:all 0.15s}
+.ni:hover{color:var(--txt);background:var(--bg3)}.ni.a{color:var(--txt);font-weight:700}
+.sep{height:1px;background:var(--brd);margin:10px 0}
+.st{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);padding:4px 12px}
+.pl{display:flex;align-items:center;gap:10px;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--txt2);transition:background 0.15s}
+.pl:hover{background:var(--bg3)}
+.plc{width:40px;height:40px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.pln{font-weight:600;font-size:12px}.plt{font-size:10px;color:var(--txt3)}
+
+/* MAIN */
+.mn{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--brd) transparent;padding-bottom:20px}
+.hero{padding:32px 28px;background:linear-gradient(180deg,#1a1020 0%,var(--bg) 100%)}
+.hero-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--tq);margin-bottom:8px}
+.hero h2{font-family:'Syne',sans-serif;font-size:32px;margin-bottom:6px}
+.hero p{font-size:14px;color:var(--txt2);margin-bottom:16px;max-width:600px;line-height:1.5}
+.hero-btns{display:flex;gap:8px}
+.hb{padding:10px 24px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;border:none;transition:all 0.15s;display:flex;align-items:center;gap:6px}
+.hb-play{background:var(--gold);color:#060609}.hb-play:hover{filter:brightness(1.15)}
+.hb-shuf{background:var(--bg3);color:var(--txt);border:1px solid var(--brd)}.hb-shuf:hover{background:var(--bg4)}
+
+/* Section */
+.sec{padding:0 28px;margin-bottom:28px}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-h h3{font-size:16px;font-weight:700}.sec-h a{font-size:12px;color:var(--txt3);cursor:pointer;text-decoration:none}
+.sec-h a:hover{color:var(--gold)}
+
+/* Card Grid */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.card{background:var(--bg2);border-radius:var(--r);padding:12px;cursor:pointer;transition:all 0.2s;position:relative}
+.card:hover{background:var(--bg3);transform:translateY(-2px)}
+.card:hover .card-play{opacity:1;transform:translateY(0)}
+.card-img{width:100%;aspect-ratio:1;border-radius:6px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:40px;position:relative;overflow:hidden}
+.card-play{position:absolute;bottom:8px;right:8px;width:40px;height:40px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:16px;opacity:0;transform:translateY(8px);transition:all 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.4);z-index:2}
+.card-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.card-sub{font-size:11px;color:var(--txt3)}
+
+/* Track List */
+.tl{width:100%}
+.tr{display:grid;grid-template-columns:32px 1fr 120px 60px 48px;align-items:center;padding:8px 12px;border-radius:6px;cursor:pointer;transition:background 0.15s;gap:12px}
+.tr:hover{background:var(--bg3)}
+.tr:hover .tr-num{display:none}.tr:hover .tr-play-icon{display:block}
+.tr-num{font-size:13px;color:var(--txt3);text-align:center;font-family:'IBM Plex Mono',monospace}
+.tr-play-icon{display:none;text-align:center;font-size:12px;color:var(--gold)}
+.tr-info{display:flex;align-items:center;gap:10px;overflow:hidden}
+.tr-cover{width:40px;height:40px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.tr-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr-artist{font-size:11px;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr-album{font-size:12px;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr-dur{font-size:12px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;text-align:right}
+.tr-bdet{display:flex;align-items:center;justify-content:center}
+.tip-btn{width:28px;height:28px;border-radius:50%;background:none;border:1px solid var(--brd);color:var(--txt3);cursor:pointer;font-size:11px;transition:all 0.15s;display:flex;align-items:center;justify-content:center}
+.tip-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-d)}
+.tr.playing{background:rgba(212,168,83,0.06)}
+.tr.playing .tr-name{color:var(--gold)}
+.tr.playing .tr-num{color:var(--gold)}
+
+/* NOW PLAYING BAR */
+.npb{grid-column:1/-1;background:var(--bg2);border-top:1px solid var(--brd);display:grid;grid-template-columns:280px 1fr 280px;align-items:center;padding:0 16px}
+.np-left{display:flex;align-items:center;gap:12px}
+.np-cover{width:56px;height:56px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;animation:spin 8s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.np-info .np-title{font-size:13px;font-weight:600}
+.np-info .np-artist{font-size:11px;color:var(--txt3)}
+.np-heart{background:none;border:none;color:var(--red);cursor:pointer;font-size:15px;margin-left:8px}
+
+.np-center{display:flex;flex-direction:column;align-items:center;gap:6px}
+.np-controls{display:flex;align-items:center;gap:12px}
+.np-btn{background:none;border:none;color:var(--txt2);cursor:pointer;font-size:16px;transition:color 0.15s;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.np-btn:hover{color:var(--txt)}
+.np-btn.main{width:40px;height:40px;border-radius:50%;background:var(--gold);color:#060609;font-size:18px}
+.np-btn.main:hover{transform:scale(1.05);filter:brightness(1.1)}
+.np-progress{display:flex;align-items:center;gap:8px;width:100%;max-width:500px}
+.np-time{font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;width:36px}
+.np-bar{flex:1;height:4px;background:var(--bg4);border-radius:2px;position:relative;cursor:pointer}
+.np-bar .fill{height:100%;background:var(--gold);border-radius:2px;width:35%;transition:width 0.3s}
+.np-bar:hover .fill{background:var(--gold)}
+
+.np-right{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.np-rbtn{background:none;border:none;color:var(--txt3);cursor:pointer;font-size:13px;transition:color 0.15s}
+.np-rbtn:hover{color:var(--txt)}
+.vol-bar{width:80px;height:4px;background:var(--bg4);border-radius:2px;position:relative;cursor:pointer}
+.vol-bar .vfill{height:100%;background:var(--txt2);border-radius:2px;width:65%}
+.np-badge{font-size:9px;padding:2px 6px;border-radius:3px;background:rgba(45,212,168,0.1);color:var(--tq);font-weight:700;letter-spacing:0.5px}
+
+@media(max-width:768px){.app{grid-template-columns:1fr}.sb{display:none}.npb{grid-template-columns:1fr}.np-left{display:none}.np-right{display:none}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sb">
+  <div class="logo"><span>🎵</span><div><h1>MúsicaSoberana</h1></div></div>
+  <div class="ni a"><span>🏠</span> Inicio</div>
+  <div class="ni"><span>🔍</span> Buscar</div>
+  <div class="ni"><span>📚</span> Tu Biblioteca</div>
+  <div class="sep"></div>
+  <div class="ni"><span>➕</span> Crear Playlist</div>
+  <div class="ni"><span>❤️</span> Canciones Favoritas</div>
+  <div class="ni"><span>📡</span> Radio Soberana</div>
+  <div class="sep"></div>
+  <div class="st">Tus Playlists</div>
+  <div class="pl"><div class="plc" style="background:linear-gradient(135deg,#1a1025,#251520)">🪘</div><div><div class="pln">Ancestral Beats</div><div class="plt">Playlist · 47 canciones</div></div></div>
+  <div class="pl"><div class="plc" style="background:linear-gradient(135deg,#0a2015,#152510)">🌿</div><div><div class="pln">Sonidos de la Selva</div><div class="plt">Playlist · 32 canciones</div></div></div>
+  <div class="pl"><div class="plc" style="background:linear-gradient(135deg,#201510,#251a10)">🎸</div><div><div class="pln">Rock Indígena</div><div class="plt">Playlist · 28 canciones</div></div></div>
+  <div class="pl"><div class="plc" style="background:linear-gradient(135deg,#150a20,#0a1520)">🎹</div><div><div class="pln">Fusión Electrónica</div><div class="plt">Playlist · 55 canciones</div></div></div>
+  <div class="pl"><div class="plc" style="background:linear-gradient(135deg,var(--gold-d),rgba(155,109,255,0.1))">💎</div><div><div class="pln">Lo Más Escuchado</div><div class="plt">MúsicaSoberana · Semanal</div></div></div>
+  <div class="pl"><div class="plc" style="background:linear-gradient(135deg,#1a100a,#0a1a15)">🪈</div><div><div class="pln">Flautas Andinas</div><div class="plt">Playlist · 23 canciones</div></div></div>
+  <div class="pl"><div class="plc" style="background:linear-gradient(135deg,#200a15,#15100a)">🥁</div><div><div class="pln">Tambores Sagrados</div><div class="plt">Playlist · 18 canciones</div></div></div>
+  <div class="sep"></div>
+  <div style="padding:8px 12px;font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace">
+    💎 Artistas reciben 92%<br>🔒 Sin tracking · MameyNode<br>🌐 Atabey subtítulos
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="mn">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-badge">🔥 PLAYLIST DESTACADA</div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:36px">Voces de las Américas</h2>
+    <p>Lo mejor de la música indígena contemporánea. 72 millones de voces, un ritmo soberano. Curada por MameyAI.</p>
+    <div style="font-size:12px;color:var(--txt3);margin-bottom:12px;font-family:'IBM Plex Mono',monospace">
+      🎵 87 canciones · 5h 23min · 💎 Ⓦ 12,847 generado para artistas
+    </div>
+    <div class="hero-btns">
+      <button class="hb hb-play" onclick="togglePlay()">▶ Reproducir</button>
+      <button class="hb hb-shuf">🔀 Aleatorio</button>
+      <button class="hb hb-shuf">❤️ Guardar</button>
+      <button class="hb hb-shuf">💎 Donar Ⓦ</button>
+    </div>
+  </div>
+
+  <!-- Track List -->
+  <div class="sec">
+    <div class="tl">
+      <div class="tr" style="border-bottom:1px solid var(--brd);padding-bottom:6px;margin-bottom:4px">
+        <div class="tr-num" style="font-size:10px">#</div>
+        <div style="font-size:11px;color:var(--txt3);font-weight:600">TÍTULO</div>
+        <div style="font-size:11px;color:var(--txt3)">ÁLBUM</div>
+        <div style="font-size:11px;color:var(--txt3);text-align:right">⏱</div>
+        <div></div>
+      </div>
+      <div class="tr playing">
+        <div class="tr-num">1</div><div class="tr-play-icon">▶</div>
+        <div class="tr-info"><div class="tr-cover" style="background:linear-gradient(135deg,#201520,#102020)">🪘</div><div><div class="tr-name">Cantos de la Tierra</div><div class="tr-artist">Colectivo Maya</div></div></div>
+        <div class="tr-album">Raíces Eternas</div>
+        <div class="tr-dur">4:33</div>
+        <div class="tr-bdet"><button class="tip-btn" onclick="this.textContent='✓';this.style.color='var(--gold)'">💎</button></div>
+      </div>
+      <div class="tr">
+        <div class="tr-num">2</div><div class="tr-play-icon">▶</div>
+        <div class="tr-info"><div class="tr-cover" style="background:linear-gradient(135deg,#1a250a,#0a2015)">🪈</div><div><div class="tr-name">Viento del Altiplano</div><div class="tr-artist">K'antu Andino</div></div></div>
+        <div class="tr-album">Siku Sagrado</div>
+        <div class="tr-dur">5:12</div>
+        <div class="tr-bdet"><button class="tip-btn" onclick="this.textContent='✓';this.style.color='var(--gold)'">💎</button></div>
+      </div>
+      <div class="tr">
+        <div class="tr-num">3</div><div class="tr-play-icon">▶</div>
+        <div class="tr-info"><div class="tr-cover" style="background:linear-gradient(135deg,#200a1a,#150a25)">🎸</div><div><div class="tr-name">Soberanía (feat. MC Taíno)</div><div class="tr-artist">Resistencia Digital</div></div></div>
+        <div class="tr-album">Código Libre</div>
+        <div class="tr-dur">3:47</div>
+        <div class="tr-bdet"><button class="tip-btn" onclick="this.textContent='✓';this.style.color='var(--gold)'">💎</button></div>
+      </div>
+      <div class="tr">
+        <div class="tr-num">4</div><div class="tr-play-icon">▶</div>
+        <div class="tr-info"><div class="tr-cover" style="background:linear-gradient(135deg,#0a1520,#15200a)">🥁</div><div><div class="tr-name">Tambores del Amazonas</div><div class="tr-artist">Shipibo Sound</div></div></div>
+        <div class="tr-album">Selva Profunda</div>
+        <div class="tr-dur">6:28</div>
+        <div class="tr-bdet"><button class="tip-btn" onclick="this.textContent='✓';this.style.color='var(--gold)'">💎</button></div>
+      </div>
+      <div class="tr">
+        <div class="tr-num">5</div><div class="tr-play-icon">▶</div>
+        <div class="tr-info"><div class="tr-cover" style="background:linear-gradient(135deg,#251510,#1a2010)">🪶</div><div><div class="tr-name">Eagle Dance (Remix)</div><div class="tr-artist">Northern Cree × ElectrIndio</div></div></div>
+        <div class="tr-album">Pow Wow Digital</div>
+        <div class="tr-dur">4:15</div>
+        <div class="tr-bdet"><button class="tip-btn" onclick="this.textContent='✓';this.style.color='var(--gold)'">💎</button></div>
+      </div>
+      <div class="tr">
+        <div class="tr-num">6</div><div class="tr-play-icon">▶</div>
+        <div class="tr-info"><div class="tr-cover" style="background:linear-gradient(135deg,#1a0a20,#0a1a1a)">🎹</div><div><div class="tr-name">MameyNode (Lo-Fi Beats)</div><div class="tr-artist">DJ Wampum</div></div></div>
+        <div class="tr-album">Blockchain Vibes</div>
+        <div class="tr-dur">3:22</div>
+        <div class="tr-bdet"><button class="tip-btn" onclick="this.textContent='✓';this.style.color='var(--gold)'">💎</button></div>
+      </div>
+      <div class="tr">
+        <div class="tr-num">7</div><div class="tr-play-icon">▶</div>
+        <div class="tr-info"><div class="tr-cover" style="background:linear-gradient(135deg,#200a0a,#250a15)">🎭</div><div><div class="tr-name">Yurumein — Garifuna Pride</div><div class="tr-artist">Garifuna Collective</div></div></div>
+        <div class="tr-album">Caribbean Roots</div>
+        <div class="tr-dur">5:55</div>
+        <div class="tr-bdet"><button class="tip-btn" onclick="this.textContent='✓';this.style.color='var(--gold)'">💎</button></div>
+      </div>
+      <div class="tr">
+        <div class="tr-num">8</div><div class="tr-play-icon">▶</div>
+        <div class="tr-info"><div class="tr-cover" style="background:linear-gradient(135deg,#0a200a,#1a250a)">🌾</div><div><div class="tr-name">Pachamama Calling</div><div class="tr-artist">Sumaq Ayllu</div></div></div>
+        <div class="tr-album">Buen Vivir</div>
+        <div class="tr-dur">7:03</div>
+        <div class="tr-bdet"><button class="tip-btn" onclick="this.textContent='✓';this.style.color='var(--gold)'">💎</button></div>
+      </div>
+      <div class="tr">
+        <div class="tr-num">9</div><div class="tr-play-icon">▶</div>
+        <div class="tr-info"><div class="tr-cover" style="background:linear-gradient(135deg,#15150a,#0a1520)">🎤</div><div><div class="tr-name">574 Nations (Hip-Hop Anthem)</div><div class="tr-artist">Supaman × Tall Paul</div></div></div>
+        <div class="tr-album">Indigenous Rising</div>
+        <div class="tr-dur">4:44</div>
+        <div class="tr-bdet"><button class="tip-btn" onclick="this.textContent='✓';this.style.color='var(--gold)'">💎</button></div>
+      </div>
+      <div class="tr">
+        <div class="tr-num">10</div><div class="tr-play-icon">▶</div>
+        <div class="tr-info"><div class="tr-cover" style="background:linear-gradient(135deg,#200a10,#0a2020)">🌊</div><div><div class="tr-name">Atabey (Ambient Ocean)</div><div class="tr-artist">Taíno Waves</div></div></div>
+        <div class="tr-album">Mar Caribe Soberano</div>
+        <div class="tr-dur">8:12</div>
+        <div class="tr-bdet"><button class="tip-btn" onclick="this.textContent='✓';this.style.color='var(--gold)'">💎</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured Artists -->
+  <div class="sec">
+    <div class="sec-h"><h3>🌟 Artistas Destacados</h3><a>Ver todos</a></div>
+    <div class="cg">
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#201520,#102020);border-radius:50%">🪘<div class="card-play">▶</div></div><div class="card-name">Colectivo Maya</div><div class="card-sub">Artista · 124K oyentes</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#1a250a,#0a2015);border-radius:50%">🪈<div class="card-play">▶</div></div><div class="card-name">K'antu Andino</div><div class="card-sub">Artista · 89K oyentes</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#200a1a,#150a25);border-radius:50%">🎸<div class="card-play">▶</div></div><div class="card-name">Resistencia Digital</div><div class="card-sub">Artista · 67K oyentes</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#200a0a,#250a15);border-radius:50%">🎭<div class="card-play">▶</div></div><div class="card-name">Garifuna Collective</div><div class="card-sub">Artista · 203K oyentes</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#0a200a,#1a250a);border-radius:50%">🌾<div class="card-play">▶</div></div><div class="card-name">Sumaq Ayllu</div><div class="card-sub">Artista · 56K oyentes</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#251510,#1a2010);border-radius:50%">🪶<div class="card-play">▶</div></div><div class="card-name">Northern Cree</div><div class="card-sub">Artista · 312K oyentes</div></div>
+    </div>
+  </div>
+
+  <!-- Genre Cards -->
+  <div class="sec">
+    <div class="sec-h"><h3>🎧 Géneros Soberanos</h3><a>Ver todos</a></div>
+    <div class="cg">
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#2a1a0a,#1a250a)">🪘🔥<div class="card-play">▶</div></div><div class="card-name">Ancestral Beats</div><div class="card-sub">Tambores + Electrónica</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#0a1a2a,#0a2a1a)">🌊🎵<div class="card-play">▶</div></div><div class="card-name">Caribbean Roots</div><div class="card-sub">Garifuna · Taíno · Kalinago</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#1a0a2a,#2a0a1a)">🎤⛓<div class="card-play">▶</div></div><div class="card-name">Indigenous Hip-Hop</div><div class="card-sub">Rap · Trap · Spoken Word</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#0a2a15,#1a2a0a)">🪈🏔<div class="card-play">▶</div></div><div class="card-name">Andino Clásico</div><div class="card-sub">Siku · Charango · Quena</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#2a0a0a,#1a1a0a)">🎸🌋<div class="card-play">▶</div></div><div class="card-name">Rock Indígena</div><div class="card-sub">Rock · Metal · Punk</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#0a0a2a,#1a0a1a)">🎹✨<div class="card-play">▶</div></div><div class="card-name">Lo-Fi Soberano</div><div class="card-sub">Estudio · Relajación · Trabajo</div></div>
+    </div>
+  </div>
+
+  <!-- New Releases -->
+  <div class="sec">
+    <div class="sec-h"><h3>✨ Nuevos Lanzamientos</h3><a>Ver todos</a></div>
+    <div class="cg">
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#1a1520,#0a2020)">🌎🔒<div class="card-play">▶</div></div><div class="card-name">Código Libre Vol. 2</div><div class="card-sub">Resistencia Digital · Álbum</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#200a15,#150a20)">🌺🎵<div class="card-play">▶</div></div><div class="card-name">Flores del Amazonas</div><div class="card-sub">Shipibo Sound · EP</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#0a1a0a,#1a2510)">🥁🌿<div class="card-play">▶</div></div><div class="card-name">Pow Wow Digital 2026</div><div class="card-sub">Varios Artistas · Compilación</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#20150a,#0a1520)">🌊🪶<div class="card-play">▶</div></div><div class="card-name">Mar Caribe Soberano</div><div class="card-sub">Taíno Waves · Álbum</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#150a0a,#0a1515)">💎⛓<div class="card-play">▶</div></div><div class="card-name">Blockchain Vibes</div><div class="card-sub">DJ Wampum · Álbum</div></div>
+      <div class="card"><div class="card-img" style="background:linear-gradient(135deg,#0a0a20,#1a0a15)">🦅🎤<div class="card-play">▶</div></div><div class="card-name">Indigenous Rising</div><div class="card-sub">Supaman × Tall Paul · Single</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NOW PLAYING BAR -->
+<div class="npb">
+  <div class="np-left">
+    <div class="np-cover" style="background:linear-gradient(135deg,#201520,#102020);border-radius:6px">🪘</div>
+    <div class="np-info">
+      <div class="np-title">Cantos de la Tierra</div>
+      <div class="np-artist">Colectivo Maya</div>
+    </div>
+    <button class="np-heart">❤️</button>
+  </div>
+  <div class="np-center">
+    <div class="np-controls">
+      <button class="np-btn">🔀</button>
+      <button class="np-btn">⏮</button>
+      <button class="np-btn main" id="playBtn" onclick="togglePlay()">▶</button>
+      <button class="np-btn">⏭</button>
+      <button class="np-btn">🔁</button>
+    </div>
+    <div class="np-progress">
+      <span class="np-time">1:35</span>
+      <div class="np-bar"><div class="fill"></div></div>
+      <span class="np-time">4:33</span>
+    </div>
+  </div>
+  <div class="np-right">
+    <span class="np-badge">🔒 E2E</span>
+    <button class="np-rbtn">🎤</button>
+    <button class="np-rbtn">📋</button>
+    <button class="np-rbtn">🔊</button>
+    <div class="vol-bar"><div class="vfill"></div></div>
+    <button class="np-rbtn" style="color:var(--gold)">💎</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+let playing = false;
+function togglePlay() {
+  playing = !playing;
+  document.getElementById('playBtn').textContent = playing ? '⏸' : '▶';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+# ===========================================
+# SOVEREIGN PLATFORM — Docker Compose
+# Ierahkwa Ne Kanienke Digital Nation
+# ===========================================
+# Uso: docker compose -f docker-compose.sovereign.yml up -d
+# ===========================================
+
+version: "3.8"
+
+networks:
+  sovereign-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  postgres-data:
+  redis-data:
+  mameynode-data:
+  grafana-data:
+  prometheus-data:
+
+services:
+  # ==========================================
+  # BLOCKCHAIN — MameyNode v4.2
+  # ==========================================
+  mameynode:
+    image: mamey/node:latest
+    build:
+      context: ./03-backend/blockchain-api
+    container_name: mameynode
+    ports:
+      - "127.0.0.1:8545:8545"
+    volumes:
+      - mameynode-data:/data
+    environment:
+      - CHAIN_ID=777777
+      - NODE_VERSION=4.2
+      - RPC_PORT=8545
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================
+  # .NET SERVICES — Identidad, ZKP, Tesoreria
+  # ==========================================
+  identity-service:
+    image: mcr.microsoft.com/dotnet/aspnet:10.0
+    container_name: identity-service
+    ports:
+      - "127.0.0.1:5001:5001"
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5001
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Host=postgres;Database=ierahkwa_identity;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  zkp-service:
+    image: mcr.microsoft.com/dotnet/aspnet:10.0
+    container_name: zkp-service
+    ports:
+      - "127.0.0.1:5002:5002"
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5002
+    depends_on:
+      - identity-service
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  treasury-service:
+    image: mcr.microsoft.com/dotnet/aspnet:10.0
+    container_name: treasury-service
+    ports:
+      - "127.0.0.1:5003:5003"
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5003
+      - ConnectionStrings__Default=Host=postgres;Database=ierahkwa_treasury;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================
+  # NODE.JS SERVICES — Plataformas
+  # ==========================================
+  bdet-bank:
+    build:
+      context: ./03-backend/plataforma-principal
+    container_name: bdet-bank
+    ports:
+      - "127.0.0.1:3001:3001"
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+      - MAMEYNODE_RPC=http://mameynode:8545
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+      - JWT_SECRET=${IDENTITY_JWT_SECRET:-changeme}
+    depends_on:
+      - mameynode
+      - postgres
+      - redis
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  voz-soberana:
+    build:
+      context: ./03-backend/social-media
+    container_name: voz-soberana
+    ports:
+      - "127.0.0.1:3002:3002"
+    environment:
+      - PORT=3002
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  red-social:
+    build:
+      context: ./03-backend/red-social
+    container_name: red-social
+    ports:
+      - "127.0.0.1:3003:3003"
+    environment:
+      - PORT=3003
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  correo-soberano:
+    build:
+      context: ./03-backend/api-gateway
+    container_name: correo-soberano
+    ports:
+      - "127.0.0.1:3004:3004"
+    environment:
+      - PORT=3004
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - SMTP_HOST=${SMTP_HOST:-localhost}
+      - SMTP_PORT=${SMTP_PORT:-587}
+    depends_on:
+      - postgres
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  reservas:
+    build:
+      context: ./03-backend/reservas
+    container_name: reservas
+    ports:
+      - "127.0.0.1:3005:3005"
+    environment:
+      - PORT=3005
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  voto-soberano:
+    build:
+      context: ./03-backend/voto-soberano
+    container_name: voto-soberano
+    ports:
+      - "127.0.0.1:3006:3006"
+    environment:
+      - PORT=3006
+      - NODE_ENV=production
+      - MAMEYNODE_RPC=http://mameynode:8545
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+    depends_on:
+      - mameynode
+      - postgres
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  trading:
+    build:
+      context: ./03-backend/trading
+    container_name: trading
+    ports:
+      - "127.0.0.1:3007:3007"
+    environment:
+      - PORT=3007
+      - NODE_ENV=production
+      - MAMEYNODE_RPC=http://mameynode:8545
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+    depends_on:
+      - mameynode
+      - postgres
+      - redis
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3007/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================
+  # REVERSE PROXY — Nginx
+  # ==========================================
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "127.0.0.1:80:80"
+      - "127.0.0.1:443:443"
+    volumes:
+      - ./04-infraestructura/nginx:/etc/nginx/conf.d:ro
+      - ./02-plataformas-html:/usr/share/nginx/html:ro
+    depends_on:
+      - identity-service
+      - bdet-bank
+      - voz-soberana
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ==========================================
+  # DATABASES
+  # ==========================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-ierahkwa_sovereign}
+      - POSTGRES_USER=${POSTGRES_USER:-sovereign_admin}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-sovereign_dev_2026}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./04-infraestructura/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --requirepass ${REDIS_PASSWORD:-sovereign_redis_2026}
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # MONITORING
+  # ==========================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-sovereign_grafana_2026}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
