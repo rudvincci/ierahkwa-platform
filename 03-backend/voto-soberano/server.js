@@ -1,7 +1,10 @@
 const express = require('express');
+const cors = require('cors');
 const auth = require('../../bdet-bank/middleware/auth');
 const { v4: uuid } = require('uuid');
+const { corsConfig } = require('../shared/security');
 const app = express();
+app.use(cors(corsConfig()));
 app.use(express.json());
 
 const appointments = new Map(), records = new Map(), prescriptions = new Map();

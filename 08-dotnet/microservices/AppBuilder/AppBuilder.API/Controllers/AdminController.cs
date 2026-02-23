@@ -6,7 +6,7 @@ namespace AppBuilder.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class AdminController : ControllerBase
 {
     private readonly IAuthService _auth;

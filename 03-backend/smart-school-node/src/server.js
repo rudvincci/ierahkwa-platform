@@ -41,8 +41,9 @@ const errorHandler = require('./middleware/error.middleware');
 const app = express();
 
 // Security middleware
-app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors());
+const { corsConfig } = require('../../shared/security');
+app.use(helmet());
+app.use(cors(corsConfig()));
 
 // Body parser
 app.use(express.json());

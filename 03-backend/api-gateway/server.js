@@ -10,7 +10,8 @@ const PORT = process.env.PORT || 3000;
 
 // Security & Middleware
 app.use(helmet());
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
+const corsOptions = require('../shared/security').corsConfig();
+app.use(cors(corsOptions));
 app.use(compression());
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));

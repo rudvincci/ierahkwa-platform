@@ -10,9 +10,15 @@ const reportRoutes = require('./src/routes/reports');
 const userRoutes = require('./src/routes/users');
 const crmRoutes = require('./src/routes/crm');
 const inventoryRoutes = require('./src/routes/inventory');
+const { securityHeaders, sanitizeInput, requestId, rateLimiters } = require('../shared/security');
 
 const app = express();
 const PORT = process.env.PORT || 3030;
+
+// Security middleware
+app.use(requestId);
+app.use(securityHeaders);
+app.use(sanitizeInput);
 
 // Middleware
 app.use(express.json());
@@ -21,12 +27,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session configuration
 app.use(session({
-  secret: 'smart-pos-secret-key-2024',
+  secret: process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex'),
   resave: false,
   saveUninitialized: false,
-  cookie: { 
-    secure: false,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: 'strict',
+    maxAge: 8 * 60 * 60 * 1000 // 8 hours
   }
 }));
 

@@ -16,9 +16,10 @@ import NodeCache from 'node-cache';
 
 const app = express();
 const server = createServer(app);
+const corsOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000').split(',');
 const io = new Server(server, {
     cors: {
-        origin: "*",
+        origin: corsOrigins,
         methods: ["GET", "POST"]
     }
 });
@@ -30,7 +31,7 @@ const signalCache = new NodeCache({ stdTTL: 300 });
 // Middleware
 app.use(helmet());
 app.use(compression());
-app.use(cors());
+app.use(cors({ origin: corsOrigins, credentials: true }));
 app.use(express.json());
 app.use(express.static('public'));
 

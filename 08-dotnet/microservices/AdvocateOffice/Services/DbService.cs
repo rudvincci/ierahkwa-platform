@@ -58,7 +58,7 @@ public class DbService
             {
                 Id = NextId("users"),
                 Username = "admin",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("advocate", 10),
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(Environment.GetEnvironmentVariable("DEFAULT_ADMIN_PASSWORD") ?? "changeme-dev", 10),
                 FullName = "Administrator",
                 Role = "admin",
                 Active = true,

@@ -7,7 +7,10 @@ builder.Services.AddSingleton<DbService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new() { Title = "Advocate Office API", Version = "v1" }); });
-builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+builder.Services.AddCors(o => o.AddDefaultPolicy(p => {
+    var origins = Environment.GetEnvironmentVariable("CORS_ORIGINS")?.Split(',') ?? new[] { "http://localhost:3000" };
+    p.WithOrigins(origins).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+}));
 
 var app = builder.Build();
 
@@ -27,7 +30,7 @@ Console.WriteLine(@"
 ║   ADVOCATE OFFICE MANAGEMENT SYSTEM — .NET 10                 ║
 ║   IGT-LEGAL | Sovereign Government Legal Platform             ║
 ╠═══════════════════════════════════════════════════════════════╣
-║   Login: admin / advocate                                     ║
+║   Login: admin / [SET VIA DEFAULT_ADMIN_PASSWORD ENV]          ║
 ║   API:   /swagger   Dashboard: /index.html   Login: /login.html║
 ╚═══════════════════════════════════════════════════════════════╝
 ");

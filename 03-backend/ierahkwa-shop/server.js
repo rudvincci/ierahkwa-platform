@@ -303,7 +303,7 @@ async function main() {
 
   // Initialize Socket.IO
   global.io = new SocketIO(httpServer, {
-    cors: { origin: '*', methods: ['GET', 'POST'] },
+    cors: { origin: (process.env.CORS_ORIGINS || 'http://localhost:3000').split(','), methods: ['GET', 'POST'] },
     pingTimeout: 60000,
     pingInterval: 25000
   });
@@ -350,35 +350,42 @@ async function main() {
     
     if (!u) return reply.code(401).send({ error: 'Invalid credentials' });
     
-    // Default admin
-    if (email === 'admin@ierahkwa.gov' && password === 'admin123') {
+    // Default admin — credentials from env, never hardcoded
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@ierahkwa.gov';
+    const adminPass = process.env.ADMIN_PASSWORD;
+    if (!adminPass) {
+      return reply.code(500).send({ success: false, error: 'Server misconfigured: admin credentials not set' });
+    }
+    if (email === adminEmail && password === adminPass) {
       const role = (data.roles || []).find(r => r.id === u.role_id);
-      const token = Buffer.from(`${email}:${password}`).toString('base64');
-      
+      const crypto = await import('crypto');
+      const token = crypto.default.randomBytes(32).toString('hex');
+
       // Update last login
       u.last_login = db.now();
       db.save();
-      
-      return { 
-        ok: true, 
-        token, 
-        user: { 
-          id: u.id, 
-          email: u.email, 
+
+      return {
+        ok: true,
+        token,
+        user: {
+          id: u.id,
+          email: u.email,
           name: u.name,
           role: role?.name || 'Admin',
           permissions: role?.permissions || ['all']
-        } 
+        }
       };
     }
-    
+
     const bcrypt = (await import('bcryptjs')).default;
     if (!bcrypt.compareSync(password, u.password_hash)) {
       return reply.code(401).send({ error: 'Invalid credentials' });
     }
-    
+
     const role = (data.roles || []).find(r => r.id === u.role_id);
-    const token = Buffer.from(`${email}:${password}`).toString('base64');
+    const crypto = await import('crypto');
+    const token = crypto.default.randomBytes(32).toString('hex');
     
     u.last_login = db.now();
     db.save();
@@ -536,7 +543,7 @@ async function main() {
 ║   → Chat:       http://localhost:${PORT}/chat                                    ║
 ║   → API:        http://localhost:${PORT}/api                                     ║
 ║                                                                               ║
-║   LOGIN:      admin@ierahkwa.gov / admin123                                   ║
+║   LOGIN:      Set ADMIN_EMAIL & ADMIN_PASSWORD env vars                        ║
 ║                                                                               ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║

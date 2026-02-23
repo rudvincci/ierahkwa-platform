@@ -41,16 +41,8 @@ public class TenantResolutionMiddleware
                 tenantCtx.TenantUrlPrefix = tenant.UrlPrefix;
             }
         }
-        // 3) Query: ?tenant=urlPrefix
-        else if (ctx.Request.Query.TryGetValue("tenant", out var q) && !string.IsNullOrEmpty(q))
-        {
-            var tenant = await tenantSvc.GetByUrlPrefixAsync(q!, ctx.RequestAborted);
-            if (tenant != null)
-            {
-                tenantCtx.TenantId = tenant.Id;
-                tenantCtx.TenantUrlPrefix = tenant.UrlPrefix;
-            }
-        }
+            // SECURITY: Query parameter tenant resolution disabled (OWASP A01 - Broken Access Control)
+            // Tenant must be resolved from subdomain, path, or authenticated user context only
 
         await _next(ctx);
     }

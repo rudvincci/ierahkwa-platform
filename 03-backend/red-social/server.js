@@ -10,8 +10,9 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server, path: '/ws' });
 
+const { corsConfig } = require('../shared/security');
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsConfig()));
 app.use(express.json());
 app.use(rateLimit({ windowMs: 60000, max: 200 }));
 

@@ -4,8 +4,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const app = express();
 
+const { corsConfig } = require('../shared/security');
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsConfig()));
 
 // Route to microservices
 const SERVICES = {

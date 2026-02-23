@@ -16,9 +16,15 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
+const { securityHeaders, sanitizeInput, requestId } = require('../shared/security');
 
 const app = express();
 const PORT = process.env.PORT || 3500;
+
+// Security middleware
+app.use(requestId);
+app.use(securityHeaders);
+app.use(sanitizeInput);
 
 // Configuration
 const CONFIG = {
@@ -75,7 +81,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // CORS headers for cross-platform support
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000').split(',');
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
     res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     if (req.method === 'OPTIONS') {

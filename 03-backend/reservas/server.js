@@ -6,7 +6,8 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server, path: '/ws' });
 
-app.use(cors());
+const { corsConfig } = require('../shared/security');
+app.use(cors(corsConfig()));
 app.use(express.json());
 
 app.use('/v1/providers', require('./routes/providers'));

@@ -2,9 +2,15 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const db = require('./src/db');
+const { securityHeaders, sanitizeInput, requestId, rateLimiters } = require('../shared/security');
 
 const app = express();
 const PORT = process.env.PORT || 3500;
+
+// Security middleware
+app.use(requestId);
+app.use(securityHeaders);
+app.use(sanitizeInput);
 
 // Middleware
 app.use(express.json());
@@ -13,12 +19,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session configuration
 app.use(session({
-    secret: 'inventory-secret-key-2026',
+    secret: process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex'),
     resave: false,
     saveUninitialized: false,
-    cookie: { 
-        secure: false,
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        sameSite: 'strict',
+        maxAge: 8 * 60 * 60 * 1000 // 8 hours
     }
 }));
 
