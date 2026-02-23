@@ -1,0 +1,21 @@
+@using System.Collections.ObjectModel
+@using Mamey.ApplicationName.BlazorWasm.Models.Profile
+<MudPaper Class="p-4 mb-4" Elevation="3">
+    <MudText Typo="Typo.h5">Notification Preferences</MudText>
+
+    @foreach (var preference in Preferences)
+    {
+        <MudSwitch T="bool" Label="@preference.Type" @bind-Checked="preference.Enabled" />
+    }
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SavePreferences">Save Preferences</MudButton>
+</MudPaper>
+
+@code {
+    [Parameter] public ObservableCollection<NotificationPreference> Preferences { get; set; }
+    
+    private void SavePreferences()
+    {
+        // Logic to save preferences
+    }
+}

@@ -1,0 +1,240 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-upc-scan"></i> Quick Stock Entry - Barcode Scanner</h2>
+        <a href="/movements" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <i class="bi bi-upc-scan"></i> Scanner Input
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Movement Type</label>
+                        <select id="movementType" class="form-select form-select-lg">
+                            <option value="purchase">Stock In (Purchase)</option>
+                            <option value="sale">Stock Out (Sale)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Scan Barcode / Enter Code</label>
+                        <input type="text" id="barcodeInput" class="form-control form-control-lg text-center" 
+                               placeholder="Scan or type..." autofocus>
+                        <small class="text-muted">Press Enter after each scan</small>
+                    </div>
+                    <div id="lastScanned" class="alert alert-info" style="display: none;">
+                        <strong>Last scanned:</strong>
+                        <span id="lastProductName"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-body text-center">
+                    <h1 id="totalItems" class="display-1 text-primary">0</h1>
+                    <p class="text-muted">Items Scanned</p>
+                    <h3 id="totalValue" class="text-success">$0.00</h3>
+                    <p class="text-muted">Total Value</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <span>Scanned Items</span>
+                    <button class="btn btn-sm btn-outline-danger" id="clearAll">
+                        <i class="bi bi-trash"></i> Clear
+                    </button>
+                </div>
+                <div class="card-body p-0" style="max-height: 500px; overflow-y: auto;">
+                    <table class="table table-hover mb-0" id="itemsTable">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-center" width="100">Qty</th>
+                                <th class="text-end" width="100">Price</th>
+                                <th class="text-end" width="100">Total</th>
+                                <th width="50"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <button id="saveAll" class="btn btn-success btn-lg w-100">
+                        <i class="bi bi-check-circle"></i> Save All Items
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const products = <%- products %>;
+let items = [];
+
+$('#barcodeInput').on('keypress', function(e) {
+    if (e.which === 13) {
+        e.preventDefault();
+        processBarcode($(this).val().trim());
+        $(this).val('').focus();
+    }
+});
+
+function processBarcode(code) {
+    if (!code) return;
+    
+    const product = products.find(p => p.barcode === code || p.code === code);
+    
+    if (!product) {
+        alert('Product not found: ' + code);
+        playSound('error');
+        return;
+    }
+    
+    const isStockIn = $('#movementType').val() === 'purchase';
+    
+    // Check stock for stock out
+    if (!isStockIn && product.current_stock <= 0) {
+        alert('No stock available for: ' + product.name);
+        playSound('error');
+        return;
+    }
+    
+    // Check if already in list
+    const existing = items.find(i => i.product_id === product.id);
+    if (existing) {
+        if (!isStockIn && existing.quantity >= product.current_stock) {
+            alert('Maximum stock reached for: ' + product.name);
+            playSound('error');
+            return;
+        }
+        existing.quantity++;
+        existing.total = existing.quantity * existing.unit_price;
+    } else {
+        items.push({
+            product_id: product.id,
+            code: product.code,
+            name: product.name,
+            quantity: 1,
+            unit_price: isStockIn ? product.purchase_price : product.sale_price,
+            total: isStockIn ? product.purchase_price : product.sale_price
+        });
+    }
+    
+    renderItems();
+    
+    // Show last scanned
+    $('#lastProductName').text(product.name);
+    $('#lastScanned').show();
+    
+    playSound('success');
+}
+
+function renderItems() {
+    let html = '';
+    let totalValue = 0;
+    let totalItems = 0;
+    
+    items.forEach((item, index) => {
+        html += `<tr>
+            <td>
+                <strong>${item.name}</strong>
+                <small class="text-muted d-block">${item.code}</small>
+            </td>
+            <td class="text-center">
+                <input type="number" class="form-control form-control-sm text-center" 
+                       value="${item.quantity}" min="1" onchange="updateQty(${index}, this.value)">
+            </td>
+            <td class="text-end">$${item.unit_price.toFixed(2)}</td>
+            <td class="text-end">$${item.total.toFixed(2)}</td>
+            <td>
+                <button class="btn btn-sm btn-outline-danger" onclick="removeItem(${index})">
+                    <i class="bi bi-x"></i>
+                </button>
+            </td>
+        </tr>`;
+        totalValue += item.total;
+        totalItems += item.quantity;
+    });
+    
+    $('#itemsTable tbody').html(html);
+    $('#totalItems').text(totalItems);
+    $('#totalValue').text('$' + totalValue.toFixed(2));
+}
+
+function updateQty(index, qty) {
+    qty = parseInt(qty) || 1;
+    items[index].quantity = qty;
+    items[index].total = qty * items[index].unit_price;
+    renderItems();
+}
+
+function removeItem(index) {
+    items.splice(index, 1);
+    renderItems();
+}
+
+$('#clearAll').click(function() {
+    if (confirm('Clear all items?')) {
+        items = [];
+        renderItems();
+    }
+});
+
+$('#saveAll').click(function() {
+    if (items.length === 0) {
+        alert('No items to save');
+        return;
+    }
+    
+    if (!confirm('Save ' + items.length + ' items?')) return;
+    
+    const type = $('#movementType').val();
+    const docNumber = type.toUpperCase().substring(0, 3) + Date.now();
+    
+    $(this).prop('disabled', true).html('<i class="bi bi-hourglass"></i> Saving...');
+    
+    $.post('/movements/process', {
+        type: type,
+        document_number: docNumber,
+        reference: 'Quick Entry',
+        items: JSON.stringify(items)
+    }).done(function(response) {
+        if (response.success) {
+            alert(response.message);
+            items = [];
+            renderItems();
+            $('#barcodeInput').focus();
+        } else {
+            alert('Error: ' + response.message);
+        }
+        $('#saveAll').prop('disabled', false).html('<i class="bi bi-check-circle"></i> Save All Items');
+    });
+});
+
+function playSound(type) {
+    // Simple beep using Web Audio API
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+        oscillator.frequency.value = type === 'success' ? 800 : 300;
+        gain.gain.value = 0.1;
+        oscillator.start();
+        setTimeout(() => oscillator.stop(), 100);
+    } catch(e) {}
+}
+</script>
+
+<%- include('../partials/footer') %>

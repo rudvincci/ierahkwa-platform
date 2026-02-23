@@ -1,0 +1,92 @@
+@page "/account/confirm-email"
+@layout LandingLayout
+@using System.Net
+@using System.Text
+@using Mamey.ApplicationName.BlazorWasm.Models.Auth
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.WebUtilities
+@using Mamey.ApplicationName.BlazorWasm.Components.Shared
+@inject NavigationManager Navigation
+
+<PageTitle>Confirm email</PageTitle>
+
+<h1>Confirm email</h1>
+@if (!string.IsNullOrEmpty(statusMessage))
+{
+    var severity = statusMessage.StartsWith("Error") ? Severity.Error : Severity.Success;
+
+    <MudAlert Variant="Variant.Outlined" Severity="@severity">@statusMessage</MudAlert>
+}
+
+@code {
+    [Inject] private IHttpClientFactory HttpClientFactory { get; set; } = default!;
+
+    
+    private string? statusMessage;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? UserId { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? Token { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine(UserId.ToString());
+        if (UserId is null || Token is null)
+        {
+            Navigation.NavigateTo("");
+        }
+        var token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Token));
+        Console.WriteLine(token);
+        var userId = Guid.Empty;
+        if (!Guid.TryParse(UserId, out userId))
+        {
+            Console.WriteLine("Not Valid guid");
+            Navigation.NavigateTo("");
+            return;
+        }
+        // var payload = new ConfirmEmail(userId, token);
+        
+        var client = HttpClientFactory.CreateClient("BankApi");
+        var response = await client.PostAsJsonAsync($"/identity-module/account/confirm-email", new
+        {
+            userId = userId,
+            token = token
+        });
+        if (response.IsSuccessStatusCode)
+        {
+            statusMessage = "Thank you for confirming your email.";
+            
+            // var result = await response.Content.ReadFromJsonAsync<AuthenticatedUser>();
+            // if (result != null)
+            // {
+            //     
+            //     //     var result = await UserManager.ConfirmEmailAsync(user, code);
+            //     //     statusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+            // }
+        }
+        else
+        {
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                statusMessage = "Error: Email verification not found";
+                return;
+            }
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                statusMessage = $"Error: {message}";
+                return;
+            }
+            statusMessage = "Error confirming your email.";
+        }
+    }
+
+    
+
+}

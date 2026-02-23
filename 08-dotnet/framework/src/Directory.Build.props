@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <!--
+      Suppress NU1900 in Mamey/src builds.
+
+      This repo sometimes has local/dev NuGet feeds (e.g. http://localhost:4000) configured in user/global NuGet settings.
+      NuGet's vulnerability/audit check can emit NU1900 when those feeds aren't reachable, and in some environments NU warnings are treated as errors.
+      Suppressing NU1900 here keeps developer builds unblocked while retaining normal restore behavior.
+    -->
+    <NoWarn>$(NoWarn);NU1900</NoWarn>
+  </PropertyGroup>
+</Project>
+
+
+
+

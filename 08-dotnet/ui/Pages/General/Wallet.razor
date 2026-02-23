@@ -1,0 +1,373 @@
+@page "/general/wallet"
+@inject MameyWalletClient WalletClient
+@inject IMetadataService MetadataService
+@inject ILogger<Wallet> Logger
+
+<PageTitle>Wallet Tools - MameyNode UI</PageTitle>
+
+<h1>Wallet Tools</h1>
+
+<ErrorDisplay HasError="@hasError" ErrorMessage="@errorMessage" ErrorDetails="@errorDetails" OnDismiss="ClearError" />
+
+<div class="row mt-3">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Keys</h5>
+                <button class="btn btn-primary" @onclick="LoadKeysAsync" disabled="@isLoadingKeys">
+                    @if (isLoadingKeys)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Loading...</text>
+                    }
+                    else
+                    {
+                        <text>Refresh</text>
+                    }
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Password</span>
+                    <input class="form-control" type="password" @bind="_password" placeholder="(optional)" />
+                    <button class="btn btn-outline-secondary" @onclick="GenerateKeyAsync" disabled="@isGenerating">
+                        @if (isGenerating)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <text>Generating...</text>
+                        }
+                        else
+                        {
+                            <text>Generate ed25519</text>
+                        }
+                    </button>
+                </div>
+
+                @if (keys == null && !isLoadingKeys)
+                {
+                    <p class="text-muted mb-0">Click "Refresh" to list keys.</p>
+                }
+                else if (isLoadingKeys)
+                {
+                    <p class="text-muted mb-0">Loading keys...</p>
+                }
+                else if (keys != null)
+                {
+                    <div class="mb-2">
+                        <span class="badge bg-secondary">@keys.TotalCount key(s)</span>
+                    </div>
+
+                    @if (keys.Keys.Count == 0)
+                    {
+                        <div class="alert alert-info mb-0">No keys found in the node keystore.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th>Key ID</th>
+                                    <th>Algorithm</th>
+                                    <th>Public Key</th>
+                                    <th>Created</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var k in keys.Keys)
+                                {
+                                    <tr>
+                                        <td><code>@k.KeyId</code></td>
+                                        <td><code>@k.Algorithm</code></td>
+                                        <td style="max-width: 420px; overflow: hidden; text-overflow: ellipsis;">
+                                            <code title="@k.PublicKey">@k.PublicKey</code>
+                                        </td>
+                                        <td>@(k.CreatedAt == 0 ? "-" : DateTimeOffset.FromUnixTimeSeconds((long)k.CreatedAt).UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mt-3 mt-lg-0">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Sign / Verify</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Key ID</label>
+                    <input class="form-control" @bind="_keyId" placeholder="key_..." />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Message (UTF-8)</label>
+                    <textarea class="form-control" rows="3" @bind="_message"></textarea>
+                </div>
+
+                <div class="d-flex gap-2 mb-3">
+                    <button class="btn btn-primary" @onclick="SignAsync" disabled="@isSigning">
+                        @if (isSigning)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <text>Signing...</text>
+                        }
+                        else
+                        {
+                            <text>Sign</text>
+                        }
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="VerifyAsync" disabled="@isVerifying">
+                        @if (isVerifying)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <text>Verifying...</text>
+                        }
+                        else
+                        {
+                            <text>Verify</text>
+                        }
+                    </button>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(_signatureBase64))
+                {
+                    <div class="mb-2">
+                        <strong>Signature (base64)</strong>
+                        <pre class="mb-0">@_signatureBase64</pre>
+                    </div>
+                }
+
+                @if (_verifyResult.HasValue)
+                {
+                    <div class="alert @(_verifyResult.Value ? "alert-success" : "alert-danger") mb-0">
+                        Verify result: <strong>@(_verifyResult.Value ? "valid" : "invalid")</strong>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<MetadataDisplay />
+
+@code {
+    private ListKeysResponse? keys;
+
+    private bool isLoadingKeys;
+    private bool isGenerating;
+    private bool isSigning;
+    private bool isVerifying;
+
+    private bool hasError;
+    private string? errorMessage;
+    private string? errorDetails;
+
+    private string? _password;
+    private string? _keyId;
+    private string _message = "hello";
+    private string? _signatureBase64;
+    private bool? _verifyResult;
+    private string? _publicKeyHex;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadKeysAsync();
+    }
+
+    private Grpc.Core.CallOptions CreateCallOptions()
+    {
+        var correlationId = MetadataService.GetCorrelationId();
+        var metadata = MetadataService.GetMetadata(correlationId);
+        return new Grpc.Core.CallOptions(metadata, deadline: DateTime.UtcNow.AddSeconds(30));
+    }
+
+    private async Task LoadKeysAsync()
+    {
+        isLoadingKeys = true;
+        ClearError();
+        StateHasChanged();
+
+        try
+        {
+            keys = await WalletClient.Client.ListKeysAsync(new ListKeysRequest { Limit = 100, Offset = 0 }, CreateCallOptions());
+            _publicKeyHex = keys.Keys.FirstOrDefault(k => k.KeyId == _keyId)?.PublicKey;
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to list wallet keys.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to list keys");
+        }
+        finally
+        {
+            isLoadingKeys = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task GenerateKeyAsync()
+    {
+        isGenerating = true;
+        ClearError();
+        StateHasChanged();
+
+        try
+        {
+            var resp = await WalletClient.Client.GenerateKeyAsync(new GenerateKeyRequest
+            {
+                KeyType = "ed25519",
+                Algorithm = "ed25519",
+                Password = _password ?? string.Empty,
+                EnableMigrationMode = false,
+                LegacyKeyId = ""
+            }, CreateCallOptions());
+
+            if (!resp.Success)
+            {
+                hasError = true;
+                errorMessage = "GenerateKey failed.";
+                errorDetails = resp.ErrorMessage;
+                return;
+            }
+
+            _keyId = resp.KeyId;
+            _publicKeyHex = resp.PublicKey;
+            await LoadKeysAsync();
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to generate key.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to generate key");
+        }
+        finally
+        {
+            isGenerating = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SignAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_keyId))
+        {
+            hasError = true;
+            errorMessage = "Key ID is required.";
+            return;
+        }
+
+        isSigning = true;
+        ClearError();
+        _verifyResult = null;
+        StateHasChanged();
+
+        try
+        {
+            var resp = await WalletClient.Client.SignMessageAsync(new SignMessageRequest
+            {
+                KeyId = _keyId,
+                Message = Google.Protobuf.ByteString.CopyFromUtf8(_message ?? string.Empty),
+                Password = _password ?? string.Empty
+            }, CreateCallOptions());
+
+            if (!resp.Success)
+            {
+                hasError = true;
+                errorMessage = "SignMessage failed.";
+                errorDetails = resp.ErrorMessage;
+                return;
+            }
+
+            var sigBytes = resp.Signature.ToByteArray();
+            _signatureBase64 = Convert.ToBase64String(sigBytes);
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to sign message.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to sign message");
+        }
+        finally
+        {
+            isSigning = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task VerifyAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_publicKeyHex))
+        {
+            // Try to infer from list
+            _publicKeyHex = keys?.Keys.FirstOrDefault(k => k.KeyId == _keyId)?.PublicKey;
+        }
+
+        if (string.IsNullOrWhiteSpace(_publicKeyHex))
+        {
+            hasError = true;
+            errorMessage = "Public key is required (select a known Key ID or refresh keys).";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_signatureBase64))
+        {
+            hasError = true;
+            errorMessage = "Sign a message first (or paste a signature).";
+            return;
+        }
+
+        isVerifying = true;
+        ClearError();
+        StateHasChanged();
+
+        try
+        {
+            var sigBytes = Convert.FromBase64String(_signatureBase64);
+            var resp = await WalletClient.Client.VerifySignatureAsync(new VerifySignatureRequest
+            {
+                PublicKey = _publicKeyHex,
+                Message = Google.Protobuf.ByteString.CopyFromUtf8(_message ?? string.Empty),
+                Signature = Google.Protobuf.ByteString.CopyFrom(sigBytes)
+            }, CreateCallOptions());
+
+            if (!resp.Success)
+            {
+                hasError = true;
+                errorMessage = "VerifySignature failed.";
+                errorDetails = resp.ErrorMessage;
+                return;
+            }
+
+            _verifyResult = resp.Valid;
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to verify signature.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to verify signature");
+        }
+        finally
+        {
+            isVerifying = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearError()
+    {
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+    }
+}
+

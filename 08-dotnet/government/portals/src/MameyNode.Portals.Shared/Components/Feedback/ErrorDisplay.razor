@@ -1,0 +1,17 @@
+@namespace MameyNode.Portals.Shared.Components.Feedback
+
+<MudAlert Severity="Severity.Error" Variant="Variant.Filled" Dense="@Dense" Class="@Class">
+    <MudText Typo="Typo.body1">@Message</MudText>
+    @if (!string.IsNullOrEmpty(Details))
+    {
+        <MudText Typo="Typo.body2" Class="mt-2">@Details</MudText>
+    }
+</MudAlert>
+
+@code {
+    [Parameter] public string Message { get; set; } = "An error occurred";
+    [Parameter] public string? Details { get; set; }
+    [Parameter] public bool Dense { get; set; } = false;
+    [Parameter] public string? Class { get; set; }
+}
+

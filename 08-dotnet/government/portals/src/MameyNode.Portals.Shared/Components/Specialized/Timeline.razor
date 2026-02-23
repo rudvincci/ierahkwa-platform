@@ -1,0 +1,36 @@
+@namespace MameyNode.Portals.Shared.Components.Specialized
+
+<MudTimeline Align="@Align" Class="@Class">
+    @if (Items != null)
+    {
+        @foreach (var item in Items)
+        {
+            <MudTimelineItem Size="@item.Size" Color="@item.Color" Variant="@item.Variant">
+                @if (!string.IsNullOrEmpty(item.Icon))
+                {
+                    <MudIcon Icon="@item.Icon" />
+                }
+                <MudText Typo="Typo.body1">@item.Title</MudText>
+                @if (!string.IsNullOrEmpty(item.Description))
+                {
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@item.Description</MudText>
+                }
+                @if (!string.IsNullOrEmpty(item.Time))
+                {
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@item.Time</MudText>
+                }
+            </MudTimelineItem>
+        }
+    }
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+</MudTimeline>
+
+@code {
+    [Parameter] public TimelineAlign Align { get; set; } = TimelineAlign.Start;
+    [Parameter] public List<TimelineItem>? Items { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

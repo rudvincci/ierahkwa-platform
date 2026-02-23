@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Mamey.Portal.Shared\Mamey.Portal.Shared.csproj" />
+    <ProjectReference Include="..\..\src\Mamey.Portal.Web\Mamey.Portal.Web.csproj" />
+    <ProjectReference Include="..\..\src\Mamey.Portal.Citizenship.Application\Mamey.Portal.Citizenship.Application.csproj" />
+    <ProjectReference Include="..\..\src\Mamey.Portal.Citizenship.Infrastructure\Mamey.Portal.Citizenship.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMameyProjects)'=='true'">
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.AmvvaStandards\src\Mamey.AmvvaStandards\Mamey.AmvvaStandards.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMameyProjects)'!='true'">
+    <PackageReference Include="Mamey.AmvvaStandards" Version="2.0.*" />
+  </ItemGroup>
+
+</Project>

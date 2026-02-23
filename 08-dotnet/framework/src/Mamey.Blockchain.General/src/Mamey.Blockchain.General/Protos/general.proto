@@ -1,0 +1,250 @@
+syntax = "proto3";
+
+package mamey.general;
+
+// General-purpose blockchain service for MameyNode
+service GeneralService {
+    // Smart contract operations
+    rpc DeployContract(DeployContractRequest) returns (DeployContractResponse);
+    rpc GetContract(GetContractRequest) returns (GetContractResponse);
+    rpc CallContract(CallContractRequest) returns (CallContractResponse);
+    rpc ListContracts(ListContractsRequest) returns (ListContractsResponse);
+    
+    // Token operations
+    rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
+    rpc GetToken(GetTokenRequest) returns (GetTokenResponse);
+    rpc TransferToken(TransferTokenRequest) returns (TransferTokenResponse);
+    rpc MintToken(MintTokenRequest) returns (MintTokenResponse);
+    rpc BurnToken(BurnTokenRequest) returns (BurnTokenResponse);
+    
+    // Token registry operations
+    rpc RegisterToken(RegisterTokenRequest) returns (RegisterTokenResponse);
+    rpc GetRegisteredToken(GetRegisteredTokenRequest) returns (GetRegisteredTokenResponse);
+    rpc ListRegisteredTokens(ListRegisteredTokensRequest) returns (ListRegisteredTokensResponse);
+    rpc UpdateTokenMetadata(UpdateTokenMetadataRequest) returns (UpdateTokenMetadataResponse);
+}
+
+// Deploy contract request
+message DeployContractRequest {
+    string contract_code = 1;
+    string deployer_account = 2;
+    map<string, string> constructor_params = 3;
+    string gas_limit = 4;
+}
+
+// Deploy contract response
+message DeployContractResponse {
+    string contract_address = 1;
+    string transaction_id = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get contract request
+message GetContractRequest {
+    string contract_address = 1;
+}
+
+// Get contract response
+message GetContractResponse {
+    ContractInfo contract = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Call contract request
+message CallContractRequest {
+    string contract_address = 1;
+    string function_name = 2;
+    map<string, string> parameters = 3;
+    string caller_account = 4;
+    string gas_limit = 5;
+}
+
+// Call contract response
+message CallContractResponse {
+    string result = 1;
+    string transaction_id = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// List contracts request
+message ListContractsRequest {
+    string deployer_account = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// List contracts response
+message ListContractsResponse {
+    repeated ContractInfo contracts = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Create token request
+message CreateTokenRequest {
+    string name = 1;
+    string symbol = 2;
+    string total_supply = 3;
+    uint32 decimals = 4;
+    string creator_account = 5;
+    map<string, string> metadata = 6;
+}
+
+// Create token response
+message CreateTokenResponse {
+    string token_address = 1;
+    string transaction_id = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get token request
+message GetTokenRequest {
+    string token_address = 1;
+}
+
+// Get token response
+message GetTokenResponse {
+    TokenInfo token = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Transfer token request
+message TransferTokenRequest {
+    string token_address = 1;
+    string from_account = 2;
+    string to_account = 3;
+    string amount = 4;
+}
+
+// Transfer token response
+message TransferTokenResponse {
+    string transaction_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Mint token request
+message MintTokenRequest {
+    string token_address = 1;
+    string to_account = 2;
+    string amount = 3;
+    string minter_account = 4;
+}
+
+// Mint token response
+message MintTokenResponse {
+    string transaction_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Burn token request
+message BurnTokenRequest {
+    string token_address = 1;
+    string from_account = 2;
+    string amount = 3;
+}
+
+// Burn token response
+message BurnTokenResponse {
+    string transaction_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Register token request
+message RegisterTokenRequest {
+    string token_address = 1;
+    string name = 2;
+    string symbol = 3;
+    string description = 4;
+    map<string, string> metadata = 5;
+}
+
+// Register token response
+message RegisterTokenResponse {
+    string registration_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get registered token request
+message GetRegisteredTokenRequest {
+    string token_address = 1;
+}
+
+// Get registered token response
+message GetRegisteredTokenResponse {
+    RegisteredTokenInfo token = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// List registered tokens request
+message ListRegisteredTokensRequest {
+    string search_query = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// List registered tokens response
+message ListRegisteredTokensResponse {
+    repeated RegisteredTokenInfo tokens = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Update token metadata request
+message UpdateTokenMetadataRequest {
+    string token_address = 1;
+    map<string, string> metadata = 2;
+}
+
+// Update token metadata response
+message UpdateTokenMetadataResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Contract info
+message ContractInfo {
+    string contract_address = 1;
+    string deployer_account = 2;
+    string contract_code_hash = 3;
+    uint64 deployed_at = 4;
+    map<string, string> state = 5;
+}
+
+// Token info
+message TokenInfo {
+    string token_address = 1;
+    string name = 2;
+    string symbol = 3;
+    string total_supply = 4;
+    string current_supply = 5;
+    uint32 decimals = 6;
+    string creator_account = 7;
+    uint64 created_at = 8;
+}
+
+// Registered token info
+message RegisteredTokenInfo {
+    string token_address = 1;
+    string name = 2;
+    string symbol = 3;
+    string description = 4;
+    map<string, string> metadata = 5;
+    uint64 registered_at = 6;
+    string registrar_account = 7;
+}
+
+
+
+

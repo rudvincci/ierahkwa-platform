@@ -1,0 +1,461 @@
+@page "/gov/intake-review"
+@page "/gov/intake-review/{ApplicationNumber}"
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+@inject IApplicationsService ApplicationsService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<PageTitle>Intake Review | Government Portal</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-4">
+    @* Breadcrumb *@
+    <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
+
+    @if (string.IsNullOrEmpty(ApplicationNumber))
+    {
+        @* Queue View - List of applications awaiting intake review *@
+        <MudText Typo="Typo.h4" Class="mb-4">Intake Review Queue</MudText>
+        
+        <MudGrid>
+            <MudItem xs="12" md="3">
+                <MudCard Class="@($"pa-4 cursor-pointer {GetCardClass("Submitted")}")" @onclick="@(async () => await FilterByStatus("Submitted"))">
+                    <MudText Typo="Typo.h4" Color="Color.Primary">@_submittedCount</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Default">Submitted</MudText>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudCard Class="@($"pa-4 cursor-pointer {GetCardClass("Validating")}")" @onclick="@(async () => await FilterByStatus("Validating"))">
+                    <MudText Typo="Typo.h4" Color="Color.Warning">@_validatingCount</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Default">Validating</MudText>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudCard Class="@($"pa-4 cursor-pointer {GetCardClass("KycPending")}")" @onclick="@(async () => await FilterByStatus("KycPending"))">
+                    <MudText Typo="Typo.h4" Color="Color.Info">@_kycPendingCount</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Default">KYC Pending</MudText>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudCard Class="@($"pa-4 cursor-pointer {GetCardClass("ReviewPending")}")" @onclick="@(async () => await FilterByStatus("ReviewPending"))">
+                    <MudText Typo="Typo.h4" Color="Color.Secondary">@_reviewPendingCount</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Default">Review Pending</MudText>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+
+        <MudPaper Class="pa-4 mt-4">
+            <MudTable Items="@_applications" Hover="true" Loading="@_isLoading" Dense="true">
+                <HeaderContent>
+                    <MudTh>Application #</MudTh>
+                    <MudTh>Applicant</MudTh>
+                    <MudTh>Submitted</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Application #">@context.ApplicationNumber</MudTd>
+                    <MudTd DataLabel="Applicant">@context.ApplicantName</MudTd>
+                    <MudTd DataLabel="Submitted">@context.SubmittedAt?.ToString("MMM dd, yyyy")</MudTd>
+                    <MudTd DataLabel="Status">
+                        <MudChip T="string" Color="@GetStatusColor(context.Status)" Size="Size.Small">@context.Status</MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" 
+                                   OnClick="@(() => ReviewApplication(context.ApplicationNumber))">
+                            Review
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText>No applications in queue</MudText>
+                </NoRecordsContent>
+            </MudTable>
+        </MudPaper>
+    }
+    else
+    {
+        @* Individual Application Review *@
+        <MudText Typo="Typo.h4" Class="mb-4">Review Application: @ApplicationNumber</MudText>
+        
+        <MudGrid>
+            <MudItem xs="12" md="8">
+                <MudPaper Class="pa-4">
+                    <MudText Typo="Typo.h6" Class="mb-3">Applicant Information</MudText>
+                    @if (_selectedApplication != null)
+                    {
+                        <MudGrid>
+                            <MudItem xs="6">
+                                <MudText Typo="Typo.caption" Color="Color.Default">Name</MudText>
+                                <MudText Typo="Typo.body1">@_selectedApplication.ApplicantName</MudText>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudText Typo="Typo.caption" Color="Color.Default">Date of Birth</MudText>
+                                <MudText Typo="Typo.body1">@_selectedApplication.DateOfBirth.ToString("MMM dd, yyyy")</MudText>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudText Typo="Typo.caption" Color="Color.Default">Email</MudText>
+                                <MudText Typo="Typo.body1">@_selectedApplication.Email</MudText>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudText Typo="Typo.caption" Color="Color.Default">Status</MudText>
+                                <MudChip T="string" Color="@GetStatusColor(_selectedApplication.Status)" Size="Size.Small">@_selectedApplication.Status</MudChip>
+                            </MudItem>
+                        </MudGrid>
+
+                        <MudDivider Class="my-4" />
+
+                        <MudText Typo="Typo.h6" Class="mb-3">Document Checklist</MudText>
+                        <MudList T="string">
+                            <MudListItem Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Success">
+                                Identity Document
+                            </MudListItem>
+                            <MudListItem Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Success">
+                                Proof of Address
+                            </MudListItem>
+                            <MudListItem Icon="@Icons.Material.Filled.Warning" IconColor="Color.Warning">
+                                Background Check - Pending
+                            </MudListItem>
+                        </MudList>
+                    }
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudPaper Class="pa-4">
+                    <MudText Typo="Typo.h6" Class="mb-3">Actions</MudText>
+                    <MudStack Spacing="2">
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
+                                   OnClick="@(() => ProgressToNextStage())">
+                            Progress to Next Stage
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Warning" FullWidth="true"
+                                   OnClick="@(() => RequestAdditionalInfo())">
+                            Request Additional Info
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Error" FullWidth="true"
+                                   OnClick="@(() => OpenRejectDialog())">
+                            Reject Application
+                        </MudButton>
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>
+
+@* Reject Dialog *@
+@if (_rejectDialogVisible)
+{
+    <MudDialog IsVisible="_rejectDialogVisible" Options="new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true }">
+        <TitleContent>
+            <MudText Typo="Typo.h6">Reject Application @ApplicationNumber</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudTextField @bind-Value="_rejectReason" Label="Rejection Reason" Required="true" 
+                          RequiredError="Please provide a reason for rejection" 
+                          Lines="3" Variant="Variant.Outlined" />
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="@(() => _rejectDialogVisible = false)">Cancel</MudButton>
+            <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="RejectApplication" Disabled="string.IsNullOrWhiteSpace(_rejectReason)">
+                Reject
+            </MudButton>
+        </DialogActions>
+    </MudDialog>
+}
+
+@code {
+    [Parameter] public string? ApplicationNumber { get; set; }
+
+    private List<BreadcrumbItem> _breadcrumbs = new();
+    private List<ApplicationSummary> _applications = new();
+    private ApplicationSummary? _selectedApplication;
+    private bool _isLoading;
+    private string? _selectedStatus;
+    
+    private int _submittedCount;
+    private int _validatingCount;
+    private int _kycPendingCount;
+    private int _reviewPendingCount;
+    
+    private bool _rejectDialogVisible;
+    private string _rejectReason = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        UpdateBreadcrumbs();
+        await LoadData();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        UpdateBreadcrumbs();
+        if (!string.IsNullOrEmpty(ApplicationNumber))
+        {
+            await LoadSelectedApplication();
+        }
+    }
+
+    private void UpdateBreadcrumbs()
+    {
+        _breadcrumbs = new List<BreadcrumbItem>
+        {
+            new("Dashboard", "/gov/dashboard"),
+            new("Intake Review", "/gov/intake-review")
+        };
+
+        if (!string.IsNullOrEmpty(ApplicationNumber))
+        {
+            _breadcrumbs.Add(new(ApplicationNumber, null, true));
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _isLoading = true;
+        try
+        {
+            // TODO: Get from user context or tenant service
+            var tenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+            // Load applications by status
+            var submitted = await ApplicationsService.BrowseAsync(tenantId, "Submitted", null, null, null, 1, 100);
+            var validating = await ApplicationsService.BrowseAsync(tenantId, "Validating", null, null, null, 1, 100);
+            var kycPending = await ApplicationsService.BrowseAsync(tenantId, "KycPending", null, null, null, 1, 100);
+            var reviewPending = await ApplicationsService.BrowseAsync(tenantId, "ReviewPending", null, null, null, 1, 100);
+
+            _submittedCount = (int)submitted.TotalResults;
+            _validatingCount = (int)validating.TotalResults;
+            _kycPendingCount = (int)kycPending.TotalResults;
+            _reviewPendingCount = (int)reviewPending.TotalResults;
+
+            // Combine all applications for display
+            var allApplications = new List<ApplicationSummary>();
+            allApplications.AddRange(submitted.Items.Select(a => new ApplicationSummary
+            {
+                ApplicationNumber = a.ApplicationNumber ?? "",
+                ApplicantName = $"{a.FirstName} {a.LastName}",
+                DateOfBirth = a.CreatedAt,
+                Email = a.Email,
+                SubmittedAt = a.SubmittedAt,
+                Status = a.Status ?? ""
+            }));
+            allApplications.AddRange(validating.Items.Select(a => new ApplicationSummary
+            {
+                ApplicationNumber = a.ApplicationNumber ?? "",
+                ApplicantName = $"{a.FirstName} {a.LastName}",
+                DateOfBirth = a.CreatedAt,
+                Email = a.Email,
+                SubmittedAt = a.SubmittedAt,
+                Status = a.Status ?? ""
+            }));
+            allApplications.AddRange(kycPending.Items.Select(a => new ApplicationSummary
+            {
+                ApplicationNumber = a.ApplicationNumber ?? "",
+                ApplicantName = $"{a.FirstName} {a.LastName}",
+                DateOfBirth = a.CreatedAt,
+                Email = a.Email,
+                SubmittedAt = a.SubmittedAt,
+                Status = a.Status ?? ""
+            }));
+            allApplications.AddRange(reviewPending.Items.Select(a => new ApplicationSummary
+            {
+                ApplicationNumber = a.ApplicationNumber ?? "",
+                ApplicantName = $"{a.FirstName} {a.LastName}",
+                DateOfBirth = a.CreatedAt,
+                Email = a.Email,
+                SubmittedAt = a.SubmittedAt,
+                Status = a.Status ?? ""
+            }));
+
+            // Filter by selected status if any
+            if (!string.IsNullOrEmpty(_selectedStatus))
+            {
+                _applications = allApplications.Where(a => a.Status == _selectedStatus).ToList();
+            }
+            else
+            {
+                _applications = allApplications;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading applications: {ex.Message}", Severity.Error);
+            // Fallback to empty list
+            _applications = new List<ApplicationSummary>();
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task LoadSelectedApplication()
+    {
+        try
+        {
+            var application = await ApplicationsService.GetByNumberAsync(ApplicationNumber!);
+            if (application != null)
+            {
+                _selectedApplication = new ApplicationSummary
+                {
+                    ApplicationNumber = application.ApplicationNumber ?? ApplicationNumber!,
+                    ApplicantName = $"{application.FirstName} {application.LastName}",
+                    DateOfBirth = application.DateOfBirth,
+                    Email = application.Email,
+                    SubmittedAt = application.SubmittedAt,
+                    Status = application.Status ?? "Unknown"
+                };
+            }
+            else
+            {
+                // Fallback to finding in loaded applications
+                _selectedApplication = _applications.FirstOrDefault(a => a.ApplicationNumber == ApplicationNumber) 
+                    ?? new ApplicationSummary
+                    {
+                        ApplicationNumber = ApplicationNumber!,
+                        ApplicantName = "Unknown Applicant",
+                        DateOfBirth = DateTime.Now.AddYears(-30),
+                        Email = "",
+                        SubmittedAt = null,
+                        Status = "Unknown"
+                    };
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading application: {ex.Message}", Severity.Error);
+            _selectedApplication = new ApplicationSummary
+            {
+                ApplicationNumber = ApplicationNumber!,
+                ApplicantName = "Error Loading",
+                DateOfBirth = DateTime.Now.AddYears(-30),
+                Email = "",
+                SubmittedAt = null,
+                Status = "Unknown"
+            };
+        }
+    }
+
+    private string GetCardClass(string status) =>
+        _selectedStatus == status ? "border-primary border-2" : "";
+
+    private async Task FilterByStatus(string status)
+    {
+        _selectedStatus = _selectedStatus == status ? null : status;
+        await LoadData();
+    }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Submitted" => Color.Primary,
+        "Validating" => Color.Warning,
+        "KycPending" => Color.Info,
+        "ReviewPending" => Color.Secondary,
+        "Approved" => Color.Success,
+        "Rejected" => Color.Error,
+        _ => Color.Default
+    };
+
+    private void ReviewApplication(string applicationNumber)
+    {
+        Navigation.NavigateTo($"/gov/intake-review/{applicationNumber}");
+    }
+
+    private async Task ProgressToNextStage()
+    {
+        if (_selectedApplication == null || string.IsNullOrEmpty(ApplicationNumber))
+            return;
+
+        try
+        {
+            var application = await ApplicationsService.GetByNumberAsync(ApplicationNumber);
+            if (application == null)
+            {
+                Snackbar.Add("Application not found", Severity.Error);
+                return;
+            }
+
+            // Submit the application to progress to next stage
+            var success = await ApplicationsService.SubmitAsync(application.Id);
+            
+            if (success)
+            {
+                Snackbar.Add($"Application {ApplicationNumber} progressed to next stage", Severity.Success);
+                await LoadSelectedApplication();
+            }
+            else
+            {
+                Snackbar.Add("Failed to progress application", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error progressing application: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private Task RequestAdditionalInfo()
+    {
+        // This would typically open a dialog to request additional information
+        // For now, just show a message
+        Snackbar.Add("Additional information request feature coming soon", Severity.Info);
+        return Task.CompletedTask;
+    }
+
+    private void OpenRejectDialog()
+    {
+        _rejectReason = string.Empty;
+        _rejectDialogVisible = true;
+    }
+
+    private async Task RejectApplication()
+    {
+        if (string.IsNullOrWhiteSpace(_rejectReason))
+        {
+            Snackbar.Add("Please provide a reason for rejection", Severity.Warning);
+            return;
+        }
+
+        if (string.IsNullOrEmpty(ApplicationNumber))
+            return;
+
+        try
+        {
+            var application = await ApplicationsService.GetByNumberAsync(ApplicationNumber);
+            if (application == null)
+            {
+                Snackbar.Add("Application not found", Severity.Error);
+                _rejectDialogVisible = false;
+                return;
+            }
+
+            var success = await ApplicationsService.RejectAsync(application.Id, _rejectReason);
+            
+            if (success)
+            {
+                Snackbar.Add($"Application {ApplicationNumber} rejected", Severity.Success);
+                _rejectDialogVisible = false;
+                _rejectReason = string.Empty;
+                Navigation.NavigateTo("/gov/intake-review");
+            }
+            else
+            {
+                Snackbar.Add("Failed to reject application", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error rejecting application: {ex.Message}", Severity.Error);
+        }
+    }
+
+    record ApplicationSummary
+    {
+        public string ApplicationNumber { get; init; } = string.Empty;
+        public string ApplicantName { get; init; } = string.Empty;
+        public DateTime DateOfBirth { get; init; }
+        public string? Email { get; init; }
+        public DateTime? SubmittedAt { get; init; }
+        public string Status { get; init; } = string.Empty;
+    }
+}

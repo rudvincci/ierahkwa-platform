@@ -1,0 +1,59 @@
+@namespace MameyNode.Portals.Shared.Components.Forms
+@using MudBlazor
+
+<MudDialog @bind-IsVisible="@IsVisible" MaxWidth="@MaxWidth">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@Title</MudText>
+    </TitleContent>
+    <DialogContent>
+        @ChildContent
+    </DialogContent>
+    <DialogActions>
+        @if (ShowCancel)
+        {
+            <MudButton OnClick="Cancel" Color="Color.Default">@CancelText</MudButton>
+        }
+        @if (ShowConfirm)
+        {
+            <MudButton OnClick="Confirm" Color="@ConfirmColor" Variant="Variant.Filled">@ConfirmText</MudButton>
+        }
+        @if (CustomActions != null)
+        {
+            @CustomActions
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; } = false;
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? CustomActions { get; set; }
+    [Parameter] public bool ShowCancel { get; set; } = true;
+    [Parameter] public bool ShowConfirm { get; set; } = true;
+    [Parameter] public string CancelText { get; set; } = "Cancel";
+    [Parameter] public string ConfirmText { get; set; } = "Confirm";
+    [Parameter] public Color ConfirmColor { get; set; } = Color.Primary;
+    [Parameter] public MaxWidth MaxWidth { get; set; } = MaxWidth.Medium;
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private async Task Confirm()
+    {
+        IsVisible = false;
+        if (OnConfirm.HasDelegate)
+        {
+            await OnConfirm.InvokeAsync();
+        }
+    }
+
+    private async Task Cancel()
+    {
+        IsVisible = false;
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync();
+        }
+    }
+}
+

@@ -1,0 +1,100 @@
+@page "/sicb/system-integrity"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject ISICBClient SICBClient
+@inject ILogger<SystemIntegrity> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="System Integrity" Icon="fas fa-shield-alt" Subtitle="System integrity and security monitoring">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Checks" Value="@_checks.Count.ToString()" Icon="fas fa-clipboard-check" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Healthy" Value="@_healthyCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Avg Health Score" Value="@_avgHealthScore.ToString("F1")" Icon="fas fa-chart-line" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Issues" Value="@_issuesCount.ToString()" Icon="fas fa-exclamation-triangle" Color="#EF4444" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="System Integrity Checks" Class="mt-4">
+        <MudTable T="SystemIntegrityInfo" Items="@_checks" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Check ID</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Health Status</MudTh>
+                <MudTh>Health Score</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Issues</MudTh>
+                <MudTh>Checked</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.CheckId</MudTd>
+                <MudTd>@context.CheckType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.IsHealthy ? Color.Success : Color.Error)">
+                        @(context.IsHealthy ? "Healthy" : "Unhealthy")
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.HealthScore</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "OK" ? Color.Success : Color.Warning)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@(context.Issues.Any() ? string.Join(", ", context.Issues) : "None")</MudTd>
+                <MudTd>@context.CheckedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<SystemIntegrityInfo> _checks = new();
+    private int _healthyCount;
+    private decimal _avgHealthScore;
+    private int _issuesCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _checks = await SICBClient.GetSystemIntegrityChecksAsync();
+            _healthyCount = _checks.Count(c => c.IsHealthy);
+            _avgHealthScore = _checks.Any() ? _checks.Average(c => decimal.Parse(c.HealthScore)) : 0;
+            _issuesCount = _checks.Sum(c => c.Issues.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading system integrity checks");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

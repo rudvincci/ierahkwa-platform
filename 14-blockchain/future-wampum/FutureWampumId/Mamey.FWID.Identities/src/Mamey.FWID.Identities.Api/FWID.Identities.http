@@ -1,0 +1,144 @@
+### Mamey FutureWampumID Identities API Routes
+### Base URL: http://localhost:5001
+
+@baseUrl = http://localhost:5001
+@contentType = application/json
+@identityId = 123e4567-e89b-12d3-a456-426614174000
+
+### ============================================
+### HEALTH & INFO
+### ============================================
+
+### Root Endpoint
+GET {{baseUrl}}/
+
+### Health Check
+GET {{baseUrl}}/health
+
+### ============================================
+### IDENTITY QUERY ROUTES
+### ============================================
+
+### Get Identity by ID
+GET {{baseUrl}}/api/identities/{{identityId}}
+
+### Find Identities
+GET {{baseUrl}}/api/identities
+
+### ============================================
+### IDENTITY CRUD ROUTES
+### ============================================
+
+### Register new identity
+POST {{baseUrl}}/api/identities
+Content-Type: {{contentType}}
+
+{
+  "id": "{{identityId}}",
+  "name": {
+    "firstName": "John",
+    "middleName": "Michael",
+    "lastName": "Doe",
+    "suffix": "Jr."
+  },
+  "personalDetails": {
+    "dateOfBirth": "1990-01-15T00:00:00Z",
+    "placeOfBirth": "Springfield, IL",
+    "gender": "Male",
+    "nationality": "USA"
+  },
+  "contactInformation": {
+    "email": "john.doe@example.com",
+    "phone": {
+      "number": "555-1234",
+      "type": "Mobile"
+    },
+    "address": {
+      "street": "123 Main St",
+      "city": "Springfield",
+      "state": "IL",
+      "zipCode": "62701",
+      "country": "USA",
+      "type": "Residential"
+    }
+  },
+  "biometricData": {
+    "type": "Fingerprint",
+    "data": "base64encodedfingerprintdata",
+    "storageLocation": "minio://biometrics/fingerprints/{{identityId}}"
+  },
+  "zone": "zone-001",
+  "clanRegistrarId": null
+}
+
+### Revoke Identity
+POST {{baseUrl}}/api/identities/{{identityId}}/revoke
+Content-Type: {{contentType}}
+
+{
+  "identityId": "{{identityId}}",
+  "reason": "Identity revoked by administrator"
+}
+
+### Update Zone
+PUT {{baseUrl}}/api/identities/{{identityId}}/zone
+Content-Type: {{contentType}}
+
+{
+  "identityId": "{{identityId}}",
+  "zone": "zone-002"
+}
+
+### Update Contact Information
+PUT {{baseUrl}}/api/identities/{{identityId}}/contact
+Content-Type: {{contentType}}
+
+{
+  "identityId": "{{identityId}}",
+  "email": "john.doe.updated@example.com",
+  "phone": {
+    "number": "555-5678",
+    "type": "Mobile"
+  },
+  "address": {
+    "street": "456 Oak Avenue",
+    "city": "Springfield",
+    "state": "IL",
+    "zipCode": "62702",
+    "country": "USA",
+    "type": "Residential"
+  }
+}
+
+### Update Biometric
+PUT {{baseUrl}}/api/identities/{{identityId}}/biometric
+Content-Type: {{contentType}}
+
+{
+  "identityId": "{{identityId}}",
+  "type": "Fingerprint",
+  "data": "updatedbase64encodedfingerprintdata",
+  "storageLocation": "minio://biometrics/fingerprints/{{identityId}}"
+}
+
+### Verify Biometric
+POST {{baseUrl}}/api/identities/{{identityId}}/verify
+Content-Type: {{contentType}}
+
+{
+  "identityId": "{{identityId}}",
+  "biometricData": "base64encodedfingerprintdata",
+  "type": "Fingerprint"
+}
+
+### ============================================
+### TESTING NOTES
+### ============================================
+
+# Replace the GUIDs in the examples with actual GUIDs from your system
+# Adjust the baseUrl to match your API endpoint
+# Some endpoints may require authentication - add Authorization headers as needed
+# The timestamps in the examples are placeholders - use actual future dates
+# Email addresses, usernames, and other data should be replaced with test data
+
+

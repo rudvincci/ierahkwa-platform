@@ -1,0 +1,154 @@
+TELEX MT 760 FROM {{SenderBankName}}		
+
+From     : {{SenderBankName}}
+Subject  : {{TransactionSubject}}
+Date     : {{TransactionDateUtc}}
+UTC International TELEX Acks  : {{TransactionDateUtc}}
+CUSTOMER’S AND BANK COPY
+--------------------------------------------------------------------------------			
+Network: TELEX Session Holder: {{SenderBankName}}
+Delivery Status:Network Ack
+------------------------ Instance Type and Transmission ------------------------			
+Original Priority Delivery : {{Priority}}
+Message Input Reference    : {{InputReference}}
+Message Output Reference   : {{OutputReference}}
+--------------------------------------Message Header----------------------------			
+TELEX Input        : MT760
+SENDER BANK	       : {{SenderBankName}}
+SENDER BANK ADDRESS: {{SenderBankAddress1}}
+                   : {{SenderBankAddress2}}
+ACCOUNT NAME       : {{SenderAccountName}}
+ACCOUNT NUMBER     : {{SenderAccountNumber}}
+TELEX CODE (KTT)   : {{SenderTelexCode}}
+--------------------------------------------------------------------------------
+RECEIVER
+RECEIVER BANK      : {{ReceiverBankName}}
+BENFICIARY BANK    : {{BeneficiaryBankName}}
+BENEFICIARY CLIENT : {{BeneficiaryClientName}}
+ACCOUNT NUMBER	   : {{BeneficiaryAccountNumber}}
+TELEX CODE (KTT)   : {{ReceiverTelexCode}}
+ATTENTION		   : {{ReceiverAttention}}
+BENEFICIARY ACCOUNT FINAL DESTINY: {{BeneficiaryAccountFinalDestiny}}
+--------------------------------------Message Text------------------------------
+F20 : Transaction Reference Number: {{TransactionReference}}		
+F21 : Related Sender’s reference : {{TransactionReference}}	
+F23B: Bank Operation Code : {{BankOperationCode}}		
+FF32A	   : Value Date/Currency/Interbank Settled
+Value Date : SAME DAY
+Currency   : {{CurrencyCode}}
+Amount     : {{Amount}} {{AmountWords}}
+F33B       : Currency/Instructed Amount
+Currency   : {{CurrencyCode}}
+Amount     : {{Amount}} {{AmountWords}}
+F50A       : Ordering Customer Name and Address
+           : {{BeneficiaryAccountNumber}}
+           : {{BeneficiaryAddress1}}
+           : {{BeneficiaryAddress2}}
+
+F52A: Ordering Institution/FI
+SENDER BANK NAME     : {{SenderBankName}}
+SENDER BANK ADDRESS  : {{SenderBankAddress1}}
+                       {{SenderBankAddress2}}
+SENDER TELEX CODE    : {{SenderTelexCode}}	
+F57A: Account With Institution/BIC
+{{BeneficiaryClientName}}
+
+F59A: Receiver and Beneficiary INV Customer – Name and Address
+{{BeneficiaryAccountNumber}}
+RECEIVER BANK: {{ReceiverBankName}}
+RECEIVER BANK ADDRESS: {{ReceiverBankAddress1}}
+RECEIVER BANK ADDRESS: {{ReceiverBankAddress2}}
+
+F70: Remittance Information :
+F71A: Details of Charges : BEN
+F72: Sender to Receiver’s Information		
+PLEASE ADVICE THE BENEFICIARY OF THIS TELEX TRANSFER IS VALID FOR PAYMENT.	
+
+THIS IRREVOCABLE CASH BACKED TELEX MT103 TRANSFER CAN BE RELIED UP ON FOR FULL CASH			
+FOR THE BENEFIT OF {{BeneficiaryClientName}} {{BeneficiaryAddress1}} {{BeneficiaryAddress2}}
+AND CLIENT BENEFICIARY {{BeneficiaryClientName}} WITH ACCOUNT NUMBER {{BeneficiaryAccountNumber}}		
+WE CONFIRM THAT THESE ARE GOOD, CLEAN, CLEARED FUNDS OF NON-CRIMINAL ORIGIN 
+AND ARE FREE AND CLEAR FROM ANY CLAIMS, LIENS AND ENCUMBRANCES WHATSOEVER.			
+F77B: Regulatory Reporting			
+{{Amount}} {{AmountWords}} 		
+OPERATIVE INSTRUMENT NO MAIL OR OTHER			
+NO HARD COPY WILL FOLLOW/NO CONFIRMATION REQUIRED. NO CODE REQUIRED			
+THIS KTT TELEX MESSAGE ITS THE MONEY AND ITS NECESARY TO PUT MANUALLY IN THE 
+DESTINATION ACCOUNT, NO DOWNLOAD CODE IS NEEDED		
+--------------------------------------------------------------------------------
+(CHK: 	{{Chk}} {{calculatedSpace}} PKI Signature: MAC Equivalent
+-----------------------------------Interventions--------------------------------			
+Category : 			
+Creation Time :	{{TransactionDateUtc}}		
+Application : Telex Interface			
+MT760: FIN MT760 GENERAL FIN INST TRANSFER		
+F20 : Transaction Reference Number : {{TransactionReference}}
+F21 : Related Sender Reference     : {{TransactionReference}}	
+F32A : Value Date/Currency/Interbank Settled:
+Value Date  : SAME DAY
+Currency    : {{CurrencyCode}}
+Amount      : {{Amount}} {{AmountWords}}
+F33B : Currency/instructed Amount
+Currency    : {{CurrencyCode}}
+Amount      : {{Amount}} {{AmountWords}}
+
+WE	{{SenderBankName}} WITH FULL BANK RESPONSIBILITY, HEREBY CONFIRM
+OUR IRREVOCABLE, CASH BACKED STANDING MT 760 BLOCK FUNDS IN FAVOUR OF			
+BENEFICIARY              : {{BeneficiaryClientName}}
+DATED                    : {{TransactionDateUtc}}
+MESSAGE INPUT REFERENCE  : {{InputReference}}
+MESSAGE OUTPUT REFERENCE : {{OutputReference}}
+AMOUNT : {{Amount}} {{AmountWords}}
+
+THIS IS FOR INVESTMENT. WE CONFIRM THAT THESE ARE GOOD, CLEAN, CLEARED FUNDS OF NON-CRIMINAL			
+ORIGIN AND ARE FREE AND CLEAR FROM ANY CLAIMS, LIENS AND ENCUMBRANCES WHATSOEVER.			
+
+WE HEREBY AUTHORIZE THE BANK OFFICERS CONCERNED OF
+{{ReceiverBankName}} AND 	
+BENEFICIARY BANK ACCOUNT NAME {{BeneficiaryClientName}}	
+AND BENEFICIARY ACCOUNT NUMBER {{BeneficiaryAccountNumber}} 
+TO CREDIT THE AMOUNT OF {{Amount}} {{AmountWords}}
+
+NO HARD COPY WILL FOLLOW/NO CONFIRMATION REQUIRED. NO CODE REQUIRED	
+
+THIS KTT TELEX MESSAGE ITS THE MONEY AND ITS NECESARY TO PUT MANUALLY IN THE DESTINATION ACCOUNT
+NO DOWNLOAD CODE IS NEEDED
+
+FOR AND ON BEHALF OF:
+From : {{SenderBankName}}
+SENDER BANK ADDRESS:
+{{SenderBankAddress1}}
+{{SenderBankAddress2}}
+CREATED: {{TransactionDateUtc}}
+---------------------------------MESSAGE TRAILER--------------------------------
+CHK: 	{{Chk}}{{calculatedSpace}}PKI SIGNATURE: MAC EQUIVALENT
+----------------------------------------INTERVENTIONS---------------------------
+CONFIRMED AND RECEIVED
+--------------------------------------------------------------------------------			
+PRT_TPZH ANSWER BACK AND ACKNOWLEDGEMENT MESSAGE AUTOMATED FILE TRANS			
+FER (AFT) GATEWAY			
+RESPONSE VALIDATION SERVICE PROVIDER LOG/APPLICATION GENERATED REPORT			
+ACKNOWLEDGEMENT &			
+AUTHENTICATION ACK NAG DELIVERY			
+FTA/FTI CONFIRMATION STATEMENT PASS/FAIL STATUS			
+0050 CNT, -------------------------------- VALID			
+0060 RFF-DTM, ---------------------------- VALID			
+0070 RFF, -------------------------------- VALID			
+0080 DTM, -------------------------------- VALID			
+0090 NAD-CTA-COM ------------------------- VALID			
+0100 NAD, -------------------------------- VALID			
+0110 CTA, -------------------------------- VALID			
+0120 COM, -------------------------------- VALID			
+0130 ERC-FTX-5G4, ------------------------ VALID			
+0140 ERC, -------------------------------- VALID			
+0150 FTX, -------------------------------- VALID			
+0160 RFF-FTX, ---------------------------- VALID			
+0170 REF, -------------------------------- VALID			
+0180 FTX, -------------------------------- VALID			
+0190 UNT, -------------------------------- VALID			
+{XMT DELIVERY REPORT}			
+MESSAGE TYPE : MT760			
+PRIORITY     : {{Priority}}
+RECEIVED     : {{ReceiverTelexCode}}
+INPUT OUTPUT ACT NAK DUP AUTH
+DATE         : {{TransactionDateUtc}}	

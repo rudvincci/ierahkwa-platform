@@ -1,0 +1,581 @@
+@page "/gov/applications/{Id:guid}"
+@attribute [Authorize(Roles = "GovernmentAgent,Admin")]
+@using Mamey.Portal.Citizenship.Application.Models
+@using Mamey.Portal.Citizenship.Application.Services
+@inject ICitizenshipBackofficeService Backoffice
+@inject IApplicationWorkflowService WorkflowService
+@inject IPaymentPlanService PaymentService
+@inject NavigationManager Nav
+
+<PageTitle>Application Details</PageTitle>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private BackofficeApplicationDetails? _app;
+    private IReadOnlyList<IssuedDocumentSummary> _issued = Array.Empty<IssuedDocumentSummary>();
+    private string? _error;
+    private string? _issueError;
+    private bool _issuing;
+    private bool _approving;
+    private bool _rejecting;
+    private string? _rejectionReason;
+    private bool _processingWorkflow;
+    private bool _confirmingPayment;
+    private string? _workflowMessage;
+    private string? _paymentError;
+    private string? _paymentReference;
+    private PaymentPlanDto? _paymentPlan;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _error = null;
+        _app = null;
+        _issued = Array.Empty<IssuedDocumentSummary>();
+
+        try
+        {
+            _app = await Backoffice.GetApplicationAsync(Id);
+            _issued = await Backoffice.GetIssuedDocumentsAsync(Id);
+            if (_app is null)
+            {
+                _error = "Application not found (or not in this tenant).";
+            }
+            else
+            {
+                await LoadPaymentPlanAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private void Back() => Nav.NavigateTo("/gov/applications");
+
+    private static string DownloadUrl(string bucket, string key)
+        => $"/dev/files/{bucket}/{key}";
+
+    private bool HasPassport => _issued.Any(x => x.Kind == "Passport");
+    private bool HasCertificate => _issued.Any(x => x.Kind == "CitizenshipCertificate");
+    private bool HasAnyIdCard => _issued.Any(x => x.Kind.StartsWith("IdCard:", StringComparison.Ordinal));
+    private bool HasAnyVehicleTag => _issued.Any(x => x.Kind.StartsWith("VehicleTag:", StringComparison.Ordinal));
+
+    private string _idCardVariant = "IdentificationCard";
+    private string _vehicleTagVariant = "Standard";
+
+    private static readonly string[] IdCardVariants =
+    [
+        "DriversLicense",
+        "IdentificationCard",
+        "MedicinalCannabis",
+        "MedicinalMushroom",
+        "ConcealedWeapons",
+    ];
+
+    private static readonly string[] VehicleTagVariants =
+    [
+        "Standard",
+    ];
+
+    private async Task GenerateCertificate()
+    {
+        _issueError = null;
+        if (_issuing)
+        {
+            return;
+        }
+
+        try
+        {
+            _issuing = true;
+            var doc = await Backoffice.GenerateCitizenshipCertificateAsync(Id);
+            _issued = (new[] { doc }).Concat(_issued).ToList();
+        }
+        catch (Exception ex)
+        {
+            _issueError = ex.Message;
+        }
+        finally
+        {
+            _issuing = false;
+        }
+    }
+
+    private async Task IssuePassport()
+    {
+        _issueError = null;
+        if (_issuing)
+        {
+            return;
+        }
+
+        try
+        {
+            _issuing = true;
+            await Backoffice.IssuePassportAsync(Id);
+            await OnParametersSetAsync();
+        }
+        catch (Exception ex)
+        {
+            _issueError = ex.Message;
+        }
+        finally
+        {
+            _issuing = false;
+        }
+    }
+
+    private async Task IssueIdCard()
+    {
+        _issueError = null;
+        if (_issuing)
+        {
+            return;
+        }
+
+        try
+        {
+            _issuing = true;
+            await Backoffice.IssueIdCardAsync(Id, _idCardVariant);
+            await OnParametersSetAsync();
+        }
+        catch (Exception ex)
+        {
+            _issueError = ex.Message;
+        }
+        finally
+        {
+            _issuing = false;
+        }
+    }
+
+    private async Task IssueVehicleTag()
+    {
+        _issueError = null;
+        if (_issuing)
+        {
+            return;
+        }
+
+        try
+        {
+            _issuing = true;
+            await Backoffice.IssueVehicleTagAsync(Id, _vehicleTagVariant);
+            await OnParametersSetAsync();
+        }
+        catch (Exception ex)
+        {
+            _issueError = ex.Message;
+        }
+        finally
+        {
+            _issuing = false;
+        }
+    }
+
+    private async Task ApproveApplication()
+    {
+        _error = null;
+        if (_approving)
+        {
+            return;
+        }
+
+        try
+        {
+            _approving = true;
+            await Backoffice.ApproveApplicationAsync(Id);
+            await OnParametersSetAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _approving = false;
+        }
+    }
+
+    private async Task RejectApplication()
+    {
+        _error = null;
+        if (_rejecting || string.IsNullOrWhiteSpace(_rejectionReason))
+        {
+            return;
+        }
+
+        try
+        {
+            _rejecting = true;
+            await Backoffice.RejectApplicationAsync(Id, _rejectionReason);
+            await OnParametersSetAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _rejecting = false;
+        }
+    }
+
+    private async Task LoadPaymentPlanAsync()
+    {
+        _paymentPlan = null;
+        _paymentError = null;
+
+        if (_app is null || _app.Status is not ("PaymentPending" or "CitizenCreating" or "Completed"))
+        {
+            return;
+        }
+
+        try
+        {
+            _paymentPlan = await PaymentService.GetPaymentPlanAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            _paymentError = ex.Message;
+        }
+    }
+
+    private async Task ProcessWorkflowAsync()
+    {
+        _workflowMessage = null;
+        if (_processingWorkflow)
+        {
+            return;
+        }
+
+        try
+        {
+            _processingWorkflow = true;
+            var processed = await WorkflowService.ProcessNextWorkflowStepAsync(Id);
+            _workflowMessage = processed ? "Workflow step processed." : "No workflow step available.";
+            await OnParametersSetAsync();
+        }
+        catch (Exception ex)
+        {
+            _workflowMessage = $"Workflow failed: {ex.Message}";
+        }
+        finally
+        {
+            _processingWorkflow = false;
+        }
+    }
+
+    private async Task ConfirmPaymentAsync()
+    {
+        _paymentError = null;
+        if (_confirmingPayment || string.IsNullOrWhiteSpace(_paymentReference))
+        {
+            _paymentError = "Payment reference is required.";
+            return;
+        }
+
+        try
+        {
+            _confirmingPayment = true;
+            var confirmed = await PaymentService.ConfirmPaymentAsync(Id, _paymentReference);
+            if (!confirmed)
+            {
+                _paymentError = "Payment confirmation failed.";
+            }
+
+            await OnParametersSetAsync();
+        }
+        catch (Exception ex)
+        {
+            _paymentError = ex.Message;
+        }
+        finally
+        {
+            _confirmingPayment = false;
+        }
+    }
+}
+
+<MudStack Spacing="3">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+        <MudButton Variant="Variant.Text" OnClick="Back" StartIcon="@Icons.Material.Filled.ArrowBack">Back</MudButton>
+        <MudText Typo="Typo.h4">Application Details</MudText>
+    </MudStack>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+
+    @if (_app is not null)
+    {
+        <MudPaper Class="pa-4">
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-3">
+                <MudText Typo="Typo.h6">Application Information</MudText>
+                <MudStack Row="true" Spacing="2">
+                    <MudButton Variant="Variant.Outlined" 
+                              Color="Color.Primary" 
+                              Href="@($"/gov/applications/{Id}/intake-review")"
+                              StartIcon="@Icons.Material.Filled.Assignment">
+                        Intake Review (CIT-001-F)
+                    </MudButton>
+                    @if (_app.Status != "Approved" && _app.Status != "Rejected")
+                    {
+                        <MudButton Variant="Variant.Filled" 
+                                  Color="Color.Success" 
+                                  Disabled="@(_approving || _rejecting)"
+                                  OnClick="ApproveApplication"
+                                  StartIcon="@Icons.Material.Filled.CheckCircle">
+                            @if (_approving)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">Approving...</MudText>
+                            }
+                            else
+                            {
+                                <MudText>Approve</MudText>
+                            }
+                        </MudButton>
+                    }
+                </MudStack>
+            </MudStack>
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Primary"
+                           Disabled="@_processingWorkflow"
+                           OnClick="ProcessWorkflowAsync">
+                    @if (_processingWorkflow)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Processing...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Process Workflow Step</MudText>
+                    }
+                </MudButton>
+                @if (!string.IsNullOrWhiteSpace(_workflowMessage))
+                {
+                    <MudText Typo="Typo.caption">@_workflowMessage</MudText>
+                }
+            </MudStack>
+            <MudGrid Spacing="2">
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2">Application #</MudText>
+                    <MudText>@_app.ApplicationNumber</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2">Status</MudText>
+                    <MudChip T="string" Color="Color.Primary" Variant="Variant.Outlined">@_app.Status</MudChip>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2">Applicant</MudText>
+                    <MudText>@_app.FirstName @_app.LastName</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2">DOB</MudText>
+                    <MudText>@_app.DateOfBirth</MudText>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2">Email</MudText>
+                    <MudText>@(_app.Email ?? "-")</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2">Tenant</MudText>
+                    <MudText>@_app.TenantId</MudText>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle2">Address</MudText>
+                    <MudText>
+                        @(_app.AddressLine1 ?? "-")
+                        @if (!string.IsNullOrWhiteSpace(_app.City) || !string.IsNullOrWhiteSpace(_app.Region) || !string.IsNullOrWhiteSpace(_app.PostalCode))
+                        {
+                            <span>, @_app.City @_app.Region @_app.PostalCode</span>
+                        }
+                    </MudText>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2">Created</MudText>
+                    <MudText>@_app.CreatedAt.LocalDateTime</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2">Updated</MudText>
+                    <MudText>@_app.UpdatedAt.LocalDateTime</MudText>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6">Payment Plan</MudText>
+            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                Payment plan details are available once the application reaches Payment Pending.
+            </MudText>
+
+            @if (!string.IsNullOrWhiteSpace(_paymentError))
+            {
+                <MudAlert Severity="Severity.Error">@_paymentError</MudAlert>
+            }
+
+            @if (_paymentPlan is null)
+            {
+                <MudText Typo="Typo.body2" Class="mt-2">No payment plan available.</MudText>
+            }
+            else
+            {
+                <MudGrid Spacing="2" Class="mt-2">
+                    <MudItem xs="12" md="4">
+                        <MudText Typo="Typo.subtitle2">Amount</MudText>
+                        <MudText Typo="Typo.body1">@_paymentPlan.Amount @_paymentPlan.Currency</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudText Typo="Typo.subtitle2">Status</MudText>
+                        <MudText Typo="Typo.body1">@_paymentPlan.Status</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudText Typo="Typo.subtitle2">Reference</MudText>
+                        <MudText Typo="Typo.body1">@(_paymentPlan.PaymentReference ?? "—")</MudText>
+                    </MudItem>
+                </MudGrid>
+
+                @if (_paymentPlan.Status == "Pending")
+                {
+                    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Class="mt-3">
+                        <MudTextField @bind-Value="_paymentReference"
+                                      Label="Payment reference"
+                                      Variant="Variant.Outlined" />
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Success"
+                                   Disabled="@_confirmingPayment"
+                                   OnClick="ConfirmPaymentAsync">
+                            @if (_confirmingPayment)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">Confirming...</MudText>
+                            }
+                            else
+                            {
+                                <MudText>Confirm Payment</MudText>
+                            }
+                        </MudButton>
+                    </MudStack>
+                }
+            }
+        </MudPaper>
+
+        <MudPaper Class="pa-4">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                <MudText Typo="Typo.h6">Issued Documents</MudText>
+                <MudStack Row="true" Spacing="2">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Secondary"
+                               Disabled="_issuing || HasPassport"
+                               OnClick="IssuePassport">
+                        Issue passport (HTML)
+                    </MudButton>
+                    <MudSelect T="string" Label="ID card" Dense="true" Variant="Variant.Outlined" @bind-Value="_idCardVariant" Style="min-width: 220px;">
+                        @foreach (var v in IdCardVariants)
+                        {
+                            <MudSelectItem T="string" Value="@v">@v</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Disabled="_issuing"
+                               OnClick="IssueIdCard">
+                        Issue ID card (HTML)
+                    </MudButton>
+                    <MudSelect T="string" Label="Vehicle tag" Dense="true" Variant="Variant.Outlined" @bind-Value="_vehicleTagVariant" Style="min-width: 180px;">
+                        @foreach (var v in VehicleTagVariants)
+                        {
+                            <MudSelectItem T="string" Value="@v">@v</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Tertiary"
+                               Disabled="_issuing"
+                               OnClick="IssueVehicleTag">
+                        Issue vehicle tag (HTML)
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Disabled="_issuing || HasCertificate"
+                               OnClick="GenerateCertificate">
+                        Generate citizenship certificate (HTML)
+                    </MudButton>
+                </MudStack>
+            </MudStack>
+
+            @if (!string.IsNullOrWhiteSpace(_issueError))
+            {
+                <MudAlert Severity="Severity.Error" Class="mt-3">@_issueError</MudAlert>
+            }
+
+            @if (_issued.Count == 0)
+            {
+                <MudText Typo="Typo.body2" Class="mt-3">No issued documents yet.</MudText>
+            }
+            else
+            {
+                <MudTable Items="_issued" Dense="true" Hover="true" Class="mt-3">
+                    <HeaderContent>
+                        <MudTh>Kind</MudTh>
+                        <MudTh>Number</MudTh>
+                        <MudTh>File</MudTh>
+                        <MudTh>Created</MudTh>
+                        <MudTh>Download</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Kind">@context.Kind</MudTd>
+                        <MudTd DataLabel="Number">@((context.DocumentNumber ?? "-"))</MudTd>
+                        <MudTd DataLabel="File">@context.FileName</MudTd>
+                        <MudTd DataLabel="Created">@context.CreatedAt.LocalDateTime</MudTd>
+                        <MudTd DataLabel="Download">
+                            <MudLink Href="@DownloadUrl(context.StorageBucket, context.StorageKey)" Target="_blank">Download</MudLink>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+        </MudPaper>
+
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6" GutterBottom="true">Uploads</MudText>
+
+            @if (_app.Uploads.Count == 0)
+            {
+                <MudText Typo="Typo.body2">No uploads found.</MudText>
+            }
+            else
+            {
+                <MudTable Items="_app.Uploads" Dense="true" Hover="true">
+                    <HeaderContent>
+                        <MudTh>Kind</MudTh>
+                        <MudTh>File</MudTh>
+                        <MudTh>Type</MudTh>
+                        <MudTh Align="Align.Right">Size</MudTh>
+                        <MudTh>Uploaded</MudTh>
+                        <MudTh>Download</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Kind">@context.Kind</MudTd>
+                        <MudTd DataLabel="File">@context.FileName</MudTd>
+                        <MudTd DataLabel="Type">@context.ContentType</MudTd>
+                        <MudTd DataLabel="Size" Align="Align.Right">@context.Size</MudTd>
+                        <MudTd DataLabel="Uploaded">@context.UploadedAt.LocalDateTime</MudTd>
+                        <MudTd DataLabel="Download">
+                            <MudLink Href="@DownloadUrl(context.StorageBucket, context.StorageKey)" Target="_blank">
+                                Download
+                            </MudLink>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+        </MudPaper>
+    }
+</MudStack>

@@ -1,0 +1,97 @@
+<\!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VozSoberana - Ierahkwa Platform</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--brd:#30363d;--txt:#e6edf3;--txt2:#8b949e;--gold:#d4a853;--teal:#2dd4a8;--purple:#9b6dff;--red:#f85149;--blue:#58a6ff}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5}
+.header{position:sticky;top:0;z-index:100;background:rgba(13,17,23,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+.header-brand{display:flex;align-items:center;gap:12px}
+.wampum-icon{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--gold));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;color:#fff}
+.header-brand h1{font-size:22px;font-weight:700;background:linear-gradient(135deg,var(--gold),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-brand .sub{font-size:11px;color:var(--txt2)}
+.header-nav{display:flex;gap:16px;align-items:center}
+.header-nav a{color:var(--txt2);text-decoration:none;font-size:14px}
+.header-nav a:hover{color:var(--gold)}
+.wbal{background:var(--bg3);border:1px solid var(--brd);border-radius:20px;padding:6px 14px;font-size:13px;color:var(--gold);font-weight:600}
+.layout{display:grid;grid-template-columns:1fr 320px;max-width:1100px;margin:0 auto;min-height:calc(100vh - 65px)}
+.main-feed{border-right:1px solid var(--brd)}.compose-box{padding:16px 20px;border-bottom:1px solid var(--brd);background:var(--bg2)}
+.compose-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.compose-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0}
+.compose-box textarea{width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:12px;padding:14px 16px;color:var(--txt);font-family:inherit;font-size:15px;resize:vertical;min-height:80px}
+.compose-box textarea:focus{outline:none;border-color:var(--gold)}.compose-box textarea::placeholder{color:var(--txt2)}
+.compose-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.char-count{font-size:13px;color:var(--txt2)}.char-count.warning{color:var(--gold)}.char-count.danger{color:var(--red)}
+.btn-pub{background:linear-gradient(135deg,var(--gold),#c49a45);color:#0d1117;border:none;border-radius:20px;padding:10px 24px;font-weight:700;font-size:14px;cursor:pointer}.btn-pub:hover{transform:translateY(-1px)}.btn-pub:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.voz-card{padding:16px 20px;border-bottom:1px solid var(--brd);transition:background .15s;cursor:pointer}.voz-card:hover{background:var(--bg2)}
+.voz-header{display:flex;align-items:flex-start;gap:12px}
+.voz-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--gold));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0}
+.voz-meta{flex:1;min-width:0}.voz-author-line{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.voz-author{font-weight:700;font-size:15px}.voz-badge{background:var(--purple);color:#fff;font-size:11px;padding:1px 6px;border-radius:4px;font-weight:600}
+.voz-handle{color:var(--txt2);font-size:14px}.voz-time{color:var(--txt2);font-size:13px}.voz-dot{color:var(--txt2)}
+.voz-content{margin-top:6px;margin-left:56px;font-size:15px;line-height:1.6;word-wrap:break-word}.voz-content .hashtag{color:var(--teal);font-weight:500}
+.voz-actions{display:flex;align-items:center;margin-top:10px;margin-left:56px;max-width:400px;justify-content:space-between}
+.voz-action{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--txt2);font-size:13px;cursor:pointer;padding:6px 10px;border-radius:20px;transition:all .2s;font-family:inherit}
+.voz-action:hover{background:rgba(255,255,255,.05)}
+.voz-action.reply:hover{color:var(--blue)}.voz-action.amplify:hover,.voz-action.amplify.active{color:var(--teal)}.voz-action.support:hover,.voz-action.support.active{color:var(--red)}.voz-action.wampum-tip:hover{color:var(--gold)}
+.voz-action .icon{font-size:16px}
+.sidebar{padding:16px}.sidebar-section{background:var(--bg2);border:1px solid var(--brd);border-radius:16px;padding:16px;margin-bottom:16px}
+.sidebar-title{font-size:18px;font-weight:700;margin-bottom:16px}
+.trending-item{padding:10px 0;border-bottom:1px solid var(--brd);cursor:pointer}.trending-item:last-child{border-bottom:none}
+.trending-item:hover .trending-tag{color:var(--teal)}
+.trending-rank{font-size:12px;color:var(--txt2)}.trending-tag{font-size:15px;font-weight:600;transition:color .2s}.trending-count{font-size:12px;color:var(--txt2);margin-top:2px}
+.protocol-info{font-size:13px;color:var(--txt2);line-height:1.6}.protocol-info strong{color:var(--gold)}
+.protocol-stat{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd)}.protocol-stat:last-child{border-bottom:none}
+.protocol-stat-label{font-size:13px;color:var(--txt2)}.protocol-stat-value{font-size:14px;font-weight:600;color:var(--teal)}
+.loading-spinner{display:flex;justify-content:center;padding:40px}
+.spinner{width:32px;height:32px;border:3px solid var(--brd);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:60px 20px;color:var(--txt2)}.empty-state .icon{font-size:48px;margin-bottom:16px}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--brd);border-radius:12px;padding:12px 20px;font-size:14px;color:var(--txt);box-shadow:0 8px 24px rgba(0,0,0,.4);transform:translateY(100px);opacity:0;transition:all .3s;z-index:1000}
+.toast.show{transform:translateY(0);opacity:1}.toast.success{border-left:4px solid var(--teal)}.toast.error{border-left:4px solid var(--red)}
+@media(max-width:768px){.layout{grid-template-columns:1fr}.sidebar{display:none}.header-nav{display:none}.voz-content,.voz-actions{margin-left:0}}
+</style>
+</head>
+<body>
+<header class="header"><div class="header-brand"><div class="wampum-icon">W</div><div><h1>VozSoberana</h1><div class="sub">Ierahkwa Platform</div></div></div><nav class="header-nav"><a href="#" onclick="loadFeed();return false">Inicio</a><a href="#" onclick="loadTrending();return false">Tendencias</a><span class="wbal">W 1,247 WMP</span></nav></header>
+<div class="layout"><main class="main-feed">
+<div class="compose-box"><div class="compose-header"><div class="compose-avatar">TU</div><div style="flex:1"><strong style="font-size:15px">Tu Voz Importa</strong><div style="font-size:12px;color:var(--txt2)">Comparte con la comunidad soberana</div></div></div>
+<textarea id="composeText" placeholder="Que quieres compartir? Usa #hashtags..." maxlength="500" oninput="updateCharCount()"></textarea>
+<div class="compose-footer"><span class="char-count" id="charCount">0 / 500</span><button class="btn-pub" id="btnPublicar" onclick="publishVoz()" disabled>Publicar Voz</button></div></div>
+<div id="feedContainer"><div class="loading-spinner"><div class="spinner"></div></div></div>
+</main>
+<aside class="sidebar">
+<div class="sidebar-section"><h3 class="sidebar-title">Tendencias</h3><div id="trendingContainer"><div class="loading-spinner"><div class="spinner"></div></div></div></div>
+<div class="sidebar-section"><h3 class="sidebar-title">Protocolo Wampum</h3><div class="protocol-info">
+<div class="protocol-stat"><span class="protocol-stat-label">Nodos activos</span><span class="protocol-stat-value">847</span></div>
+<div class="protocol-stat"><span class="protocol-stat-label">Voces hoy</span><span class="protocol-stat-value" id="vocesHoyCount">--</span></div>
+<div class="protocol-stat"><span class="protocol-stat-label">Ciudadanos</span><span class="protocol-stat-value">12,483</span></div>
+<div class="protocol-stat"><span class="protocol-stat-label">Protocolo</span><span class="protocol-stat-value">v0.9.1</span></div>
+</div></div>
+<div class="sidebar-section"><h3 class="sidebar-title">Acerca de</h3><p class="protocol-info"><strong>VozSoberana</strong> es la plataforma de microblogging de la red <strong>Ierahkwa</strong>. Tu voz, tus datos, tu soberania.</p></div>
+</aside></div>
+<div class="toast" id="toast"></div>
+<script>
+var API="",currentVoces=[],refreshInterval=null;
+document.addEventListener("DOMContentLoaded",function(){loadFeed();loadTrending();startAutoRefresh()});
+async function loadFeed(){try{var res=await fetch(API+"/api/voces?page=1&limit=50");var data=await res.json();currentVoces=data.voces;renderFeed(currentVoces);document.getElementById("vocesHoyCount").textContent=data.total}catch(e){document.getElementById("feedContainer").innerHTML="<div class=\"empty-state\"><p>No se pudo conectar</p></div>"}}
+function renderFeed(voces){var c=document.getElementById("feedContainer");if(\!voces||voces.length===0){c.innerHTML="<div class=\"empty-state\"><p>No hay voces aun</p></div>";return}c.innerHTML=voces.map(function(v){return renderVozCard(v)}).join("")}
+function renderVozCard(v){var t=getRelativeTime(v.timestamp);var ch=highlightHashtags(escapeHtml(v.contenido));var badge=v.verificado?"<span class=\"voz-badge\">&#10003; Verificado</span>":"";return "<article class=\"voz-card\"><div class=\"voz-header\"><div class=\"voz-avatar\">"+escapeHtml(v.avatar_initials)+"</div><div class=\"voz-meta\"><div class=\"voz-author-line\"><span class=\"voz-author\">"+escapeHtml(v.autor)+"</span>"+badge+"<span class=\"voz-handle\">"+escapeHtml(v.handle)+"</span><span class=\"voz-dot\">&middot;</span><span class=\"voz-time\">"+t+"</span></div></div></div><div class=\"voz-content\">"+ch+"</div><div class=\"voz-actions\"><button class=\"voz-action reply\"><span class=\"icon\">&#x1F4AC;</span> Responder</button><button class=\"voz-action amplify\" onclick=\"amplificar("+v.id+",event)\"><span class=\"icon\">&#x1F504;</span> <span class=\"count\">"+v.amplificaciones+"</span></button><button class=\"voz-action support\" onclick=\"apoyar("+v.id+",event)\"><span class=\"icon\">&#x2764;&#xFE0F;</span> <span class=\"count\">"+v.apoyos+"</span></button><button class=\"voz-action wampum-tip\"><span class=\"icon\">W</span></button></div></article>"}
+function updateCharCount(){var ta=document.getElementById("composeText");var n=ta.value.length;var ct=document.getElementById("charCount");var btn=document.getElementById("btnPublicar");ct.textContent=n+" / 500";ct.className="char-count";if(n>450)ct.classList.add("danger");else if(n>350)ct.classList.add("warning");btn.disabled=n===0||n>500}
+async function publishVoz(){var ta=document.getElementById("composeText");var c=ta.value.trim();if(\!c)return;var btn=document.getElementById("btnPublicar");btn.disabled=true;btn.textContent="Publicando...";try{var res=await fetch(API+"/api/voces",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({autor:"Ciudadano Soberano",handle:"@ciudadano",contenido:c,verificado:false,avatar_initials:"CS"})});if(\!res.ok){var err=await res.json();throw new Error(err.error)}ta.value="";updateCharCount();showToast("Tu voz ha sido publicada","success");await loadFeed();await loadTrending()}catch(e){showToast("Error: "+e.message,"error")}finally{btn.textContent="Publicar Voz";btn.disabled=false}}
+async function amplificar(id,ev){ev.stopPropagation();try{var res=await fetch(API+"/api/voces/"+id+"/amplificar",{method:"POST"});var data=await res.json();var btn=ev.currentTarget;btn.classList.add("active");btn.querySelector(".count").textContent=data.amplificaciones;showToast("Voz amplificada","success")}catch(e){showToast("Error al amplificar","error")}}
+async function apoyar(id,ev){ev.stopPropagation();try{var res=await fetch(API+"/api/voces/"+id+"/apoyar",{method:"POST"});var data=await res.json();var btn=ev.currentTarget;btn.classList.add("active");btn.querySelector(".count").textContent=data.apoyos;showToast("Apoyo registrado","success")}catch(e){showToast("Error al apoyar","error")}}
+async function loadTrending(){try{var res=await fetch(API+"/api/trending");var data=await res.json();renderTrending(data.trending)}catch(e){document.getElementById("trendingContainer").innerHTML="<p style=\"color:var(--txt2)\">Error cargando tendencias</p>"}}
+function renderTrending(trending){var c=document.getElementById("trendingContainer");if(\!trending||trending.length===0){c.innerHTML="<p>Sin tendencias</p>";return}c.innerHTML=trending.map(function(item,i){return "<div class=\"trending-item\"><div class=\"trending-rank\">Tendencia #"+(i+1)+"</div><div class=\"trending-tag\">"+escapeHtml(item.hashtag)+"</div><div class=\"trending-count\">"+item.count+" "+(item.count===1?"voz":"voces")+"</div></div>"}).join("")}
+function startAutoRefresh(){if(refreshInterval)clearInterval(refreshInterval);refreshInterval=setInterval(function(){loadFeed();loadTrending()},10000)}
+function escapeHtml(t){var d=document.createElement("div");d.textContent=t;return d.innerHTML}
+function highlightHashtags(h){return h.replace(/(#[\wÀ-ɏ]+)/g,"<span class=\"hashtag\">$1</span>")}
+function getRelativeTime(ts){var d=Date.now()-new Date(ts).getTime();var s=Math.floor(d/1000);if(s<60)return"ahora";var m=Math.floor(s/60);if(m<60)return"hace "+m+"m";var h=Math.floor(m/60);if(h<24)return"hace "+h+"h";return"hace "+Math.floor(h/24)+"d"}
+function showToast(msg,type){var t=document.getElementById("toast");t.innerHTML=msg;t.className="toast "+type+" show";setTimeout(function(){t.className="toast"},3000)}
+document.getElementById("composeText").addEventListener("keydown",function(e){if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){e.preventDefault();if(\!document.getElementById("btnPublicar").disabled)publishVoz()}});
+</script>
+</body>
+</html>

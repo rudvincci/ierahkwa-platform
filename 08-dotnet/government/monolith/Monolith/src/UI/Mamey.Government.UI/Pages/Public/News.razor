@@ -1,0 +1,62 @@
+@page "/news"
+
+<PageTitle>News - Mamey Government Portal</PageTitle>
+
+<MudPaper Elevation="0" Class="pa-6">
+    <MudStack Spacing="4">
+        <MudText Typo="Typo.h4" Color="Color.Primary">Government News</MudText>
+        
+        <MudText Typo="Typo.body1">
+            Stay informed with the latest announcements, updates, and news from the government.
+        </MudText>
+
+        <MudDivider Class="my-4" />
+
+        @foreach (var news in _newsItems)
+        {
+            <MudCard Elevation="2">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">@news.Title</MudText>
+                        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                            <MudChip T="string" Color="Color.Primary" Size="Size.Small">@news.Category</MudChip>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">@news.Date.ToString("MMMM dd, yyyy")</MudText>
+                        </MudStack>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.body2">@news.Summary</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Read More</MudButton>
+                    <MudButton Variant="Variant.Text" Color="Color.Default">Share</MudButton>
+                </MudCardActions>
+            </MudCard>
+        }
+
+        <MudPagination Count="5" Selected="1" Color="Color.Primary" Class="mt-4" />
+    </MudStack>
+</MudPaper>
+
+@code {
+    private record NewsItem(string Title, string Category, string Summary, DateTime Date);
+
+    private readonly List<NewsItem> _newsItems = new()
+    {
+        new("New Citizenship Portal Launched", "Announcement",
+            "We are pleased to announce the launch of our new digital citizenship portal, providing citizens with seamless access to government services online.",
+            DateTime.Now.AddDays(-1)),
+        new("Annual Budget Report Released", "Finance",
+            "The government has released the annual budget report for the fiscal year, outlining key investments in infrastructure, education, and healthcare.",
+            DateTime.Now.AddDays(-7)),
+        new("Upcoming National Holiday", "Events",
+            "The government offices will be closed on the upcoming national holiday. Online services will remain available throughout the holiday period.",
+            DateTime.Now.AddDays(-14)),
+        new("New Environmental Protection Policy", "Policy",
+            "The government has introduced new environmental protection measures aimed at reducing carbon emissions and promoting sustainable development.",
+            DateTime.Now.AddDays(-21)),
+        new("Digital ID Cards Now Available", "Services",
+            "Citizens can now apply for digital ID cards through the online portal. Digital cards offer enhanced security and convenience.",
+            DateTime.Now.AddDays(-30))
+    };
+}

@@ -1,0 +1,96 @@
+@page "/admin/diplomats"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<Diplomats> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Diplomats" Icon="fas fa-user-tie" Subtitle="Diplomat management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Diplomats" Value="@_diplomats.Count.ToString()" Icon="fas fa-user-tie" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Countries" Value="@_countryCount.ToString()" Icon="fas fa-globe" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Ranks" Value="@_rankCount.ToString()" Icon="fas fa-star" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Diplomats" Class="mt-4">
+        <MudTable T="DiplomatInfo" Items="@_diplomats" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Diplomat ID</MudTh>
+                <MudTh>Citizen ID</MudTh>
+                <MudTh>Rank</MudTh>
+                <MudTh>Assignment Country</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Start Date</MudTh>
+                <MudTh>End Date</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.DiplomatId</MudTd>
+                <MudTd>@context.CitizenId</MudTd>
+                <MudTd>@context.DiplomaticRank</MudTd>
+                <MudTd>@context.AssignmentCountry</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.AssignmentStart.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@(context.AssignmentEnd?.ToString("yyyy-MM-dd") ?? "-")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<DiplomatInfo> _diplomats = new();
+    private int _activeCount;
+    private int _countryCount;
+    private int _rankCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _diplomats = await GovernmentClient.GetDiplomatsAsync();
+            _activeCount = _diplomats.Count(d => d.Status == "Active");
+            _countryCount = _diplomats.Select(d => d.AssignmentCountry).Distinct().Count();
+            _rankCount = _diplomats.Select(d => d.DiplomaticRank).Distinct().Count();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading diplomats");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

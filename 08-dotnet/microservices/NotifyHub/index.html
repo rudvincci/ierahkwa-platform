@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔔 NOTIFY HUB | Ierahkwa Notification Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --green: #00FF41; --cyan: #00FFFF; --red: #FF1744; --purple: #9D4EDD; --orange: #FF6B35; --bg: #0a0e17; --card: #0d1a2d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17, #0a0e2a, #0a0e17); color: #fff; min-height: 100vh; }
+        
+        .header { background: var(--card); padding: 15px 30px; border-bottom: 3px solid var(--purple); display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--purple), var(--cyan)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; position: relative; }
+        .logo-badge { position: absolute; top: -5px; right: -5px; width: 20px; height: 20px; background: var(--red); border-radius: 50%; font-size: 0.6em; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .logo h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--purple); }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .nav-link { padding: 10px 20px; background: rgba(157,78,221,0.2); border: 1px solid var(--purple); border-radius: 10px; color: var(--purple); text-decoration: none; }
+        .compose-btn { padding: 10px 25px; background: var(--purple); border: none; border-radius: 10px; color: #fff; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        .main { display: grid; grid-template-columns: 280px 1fr 350px; height: calc(100vh - 80px); }
+        
+        /* Sidebar */
+        .sidebar { background: var(--card); border-right: 1px solid rgba(157,78,221,0.2); padding: 20px; overflow-y: auto; }
+        .sidebar-title { font-size: 0.7em; color: #666; text-transform: uppercase; margin: 20px 0 10px; }
+        .channel-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 10px; cursor: pointer; margin-bottom: 5px; }
+        .channel-item:hover, .channel-item.active { background: rgba(157,78,221,0.15); }
+        .channel-item.active { border-left: 3px solid var(--purple); }
+        .channel-icon { font-size: 1.3em; width: 30px; text-align: center; }
+        .channel-count { margin-left: auto; background: var(--red); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        
+        .stats-mini { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; margin-top: 20px; }
+        .stats-mini-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .stats-mini-item:last-child { border-bottom: none; }
+        .stats-mini-label { color: #888; font-size: 0.85em; }
+        .stats-mini-value { font-family: 'Orbitron', sans-serif; color: var(--cyan); }
+        
+        /* Content */
+        .content { padding: 25px; overflow-y: auto; }
+        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .content-title { font-family: 'Orbitron', sans-serif; color: var(--purple); }
+        .filter-tabs { display: flex; gap: 10px; }
+        .filter-tab { padding: 8px 15px; background: rgba(157,78,221,0.1); border: 1px solid rgba(157,78,221,0.3); border-radius: 20px; color: #888; cursor: pointer; font-size: 0.85em; }
+        .filter-tab.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+        
+        /* Notification Cards */
+        .notification-card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--purple); cursor: pointer; transition: all 0.3s; }
+        .notification-card:hover { transform: translateX(5px); box-shadow: 0 5px 20px rgba(157,78,221,0.2); }
+        .notification-card.unread { background: rgba(157,78,221,0.1); }
+        .notification-card.urgent { border-left-color: var(--red); }
+        .notification-card.success { border-left-color: var(--green); }
+        .notification-card.warning { border-left-color: var(--orange); }
+        
+        .notification-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .notification-source { display: flex; align-items: center; gap: 10px; }
+        .source-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2em; }
+        .source-icon.system { background: rgba(0,255,255,0.2); }
+        .source-icon.banking { background: rgba(255,215,0,0.2); }
+        .source-icon.security { background: rgba(255,23,68,0.2); }
+        .source-icon.ai { background: rgba(157,78,221,0.2); }
+        .source-info h4 { font-size: 0.95em; margin-bottom: 2px; }
+        .source-info span { font-size: 0.8em; color: #888; }
+        .notification-time { font-size: 0.8em; color: #888; }
+        
+        .notification-body { font-size: 0.9em; color: #ccc; line-height: 1.5; margin-bottom: 15px; }
+        .notification-actions { display: flex; gap: 10px; }
+        .notif-btn { padding: 8px 15px; border-radius: 8px; font-size: 0.85em; cursor: pointer; }
+        .notif-btn.primary { background: var(--purple); border: none; color: #fff; }
+        .notif-btn.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; }
+        
+        /* Campaign Panel */
+        .panel { background: var(--card); border-left: 1px solid rgba(157,78,221,0.2); padding: 20px; overflow-y: auto; }
+        .panel-title { font-family: 'Orbitron', sans-serif; color: var(--gold); font-size: 0.9em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        .campaign-card { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; margin-bottom: 15px; }
+        .campaign-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .campaign-name { font-weight: 600; }
+        .campaign-status { padding: 4px 10px; border-radius: 10px; font-size: 0.75em; }
+        .campaign-status.active { background: rgba(0,255,65,0.2); color: var(--green); }
+        .campaign-status.scheduled { background: rgba(0,255,255,0.2); color: var(--cyan); }
+        .campaign-status.draft { background: rgba(255,255,255,0.1); color: #888; }
+        
+        .campaign-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .campaign-stat { text-align: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; }
+        .campaign-stat-value { font-family: 'Orbitron', sans-serif; color: var(--cyan); font-size: 1.2em; }
+        .campaign-stat-label { font-size: 0.7em; color: #888; }
+        
+        .campaign-progress { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+        .campaign-progress-bar { height: 100%; background: linear-gradient(90deg, var(--purple), var(--cyan)); border-radius: 3px; }
+        
+        /* Quick Actions */
+        .quick-actions { margin-top: 20px; }
+        .quick-action { display: flex; align-items: center; gap: 12px; padding: 15px; background: rgba(157,78,221,0.1); border: 1px solid rgba(157,78,221,0.3); border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+        .quick-action:hover { border-color: var(--purple); background: rgba(157,78,221,0.2); }
+        .quick-action-icon { font-size: 1.5em; }
+        .quick-action-info h4 { font-size: 0.9em; margin-bottom: 3px; }
+        .quick-action-info span { font-size: 0.8em; color: #888; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); border: 2px solid var(--purple); border-radius: 20px; padding: 30px; width: 600px; max-width: 90%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .modal-title { font-family: 'Orbitron', sans-serif; color: var(--purple); }
+        .close-btn { background: none; border: none; color: #fff; font-size: 1.5em; cursor: pointer; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: var(--cyan); margin-bottom: 8px; font-size: 0.9em; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid rgba(157,78,221,0.3); border-radius: 10px; background: rgba(0,0,0,0.3); color: #fff; font-size: 1em; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .checkbox-row { display: flex; flex-wrap: wrap; gap: 15px; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; }
+        .checkbox-item input { width: auto; }
+        .submit-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--purple), var(--cyan)); border: none; border-radius: 12px; color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                🔔
+                <span class="logo-badge">5</span>
+            </div>
+            <div>
+                <h1>NOTIFY HUB</h1>
+                <p style="color: #888; font-size: 0.75em;">Multi-Channel Notifications</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="compose-btn" onclick="openComposeModal()"><i class="bi bi-send"></i> Send Notification</button>
+            <a href="/platform" class="nav-link"><i class="bi bi-arrow-left"></i> Platform</a>
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Channels</div>
+            <div class="channel-item active">
+                <span class="channel-icon">📥</span>
+                <span>All</span>
+                <span class="channel-count">24</span>
+            </div>
+            <div class="channel-item">
+                <span class="channel-icon">📧</span>
+                <span>Email</span>
+                <span class="channel-count">12</span>
+            </div>
+            <div class="channel-item">
+                <span class="channel-icon">📱</span>
+                <span>Push</span>
+                <span class="channel-count">8</span>
+            </div>
+            <div class="channel-item">
+                <span class="channel-icon">💬</span>
+                <span>SMS</span>
+                <span class="channel-count">4</span>
+            </div>
+            <div class="channel-item">
+                <span class="channel-icon">🔔</span>
+                <span>In-App</span>
+            </div>
+            
+            <div class="sidebar-title">Categories</div>
+            <div class="channel-item">
+                <span class="channel-icon">🚨</span>
+                <span>Urgent</span>
+                <span class="channel-count" style="background: var(--red);">2</span>
+            </div>
+            <div class="channel-item">
+                <span class="channel-icon">💰</span>
+                <span>Financial</span>
+            </div>
+            <div class="channel-item">
+                <span class="channel-icon">🔐</span>
+                <span>Security</span>
+            </div>
+            <div class="channel-item">
+                <span class="channel-icon">📋</span>
+                <span>System</span>
+            </div>
+            <div class="channel-item">
+                <span class="channel-icon">🤖</span>
+                <span>AI Alerts</span>
+            </div>
+            
+            <div class="stats-mini">
+                <div class="stats-mini-item">
+                    <span class="stats-mini-label">Sent Today</span>
+                    <span class="stats-mini-value">156</span>
+                </div>
+                <div class="stats-mini-item">
+                    <span class="stats-mini-label">Open Rate</span>
+                    <span class="stats-mini-value">87%</span>
+                </div>
+                <div class="stats-mini-item">
+                    <span class="stats-mini-label">Click Rate</span>
+                    <span class="stats-mini-value">45%</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Content -->
+        <section class="content">
+            <div class="content-header">
+                <div class="content-title">🔔 Notifications</div>
+                <div class="filter-tabs">
+                    <div class="filter-tab active">All</div>
+                    <div class="filter-tab">Unread</div>
+                    <div class="filter-tab">Urgent</div>
+                    <div class="filter-tab">Archived</div>
+                </div>
+            </div>
+            
+            <div class="notification-card unread urgent">
+                <div class="notification-header">
+                    <div class="notification-source">
+                        <div class="source-icon security">🔐</div>
+                        <div class="source-info">
+                            <h4>Security Alert</h4>
+                            <span>System Security</span>
+                        </div>
+                    </div>
+                    <div class="notification-time">5 min ago</div>
+                </div>
+                <div class="notification-body">
+                    <strong>15 failed login attempts</strong> detected from IP 192.168.x.x. 
+                    The IP has been automatically blocked. Please review the security logs.
+                </div>
+                <div class="notification-actions">
+                    <button class="notif-btn primary">View Details</button>
+                    <button class="notif-btn secondary">Dismiss</button>
+                </div>
+            </div>
+            
+            <div class="notification-card unread warning">
+                <div class="notification-header">
+                    <div class="notification-source">
+                        <div class="source-icon banking">💰</div>
+                        <div class="source-info">
+                            <h4>Wire Transfer Pending</h4>
+                            <span>BDET Banking</span>
+                        </div>
+                    </div>
+                    <div class="notification-time">15 min ago</div>
+                </div>
+                <div class="notification-body">
+                    Wire transfer of <strong>$50,000 USD</strong> to BBVA Mexico requires your approval.
+                    Beneficiary: María García. Reference: WIR-2026-0045.
+                </div>
+                <div class="notification-actions">
+                    <button class="notif-btn primary" style="background: var(--green);">✓ Approve</button>
+                    <button class="notif-btn secondary" style="border-color: var(--red); color: var(--red);">✗ Deny</button>
+                    <button class="notif-btn secondary">View Details</button>
+                </div>
+            </div>
+            
+            <div class="notification-card success">
+                <div class="notification-header">
+                    <div class="notification-source">
+                        <div class="source-icon system">✅</div>
+                        <div class="source-info">
+                            <h4>Document Signed</h4>
+                            <span>E-Signature</span>
+                        </div>
+                    </div>
+                    <div class="notification-time">1 hour ago</div>
+                </div>
+                <div class="notification-body">
+                    Contract "Service Agreement - Tech Corp" has been signed by all parties.
+                    Hash: 0x7f4a2b9c... verified on blockchain.
+                </div>
+                <div class="notification-actions">
+                    <button class="notif-btn primary">View Document</button>
+                </div>
+            </div>
+            
+            <div class="notification-card">
+                <div class="notification-header">
+                    <div class="notification-source">
+                        <div class="source-icon ai">🤖</div>
+                        <div class="source-info">
+                            <h4>AI Daily Report</h4>
+                            <span>Iera AI System</span>
+                        </div>
+                    </div>
+                    <div class="notification-time">3 hours ago</div>
+                </div>
+                <div class="notification-body">
+                    Daily summary: All systems operational. 1,234 citizens protected. 
+                    456 families with active AI protectors. 0 security incidents.
+                </div>
+                <div class="notification-actions">
+                    <button class="notif-btn secondary">View Full Report</button>
+                </div>
+            </div>
+            
+            <div class="notification-card">
+                <div class="notification-header">
+                    <div class="notification-source">
+                        <div class="source-icon system">👥</div>
+                        <div class="source-info">
+                            <h4>New Citizen Registration</h4>
+                            <span>Citizen CRM</span>
+                        </div>
+                    </div>
+                    <div class="notification-time">Yesterday</div>
+                </div>
+                <div class="notification-body">
+                    Family "Rodríguez" (4 members) has completed registration. 
+                    AI protector assigned. Awaiting document verification.
+                </div>
+                <div class="notification-actions">
+                    <button class="notif-btn secondary">Review Application</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Panel -->
+        <aside class="panel">
+            <div class="panel-title"><i class="bi bi-megaphone"></i> CAMPAIGNS</div>
+            
+            <div class="campaign-card">
+                <div class="campaign-header">
+                    <span class="campaign-name">Weekly Newsletter</span>
+                    <span class="campaign-status active">● Active</span>
+                </div>
+                <div class="campaign-stats">
+                    <div class="campaign-stat">
+                        <div class="campaign-stat-value">1,234</div>
+                        <div class="campaign-stat-label">Sent</div>
+                    </div>
+                    <div class="campaign-stat">
+                        <div class="campaign-stat-value">87%</div>
+                        <div class="campaign-stat-label">Opened</div>
+                    </div>
+                    <div class="campaign-stat">
+                        <div class="campaign-stat-value">45%</div>
+                        <div class="campaign-stat-label">Clicked</div>
+                    </div>
+                </div>
+                <div class="campaign-progress">
+                    <div class="campaign-progress-bar" style="width: 87%;"></div>
+                </div>
+            </div>
+            
+            <div class="campaign-card">
+                <div class="campaign-header">
+                    <span class="campaign-name">Security Reminder</span>
+                    <span class="campaign-status scheduled">⏰ Scheduled</span>
+                </div>
+                <div class="campaign-stats">
+                    <div class="campaign-stat">
+                        <div class="campaign-stat-value">456</div>
+                        <div class="campaign-stat-label">Recipients</div>
+                    </div>
+                    <div class="campaign-stat">
+                        <div class="campaign-stat-value">Jan 22</div>
+                        <div class="campaign-stat-label">Send Date</div>
+                    </div>
+                    <div class="campaign-stat">
+                        <div class="campaign-stat-value">9 AM</div>
+                        <div class="campaign-stat-label">Time</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <div class="panel-title"><i class="bi bi-lightning"></i> QUICK ACTIONS</div>
+                <div class="quick-action" onclick="openComposeModal()">
+                    <span class="quick-action-icon">📧</span>
+                    <div class="quick-action-info">
+                        <h4>Send Email Blast</h4>
+                        <span>To all citizens</span>
+                    </div>
+                </div>
+                <div class="quick-action">
+                    <span class="quick-action-icon">📱</span>
+                    <div class="quick-action-info">
+                        <h4>Push Notification</h4>
+                        <span>Mobile app users</span>
+                    </div>
+                </div>
+                <div class="quick-action">
+                    <span class="quick-action-icon">🚨</span>
+                    <div class="quick-action-info">
+                        <h4>Emergency Alert</h4>
+                        <span>All channels</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+    
+    <!-- Compose Modal -->
+    <div class="modal" id="composeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📤 Send Notification</div>
+                <button class="close-btn" onclick="closeComposeModal()">&times;</button>
+            </div>
+            <form onsubmit="sendNotification(event)">
+                <div class="form-group">
+                    <label>Notification Type</label>
+                    <select required>
+                        <option value="">Select type...</option>
+                        <option>General Announcement</option>
+                        <option>Security Alert</option>
+                        <option>Financial Update</option>
+                        <option>System Maintenance</option>
+                        <option>Emergency</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" placeholder="Notification subject..." required>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea rows="4" placeholder="Your message..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Recipients</label>
+                    <select required>
+                        <option value="">Select audience...</option>
+                        <option>All Citizens</option>
+                        <option>VIP Members</option>
+                        <option>Family Heads</option>
+                        <option>Business Owners</option>
+                        <option>Specific User</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Channels</label>
+                    <div class="checkbox-row">
+                        <label class="checkbox-item"><input type="checkbox" checked> 📧 Email</label>
+                        <label class="checkbox-item"><input type="checkbox" checked> 📱 Push</label>
+                        <label class="checkbox-item"><input type="checkbox"> 💬 SMS</label>
+                        <label class="checkbox-item"><input type="checkbox" checked> 🔔 In-App</label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Schedule</label>
+                        <select>
+                            <option>Send Now</option>
+                            <option>Schedule for Later</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select>
+                            <option>Normal</option>
+                            <option>High</option>
+                            <option>Urgent</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Send Notification</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function openComposeModal() { document.getElementById('composeModal').classList.add('active'); }
+        function closeComposeModal() { document.getElementById('composeModal').classList.remove('active'); }
+        function sendNotification(e) {
+            e.preventDefault();
+            alert('✅ Notification sent successfully!\n\n📧 Email: 1,234 recipients\n📱 Push: 890 devices\n🔔 In-App: All users\n\nDelivery in progress...');
+            closeComposeModal();
+        }
+        
+        console.log('🔔 NOTIFY HUB - Notification Center Initialized');
+    </script>
+</body>
+</html>

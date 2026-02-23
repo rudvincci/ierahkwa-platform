@@ -1,0 +1,27 @@
+@using System.Collections.ObjectModel
+@using Mamey.ApplicationName.BlazorWasm.Models.Profile
+<MudPaper Class="p-4 mb-4" Elevation="3">
+    <MudText Typo="Typo.h5">Linked Accounts</MudText>
+
+    @foreach (var account in Accounts)
+    {
+        <MudCard Class="mb-2">
+            <MudCardContent>
+                <MudText Typo="Typo.body1">@account.AccountName</MudText>
+                <MudText Typo="Typo.body2">Type: @account.AccountType</MudText>
+                <MudSwitch T="bool" Label="Linked" @bind-Checked="account.IsLinked" />
+            </MudCardContent>
+        </MudCard>
+    }
+
+    <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="LinkNewAccount">Link New Account</MudButton>
+</MudPaper>
+
+@code {
+    [Parameter] public ObservableCollection<LinkedAccount> Accounts { get; set; }
+
+    private void LinkNewAccount()
+    {
+        // Logic to link a new account
+    }
+}

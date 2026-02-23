@@ -1,0 +1,166 @@
+@page "/explorer/transactions"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IInfrastructureClient InfrastructureClient
+@inject ILogger<TransactionExplorer> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Transaction Explorer" Icon="fas fa-list" Subtitle="Browse and search blockchain transactions">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshTransactions" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="8">
+            <MudTextField @bind-Value="_searchTransactionHash" Label="Transaction Hash" Variant="Variant.Outlined" Placeholder="Enter transaction hash to search" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SearchTransaction" FullWidth="true" StartIcon="@Icons.Material.Filled.Search">
+                Search Transaction
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+    @if (_selectedTransaction != null)
+    {
+        <CardContainer Title="Transaction Details" Class="mt-4">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Transaction Hash:</strong> @_selectedTransaction.Hash</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Type:</strong> @_selectedTransaction.Type</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Account:</strong> @_selectedTransaction.Account</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Amount:</strong> @_selectedTransaction.Amount</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Height:</strong> @_selectedTransaction.Height</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Timestamp:</strong> @_selectedTransaction.LocalTimestamp.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
+                </MudItem>
+            </MudGrid>
+        </CardContainer>
+    }
+
+    @if (_transactions.Any())
+    {
+        <CardContainer Title="Recent Transactions" Class="mt-4">
+            <MudTable T="HistoryEntryInfo" Items="@_transactions" Hover="true" Dense="false" Striped="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>Hash</MudTh>
+                    <MudTh>Type</MudTh>
+                    <MudTh>Account</MudTh>
+                    <MudTh>Amount</MudTh>
+                    <MudTh>Height</MudTh>
+                    <MudTh>Timestamp</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <MudText Typo="Typo.body2" Class="text-truncate" Style="max-width: 200px;">
+                            @context.Hash
+                        </MudText>
+                    </MudTd>
+                    <MudTd>
+                        <MudChip Size="Size.Small" Color="@GetTypeColor(context.Type)">
+                            @context.Type
+                        </MudChip>
+                    </MudTd>
+                    <MudTd>
+                        <MudText Typo="Typo.body2" Class="text-truncate" Style="max-width: 150px;">
+                            @context.Account
+                        </MudText>
+                    </MudTd>
+                    <MudTd>@context.Amount</MudTd>
+                    <MudTd>@context.Height</MudTd>
+                    <MudTd>@context.LocalTimestamp.ToString("yyyy-MM-dd HH:mm:ss")</MudTd>
+                    <MudTd>
+                        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="() => ViewTransaction(context)">
+                            View
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </CardContainer>
+    }
+</PageContainer>
+
+@code {
+    private string _searchTransactionHash = string.Empty;
+    private HistoryEntryInfo? _selectedTransaction;
+    private List<HistoryEntryInfo> _transactions = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRecentTransactionsAsync();
+    }
+
+    private async Task LoadRecentTransactionsAsync()
+    {
+        try
+        {
+            // Load transactions for a sample account
+            _transactions = await InfrastructureClient.GetAccountHistoryAsync("0xSampleAccount", 50);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading transactions");
+        }
+    }
+
+    private async Task SearchTransaction()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(_searchTransactionHash))
+            {
+                // In real implementation, would search by hash
+                _selectedTransaction = _transactions.FirstOrDefault(t => t.Hash == _searchTransactionHash);
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error searching transaction");
+        }
+    }
+
+    private void ViewTransaction(HistoryEntryInfo transaction)
+    {
+        _selectedTransaction = transaction;
+        StateHasChanged();
+    }
+
+    private async Task RefreshTransactions()
+    {
+        await LoadRecentTransactionsAsync();
+        StateHasChanged();
+    }
+
+    private Color GetTypeColor(string type)
+    {
+        return type switch
+        {
+            "send" => Color.Error,
+            "receive" => Color.Success,
+            "open" => Color.Info,
+            "change" => Color.Warning,
+            _ => Color.Default
+        };
+    }
+}
+
+

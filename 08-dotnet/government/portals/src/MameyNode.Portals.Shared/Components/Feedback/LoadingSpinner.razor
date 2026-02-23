@@ -1,0 +1,20 @@
+@namespace MameyNode.Portals.Shared.Components.Feedback
+
+@if (ShowOverlay)
+{
+    <MudOverlay Visible="@IsLoading" ZIndex="1300" Opacity="0.5">
+        <MudProgressCircular Indeterminate="true" Size="Size.Large" Color="Color.Primary" />
+    </MudOverlay>
+}
+else
+{
+    <MudProgressCircular Indeterminate="@IsLoading" Size="@Size" Color="@Color" />
+}
+
+@code {
+    [Parameter] public bool IsLoading { get; set; } = true;
+    [Parameter] public bool ShowOverlay { get; set; } = false;
+    [Parameter] public Size Size { get; set; } = Size.Medium;
+    [Parameter] public Color Color { get; set; } = Color.Primary;
+}
+

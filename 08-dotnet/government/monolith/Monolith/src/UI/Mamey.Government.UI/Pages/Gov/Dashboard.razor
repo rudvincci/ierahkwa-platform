@@ -1,0 +1,254 @@
+@page "/gov/dashboard"
+@layout GovLayout
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+@inject IDashboardService DashboardService
+@inject ISnackbar Snackbar
+
+<PageTitle>Government Dashboard</PageTitle>
+
+<PageHeader Title="Government Dashboard" Subtitle="Overview of citizenship services and operations" />
+
+@if (_isLoading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mb-4" />
+}
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2">
+            <MudCardContent>
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                    <MudStack Spacing="1">
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">Pending Applications</MudText>
+                        <MudText Typo="Typo.h4">@_stats.PendingApplications</MudText>
+                    </MudStack>
+                    <MudAvatar Color="Color.Warning" Size="Size.Medium">
+                        <MudIcon Icon="@Icons.Material.Filled.Pending" />
+                    </MudAvatar>
+                </MudStack>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/gov/applications?status=pending">View All</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2">
+            <MudCardContent>
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                    <MudStack Spacing="1">
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">Total Citizens</MudText>
+                        <MudText Typo="Typo.h4">@_stats.TotalCitizens</MudText>
+                    </MudStack>
+                    <MudAvatar Color="Color.Success" Size="Size.Medium">
+                        <MudIcon Icon="@Icons.Material.Filled.People" />
+                    </MudAvatar>
+                </MudStack>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/gov/citizens">View All</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2">
+            <MudCardContent>
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                    <MudStack Spacing="1">
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">Documents Issued</MudText>
+                        <MudText Typo="Typo.h4">@_stats.DocumentsIssued</MudText>
+                    </MudStack>
+                    <MudAvatar Color="Color.Primary" Size="Size.Medium">
+                        <MudIcon Icon="@Icons.Material.Filled.Description" />
+                    </MudAvatar>
+                </MudStack>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/gov/library">View All</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2">
+            <MudCardContent>
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                    <MudStack Spacing="1">
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">Progression Requests</MudText>
+                        <MudText Typo="Typo.h4">@_stats.ProgressionRequests</MudText>
+                    </MudStack>
+                    <MudAvatar Color="Color.Secondary" Size="Size.Medium">
+                        <MudIcon Icon="@Icons.Material.Filled.TrendingUp" />
+                    </MudAvatar>
+                </MudStack>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/gov/progression-applications">View All</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<MudGrid Spacing="3" Class="mt-4">
+    <MudItem xs="12" md="8">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Recent Applications</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/gov/applications">View All</MudButton>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudTable Items="@_stats.RecentApplications" Dense="true" Hover="true" Loading="@_isLoading">
+                    <HeaderContent>
+                        <MudTh>Application #</MudTh>
+                        <MudTh>Applicant</MudTh>
+                        <MudTh>Status</MudTh>
+                        <MudTh>Submitted</MudTh>
+                        <MudTh>Actions</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Application #">@context.ApplicationNumber</MudTd>
+                        <MudTd DataLabel="Applicant">@context.ApplicantName</MudTd>
+                        <MudTd DataLabel="Status"><StatusChip Status="@context.Status" /></MudTd>
+                        <MudTd DataLabel="Submitted">@context.SubmittedAt?.ToString("d")</MudTd>
+                        <MudTd DataLabel="Actions">
+                            <MudIconButton Icon="@Icons.Material.Filled.Visibility" Size="Size.Small"
+                                           Href="@($"/gov/applications/{context.ApplicationNumber}")" />
+                        </MudTd>
+                    </RowTemplate>
+                    <NoRecordsContent>
+                        <MudText>No recent applications</MudText>
+                    </NoRecordsContent>
+                </MudTable>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Quick Actions</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Spacing="2">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true" 
+                               StartIcon="@Icons.Material.Filled.NoteAdd" Href="/gov/manual-application">
+                        New Manual Application
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true"
+                               StartIcon="@Icons.Material.Filled.PersonAdd" Href="/gov/citizens/new">
+                        Register Citizen
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true"
+                               StartIcon="@Icons.Material.Filled.Upload" Href="/gov/library/upload">
+                        Upload Document
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" FullWidth="true"
+                               StartIcon="@Icons.Material.Filled.Refresh" OnClick="RefreshData">
+                        Refresh Data
+                    </MudButton>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+
+        <MudCard Elevation="2" Class="mt-3">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Status Breakdown</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Spacing="2">
+                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.body2">Probationary</MudText>
+                        <MudText Typo="Typo.body2"><strong>@_stats.ProbationaryCitizens</strong></MudText>
+                    </MudStack>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.body2">Resident</MudText>
+                        <MudText Typo="Typo.body2"><strong>@_stats.ResidentCitizens</strong></MudText>
+                    </MudStack>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.body2">Citizen</MudText>
+                        <MudText Typo="Typo.body2"><strong>@_stats.FullCitizens</strong></MudText>
+                    </MudStack>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@if (_hasError)
+{
+    <MudAlert Severity="Severity.Warning" Class="mt-4">
+        Unable to load some data from the server. Showing cached or default values.
+    </MudAlert>
+}
+
+@code {
+    private DashboardStats _stats = new();
+    private bool _isLoading = true;
+    private bool _hasError = false;
+    
+    // TODO: Get from user context or tenant service
+    private Guid _tenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _isLoading = true;
+        _hasError = false;
+        StateHasChanged();
+        
+        try
+        {
+            _stats = await DashboardService.GetStatsAsync(_tenantId);
+        }
+        catch (Exception ex)
+        {
+            _hasError = true;
+            Console.WriteLine($"Error loading dashboard data: {ex.Message}");
+            
+            // Use default values when API fails
+            _stats = new DashboardStats
+            {
+                PendingApplications = 0,
+                TotalCitizens = 0,
+                DocumentsIssued = 0,
+                ProgressionRequests = 0,
+                ProbationaryCitizens = 0,
+                ResidentCitizens = 0,
+                FullCitizens = 0,
+                RecentApplications = new()
+            };
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        if (!_hasError)
+        {
+            Snackbar.Add("Dashboard data refreshed", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Failed to refresh some data", Severity.Warning);
+        }
+    }
+}

@@ -1,0 +1,98 @@
+@page "/sicb/foreign-exchange"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject ISICBClient SICBClient
+@inject ILogger<ForeignExchange> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Foreign Exchange" Icon="fas fa-globe" Subtitle="FX and BIIS settlement">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Exchanges" Value="@_exchanges.Count.ToString()" Icon="fas fa-exchange-alt" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Completed" Value="@_completedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Currency Pairs" Value="@_currencyPairs.ToString()" Icon="fas fa-coins" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Foreign Exchanges" Class="mt-4">
+        <MudTable T="ForeignExchangeInfo" Items="@_exchanges" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Exchange ID</MudTh>
+                <MudTh>From</MudTh>
+                <MudTh>To</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Rate</MudTh>
+                <MudTh>Converted</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Executed</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.ExchangeId</MudTd>
+                <MudTd>@context.FromCurrency</MudTd>
+                <MudTd>@context.ToCurrency</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.ExchangeRate).ToString("F4")</MudTd>
+                <MudTd>@decimal.Parse(context.ConvertedAmount).ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Completed" ? Color.Success : Color.Warning)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.ExecutedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<ForeignExchangeInfo> _exchanges = new();
+    private decimal _totalVolume;
+    private int _completedCount;
+    private int _currencyPairs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _exchanges = await SICBClient.GetForeignExchangesAsync();
+            _totalVolume = _exchanges.Sum(e => decimal.Parse(e.Amount));
+            _completedCount = _exchanges.Count(e => e.Status == "Completed");
+            _currencyPairs = _exchanges.Select(e => $"{e.FromCurrency}/{e.ToCurrency}").Distinct().Count();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading foreign exchanges");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

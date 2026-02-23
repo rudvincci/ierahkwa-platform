@@ -1,0 +1,248 @@
+@page "/citizen/dashboard"
+@attribute [Authorize(Roles = "Citizen")]
+@using Mamey.Portal.Citizenship.Application.Models
+@using Mamey.Portal.Citizenship.Application.Services
+@using Mamey.Portal.Shared.Auth
+@inject ICitizenPortalService PortalService
+@inject ICitizenshipStatusService StatusService
+@inject ICurrentUserContext UserContext
+
+<PageTitle>Citizen Dashboard</PageTitle>
+
+@if (_loading)
+{
+    <MudStack Spacing="3">
+        <MudProgressLinear Indeterminate="true" />
+        <MudText Typo="Typo.body2">Loading dashboard...</MudText>
+    </MudStack>
+}
+else
+{
+    <MudStack Spacing="3">
+        <MudText Typo="Typo.h4">Citizen Dashboard</MudText>
+
+        @if (_profile is not null)
+        {
+            <MudPaper Class="pa-4">
+                <MudStack Spacing="2">
+                    <MudText Typo="Typo.h6">Profile</MudText>
+                    <MudDivider />
+                    <MudText Typo="Typo.body1"><strong>Name:</strong> @_profile.FullName</MudText>
+                    <MudText Typo="Typo.body2"><strong>Date of Birth:</strong> @_profile.DateOfBirth.ToString("yyyy-MM-dd")</MudText>
+                    <MudText Typo="Typo.body2"><strong>Email:</strong> @_profile.Email</MudText>
+                    @if (_currentStatus is not null)
+                    {
+                        <MudText Typo="Typo.body2">
+                            <strong>Citizenship Status:</strong>
+                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(_currentStatus.Status.ToString())" Class="ms-2">
+                                @_currentStatus.Status
+                            </MudChip>
+                        </MudText>
+                        <MudText Typo="Typo.body2"><strong>Years Completed:</strong> @_currentStatus.YearsCompleted</MudText>
+                    }
+                </MudStack>
+            </MudPaper>
+        }
+
+        <MudStack Row="true" Spacing="2">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/become-a-citizen">
+                Start / Continue Application
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/citizen/applications">
+                My Applications (@_applications.Count)
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/citizen/documents">
+                My Documents (@_documents.Count)
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Href="/public/validate-citizen">
+                Validate an ID
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/citizen/status-progression">
+                Status Progression
+            </MudButton>
+        </MudStack>
+
+        <MudGrid>
+            <MudItem xs="12" md="6">
+                <MudPaper Class="pa-4">
+                    <MudStack Spacing="2">
+                        <div>
+                            <MudText Typo="Typo.h6">Recent Applications</MudText>
+                            <MudDivider Class="my-2" />
+                        </div>
+                        @if (_applications.Count > 0)
+                        {
+                            <MudSimpleTable>
+                                <thead>
+                                    <tr>
+                                        <th>Application #</th>
+                                        <th>Status</th>
+                                        <th>Submitted</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var app in _applications.Take(5))
+                                    {
+                                        <tr>
+                                            <td>@app.ApplicationNumber</td>
+                                            <td>
+                                                <MudChip T="string" Size="Size.Small" Color="@GetApplicationStatusColor(app.Status)">
+                                                    @app.Status
+                                                </MudChip>
+                                            </td>
+                                            <td>@app.CreatedAt.LocalDateTime.ToString("yyyy-MM-dd")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                            @if (_applications.Count > 5)
+                            {
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/citizen/applications" Size="Size.Small">
+                                    View All (@_applications.Count)
+                                </MudButton>
+                            }
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">No applications yet.</MudText>
+                        }
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudPaper Class="pa-4">
+                    <MudStack Spacing="2">
+                        <div>
+                            <MudText Typo="Typo.h6">Issued Documents</MudText>
+                            <MudDivider Class="my-2" />
+                        </div>
+                        @if (_documents.Count > 0)
+                        {
+                            <MudSimpleTable>
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Variant</th>
+                                        <th>Status</th>
+                                        <th>Expires</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var doc in _documents.Take(5))
+                                    {
+                                        <tr>
+                                            <td>@doc.Type</td>
+                                            <td>@doc.Variant</td>
+                                            <td>
+                                                <MudChip T="string" Size="Size.Small" Color="@GetDocumentStatusColor(doc.ExpiresAt)">
+                                                    @GetDocumentStatus(doc.ExpiresAt)
+                                                </MudChip>
+                                            </td>
+                                            <td>@(doc.ExpiresAt?.LocalDateTime.ToString("yyyy-MM-dd") ?? "N/A")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                            @if (_documents.Count > 5)
+                            {
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/citizen/documents" Size="Size.Small">
+                                    View All (@_documents.Count)
+                                </MudButton>
+                            }
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">No documents issued yet.</MudText>
+                        }
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudStack>
+}
+
+@code
+{
+    private bool _loading = true;
+    private CitizenProfileDto? _profile;
+    private CitizenshipStatusDetailsDto? _currentStatus;
+    private List<CitizenApplicationDto> _applications = new();
+    private List<CitizenDocumentDto> _documents = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboardDataAsync();
+    }
+
+    private async Task LoadDashboardDataAsync()
+    {
+        try
+        {
+            _loading = true;
+
+            var email = UserContext.UserName;
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                _profile = await PortalService.GetProfileAsync();
+                _currentStatus = await StatusService.GetStatusDetailsAsync(email);
+            }
+
+            _applications = (await PortalService.GetApplicationsAsync()).ToList();
+            _documents = (await PortalService.GetDocumentsAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading dashboard: {ex.Message}");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private Color GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "Probationary" => Color.Warning,
+            "Resident" => Color.Info,
+            "Citizen" => Color.Success,
+            _ => Color.Default
+        };
+    }
+
+    private Color GetApplicationStatusColor(string status)
+    {
+        return status switch
+        {
+            "Approved" => Color.Success,
+            "Rejected" => Color.Error,
+            "Pending" => Color.Warning,
+            "Submitted" => Color.Info,
+            _ => Color.Default
+        };
+    }
+
+    private Color GetDocumentStatusColor(DateTimeOffset? expiresAt)
+    {
+        if (expiresAt is null) return Color.Success;
+        
+        var now = DateTimeOffset.UtcNow;
+        if (expiresAt.Value < now) return Color.Error;
+        if (expiresAt.Value < now.AddDays(30)) return Color.Warning;
+        return Color.Success;
+    }
+
+    private string GetDocumentStatus(DateTimeOffset? expiresAt)
+    {
+        if (expiresAt is null) return "Valid";
+        
+        var now = DateTimeOffset.UtcNow;
+        if (expiresAt.Value < now) return "Expired";
+        if (expiresAt.Value < now.AddDays(30)) return "Expiring Soon";
+        return "Valid";
+    }
+}
+
+

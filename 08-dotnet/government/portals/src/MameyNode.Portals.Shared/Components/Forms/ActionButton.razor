@@ -1,0 +1,38 @@
+@namespace MameyNode.Portals.Shared.Components.Forms
+
+@if (IsFab)
+{
+    <MudFab Color="@Color" Icon="@Icon" OnClick="@OnClick" Size="@Size" Class="@Class">
+        @if (!string.IsNullOrEmpty(Label))
+        {
+            @Label
+        }
+    </MudFab>
+}
+else
+{
+    <MudButton Variant="@Variant" Color="@Color" Icon="@Icon" OnClick="@OnClick" Size="@Size" Class="@Class">
+        @if (!string.IsNullOrEmpty(Label))
+        {
+            @Label
+        }
+        @if (ChildContent != null)
+        {
+            @ChildContent
+        }
+    </MudButton>
+}
+
+@code {
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public Color Color { get; set; } = Color.Primary;
+    [Parameter] public Variant Variant { get; set; } = Variant.Filled;
+    [Parameter] public Size Size { get; set; } = Size.Medium;
+    [Parameter] public bool IsFab { get; set; } = false;
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
+
+

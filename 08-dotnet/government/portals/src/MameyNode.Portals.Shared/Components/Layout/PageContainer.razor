@@ -1,0 +1,21 @@
+@namespace MameyNode.Portals.Shared.Components.Layout
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
+    @if (Breadcrumbs != null)
+    {
+        <MudBreadcrumbs Items="@Breadcrumbs" Class="mb-4" />
+    }
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <MudText Typo="Typo.h4" Class="mb-4">@Title</MudText>
+    }
+    @ChildContent
+</MudContainer>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public List<BreadcrumbItem>? Breadcrumbs { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
+
+

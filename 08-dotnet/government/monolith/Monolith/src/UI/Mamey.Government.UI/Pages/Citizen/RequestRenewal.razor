@@ -1,0 +1,89 @@
+@page "/citizen/request-renewal"
+@layout CitizenLayout
+@attribute [Authorize]
+
+<PageTitle>Request Renewal - Citizen Portal</PageTitle>
+
+<PageHeader Title="Request Document Renewal" Subtitle="Renew your expiring or expired documents" />
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" md="8">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Select Document to Renew</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudRadioGroup @bind-Value="_selectedDocument">
+                    <MudStack Spacing="2">
+                        <MudPaper Elevation="1" Class="pa-4">
+                            <MudRadio Value="@("passport")" Color="Color.Primary">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Book" />
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.subtitle1">Passport</MudText>
+                                        <MudText Typo="Typo.caption" Class="mud-text-secondary">Expires: March 14, 2034</MudText>
+                                    </MudStack>
+                                </MudStack>
+                            </MudRadio>
+                        </MudPaper>
+                        <MudPaper Elevation="1" Class="pa-4">
+                            <MudRadio Value="@("travelid")" Color="Color.Primary">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.CreditCard" />
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.subtitle1">Travel ID</MudText>
+                                        <MudText Typo="Typo.caption" Class="mud-text-secondary">Expires: March 19, 2029</MudText>
+                                    </MudStack>
+                                </MudStack>
+                            </MudRadio>
+                        </MudPaper>
+                    </MudStack>
+                </MudRadioGroup>
+
+                <MudDivider Class="my-4" />
+
+                <MudText Typo="Typo.h6" Class="mb-2">Renewal Reason</MudText>
+                <MudSelect @bind-Value="_renewalReason" Label="Select Reason" Variant="Variant.Outlined">
+                    <MudSelectItem Value="@("expiring")">Document Expiring Soon</MudSelectItem>
+                    <MudSelectItem Value="@("expired")">Document Expired</MudSelectItem>
+                    <MudSelectItem Value="@("damaged")">Document Damaged</MudSelectItem>
+                    <MudSelectItem Value="@("lost")">Document Lost/Stolen</MudSelectItem>
+                    <MudSelectItem Value="@("name_change")">Name Change</MudSelectItem>
+                </MudSelect>
+
+                <MudTextField @bind-Value="_notes" Label="Additional Notes" Variant="Variant.Outlined"
+                              Lines="3" Class="mt-4" Placeholder="Any additional information..." />
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(string.IsNullOrEmpty(_selectedDocument))">
+                    Submit Renewal Request
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Renewal Information</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudList T="string" Dense="true">
+                    <MudListItem Icon="@Icons.Material.Filled.Schedule">Processing: 5-7 business days</MudListItem>
+                    <MudListItem Icon="@Icons.Material.Filled.LocalShipping">Shipping: 2-3 business days</MudListItem>
+                    <MudListItem Icon="@Icons.Material.Filled.AttachMoney">Fee: Varies by document</MudListItem>
+                </MudList>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private string? _selectedDocument;
+    private string? _renewalReason;
+    private string? _notes;
+}

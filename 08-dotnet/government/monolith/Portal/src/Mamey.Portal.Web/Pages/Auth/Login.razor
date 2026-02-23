@@ -1,0 +1,112 @@
+@page "/auth/login"
+@using Mamey.Portal.Web.Auth
+@inject Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Nav
+@inject Microsoft.Extensions.Options.IOptions<PortalAuthOptions> AuthOptions
+@inject IServiceProvider Services
+
+<PageTitle>Login</PageTitle>
+
+@code {
+    private bool _oidcMode;
+    private string _tenant = "default";
+    private string _userName = "demo.user";
+    private string _role = "Citizen";
+    private string? _error;
+
+    private static readonly string[] Roles =
+    [
+        "Citizen",
+        "GovernmentAgent",
+        "ContentEditor",
+        "LibraryEditor",
+        "Admin",
+    ];
+
+    protected override void OnInitialized()
+    {
+        _oidcMode = string.Equals(AuthOptions.Value.Mode, "Oidc", StringComparison.OrdinalIgnoreCase);
+        if (_oidcMode)
+        {
+            // Force-load so the server can issue an OIDC challenge.
+            Nav.NavigateTo("/auth/oidc/login", forceLoad: true);
+        }
+    }
+
+    private void SignIn()
+    {
+        _error = null;
+        var session = Services.GetService<MockAuthSession>();
+        if (session is null)
+        {
+            _error = "Mock auth session is not available (Auth:Mode is not Mock).";
+            return;
+        }
+
+        var normalizedRole = _role?.Trim();
+        if (string.IsNullOrWhiteSpace(normalizedRole) || !Roles.Contains(normalizedRole, StringComparer.Ordinal))
+        {
+            _error = $"Unknown role '{_role}'. Allowed: {string.Join(", ", Roles)}";
+            return;
+        }
+
+        session.SignIn(_tenant, _userName, _role);
+        (AuthStateProvider as MockAuthStateProvider)?.NotifyChanged();
+        Nav.NavigateTo("/");
+    }
+}
+
+<MudStack Spacing="3" Style="max-width: 600px;">
+    <MudText Typo="Typo.h4">@(_oidcMode ? "Login" : "Login (mock)")</MudText>
+    <MudAlert Severity="Severity.Info">
+        @if (_oidcMode)
+        {
+            <span>Redirecting to authentik…</span>
+        }
+        else
+        {
+            <span>UI-first mock login. Later this will be replaced by Authentik (OIDC) + Mamey.Identity.* and tenant resolution.</span>
+        }
+    </MudAlert>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+
+    @if (_oidcMode)
+    {
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.body2">
+                If you are not redirected automatically, click:
+                <MudLink Href="/auth/oidc/login">Continue to login</MudLink>.
+            </MudText>
+        </MudPaper>
+    }
+    else
+    {
+    <MudPaper Class="pa-4">
+        <MudGrid Spacing="2">
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="_tenant" Label="Tenant" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="_userName" Label="User name" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="_role"
+                              Label="Role"
+                              Variant="Variant.Outlined"
+                              HelperText="@($"Allowed: {string.Join(", ", Roles)}")" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SignIn">
+                    Sign in
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+    }
+</MudStack>
+
+

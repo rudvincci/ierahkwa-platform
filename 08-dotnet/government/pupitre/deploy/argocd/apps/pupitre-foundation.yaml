@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pupitre-foundation
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: pupitre
+  source:
+    repoURL: https://github.com/pupitre/pupitre.git
+    targetRevision: HEAD
+    path: deploy/helm/pupitre
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-foundation.yaml
+      parameters:
+        - name: namespaces.foundation
+          value: pupitre-foundation
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pupitre-foundation
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  revisionHistoryLimit: 10

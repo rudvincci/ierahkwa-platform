@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CanalSoberano — Video Soberano | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--gold-d:rgba(212,168,83,0.1);--tq:#2dd4a8;--tq-d:rgba(45,212,168,0.1);--wp:#9b6dff;--red:#ff4d6a;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+.app{display:grid;grid-template-columns:220px 1fr;grid-template-rows:56px 1fr;height:100vh}
+
+/* TOPBAR */
+.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--brd);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:100}
+.brand{display:flex;align-items:center;gap:8px;min-width:180px;cursor:pointer}
+.brand span{font-size:22px}
+.brand h1{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--red);letter-spacing:1px}
+.brand small{font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+.search-area{flex:1;max-width:560px;display:flex;gap:8px}
+.search-area input{flex:1;padding:8px 16px;background:var(--bg3);border:1px solid var(--brd);border-radius:20px 0 0 20px;color:var(--txt);font-size:13px;outline:none;font-family:'DM Sans',sans-serif}
+.search-area input:focus{border-color:var(--gold)}
+.search-area button{padding:0 16px;background:var(--bg3);border:1px solid var(--brd);border-left:none;border-radius:0 20px 20px 0;color:var(--txt2);cursor:pointer;font-size:14px}
+.top-actions{margin-left:auto;display:flex;gap:6px;align-items:center}
+.t-btn{width:34px;height:34px;border-radius:50%;background:none;border:1px solid var(--brd);color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.15s}
+.t-btn:hover{background:var(--bg3);color:var(--txt)}
+.upload-btn{padding:6px 14px;border-radius:18px;background:none;border:1px solid var(--red);color:var(--red);font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:4px;transition:all 0.15s}
+.upload-btn:hover{background:var(--red);color:#fff}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--brd);padding:8px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--brd) transparent}
+.s-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--txt2);transition:all 0.15s}
+.s-item:hover{background:var(--bg3);color:var(--txt)}
+.s-item.active{background:var(--bg4);color:var(--red)}
+.s-item .icon{width:18px;text-align:center;font-size:14px}
+.s-sep{height:1px;background:var(--brd);margin:8px 12px}
+.s-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);padding:8px 12px 4px}
+.s-sub{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;color:var(--txt2);transition:background 0.15s}
+.s-sub:hover{background:var(--bg3)}
+.s-sub .dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.s-sub .live-dot{width:6px;height:6px;border-radius:50%;background:var(--red);margin-left:auto;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* MAIN */
+.main{overflow-y:auto;padding:20px;scrollbar-width:thin;scrollbar-color:var(--brd) transparent}
+
+/* FEATURED VIDEO */
+.featured{display:grid;grid-template-columns:1fr 380px;gap:20px;margin-bottom:28px}
+.feat-player{background:var(--bg2);border-radius:var(--r);overflow:hidden;aspect-ratio:16/9;position:relative;cursor:pointer}
+.feat-player .thumb{width:100%;height:100%;background:linear-gradient(135deg,#1a1015,#0a1520,#15102a);display:flex;align-items:center;justify-content:center;font-size:72px;position:relative}
+.feat-player .thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 60%,rgba(0,0,0,0.8))}
+.play-btn{position:absolute;width:64px;height:64px;border-radius:50%;background:rgba(255,77,106,0.9);display:flex;align-items:center;justify-content:center;font-size:24px;z-index:2;transition:transform 0.2s}
+.feat-player:hover .play-btn{transform:scale(1.1)}
+.feat-badge{position:absolute;top:12px;left:12px;padding:4px 10px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;z-index:2}
+.badge-live{background:var(--red);color:#fff;animation:pulse 1.5s infinite}
+.feat-duration{position:absolute;bottom:12px;right:12px;padding:2px 8px;background:rgba(0,0,0,0.7);border-radius:4px;font-size:11px;font-family:'IBM Plex Mono',monospace;z-index:2}
+
+.feat-info{display:flex;flex-direction:column;gap:12px}
+.feat-title{font-size:20px;font-weight:700;line-height:1.3}
+.feat-channel{display:flex;align-items:center;gap:10px}
+.feat-channel .ch-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.feat-channel .ch-name{font-weight:600;font-size:14px}
+.feat-channel .ch-subs{font-size:11px;color:var(--txt3)}
+.feat-channel .ch-ver{color:var(--tq);font-size:11px}
+.feat-stats{display:flex;gap:12px;font-size:12px;color:var(--txt3)}
+.feat-desc{font-size:13px;color:var(--txt2);line-height:1.5;flex:1}
+.feat-tags{display:flex;gap:4px;flex-wrap:wrap}
+.vtag{font-size:10px;padding:3px 8px;border-radius:4px;cursor:pointer;transition:all 0.15s}
+.vtag-cat{background:var(--bg3);color:var(--txt2);border:1px solid var(--brd)}
+.vtag-cat:hover{border-color:var(--gold);color:var(--gold)}
+
+/* CATEGORY CHIPS */
+.cats{display:flex;gap:6px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat{padding:6px 14px;border-radius:16px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;border:1px solid var(--brd);background:var(--bg2);color:var(--txt2);transition:all 0.15s;font-family:'DM Sans',sans-serif}
+.cat:hover{background:var(--bg3);color:var(--txt)}
+.cat.active{background:var(--txt);color:var(--bg);border-color:var(--txt)}
+
+/* VIDEO GRID */
+.section-title{font-size:16px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:28px}
+.video-card{cursor:pointer;transition:transform 0.2s}
+.video-card:hover{transform:translateY(-2px)}
+.video-thumb{width:100%;aspect-ratio:16/9;background:var(--bg2);border-radius:var(--r);overflow:hidden;position:relative;margin-bottom:10px}
+.video-thumb .vt{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;position:relative}
+.video-thumb .vt::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 70%,rgba(0,0,0,0.6))}
+.video-thumb .dur{position:absolute;bottom:6px;right:6px;padding:2px 6px;background:rgba(0,0,0,0.8);border-radius:3px;font-size:10px;font-family:'IBM Plex Mono',monospace;z-index:1}
+.video-thumb .live-badge{position:absolute;top:6px;left:6px;padding:2px 8px;background:var(--red);border-radius:3px;font-size:9px;font-weight:700;text-transform:uppercase;z-index:1}
+.video-meta{display:flex;gap:10px}
+.video-meta .vm-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px}
+.vm-info .vm-title{font-size:13px;font-weight:600;line-height:1.3;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vm-info .vm-channel{font-size:12px;color:var(--txt3);display:flex;align-items:center;gap:4px}
+.vm-info .vm-stats{font-size:11px;color:var(--txt3)}
+
+/* MONETIZATION */
+.bdet-earn{background:linear-gradient(135deg,var(--gold-d),rgba(155,109,255,0.08));border:1px solid rgba(212,168,83,0.2);border-radius:var(--r);padding:16px;margin-bottom:28px;display:flex;align-items:center;gap:16px}
+.bdet-earn .earn-icon{font-size:36px}
+.bdet-earn .earn-text h3{font-size:15px;color:var(--gold);margin-bottom:2px}
+.bdet-earn .earn-text p{font-size:12px;color:var(--txt2)}
+.earn-btn{margin-left:auto;padding:8px 20px;border-radius:20px;background:var(--gold);border:none;color:#09090d;font-weight:700;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap}
+.earn-btn:hover{filter:brightness(1.15)}
+
+@media(max-width:1024px){.featured{grid-template-columns:1fr}.video-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}}
+@media(max-width:768px){.app{grid-template-columns:1fr}.sidebar{display:none}.main{padding:12px}.video-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.video-grid{grid-template-columns:1fr}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand"><span>📺</span><div><h1>CANAL SOBERANO</h1></div></div>
+  <div class="search-area">
+    <input placeholder="Buscar videos soberanos..." />
+    <button>⌕</button>
+  </div>
+  <div class="top-actions">
+    <button class="upload-btn">⬆ Subir</button>
+    <button class="t-btn">🔔</button>
+    <button class="t-btn">💬</button>
+    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--tq));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;cursor:pointer">CA</div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="s-item active"><span class="icon">🏠</span> Inicio</div>
+  <div class="s-item"><span class="icon">🔥</span> Tendencias</div>
+  <div class="s-item"><span class="icon">📡</span> En Vivo</div>
+  <div class="s-item"><span class="icon">🎵</span> Música</div>
+  <div class="s-item"><span class="icon">🎮</span> Gaming</div>
+  <div class="s-item"><span class="icon">📰</span> Noticias</div>
+  <div class="s-sep"></div>
+  <div class="s-item"><span class="icon">📚</span> Biblioteca</div>
+  <div class="s-item"><span class="icon">⏱</span> Historial</div>
+  <div class="s-item"><span class="icon">📥</span> Descargas</div>
+  <div class="s-item"><span class="icon">❤️</span> Me gusta</div>
+  <div class="s-sep"></div>
+  <div class="s-title">Suscripciones</div>
+  <div class="s-sub"><div class="dot" style="background:linear-gradient(135deg,var(--gold),var(--tq))">CS</div>Cacike Soberano<div class="live-dot"></div></div>
+  <div class="s-sub"><div class="dot" style="background:linear-gradient(135deg,var(--red),#ffa07a)">MC</div>María Canaima</div>
+  <div class="s-sub"><div class="dot" style="background:linear-gradient(135deg,var(--tq),#4da6ff)">FI</div>FILAC Oficial</div>
+  <div class="s-sub"><div class="dot" style="background:linear-gradient(135deg,var(--wp),var(--red))">NC</div>NCAI Digital</div>
+  <div class="s-sub"><div class="dot" style="background:linear-gradient(135deg,#34d399,var(--tq))">CO</div>COICA Amazonía</div>
+  <div class="s-sub"><div class="dot" style="background:linear-gradient(135deg,var(--gold),#ffa07a)">PU</div>Pupitre Educativo</div>
+  <div class="s-sub"><div class="dot" style="background:linear-gradient(135deg,var(--wp),var(--tq))">BD</div>BDET Finance</div>
+  <div class="s-sub"><div class="dot" style="background:linear-gradient(135deg,#ff6b6b,var(--wp))">AL</div>Arte Lenca</div>
+  <div class="s-sep"></div>
+  <div class="s-title">Soberano</div>
+  <div class="s-item"><span class="icon">💎</span> Monetización BDET</div>
+  <div class="s-item"><span class="icon">🛡</span> Verificación</div>
+  <div class="s-item"><span class="icon">🌐</span> Atabey Subtítulos</div>
+  <div class="s-item"><span class="icon">⚙</span> Configuración</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- Category Chips -->
+  <div class="cats">
+    <button class="cat active">Todos</button>
+    <button class="cat">🔴 En Vivo</button>
+    <button class="cat">Soberanía Digital</button>
+    <button class="cat">Cultura Indígena</button>
+    <button class="cat">Artesanía</button>
+    <button class="cat">Blockchain</button>
+    <button class="cat">Educación</button>
+    <button class="cat">Música</button>
+    <button class="cat">Naturaleza</button>
+    <button class="cat">Cocina Ancestral</button>
+    <button class="cat">Idiomas</button>
+    <button class="cat">Tecnología</button>
+    <button class="cat">Agricultura</button>
+    <button class="cat">Medicina Tradicional</button>
+  </div>
+
+  <!-- Featured Video -->
+  <div class="featured">
+    <div class="feat-player">
+      <div class="thumb" style="background:linear-gradient(135deg,#1a0a15,#0a1525,#150a2a)">🦅🌎🔒</div>
+      <div class="feat-badge badge-live">🔴 EN VIVO</div>
+      <div class="play-btn">▶</div>
+    </div>
+    <div class="feat-info">
+      <div class="feat-title">🦅 HISTÓRICO: I Cumbre de Soberanía Digital Indígena — 19 Países Unidos</div>
+      <div class="feat-channel">
+        <div class="ch-av" style="background:linear-gradient(135deg,var(--gold),var(--tq))">CS</div>
+        <div>
+          <div class="ch-name">Cacike Soberano <span class="ch-ver">✓</span></div>
+          <div class="ch-subs">48.2K suscriptores</div>
+        </div>
+      </div>
+      <div class="feat-stats">
+        <span>🔴 12,847 viendo ahora</span>
+        <span>💬 2,341 chat</span>
+        <span>💎 Ⓦ 847 donado</span>
+      </div>
+      <div class="feat-desc">Primera cumbre digital de soberanía indígena. Representantes de NCAI (574 naciones), FILAC (19 países), COICA (9 países amazónicos) discutiendo el futuro de la infraestructura digital propia. Traducción simultánea en 14 idiomas vía Atabey.</div>
+      <div class="feat-tags">
+        <span class="vtag vtag-cat">#CumbreSoberana</span>
+        <span class="vtag vtag-cat">#SoberaníaDigital</span>
+        <span class="vtag vtag-cat">#72Millones</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BDET Monetization Banner -->
+  <div class="bdet-earn">
+    <div class="earn-icon">💎</div>
+    <div class="earn-text">
+      <h3>Monetización Soberana con BDET</h3>
+      <p>Creadores reciben 92% de ingresos. Sin ads invasivos. Fans pagan directo con Wampum. Todo en blockchain.</p>
+    </div>
+    <button class="earn-btn">Activar Monetización</button>
+  </div>
+
+  <!-- Trending -->
+  <div class="section-title">🔥 Tendencias en la Red Soberana</div>
+  <div class="video-grid">
+    <div class="video-card">
+      <div class="video-thumb"><div class="vt" style="background:linear-gradient(135deg,#201520,#102020)">🏺✨</div><span class="dur">18:42</span></div>
+      <div class="video-meta">
+        <div class="vm-av" style="background:linear-gradient(135deg,#ff6b6b,var(--wp))">AL</div>
+        <div class="vm-info">
+          <div class="vm-title">Cómo hago cerámica Lenca — De barro ancestral a obra de arte</div>
+          <div class="vm-channel">Ana Lenca <span style="color:var(--tq)">✓</span></div>
+          <div class="vm-stats">124K vistas · hace 2 días</div>
+        </div>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="video-thumb"><div class="vt" style="background:linear-gradient(135deg,#0a1a25,#151030)">⛓💻</div><span class="dur">32:15</span></div>
+      <div class="video-meta">
+        <div class="vm-av" style="background:linear-gradient(135deg,var(--tq),#4da6ff)">RT</div>
+        <div class="vm-info">
+          <div class="vm-title">MameyNode v4.2 — Tutorial: Despliega tu primer smart contract soberano</div>
+          <div class="vm-channel">Roberto Taíno <span style="color:var(--tq)">✓</span></div>
+          <div class="vm-stats">87K vistas · hace 3 días</div>
+        </div>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="video-thumb"><div class="vt" style="background:linear-gradient(135deg,#1a1510,#201a10)">🌾🌄</div><span class="dur">24:08</span></div>
+      <div class="video-meta">
+        <div class="vm-av" style="background:linear-gradient(135deg,#34d399,var(--gold))">SF</div>
+        <div class="vm-info">
+          <div class="vm-title">SoberanoFarm en acción: IA monitoreando 500 hectáreas de quinoa en Bolivia</div>
+          <div class="vm-channel">SoberanoFarm <span style="color:var(--tq)">✓</span></div>
+          <div class="vm-stats">56K vistas · hace 4 días</div>
+        </div>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="video-thumb"><div class="vt" style="background:linear-gradient(135deg,#1a0a1a,#0a1520)">🎵🪘</div><span class="dur">4:33</span></div>
+      <div class="video-meta">
+        <div class="vm-av" style="background:linear-gradient(135deg,var(--wp),var(--red))">CM</div>
+        <div class="vm-info">
+          <div class="vm-title">Cantos de la Tierra — Música ancestral Maya remasterizada</div>
+          <div class="vm-channel">Colectivo Musical Maya <span style="color:var(--tq)">✓</span></div>
+          <div class="vm-stats">312K vistas · hace 1 semana</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Education -->
+  <div class="section-title">📚 Educación Soberana · Pupitre</div>
+  <div class="video-grid">
+    <div class="video-card">
+      <div class="video-thumb"><div class="vt" style="background:linear-gradient(135deg,#15200a,#0a2015)">🌐📖</div><span class="dur">15:20</span></div>
+      <div class="video-meta">
+        <div class="vm-av" style="background:linear-gradient(135deg,var(--gold),#ffa07a)">AT</div>
+        <div class="vm-info">
+          <div class="vm-title">Aprende Quechua — Lección 1: Saludos y presentaciones básicas</div>
+          <div class="vm-channel">Atabey Idiomas <span style="color:var(--tq)">✓</span></div>
+          <div class="vm-stats">89K vistas · hace 5 días</div>
+        </div>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="video-thumb"><div class="vt" style="background:linear-gradient(135deg,#100a20,#0a1520)">💎📊</div><span class="dur">28:45</span></div>
+      <div class="video-meta">
+        <div class="vm-av" style="background:linear-gradient(135deg,var(--wp),var(--tq))">BD</div>
+        <div class="vm-info">
+          <div class="vm-title">BDET Bank Tutorial: Abre tu cuenta Wampum en 5 minutos</div>
+          <div class="vm-channel">BDET Finance <span style="color:var(--tq)">✓</span></div>
+          <div class="vm-stats">203K vistas · hace 1 semana</div>
+        </div>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="video-thumb"><div class="vt" style="background:linear-gradient(135deg,#200a15,#150a20)">🩺🌿</div><span class="dur">42:10</span></div>
+      <div class="video-meta">
+        <div class="vm-av" style="background:linear-gradient(135deg,#34d399,var(--tq))">SD</div>
+        <div class="vm-info">
+          <div class="vm-title">Medicina ancestral + IA moderna: Cómo SoberanoDoctor salva vidas rurales</div>
+          <div class="vm-channel">SoberanoDoctor <span style="color:var(--tq)">✓</span></div>
+          <div class="vm-stats">67K vistas · hace 6 días</div>
+        </div>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="video-thumb"><div class="vt" style="background:linear-gradient(135deg,#0a150a,#152010)">🌳🛰</div><span class="dur">19:55</span></div>
+      <div class="video-meta">
+        <div class="vm-av" style="background:linear-gradient(135deg,#34d399,var(--gold))">SC</div>
+        <div class="vm-info">
+          <div class="vm-title">Protegiendo la Amazonía con SoberanoClean — Detección de deforestación con IA</div>
+          <div class="vm-channel">SoberanoClean <span style="color:var(--tq)">✓</span></div>
+          <div class="vm-stats">145K vistas · hace 1 semana</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Community -->
+  <div class="section-title">🌎 Comunidades Indígenas</div>
+  <div class="video-grid">
+    <div class="video-card">
+      <div class="video-thumb"><div class="vt" style="background:linear-gradient(135deg,#201510,#102015)">🪶🏔</div><span class="dur">52:30</span></div>
+      <div class="video-meta">
+        <div class="vm-av" style="background:linear-gradient(135deg,var(--gold),var(--red))">NC</div>
+        <div class="vm-info">
+          <div class="vm-title">574 Naciones: El camino de los pueblos indígenas hacia la soberanía digital</div>
+          <div class="vm-channel">NCAI Digital <span style="color:var(--tq)">✓</span></div>
+          <div class="vm-stats">234K vistas · hace 2 semanas</div>
+        </div>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="video-thumb"><div class="vt" style="background:linear-gradient(135deg,#0a2010,#102515)">🌳🏠</div><span class="live-badge">🔴 EN VIVO</span></div>
+      <div class="video-meta">
+        <div class="vm-av" style="background:linear-gradient(135deg,#34d399,var(--tq))">CO</div>
+        <div class="vm-info">
+          <div class="vm-title">🔴 Transmisión desde comunidad Achuar — Instalación de nodo satelital</div>
+          <div class="vm-channel">COICA Amazonía <span style="color:var(--tq)">✓</span></div>
+          <div class="vm-stats">3,291 viendo · En vivo</div>
+        </div>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="video-thumb"><div class="vt" style="background:linear-gradient(135deg,#201015,#151020)">🎭🪘</div><span class="dur">1:12:40</span></div>
+      <div class="video-meta">
+        <div class="vm-av" style="background:linear-gradient(135deg,var(--red),#ffa07a)">GR</div>
+        <div class="vm-info">
+          <div class="vm-title">Festival Garifuna 2026 — Música, danza y resistencia cultural en Honduras</div>
+          <div class="vm-channel">Garifuna Records <span style="color:var(--tq)">✓</span></div>
+          <div class="vm-stats">178K vistas · hace 3 días</div>
+        </div>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="video-thumb"><div class="vt" style="background:linear-gradient(135deg,#150a1a,#0a1520)">🍲🌶</div><span class="dur">22:18</span></div>
+      <div class="video-meta">
+        <div class="vm-av" style="background:linear-gradient(135deg,var(--gold),#34d399)">CI</div>
+        <div class="vm-info">
+          <div class="vm-title">Cocina Ancestral: Recetas Nahuatl que alimentaron imperios — Episodio 12</div>
+          <div class="vm-channel">Cocina Indígena <span style="color:var(--tq)">✓</span></div>
+          <div class="vm-stats">92K vistas · hace 4 días</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+</body>
+</html>

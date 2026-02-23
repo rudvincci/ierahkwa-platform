@@ -1,0 +1,84 @@
+@page "/service/{Id:guid}/edit"
+@using Mamey.Domain.Service.Contracts
+@inject IServiceService Service
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Edit Entity</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    @if (_entity == null)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+    }
+    else
+    {
+        <MudText Typo="Typo.h4" Class="mb-4">Edit Entity</MudText>
+        
+        <FormPro Model="@_command" OnValidSubmit="OnSubmit">
+            <MudTextField @bind-Value="_command.Name" 
+                         Label="Name" 
+                         Required="true"
+                         RequiredError="Name is required"
+                         Variant="Variant.Outlined" />
+            
+            <MudButton ButtonType="ButtonType.Submit" 
+                       Variant="Variant.Filled" 
+                       Color="Color.Primary"
+                       Class="mt-4">
+                Update
+            </MudButton>
+            
+            <MudButton Variant="Variant.Text" 
+                       Color="Color.Default"
+                       Href="/service"
+                       Class="mt-4 ml-2">
+                Cancel
+            </MudButton>
+        </FormPro>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    
+    private EntityDto? _entity;
+    private UpdateEntityCommand _command = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _entity = await Service.GetByIdAsync(Id);
+        if (_entity != null)
+        {
+            _command = new UpdateEntityCommand
+            {
+                Name = _entity.Name
+            };
+        }
+    }
+
+    private async Task OnSubmit()
+    {
+        try
+        {
+            await Service.UpdateAsync(Id, _command);
+            Snackbar.Add("Entity updated successfully", Severity.Success);
+            Navigation.NavigateTo($"/service/{Id}");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error updating entity: {ex.Message}", Severity.Error);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+

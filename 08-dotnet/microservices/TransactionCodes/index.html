@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Códigos Indígenas - Ierahkwa Ne Kanienke</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --neon-green: #00ff88;
+            --neon-cyan: #00FFFF;
+            --neon-purple: #9D4EDD;
+            --success: #00ff88;
+            --warning: #FF8C00;
+            --danger: #FF4444;
+            --wampum: #9D4EDD;
+            --bg-dark: #0a0e17;
+            --bg-card: #0d1a2d;
+            --bg-hover: #142238;
+            --border: #1e3a5f;
+            --text: #ffffff;
+            --text-light: #8899aa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0e17 0%, #0d1a2d 50%, #1a0a2e 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0d1a2d 0%, #1a2a3d 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 3px solid var(--neon-green);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .mohawk-banner {
+            background: linear-gradient(90deg, var(--neon-green), #00cc6a);
+            color: #000;
+            padding: 0.8rem;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Dictionary Section */
+        .dictionary {
+            background: var(--bg-card);
+            border: 2px solid var(--neon-green);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .dictionary h3 {
+            color: var(--neon-green);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .dictionary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .dict-item {
+            background: rgba(0,255,136,0.1);
+            padding: 0.8rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--gold);
+        }
+
+        .dict-item strong {
+            color: var(--gold);
+            font-size: 1rem;
+        }
+
+        .dict-item p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 0.3rem;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 2px solid var(--border);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .summary-card:hover {
+            border-color: var(--neon-green);
+            transform: translateY(-3px);
+        }
+
+        .summary-card.gold { border-color: var(--gold); }
+        .summary-card.wampum { border-color: var(--wampum); }
+        .summary-card.turquoise { border-color: var(--neon-cyan); }
+        .summary-card.danger { border-color: var(--danger); }
+
+        .summary-card h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--neon-green);
+        }
+
+        .summary-card.gold .value { color: var(--gold); }
+        .summary-card.wampum .value { color: var(--wampum); }
+        .summary-card.danger .value { color: var(--danger); }
+
+        /* Category Filters */
+        .filters {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 0.7rem 1.2rem;
+            border: 2px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--neon-green);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: var(--neon-green);
+            color: #000;
+            border-color: var(--neon-green);
+        }
+
+        /* Transaction Cards */
+        .transactions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tx-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .tx-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--neon-green);
+        }
+
+        .tx-card-header {
+            padding: 1rem 1.2rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tx-card-header.wampum { background: linear-gradient(135deg, #9D4EDD, #6B21A8); }
+        .tx-card-header.kanata { background: linear-gradient(135deg, #00ff88, #00cc6a); color: #000; }
+        .tx-card-header.ohwista { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+        .tx-card-header.kariwiio { background: linear-gradient(135deg, #FF6B35, #FF4500); }
+        .tx-card-header.tekeni { background: linear-gradient(135deg, #00FFFF, #0088FF); color: #000; }
+        .tx-card-header.onkwehonwe { background: linear-gradient(135deg, #1e3a5f, #0d1a2d); }
+
+        .tx-code {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            background: rgba(255,255,255,0.2);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+        }
+
+        .tx-priority {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .tx-priority.critical { background: #DC143C; }
+        .tx-priority.high { background: #FF8C00; }
+        .tx-priority.medium { background: #DAA520; }
+        .tx-priority.low { background: #228B22; }
+
+        .tx-card-body {
+            padding: 1.2rem;
+        }
+
+        .tx-name {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            color: var(--text);
+        }
+
+        .tx-desc {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .tx-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tx-stat {
+            text-align: center;
+            padding: 0.5rem;
+            background: rgba(0,255,136,0.1);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .tx-stat-value {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--neon-green);
+        }
+
+        .tx-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+
+        .tx-progress {
+            margin-bottom: 1rem;
+        }
+
+        .tx-progress-bar {
+            background: var(--border);
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .tx-progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+
+        .tx-progress-fill.high { background: linear-gradient(90deg, #00ff88, #00cc6a); }
+        .tx-progress-fill.medium { background: linear-gradient(90deg, #FFD700, #FFA500); }
+        .tx-progress-fill.low { background: linear-gradient(90deg, #FF6B35, #FF4500); }
+
+        .tx-missing {
+            background: rgba(255,68,68,0.1);
+            border: 1px solid rgba(255,68,68,0.3);
+            border-radius: 8px;
+            padding: 0.8rem;
+        }
+
+        .tx-missing h4 {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tx-missing-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+
+        .tx-missing-item {
+            background: rgba(255,68,68,0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(255,68,68,0.3);
+            color: #ff8888;
+        }
+
+        .tx-card-footer {
+            padding: 0.8rem 1.2rem;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .tx-folder {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            font-family: monospace;
+        }
+
+        .tx-action-btn {
+            background: var(--neon-green);
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tx-action-btn:hover {
+            box-shadow: 0 0 15px rgba(0,255,136,0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 2px solid var(--neon-green);
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-section h4 {
+            color: var(--neon-green);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .modal-section ul {
+            list-style: none;
+        }
+
+        .modal-section li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .modal-section.missing li::before { content: "⚠️"; position: absolute; left: 0; }
+        .modal-section.actions li::before { content: "→"; position: absolute; left: 0; color: var(--neon-green); }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            border-top: 2px solid var(--border);
+            margin-top: 2rem;
+            background: var(--bg-card);
+        }
+
+        .copy-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--neon-green);
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            display: none;
+            z-index: 2000;
+            font-weight: 600;
+        }
+
+        .copy-toast.show {
+            display: block;
+            animation: fadeInOut 2s;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+
+        @media (max-width: 768px) {
+            .transactions-grid { grid-template-columns: 1fr; }
+            .dictionary-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🪶 Sistema de Códigos de Transacciones</h1>
+        <p>Sovereign Government of Ierahkwa Ne Kanienke</p>
+    </header>
+
+    <div class="mohawk-banner">
+        📜 <strong>Códigos Indígenas Mohawk/Haudenosaunee</strong> - Honrando la tradición del registro sagrado Wampum
+    </div>
+
+    <div class="container">
+        <!-- Mohawk Dictionary -->
+        <div class="dictionary">
+            <h3>🪶 Diccionario de Palabras Mohawk en los Códigos</h3>
+            <div class="dictionary-grid">
+                <div class="dict-item">
+                    <strong>WAMPUM</strong>
+                    <p>Cinturón de cuentas sagrado - Registro de tratados y valor</p>
+                </div>
+                <div class="dict-item">
+                    <strong>KANATA</strong>
+                    <p>Aldea, territorio, nación soberana</p>
+                </div>
+                <div class="dict-item">
+                    <strong>OHWISTA</strong>
+                    <p>Dinero, riqueza, tesoro</p>
+                </div>
+                <div class="dict-item">
+                    <strong>KARIWIIO</strong>
+                    <p>Buena palabra, mensaje verdadero</p>
+                </div>
+                <div class="dict-item">
+                    <strong>TEKENI</strong>
+                    <p>Dos - Conexión bilateral</p>
+                </div>
+                <div class="dict-item">
+                    <strong>ONKWEHONWE</strong>
+                    <p>Pueblo original, gente verdadera</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card gold">
+                <h3>Valor Total</h3>
+                <div class="value">$11.2B+</div>
+            </div>
+            <div class="summary-card wampum">
+                <h3>Transacciones</h3>
+                <div class="value">13</div>
+            </div>
+            <div class="summary-card danger">
+                <h3>Críticas</h3>
+                <div class="value">3</div>
+            </div>
+            <div class="summary-card turquoise">
+                <h3>Completitud</h3>
+                <div class="value">62%</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">🪶 Todos</button>
+            <button class="filter-btn" data-filter="WAMPUM">💜 WAMPUM</button>
+            <button class="filter-btn" data-filter="KANATA">🌲 KANATA</button>
+            <button class="filter-btn" data-filter="OHWISTA">💎 OHWISTA</button>
+            <button class="filter-btn" data-filter="KARIWIIO">🔥 KARIWIIO</button>
+            <button class="filter-btn" data-filter="TEKENI">🔗 TEKENI</button>
+            <button class="filter-btn" data-filter="ONKWEHONWE">🏛️ ONKWEHONWE</button>
+        </div>
+
+        <!-- Transaction Cards -->
+        <div class="transactions-grid" id="transactionsGrid">
+            <!-- Dynamic content -->
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header" id="modalHeader">
+                <div>
+                    <div class="tx-code" id="modalCode"></div>
+                    <h3 id="modalTitle" style="margin-top:0.5rem"></h3>
+                </div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Toast -->
+    <div class="copy-toast" id="copyToast">✅ Código copiado al portapapeles</div>
+
+    <footer class="footer">
+        🪶 Sovereign Government of Ierahkwa Ne Kanienke<br>
+        Office of the Minister of Finance • Sistema de Códigos Indígenas v1.0<br>
+        Nia:wen (Gracias) • 21 Enero 2026
+    </footer>
+
+    <script>
+        const transactions = [
+            {
+                code: "WAMPUM-SWIFT-001",
+                name: "IBAN TO IBAN MT103 CASH TRANSFER STP",
+                description: "Deutsche Bank MT103 International Wire Transfer",
+                category: "WAMPUM",
+                amount: 1000000000,
+                completion: 90,
+                priority: "critical",
+                folder: "IBAN TO IBAN MT103 CASH TRANSFER STP",
+                documents: 9,
+                missing: ["UETR", "Video Evidence"],
+                actions: ["Extract TRN from 002 - MT199.pdf", "Contact Deutsche Bank for UETR", "Record video evidence"]
+            },
+            {
+                code: "WAMPUM-SWIFT-002",
+                name: "STP MT103 CELOS INVEST - 1B",
+                description: "CELOS INVEST AG x QUANTUMTIME - $1 Billion",
+                category: "WAMPUM",
+                amount: 1000000000,
+                completion: 85,
+                priority: "critical",
+                folder: "STP MT103/1B",
+                documents: 16,
+                missing: ["UETR", "Video Evidence"],
+                actions: ["Extract TRN from 16 PDFs", "Contact issuing bank for UETR"]
+            },
+            {
+                code: "WAMPUM-SWIFT-003",
+                name: "STP MT103 CELOS INVEST - 5B",
+                description: "CELOS INVEST AG x QUANTUMTIME - $5 Billion",
+                category: "WAMPUM",
+                amount: 5000000000,
+                completion: 85,
+                priority: "critical",
+                folder: "STP MT103/5B",
+                documents: 14,
+                missing: ["UETR", "Video Evidence"],
+                actions: ["Extract TRN from 14 PDFs", "Contact issuing bank for UETR"]
+            },
+            {
+                code: "WAMPUM-SWIFT-004",
+                name: "INTERNATIONAL SWIFT ACKS",
+                description: "UBS London AG → Deutsche Bank",
+                category: "WAMPUM",
+                amount: null,
+                completion: 80,
+                priority: "high",
+                folder: "INTERNATIONAL SWIFT ACKS - CUSTOMER'S COPY",
+                documents: 1,
+                missing: ["UETR/GPI", "Customer Signature"],
+                actions: ["Extract SWIFT Reference", "Sign as authorized customer"]
+            },
+            {
+                code: "KANATA-GOV-001",
+                name: "VENEZUELA BCV EUROCLEAR",
+                description: "Banco Central de Venezuela → EuroClear",
+                category: "KANATA",
+                amount: 4200000000,
+                completion: 60,
+                priority: "high",
+                folder: "venezuea trasacion",
+                documents: 4,
+                missing: ["UETR/GPI", "BCV Reference", "EuroClear Account", "Mandate"],
+                actions: ["Extract BCV reference", "Contact EuroClear Brussels", "Prepare mandate"]
+            },
+            {
+                code: "KANATA-GOV-002",
+                name: "BONOS HISTÓRICOS",
+                description: "Historical Bonds Collection - 1,632 docs",
+                category: "KANATA",
+                amount: null,
+                completion: 50,
+                priority: "medium",
+                folder: "bonos historicos",
+                documents: 1632,
+                missing: ["ISIN/CUSIP", "Face Values", "Authentication"],
+                actions: ["Inventory all files", "Create Excel list", "Contact EuroClear"]
+            },
+            {
+                code: "OHWISTA-ASSET-001",
+                name: "RUBÍ 3",
+                description: "Ruby Precious Stone with SKRs",
+                category: "OHWISTA",
+                amount: null,
+                completion: 75,
+                priority: "high",
+                folder: "rubi 3",
+                documents: 15,
+                missing: ["GIA/IGI Certification", "Weight in Carats", "USD Valuation"],
+                actions: ["Review SKRs", "Verify MOU signatures", "Send to GIA/IGI lab"]
+            },
+            {
+                code: "OHWISTA-ASSET-002",
+                name: "ALEXANDRITE",
+                description: "Alexandrite Precious Stone from Brazil",
+                category: "OHWISTA",
+                amount: null,
+                completion: 40,
+                priority: "medium",
+                folder: "Alexandrite",
+                documents: 6,
+                missing: ["GIA/IGI Certification", "Weight", "USD Valuation", "Photos"],
+                actions: ["Review Laudo", "Review DANFE", "Send to lab"]
+            },
+            {
+                code: "KARIWIIO-CRYPTO-001",
+                name: "CRYPTOHOST SYSTEM",
+                description: "Crypto Reception and Conversion",
+                category: "KARIWIIO",
+                amount: null,
+                completion: 55,
+                priority: "medium",
+                folder: "cryptohost system",
+                documents: 7,
+                missing: ["UETR/GPI", "TRN", "Wallets", "KYC"],
+                actions: ["Review certificate", "Verify on blockchain", "Complete KYC"]
+            },
+            {
+                code: "TEKENI-API-001",
+                name: "API TO API",
+                description: "Technical API Transactions",
+                category: "TEKENI",
+                amount: null,
+                completion: 50,
+                priority: "medium",
+                folder: "api to api",
+                documents: 5,
+                missing: ["API Endpoint", "TRN References", "Amounts"],
+                actions: ["Open each PDF", "Create summary table"]
+            },
+            {
+                code: "TEKENI-API-002",
+                name: "IP SPECIAL CASH TRANSFER",
+                description: "Special Cash Transfer via IP",
+                category: "TEKENI",
+                amount: null,
+                completion: 50,
+                priority: "medium",
+                folder: "TRANSMITED BY IP:IP SPECIAL CASH TRANSFER MESSAGE",
+                documents: 1,
+                missing: ["IP Transfer ID", "UETR/GPI", "Bank ACK"],
+                actions: ["Review PDF", "Contact issuing bank", "Obtain ACK"]
+            },
+            {
+                code: "TEKENI-API-003",
+                name: "WISE PORT",
+                description: "WISE International Transfer",
+                category: "TEKENI",
+                amount: null,
+                completion: 45,
+                priority: "low",
+                folder: "WISE PORT",
+                documents: 1,
+                missing: ["WISE Transfer ID", "Status", "Amount"],
+                actions: ["Open WISE PORT.pdf", "Verify in wise.com"]
+            },
+            {
+                code: "ONKWEHONWE-CARD-001",
+                name: "VISA MASTERCARD",
+                description: "Card Transactions",
+                category: "ONKWEHONWE",
+                amount: null,
+                completion: 40,
+                priority: "low",
+                folder: "targeta visa y mastercar",
+                documents: 10,
+                missing: ["Card Last 4", "Transaction IDs", "Bank Statement"],
+                actions: ["Review photos/videos", "Request bank statement"]
+            }
+        ];
+
+        function formatAmount(amount) {
+            if (!amount) return "—";
+            if (amount >= 1e9) return `$${(amount / 1e9).toFixed(1)}B`;
+            if (amount >= 1e6) return `$${(amount / 1e6).toFixed(0)}M`;
+            return `$${amount.toLocaleString()}`;
+        }
+
+        function getProgressClass(completion) {
+            if (completion >= 70) return 'high';
+            if (completion >= 40) return 'medium';
+            return 'low';
+        }
+
+        function renderCards(filter = 'all') {
+            const grid = document.getElementById('transactionsGrid');
+            let filtered = filter === 'all' ? transactions : transactions.filter(t => t.category === filter);
+            
+            grid.innerHTML = filtered.map(t => `
+                <div class="tx-card">
+                    <div class="tx-card-header ${t.category.toLowerCase()}">
+                        <span class="tx-code" onclick="copyCode('${t.code}')" style="cursor:pointer" title="Click para copiar">${t.code}</span>
+                        <span class="tx-priority ${t.priority}">${t.priority}</span>
+                    </div>
+                    <div class="tx-card-body">
+                        <div class="tx-name">${t.name}</div>
+                        <div class="tx-desc">${t.description}</div>
+                        
+                        <div class="tx-stats">
+                            <div class="tx-stat">
+                                <div class="tx-stat-value">${formatAmount(t.amount)}</div>
+                                <div class="tx-stat-label">Monto</div>
+                            </div>
+                            <div class="tx-stat">
+                                <div class="tx-stat-value">${t.documents}</div>
+                                <div class="tx-stat-label">Docs</div>
+                            </div>
+                            <div class="tx-stat">
+                                <div class="tx-stat-value">${t.missing.length}</div>
+                                <div class="tx-stat-label">Faltantes</div>
+                            </div>
+                        </div>
+                        
+                        <div class="tx-progress">
+                            <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem">
+                                <span style="font-size:0.8rem;color:var(--text-light)">Progreso</span>
+                                <span style="font-size:0.8rem;font-weight:600">${t.completion}%</span>
+                            </div>
+                            <div class="tx-progress-bar">
+                                <div class="tx-progress-fill ${getProgressClass(t.completion)}" style="width:${t.completion}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="tx-missing">
+                            <h4>⚠️ Faltantes</h4>
+                            <div class="tx-missing-list">
+                                ${t.missing.slice(0,3).map(m => `<span class="tx-missing-item">${m}</span>`).join('')}
+                                ${t.missing.length > 3 ? `<span class="tx-missing-item">+${t.missing.length - 3} más</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tx-card-footer">
+                        <span class="tx-folder">${t.folder.substring(0,25)}...</span>
+                        <button class="tx-action-btn" onclick="showDetails('${t.code}')">Ver Detalles</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function copyCode(code) {
+            navigator.clipboard.writeText(code);
+            const toast = document.getElementById('copyToast');
+            toast.textContent = `✅ Código copiado: ${code}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function showDetails(code) {
+            const t = transactions.find(tx => tx.code === code);
+            if (!t) return;
+
+            document.getElementById('modalHeader').className = `modal-header ${t.category.toLowerCase()}`;
+            document.getElementById('modalCode').textContent = t.code;
+            document.getElementById('modalTitle').textContent = t.name;
+
+            document.getElementById('modalBody').innerHTML = `
+                <p style="color:var(--text-light);margin-bottom:1rem">${t.description}</p>
+                
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1.5rem">
+                    <div style="background:var(--bg);padding:1rem;border-radius:8px">
+                        <div style="font-size:0.75rem;color:var(--text-light)">MONTO</div>
+                        <div style="font-size:1.2rem;font-weight:700">${formatAmount(t.amount)}</div>
+                    </div>
+                    <div style="background:var(--bg);padding:1rem;border-radius:8px">
+                        <div style="font-size:0.75rem;color:var(--text-light)">DOCUMENTOS</div>
+                        <div style="font-size:1.2rem;font-weight:700">${t.documents}</div>
+                    </div>
+                </div>
+                
+                <div style="background:var(--bg);padding:1rem;border-radius:8px;margin-bottom:1.5rem">
+                    <div style="font-size:0.75rem;color:var(--text-light)">CARPETA</div>
+                    <div style="font-family:monospace;font-size:0.9rem">trasaciones vip/${t.folder}</div>
+                </div>
+                
+                <div class="modal-section missing">
+                    <h4>⚠️ Elementos Faltantes (${t.missing.length})</h4>
+                    <ul>${t.missing.map(m => `<li>${m}</li>`).join('')}</ul>
+                </div>
+                
+                <div class="modal-section actions">
+                    <h4>📋 Acciones Requeridas</h4>
+                    <ul>${t.actions.map(a => `<li>${a}</li>`).join('')}</ul>
+                </div>
+            `;
+
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderCards(btn.dataset.filter);
+            });
+        });
+
+        document.getElementById('modalOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'modalOverlay') closeModal();
+        });
+
+        renderCards();
+
+        // ============================================================================
+        // API INTEGRATION - Fetches real data when Banking API is available
+        // Falls back to static data if API is not running
+        // ============================================================================
+        
+        const API_BASE = 'http://localhost:5000/api';
+        const NODE_API = 'http://localhost:3000/api';
+        
+        // Check API status and update UI
+        async function checkAPIStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/mamey/status`, { timeout: 3000 });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('🪶 Banking API Connected:', data);
+                    document.querySelector('.mohawk-banner').innerHTML = 
+                        '📡 <strong>LIVE</strong> - Conectado a IERAHKWA Banking API | ' +
+                        `Block: ${data.data?.nodeStatus?.blockHeight || 'N/A'}`;
+                    return true;
+                }
+            } catch (e) {
+                console.log('Banking API not available, using static data');
+            }
+            return false;
+        }
+
+        // Fetch real transactions from API
+        async function fetchRealTransactions() {
+            try {
+                const response = await fetch(`${API_BASE}/transactions/pending`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data) {
+                        console.log('Real transactions loaded:', data.count);
+                        // Merge with static data or replace
+                        // For now, keep static VIP transaction codes
+                    }
+                }
+            } catch (e) {
+                // Use static data
+            }
+        }
+
+        // Fetch bank info
+        async function fetchBankInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/banks`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Banks loaded:', data);
+                }
+            } catch (e) {
+                // Use static data
+            }
+        }
+
+        // Initialize API connection
+        (async function initAPI() {
+            const apiAvailable = await checkAPIStatus();
+            if (apiAvailable) {
+                await fetchRealTransactions();
+                await fetchBankInfo();
+            }
+        })();
+
+        // Auto-refresh every 30 seconds if API is available
+        setInterval(async () => {
+            const apiAvailable = await checkAPIStatus();
+            if (apiAvailable) {
+                await fetchRealTransactions();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

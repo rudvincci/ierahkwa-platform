@@ -1,0 +1,319 @@
+# Red Soberana — Kubernetes Manifests
+# Namespace + Core Deployments + Services + Ingress
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: soberana
+  labels:
+    app: red-soberana
+    blockchain: mameynode
+---
+# ============ API DEPLOYMENT ============
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-soberana
+  namespace: soberana
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api-soberana
+  template:
+    metadata:
+      labels:
+        app: api-soberana
+    spec:
+      containers:
+      - name: api
+        image: soberano/api:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: soberana-secrets
+              key: database-url
+        - name: MAMEYNODE_RPC
+          value: "http://mameynode:8545"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: soberana-secrets
+              key: jwt-secret
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "2000m"
+            memory: "2Gi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-soberana
+  namespace: soberana
+spec:
+  selector:
+    app: api-soberana
+  ports:
+  - port: 3000
+    targetPort: 3000
+  type: ClusterIP
+---
+# ============ MAMEYNODE STATEFULSET ============
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mameynode
+  namespace: soberana
+spec:
+  serviceName: mameynode
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mameynode
+  template:
+    metadata:
+      labels:
+        app: mameynode
+    spec:
+      containers:
+      - name: mameynode
+        image: mameynode/node:4.2.0
+        ports:
+        - containerPort: 8545
+          name: rpc
+        - containerPort: 8546
+          name: ws
+        - containerPort: 30303
+          name: p2p
+        env:
+        - name: NETWORK_ID
+          value: "574"
+        - name: CONSENSUS
+          value: "proof-of-sovereignty"
+        volumeMounts:
+        - name: chain-data
+          mountPath: /data
+        resources:
+          requests:
+            cpu: "2000m"
+            memory: "4Gi"
+          limits:
+            cpu: "4000m"
+            memory: "8Gi"
+  volumeClaimTemplates:
+  - metadata:
+      name: chain-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 100Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mameynode
+  namespace: soberana
+spec:
+  selector:
+    app: mameynode
+  ports:
+  - port: 8545
+    name: rpc
+  - port: 8546
+    name: ws
+  clusterIP: None
+---
+# ============ POSTGRES ============
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: soberana
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: soberana
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: soberana-secrets
+              key: db-password
+        volumeMounts:
+        - name: pg-data
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "2Gi"
+          limits:
+            cpu: "2000m"
+            memory: "4Gi"
+  volumeClaimTemplates:
+  - metadata:
+      name: pg-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 50Gi
+---
+# ============ AI FORTRESS ============
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-fortress
+  namespace: soberana
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ai-fortress
+  template:
+    metadata:
+      labels:
+        app: ai-fortress
+    spec:
+      containers:
+      - name: ai
+        image: soberano/ai-fortress:1.0
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ENGINES
+          value: "42"
+        resources:
+          requests:
+            cpu: "4000m"
+            memory: "8Gi"
+          limits:
+            cpu: "8000m"
+            memory: "16Gi"
+---
+# ============ ATABEY TRANSLATOR ============
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atabey
+  namespace: soberana
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: atabey
+  template:
+    metadata:
+      labels:
+        app: atabey
+    spec:
+      containers:
+      - name: atabey
+        image: soberano/atabey:1.0
+        ports:
+        - containerPort: 8081
+        resources:
+          requests:
+            cpu: "2000m"
+            memory: "4Gi"
+---
+# ============ INGRESS ============
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: soberana-ingress
+  namespace: soberana
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - soberano.bo
+    - "*.soberano.bo"
+    secretName: soberana-tls
+  rules:
+  - host: soberano.bo
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: portal
+            port:
+              number: 80
+  - host: api.soberano.bo
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api-soberana
+            port:
+              number: 3000
+  - host: chain.soberano.bo
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mameynode
+            port:
+              number: 8545
+---
+# ============ HPA ============
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-hpa
+  namespace: soberana
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-soberana
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70

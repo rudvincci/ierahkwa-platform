@@ -1,0 +1,370 @@
+syntax = "proto3";
+
+package mamey.lending;
+
+// Lending service for MameyNode blockchain
+service LendingService {
+    // Loan operations
+    rpc CreateLoan(CreateLoanRequest) returns (CreateLoanResponse);
+    rpc GetLoan(GetLoanRequest) returns (GetLoanResponse);
+    rpc ListLoans(ListLoansRequest) returns (ListLoansResponse);
+    rpc ApproveLoan(ApproveLoanRequest) returns (ApproveLoanResponse);
+    rpc RejectLoan(RejectLoanRequest) returns (RejectLoanResponse);
+    
+    // Microloan operations
+    rpc CreateMicroloan(CreateMicroloanRequest) returns (CreateMicroloanResponse);
+    rpc GetMicroloan(GetMicroloanRequest) returns (GetMicroloanResponse);
+    rpc ListMicroloans(ListMicroloansRequest) returns (ListMicroloansResponse);
+    
+    // Repayment operations
+    rpc MakeRepayment(MakeRepaymentRequest) returns (MakeRepaymentResponse);
+    rpc GetRepaymentHistory(GetRepaymentHistoryRequest) returns (GetRepaymentHistoryResponse);
+    rpc ProcessRepayment(ProcessRepaymentRequest) returns (ProcessRepaymentResponse);
+    
+    // Credit risk operations
+    rpc EvaluateCreditRisk(EvaluateCreditRiskRequest) returns (EvaluateCreditRiskResponse);
+    rpc GetCreditScore(GetCreditScoreRequest) returns (GetCreditScoreResponse);
+    rpc UpdateCreditScore(UpdateCreditScoreRequest) returns (UpdateCreditScoreResponse);
+    
+    // Loan forgiveness
+    rpc RequestForgiveness(RequestForgivenessRequest) returns (RequestForgivenessResponse);
+    rpc ApproveForgiveness(ApproveForgivenessRequest) returns (ApproveForgivenessResponse);
+    
+    // Collateral operations
+    rpc AddCollateral(AddCollateralRequest) returns (AddCollateralResponse);
+    rpc GetCollateral(GetCollateralRequest) returns (GetCollateralResponse);
+    rpc ReleaseCollateral(ReleaseCollateralRequest) returns (ReleaseCollateralResponse);
+}
+
+// Create loan request
+message CreateLoanRequest {
+    string borrower_id = 1;
+    string amount = 2;
+    string currency = 3;
+    string interest_rate = 4;
+    uint32 term_months = 5;
+    string purpose = 6;
+    repeated CollateralInfo collateral = 7;
+}
+
+// Create loan response
+message CreateLoanResponse {
+    string loan_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get loan request
+message GetLoanRequest {
+    string loan_id = 1;
+}
+
+// Get loan response
+message GetLoanResponse {
+    LoanInfo loan = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// List loans request
+message ListLoansRequest {
+    string borrower_id = 1;
+    string status = 2;  // "pending", "active", "completed", "defaulted"
+    uint32 limit = 3;
+    uint32 offset = 4;
+}
+
+// List loans response
+message ListLoansResponse {
+    repeated LoanInfo loans = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Loan info
+message LoanInfo {
+    string loan_id = 1;
+    string borrower_id = 2;
+    string amount = 3;
+    string currency = 4;
+    string interest_rate = 5;
+    uint32 term_months = 6;
+    string remaining_balance = 7;
+    string next_payment_amount = 8;
+    uint64 next_payment_date = 9;
+    LoanStatus status = 10;
+    uint64 created_at = 11;
+    uint64 approved_at = 12;
+}
+
+// Approve loan request
+message ApproveLoanRequest {
+    string loan_id = 1;
+    string approver_id = 2;
+}
+
+// Approve loan response
+message ApproveLoanResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Reject loan request
+message RejectLoanRequest {
+    string loan_id = 1;
+    string reason = 2;
+}
+
+// Reject loan response
+message RejectLoanResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Create microloan request
+message CreateMicroloanRequest {
+    string borrower_id = 1;
+    string amount = 2;
+    string currency = 3;
+    string purpose = 4;
+}
+
+// Create microloan response
+message CreateMicroloanResponse {
+    string loan_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get microloan request
+message GetMicroloanRequest {
+    string loan_id = 1;
+}
+
+// Get microloan response
+message GetMicroloanResponse {
+    MicroloanInfo loan = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Microloan info
+message MicroloanInfo {
+    string loan_id = 1;
+    string borrower_id = 2;
+    string amount = 3;
+    string currency = 4;
+    string remaining_balance = 5;
+    MicroloanStatus status = 6;
+    uint64 created_at = 7;
+    uint64 due_date = 8;
+}
+
+// List microloans request
+message ListMicroloansRequest {
+    string borrower_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// List microloans response
+message ListMicroloansResponse {
+    repeated MicroloanInfo loans = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Make repayment request
+message MakeRepaymentRequest {
+    string loan_id = 1;
+    string amount = 2;
+    string currency = 3;
+}
+
+// Make repayment response
+message MakeRepaymentResponse {
+    string repayment_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get repayment history request
+message GetRepaymentHistoryRequest {
+    string loan_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// Get repayment history response
+message GetRepaymentHistoryResponse {
+    repeated RepaymentInfo repayments = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Repayment info
+message RepaymentInfo {
+    string repayment_id = 1;
+    string loan_id = 2;
+    string amount = 3;
+    string currency = 4;
+    uint64 payment_date = 5;
+    RepaymentStatus status = 6;
+}
+
+// Process repayment request
+message ProcessRepaymentRequest {
+    string repayment_id = 1;
+}
+
+// Process repayment response
+message ProcessRepaymentResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Evaluate credit risk request
+message EvaluateCreditRiskRequest {
+    string borrower_id = 1;
+    string loan_amount = 2;
+    string currency = 3;
+}
+
+// Evaluate credit risk response
+message EvaluateCreditRiskResponse {
+    string risk_level = 1;  // "low", "medium", "high"
+    double risk_score = 2;
+    repeated string risk_factors = 3;
+    bool success = 4;
+    string error_message = 5;
+}
+
+// Get credit score request
+message GetCreditScoreRequest {
+    string borrower_id = 1;
+}
+
+// Get credit score response
+message GetCreditScoreResponse {
+    double credit_score = 1;
+    string credit_rating = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Update credit score request
+message UpdateCreditScoreRequest {
+    string borrower_id = 1;
+    double new_score = 2;
+    string reason = 3;
+}
+
+// Update credit score response
+message UpdateCreditScoreResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Request forgiveness request
+message RequestForgivenessRequest {
+    string loan_id = 1;
+    string reason = 2;
+}
+
+// Request forgiveness response
+message RequestForgivenessResponse {
+    string forgiveness_request_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Approve forgiveness request
+message ApproveForgivenessRequest {
+    string forgiveness_request_id = 1;
+    string approver_id = 2;
+}
+
+// Approve forgiveness response
+message ApproveForgivenessResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Add collateral request
+message AddCollateralRequest {
+    string loan_id = 1;
+    CollateralInfo collateral = 2;
+}
+
+// Add collateral response
+message AddCollateralResponse {
+    string collateral_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get collateral request
+message GetCollateralRequest {
+    string loan_id = 1;
+}
+
+// Get collateral response
+message GetCollateralResponse {
+    repeated CollateralInfo collateral = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Release collateral request
+message ReleaseCollateralRequest {
+    string loan_id = 1;
+    string collateral_id = 2;
+}
+
+// Release collateral response
+message ReleaseCollateralResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Collateral info
+message CollateralInfo {
+    string collateral_id = 1;
+    string collateral_type = 2;
+    string value = 3;
+    string currency = 4;
+    string description = 5;
+}
+
+// Loan status enum
+enum LoanStatus {
+    LOAN_STATUS_PENDING = 0;
+    LOAN_STATUS_APPROVED = 1;
+    LOAN_STATUS_ACTIVE = 2;
+    LOAN_STATUS_COMPLETED = 3;
+    LOAN_STATUS_DEFAULTED = 4;
+    LOAN_STATUS_FORGIVEN = 5;
+}
+
+// Microloan status enum
+enum MicroloanStatus {
+    MICROLOAN_STATUS_PENDING = 0;
+    MICROLOAN_STATUS_ACTIVE = 1;
+    MICROLOAN_STATUS_COMPLETED = 2;
+    MICROLOAN_STATUS_DEFAULTED = 3;
+}
+
+// Repayment status enum
+enum RepaymentStatus {
+    REPAYMENT_STATUS_PENDING = 0;
+    REPAYMENT_STATUS_PROCESSING = 1;
+    REPAYMENT_STATUS_COMPLETED = 2;
+    REPAYMENT_STATUS_FAILED = 3;
+}
+
+
+
+

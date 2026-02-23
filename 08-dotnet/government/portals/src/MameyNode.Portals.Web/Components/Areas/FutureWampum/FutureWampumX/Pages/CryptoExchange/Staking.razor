@@ -1,0 +1,90 @@
+@page "/crypto-exchange/staking"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<Staking> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Staking" Icon="fas fa-lock" Subtitle="Staking pool management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Staking" Value="@_pools.Count.ToString()" Icon="fas fa-lock" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Staked" Value="@_totalStaked.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Rewards" Value="@_pools.Sum(p => decimal.Parse(p.RewardsEarned ?? "0")).ToString("C")" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Avg APY" Value="@_avgAPYText" Icon="fas fa-percent" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Staking Pools" Class="mt-4">
+        <MudTable T="StakingInfo" Items="@_pools" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Account ID</MudTh>
+                <MudTh>Currency</MudTh>
+                <MudTh>Total Staked</MudTh>
+                <MudTh>Rewards Earned</MudTh>
+                <MudTh>Start Date</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.AccountId</MudTd>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd>@decimal.Parse(context.TotalStaked ?? "0").ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.RewardsEarned ?? "0").ToString("C")</MudTd>
+                <MudTd>@context.StakingStartDate.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<StakingInfo> _pools = new();
+    private decimal _totalStaked;
+    private int _activeCount;
+    private decimal _avgAPY;
+    private string _avgAPYText = "0.00%";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _pools = await FutureWampumXClient.GetStakingInfoAsync();
+            _totalStaked = _pools.Sum(p => decimal.Parse(p.TotalStaked ?? "0"));
+            _activeCount = _pools.Count;
+            _avgAPY = 5.5m; // Mock average APY
+            _avgAPYText = $"{_avgAPY:F2}%";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading staking pools");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

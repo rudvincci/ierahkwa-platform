@@ -1,0 +1,72 @@
+@using Mamey.BlazorWasm.Components.Foundation
+<MudPaper Class="@PaperClass" Style="@Style">
+    <MudText Typo="Typo.subtitle1">@Label</MudText>
+
+    <MudRadioGroup T="string" @bind-Value="_unit" SelectedOptionChanged="OnUnitChanged">
+        <MudRadio T="string" Value="@("ft-in")">Feet / Inches</MudRadio>
+        <MudRadio T="string" Value="@("cm")">Centimeters</MudRadio>
+    </MudRadioGroup>
+
+    @if (_unit == "cm")
+    {
+        <MudTextField T="double" Label="Height (cm)" Immediate="true" ValueChanged="@(v => OnCmChanged(v))" />
+    }
+    else
+    {
+        <MudGrid Class="mt-1">
+            <MudItem xs="6"><MudTextField T="int" Label="Feet" Immediate="true" ValueChanged="@(v => OnFtInChanged())" /></MudItem>
+            <MudItem xs="6"><MudTextField T="int" Label="Inches" Immediate="true" ValueChanged="@(v => OnFtInChanged())" /></MudItem>
+        </MudGrid>
+    }
+
+    <FieldMessages HelperText="@HelperText" />
+</MudPaper>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Height";
+    [Parameter] public string HelperText { get; set; } = "Stored canonically in inches";
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public double HeightInInches { get; set; }
+    [Parameter] public EventCallback<double> HeightInInchesChanged { get; set; }
+
+    private string _unit = "ft-in";
+    private int _feet;
+    private int _inches;
+    private double _cm;
+
+    protected override void OnParametersSet()
+    {
+        // sync display with canonical inches
+        if (_unit == "ft-in")
+        {
+            _feet = (int)Math.Floor(HeightInInches / 12.0);
+            _inches = (int)Math.Round(HeightInInches - _feet * 12);
+        }
+        else
+        {
+            _cm = HeightInInches * 2.54;
+        }
+    }
+
+    private async Task OnFtInChanged()
+    {
+        var inches = (_feet * 12) + _inches;
+        await HeightInInchesChanged.InvokeAsync(inches);
+    }
+
+    private async Task OnCmChanged(double v)
+    {
+        var inches = v / 2.54;
+        await HeightInInchesChanged.InvokeAsync(inches);
+    }
+
+    private void OnUnitChanged(string unit)
+    {
+        _unit = unit;
+        StateHasChanged();
+    }
+
+    private string PaperClass => $"pa-4 ma-2 {Class}";
+}

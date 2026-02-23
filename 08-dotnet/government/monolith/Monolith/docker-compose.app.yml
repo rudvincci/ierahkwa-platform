@@ -1,0 +1,88 @@
+name: mamey-government
+
+services:
+  government-portal:
+    build:
+      context: ../..
+      dockerfile: Mamey.Government/Monolith/src/Bootstrapper/Mamey.Government.BlazorServer/Dockerfile
+    container_name: mamey-government-portal
+    restart: unless-stopped
+    environment:
+      # ASP.NET Core settings
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Docker}
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      ASPNETCORE_HTTPS_PORT: 443
+      # Kestrel HTTPS certificate (using existing localhost.pfx)
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${CERT_PASSWORD:-supersecret}
+      # Application settings (override for Docker)
+      app__name: Mamey Government Portal
+      app__domain: localhost
+      # Database connections (Docker service names)
+      postgres__connectionString: Host=postgres;Database=mamey_government;Username=admin;Password=secret;Port=5432
+      mongo__connectionString: mongodb://root:secret@mongo:27017/?authSource=admin
+      mongo__database: mamey_government
+      redis__connectionString: redis
+      redis__instance: mamey-government:
+      # Seq logging
+      logger__seq__enabled: "true"
+      logger__seq__url: http://seq:80
+      # Vault (disabled by default in Docker)
+      vault__enabled: "false"
+      vault__url: http://vault:8200
+      vault__token: secret
+      # Email (MailHog for development)
+      email__mailkit__smtp: mailhog
+      email__mailkit__port: "1025"
+      email__mailkit__useSsl: "false"
+      # Authentik OIDC
+      Authentication__Authentik__Authority: ${AUTHENTIK_AUTHORITY:-https://localhost:9444/application/o/mamey-government/}
+      Authentication__Authentik__ClientId: ${AUTHENTIK_CLIENT_ID:-mamey-government-portal}
+      Authentication__Authentik__ClientSecret: ${AUTHENTIK_CLIENT_SECRET:-}
+    ports:
+      - "${APP_HTTPS_PORT:-7295}:443"
+      - "${APP_HTTP_PORT:-5075}:80"
+    volumes:
+      # Mount HTTPS certificate
+      - ./certs:/https:ro
+      # Mount appsettings override for Docker
+      - ./docker/appsettings.Docker.json:/app/appsettings.Docker.json:ro
+    networks:
+      - mamey
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # PostgreSQL for the Government Portal
+  postgres:
+    image: postgres:16-alpine
+    container_name: mamey-government-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: mamey_government
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - government_postgres_data:/var/lib/postgresql/data
+    networks:
+      - mamey
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d mamey_government"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  mamey:
+    name: mamey
+    external: true
+
+volumes:
+  government_postgres_data:

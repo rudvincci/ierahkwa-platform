@@ -1,0 +1,147 @@
+@page "/cockleshell-bay/citizenship-programs"
+@using Mamey.ApplicationName.BlazorWasm.Models
+@using Mamey.ApplicationName.BlazorWasm.Components.Shared
+@using Mamey.BlazorWasm.Models
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="citizenship-programs-page-container">
+    <!-- Header Section -->
+    <MudPaper Class="header-section" Elevation="0">
+        <h1 class="page-title animate-slide-in">St. Kitts and Ierahkwa Citizenship Programs</h1>
+        <p class="page-subtitle animate-fade-in">
+            Unique Opportunities for Investment and Cultural Engagement
+        </p>
+    </MudPaper>
+
+    <!-- Introduction Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Overview</h2>
+            <p class="section-content animate-fade-in">
+                The St. Kitts and Ierahkwa citizenship programs offer individuals an opportunity to invest in culturally rich and sustainable communities.
+                These programs prioritize economic growth, environmental sustainability, and cultural preservation, creating a unique platform for meaningful
+                engagement.
+            </p>
+        </MudPaper>
+    </section>
+
+    <!-- Key Features Section -->
+    <CardHighlight Items="GetKeyFeatures()" />
+
+    <!-- How to Apply Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">How to Apply</h2>
+            <ol class="steps-list animate-fade-in">
+                
+                <li>
+                    Choose the citizenship program that aligns with your goals—investment in real estate, community projects, or other initiatives.
+                </li>
+                <li>
+                    Complete the application process through our secure platform and provide the required documentation.
+                </li>
+                <li>
+                    Finalize your investment, which will be allocated to projects supporting community development and sustainability.
+                </li>
+                <li>
+                    Receive your citizenship and start participating in governance and community-driven initiatives.
+                </li>
+            </ol>
+        </MudPaper>
+    </section>
+
+    <!-- Why Choose Our Programs Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper d-flex flex-column align-center justify-center px-4 py-4">
+            <h2 class="section-title animate-slide-in">Why Choose Our Programs?</h2>
+            <MudGrid Class="pa-8">
+                @foreach (var item in GetWhyChoose())
+                {
+                    <MudItem xs="12" md="6" lg="4">
+                        <MudPaper Elevation="25" Class="d-flex flex-column align-center justify-center px-4 py-4" Height="125px">
+                            <MudStack Row="true">
+                                <MudIcon Class="align-content-center justify-center" Icon="@item.Icon" Color="Color.Primary" Size="Size.Large"/>
+                                <MudText Class="align-content-center justify-center px-2 py-2" Typo="Typo.body1">@item.Text</MudText>
+                            </MudStack>
+                        </MudPaper>
+                    </MudItem>
+                }
+            
+                
+            </MudGrid>
+            @* <ul class="benefits-list animate-fade-in"> *@
+            @*     <li>Contribute to transformative change in Indigenous and local communities.</li> *@
+            @*     <li>Enjoy exclusive benefits like access to eco-friendly real estate and cultural immersion programs.</li> *@
+            @*     <li>Foster connections with global networks and business opportunities.</li> *@
+            @*     <li>Be part of a sustainable and culturally rich community.</li> *@
+            @* </ul> *@
+        </MudPaper>
+    </section>
+</MudContainer>
+
+
+@code {
+
+    public class Feature
+    {
+        public string Text { get; set; }
+        public string Icon { get; set; }
+    }
+
+    private List<Feature> GetWhyChoose() => new List<Feature>()
+    {
+        new Feature()
+        {
+            Icon = Icons.Material.Filled.Lightbulb,
+            Text = "Choose the citizenship program that aligns with your goals—investment in real estate, community projects, or other initiatives."
+        },
+        new Feature()
+        {
+            Icon = Icons.Material.Filled.Lightbulb,
+            Text = "Enjoy exclusive benefits like access to eco-friendly real estate and cultural immersion programs."
+        },
+        new Feature()
+        {
+            Icon = Icons.Material.Filled.Lightbulb,
+            Text = "Foster connections with global networks and business opportunities."
+        },
+        new Feature()
+        {
+            Icon = Icons.Material.Filled.Lightbulb,
+            Text = "Be part of a sustainable and culturally rich community."
+        },
+    };
+    private List<FeaturedProduct> GetKeyFeatures()
+    {
+        return new List<FeaturedProduct>()
+        {
+            new FeaturedProduct()
+            {
+                Title = "Economic Development",
+                Description = "Drive local economies by investing in initiatives that prioritize infrastructure development and community growth.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 1,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Sustainable Living",
+                Description = "Participate in projects that promote eco-friendly practices and renewable energy, ensuring long-term environmental benefits.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 2,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Cultural Preservation",
+                Description = "Contribute to the protection and celebration of Indigenous traditions and heritage while engaging with rich cultural histories.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 3,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Global Networking",
+                Description = "Gain access to international business opportunities and networks through strategic investments and collaborations.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 4,
+            },
+        };
+    }
+}

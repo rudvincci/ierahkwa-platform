@@ -1,0 +1,231 @@
+syntax = "proto3";
+
+package mamey.wallet;
+
+// Wallet service for MameyNode blockchain client-side operations
+service WalletService {
+    // Key management
+    rpc GenerateKey(GenerateKeyRequest) returns (GenerateKeyResponse);
+    rpc ImportKey(ImportKeyRequest) returns (ImportKeyResponse);
+    rpc ExportKey(ExportKeyRequest) returns (ExportKeyResponse);
+    rpc ListKeys(ListKeysRequest) returns (ListKeysResponse);
+    rpc MigrateKey(MigrateKeyRequest) returns (MigrateKeyResponse);
+
+    // Signing
+    rpc SignTransaction(SignTransactionRequest) returns (SignTransactionResponse);
+    rpc SignMessage(SignMessageRequest) returns (SignMessageResponse);
+    rpc VerifySignature(VerifySignatureRequest) returns (VerifySignatureResponse);
+
+    // Offline operations
+    rpc CreateOfflineTransaction(CreateOfflineTransactionRequest) returns (CreateOfflineTransactionResponse);
+    rpc BroadcastOfflineTransaction(BroadcastOfflineTransactionRequest) returns (BroadcastOfflineTransactionResponse);
+
+    // Biometric hooks
+    rpc RegisterBiometric(RegisterBiometricRequest) returns (RegisterBiometricResponse);
+    rpc VerifyBiometric(VerifyBiometricRequest) returns (VerifyBiometricResponse);
+}
+
+// Key management messages
+message GenerateKeyRequest {
+    // Examples:
+    // - \"ed25519\", \"secp256k1\"
+    // - \"ml-dsa-44\", \"ml-dsa-65\", \"ml-dsa-87\"
+    // - \"ml-kem-512\", \"ml-kem-768\", \"ml-kem-1024\"
+    // - \"hybrid-rsa-mldsa65\", \"hybrid-ecdsa-mldsa65\"
+    string key_type = 1;
+    string algorithm = 2;
+    string password = 3; // Optional encryption
+
+    // When true, generate a PQC or hybrid key and link it to legacy_key_id
+    // to support migration from classical keys.
+    bool enable_migration_mode = 4;
+
+    // Optional existing classical key being migrated/upgraded.
+    string legacy_key_id = 5;
+}
+
+message GenerateKeyResponse {
+    string public_key = 1;
+    string key_id = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message ImportKeyRequest {
+    string private_key = 1; // Hex or PEM
+    string password = 2; // For encryption
+    string name = 3;
+}
+
+message ImportKeyResponse {
+    string key_id = 1;
+    string public_key = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message ExportKeyRequest {
+    string key_id = 1;
+    string password = 2; // For decryption
+}
+
+message ExportKeyResponse {
+    string private_key = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ListKeysRequest {
+    uint32 limit = 1;
+    uint32 offset = 2;
+}
+
+message ListKeysResponse {
+    repeated KeyInfo keys = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message KeyInfo {
+    string key_id = 1;
+    string public_key = 2;
+    string algorithm = 3;
+    uint64 created_at = 4;
+
+    // Indicates whether this key is quantum-resistant (PQC or hybrid).
+    bool quantum_resistant = 5;
+
+    // NIST standardization status, e.g. \"FIPS 204\", \"draft\", \"candidate\".
+    string nist_status = 6;
+
+    // Qualitative security level (e.g. 1, 3, 5 for ML-DSA/ML-KEM).
+    int32 security_level = 7;
+
+    // For hybrid deployments, links between classical and PQ keys.
+    string linked_classical_key_id = 8;
+    string linked_pq_key_id = 9;
+}
+
+// Key migration messages
+message MigrateKeyRequest {
+    // Existing classical key being migrated.
+    string classical_key_id = 1;
+
+    // Target PQC or hybrid algorithm, e.g. \"ml-dsa-65\" or \"hybrid-rsa-mldsa65\".
+    string target_algorithm = 2;
+
+    // Optional password used to unlock and/or re-encrypt keys.
+    string password = 3;
+
+    // When true, keep the classical key alongside the new PQC/hybrid key.
+    bool keep_classical = 4;
+}
+
+message KeyMigrationInfo {
+    string classical_key_id = 1;
+    string pq_key_id = 2;
+    string classical_algorithm = 3;
+    string pq_algorithm = 4;
+    uint64 requested_at = 5;
+    uint64 completed_at = 6;
+    bool hybrid_mode_enabled = 7;
+}
+
+message MigrateKeyResponse {
+    string new_key_id = 1;
+    string public_key = 2;
+    bool success = 3;
+    string error_message = 4;
+    KeyMigrationInfo migration_info = 5;
+}
+
+// Signing messages
+message SignTransactionRequest {
+    string key_id = 1;
+    bytes transaction_data = 2;
+    string password = 3; // If encrypted
+}
+
+message SignTransactionResponse {
+    bytes signature = 1;
+    bytes signed_transaction = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message SignMessageRequest {
+    string key_id = 1;
+    bytes message = 2;
+    string password = 3;
+}
+
+message SignMessageResponse {
+    bytes signature = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message VerifySignatureRequest {
+    string public_key = 1;
+    bytes message = 2;
+    bytes signature = 3;
+}
+
+message VerifySignatureResponse {
+    bool valid = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Offline operations
+message CreateOfflineTransactionRequest {
+    string from_account = 1;
+    string to_account = 2;
+    string amount = 3;
+    string currency = 4;
+    uint64 nonce = 5;
+    string block_hash = 6; // Recent block hash
+}
+
+message CreateOfflineTransactionResponse {
+    bytes unsigned_transaction = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message BroadcastOfflineTransactionRequest {
+    bytes signed_transaction = 1;
+}
+
+message BroadcastOfflineTransactionResponse {
+    string transaction_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Biometric hooks
+message RegisterBiometricRequest {
+    string key_id = 1;
+    string biometric_type = 2; // "fingerprint", "face", "iris"
+    bytes biometric_data = 3; // Template or public key of authenticator
+}
+
+message RegisterBiometricResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message VerifyBiometricRequest {
+    string key_id = 1;
+    bytes biometric_proof = 2;
+}
+
+message VerifyBiometricResponse {
+    bool verified = 1;
+    string token = 2; // Temporary auth token
+    bool success = 3;
+    string error_message = 4;
+}
+
+

@@ -1,0 +1,98 @@
+@page "/biis/cross-border"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IBIISClient BIISClient
+@inject ILogger<CrossBorder> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Cross-Border Settlement" Icon="fas fa-plane" Subtitle="International settlement operations">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Settlements" Value="@_settlements.Count.ToString()" Icon="fas fa-globe" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Amount" Value="@_totalAmount.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Completed" Value="@_completedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Cross-Border Settlements" Class="mt-4">
+        <MudTable T="CrossBorderSettlementInfo" Items="@_settlements" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Settlement ID</MudTh>
+                <MudTh>Source Bank</MudTh>
+                <MudTh>Target Bank</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Currency</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+                <MudTh>Processed</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.SettlementId</MudTd>
+                <MudTd>@context.SourceBank</MudTd>
+                <MudTd>@context.TargetBank</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Completed" ? Color.Success : context.Status == "Pending" ? Color.Warning : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@(context.ProcessedAt?.ToString("yyyy-MM-dd") ?? "-")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<CrossBorderSettlementInfo> _settlements = new();
+    private decimal _totalAmount;
+    private int _completedCount;
+    private int _pendingCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _settlements = await BIISClient.GetCrossBorderSettlementsAsync();
+            _totalAmount = _settlements.Where(s => s.Status == "Completed").Sum(s => decimal.Parse(s.Amount));
+            _completedCount = _settlements.Count(s => s.Status == "Completed");
+            _pendingCount = _settlements.Count(s => s.Status == "Pending");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading cross-border settlements");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

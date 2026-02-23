@@ -1,0 +1,47 @@
+microservices:
+  common:
+    env:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      vaultTokenSecretName: "vault-token"
+      vaultToken: "my-default-vault-token"  # Override in production with your secure value.
+  services:
+    mamey-bank-gateway:
+      replicaCount: 2
+      image: "mamey-io/mamey-bank-gateway:latest"
+      service:
+        port: 80
+    mamey-identity:
+      replicaCount: 2
+      image: "mamey-io/mamey-identity:latest"
+      service:
+        port: 80
+    mamey-organizations:
+      replicaCount: 2
+      image: "mamey-io/mamey-organizations:latest"
+      service:
+        port: 80
+    mamey-people:
+      replicaCount: 2
+      image: "mamey-io/mamey-people:latest"
+      service:
+        port: 80
+    mamey-kycs:
+      replicaCount: 2
+      image: "mamey-io/mamey-kycs:latest"
+      service:
+        port: 80
+    mamey-employees:
+      replicaCount: 2
+      image: "mamey-io/mamey-employees:latest"
+      service:
+        port: 80
+    mamey-accounts:
+      replicaCount: 2
+      image: "mamey-io/mamey-accounts:latest"
+      service:
+        port: 80
+    mamey-notifications:
+      replicaCount: 2
+      image: "mamey-io/mamey-notifications:latest"
+      service:
+        port: 80

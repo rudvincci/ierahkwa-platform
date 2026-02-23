@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "infra.fullname" . }}-fabio
+  labels:
+    app: fabio
+spec:
+  replicas: {{ .Values.fabio.replicaCount }}
+  selector:
+    matchLabels:
+      app: fabio
+  template:
+    metadata:
+      labels:
+        app: fabio
+    spec:
+      containers:
+      - name: fabio
+        image: "{{ .Values.fabio.image }}"
+        imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+        env:
+        - name: FABIO_REGISTRY_CONSUL_ADDR
+          value: "{{ .Values.fabio.env.FABIO_REGISTRY_CONSUL_ADDR }}"
+        ports:
+        - containerPort: {{ .Values.fabio.port }}
+        - containerPort: {{ index .Values.fabio.extraPorts 0 | default 9999 }}
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.fabio.port }}
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.fabio.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+          requests:
+            cpu: "150m"
+            memory: "128Mi"

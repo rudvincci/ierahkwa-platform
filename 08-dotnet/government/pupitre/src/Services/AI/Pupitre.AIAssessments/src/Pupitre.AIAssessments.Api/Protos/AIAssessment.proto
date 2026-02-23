@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.AIAssessments.Api.Protos";
+
+package Pupitre.AIAssessments;
+
+// gRPC service for AIAssessment operations
+service AIAssessmentService {
+    // Get a single AIAssessment by ID
+    rpc GetAIAssessment (GetAIAssessmentRequest) returns (AIAssessmentResponse) {};
+    
+    // List all AIAssessments with pagination
+    rpc ListAIAssessments (ListAIAssessmentsRequest) returns (ListAIAssessmentsResponse) {};
+    
+    // Stream AIAssessment updates
+    rpc StreamAIAssessmentUpdates (StreamAIAssessmentUpdatesRequest) returns (stream AIAssessmentResponse) {};
+}
+
+message GetAIAssessmentRequest {
+    string id = 1;
+}
+
+message ListAIAssessmentsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListAIAssessmentsResponse {
+    repeated AIAssessmentResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message AIAssessmentResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamAIAssessmentUpdatesRequest {
+    string filter = 1;
+}

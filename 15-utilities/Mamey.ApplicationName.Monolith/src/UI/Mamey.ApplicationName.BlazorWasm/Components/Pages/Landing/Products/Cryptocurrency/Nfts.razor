@@ -1,0 +1,71 @@
+@page "/products/crypto/nfts"
+@using Mamey.BlazorWasm.Models
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="nfts-page-container">
+    <!-- Header Section -->
+    <MudPaper Class="header-section" Elevation="0">
+        <h1 class="page-title animate-slide-in">NFTs and Cultural Representation</h1>
+        <p class="page-subtitle animate-fade-in">
+            Preserving Indigenous Heritage Through Digital Innovation
+        </p>
+    </MudPaper>
+
+    <!-- Introduction Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">What are NFTs?</h2>
+            <p class="section-content animate-fade-in">
+                Non-Fungible Tokens (NFTs) are unique digital assets that represent ownership of digital or physical items. In our ecosystem, NFTs empower Indigenous artists and creators to preserve cultural heritage while monetizing their work.
+            </p>
+        </MudPaper>
+    </section>
+
+    <!-- Benefits of NFTs Section -->
+    <section class="section">
+        <CardHighlight Items="GetNFTBenefits()" />
+        
+    </section>
+
+    <!-- How to Participate Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">How to Get Involved</h2>
+            <ul class="participation-list animate-fade-in">
+                <li>Support Indigenous artists by purchasing NFTs from our platform.</li>
+                <li>Collaborate with artists to bring new cultural artifacts into the digital space.</li>
+                <li>Share and promote the significance of these digital creations globally.</li>
+            </ul>
+        </MudPaper>
+    </section>
+</MudContainer>
+
+
+@code {
+    private List<FeaturedProduct> GetNFTBenefits()
+    {
+        return new List<FeaturedProduct>()
+        {
+            new FeaturedProduct()
+            {
+                Title = "Digital Ownership",
+                Description = "NFTs allow Indigenous creators to maintain ownership of their cultural artifacts and digital artworks, ensuring authenticity and value.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 1,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Cultural Representation",
+                Description = "NFTs promote the stories and traditions of Indigenous communities in the digital realm, fostering cultural appreciation and recognition.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 2,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Financial Empowerment",
+                Description = "By selling NFTs, Indigenous artists can generate income while ensuring their work reaches global audiences.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 3,
+            },
+        };
+    }
+}

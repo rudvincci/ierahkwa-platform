@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pupitre-ai
+  labels:
+    app.kubernetes.io/name: pupitre
+    app.kubernetes.io/component: ai
+    app.kubernetes.io/part-of: pupitre-platform
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: ai-quota
+  namespace: pupitre-ai
+spec:
+  hard:
+    requests.cpu: "40"
+    requests.memory: 80Gi
+    limits.cpu: "80"
+    limits.memory: 160Gi
+    pods: "100"
+    requests.nvidia.com/gpu: "4"
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: ai-limits
+  namespace: pupitre-ai
+spec:
+  limits:
+    - default:
+        cpu: "2"
+        memory: 4Gi
+      defaultRequest:
+        cpu: "500m"
+        memory: 1Gi
+      type: Container

@@ -1,0 +1,39 @@
+@implements IDisposable
+@code {
+    private DateTime _currentDateTime;
+    private System.Timers.Timer? _timer;
+
+    protected override void OnInitialized()
+    {
+        // Initialize the current time
+        _currentDateTime = DateTime.Now;
+
+        // Set up a timer to refresh the time every second
+        _timer = new System.Timers.Timer(1000);
+        _timer.Elapsed += (sender, args) =>
+        {
+            // Update the time
+            InvokeAsync(() =>
+            {
+                _currentDateTime = DateTime.Now;
+                StateHasChanged();
+            });
+        };
+        _timer.Start();
+    }
+
+    public void Dispose()
+    {
+        // Clean up the timer
+        _timer?.Stop();
+        _timer?.Dispose();
+    }
+
+}
+
+<div style="text-align: center; font-family: Arial, sans-serif; padding: 10px;">
+    <h3>Current Day and Time</h3>
+    <p style="font-size: 1.2em; color: #333;">
+        @(_currentDateTime.ToString("dddd, MMMM dd, yyyy - hh:mm:ss tt"))
+    </p>
+</div>

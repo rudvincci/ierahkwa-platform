@@ -1,0 +1,237 @@
+@page "/authority/banks"
+@inject IDIDClient DidClient
+@inject MameyWalletClient WalletClient
+@inject AuthorityRegistryStore Store
+@using System.Security.Cryptography
+
+<PageTitle>Bank Charter Issuance - MameyNode Authority</PageTitle>
+
+<h1>Bank Institutions</h1>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5>Issue Bank Charter (Government → Bank)</h5>
+    </div>
+    <div class="card-body">
+        @if (_registry is null)
+        {
+            <p class="text-muted">Loading...</p>
+        }
+        else if (_registry.Governments.Count == 0)
+        {
+            <div class="alert alert-warning">
+                No governments available. Onboard a government first.
+            </div>
+        }
+        else
+        {
+            <div class="mb-3">
+                <label class="form-label">Issuing Government</label>
+                <select class="form-select" @bind="_issuerDid">
+                    @foreach (var g in _registry.Governments.OrderBy(x => x.Jurisdiction))
+                    {
+                        <option value="@g.Did">@g.Jurisdiction — @g.Did</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Bank Jurisdiction</label>
+                <input class="form-control" @bind="_bankJurisdiction" placeholder="e.g. US-NY, CA-BC" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Charter Number</label>
+                <input class="form-control" @bind="_charterNumber" placeholder="e.g. CHARTER-0001" />
+            </div>
+
+            <button class="btn btn-primary" @onclick="IssueCharterAsync" disabled="@_busy">
+                Create Bank (Issue DID + Wallet Key + BankCharterCredential)
+            </button>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="alert alert-danger mt-3">@_error</div>
+        }
+        @if (!string.IsNullOrWhiteSpace(_info))
+        {
+            <div class="alert alert-info mt-3">@_info</div>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>Registered Banks</h5>
+    </div>
+    <div class="card-body">
+        @if (_registry is null)
+        {
+            <p class="text-muted">Loading...</p>
+        }
+        else if (_registry.Banks.Count == 0)
+        {
+            <p class="text-muted">No banks chartered yet.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                    <tr>
+                        <th>DID</th>
+                        <th>Jurisdiction</th>
+                        <th>Wallet Key</th>
+                        <th>Created</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var b in _registry.Banks.OrderByDescending(x => x.CreatedAt))
+                    {
+                        <tr>
+                            <td><code>@b.Did</code></td>
+                            <td>@b.Jurisdiction</td>
+                            <td><code>@b.WalletKeyId</code></td>
+                            <td>@b.CreatedAt.ToString("u")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private AuthorityRegistry? _registry;
+    private bool _busy;
+    private string? _issuerDid;
+    private string _bankJurisdiction = "US-NY";
+    private string _charterNumber = "CHARTER-0001";
+    private string? _error;
+    private string? _info;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _registry = await Store.LoadAsync();
+        _issuerDid = _registry.Governments.FirstOrDefault()?.Did;
+    }
+
+    private async Task IssueCharterAsync()
+    {
+        _busy = true;
+        _error = null;
+        _info = null;
+
+        try
+        {
+            _registry ??= await Store.LoadAsync();
+            if (string.IsNullOrWhiteSpace(_issuerDid))
+            {
+                _error = "Issuing government must be selected.";
+                return;
+            }
+
+            var issuer = _registry.Governments.First(g => g.Did == _issuerDid);
+
+            var controller = $"bank_{NormalizeControllerComponent(_bankJurisdiction)}".ToLowerInvariant();
+            var didResult = await DidClient.IssueDIDAsync(controller);
+            if (!didResult.Success || string.IsNullOrWhiteSpace(didResult.DID))
+            {
+                _error = didResult.ErrorMessage ?? "Failed to issue DID.";
+                return;
+            }
+
+            var walletResp = await WalletClient.Client.GenerateKeyAsync(new GenerateKeyRequest
+            {
+                KeyType = "ed25519",
+                Algorithm = "ed25519",
+                Password = "",
+                EnableMigrationMode = false,
+                LegacyKeyId = ""
+            });
+            if (!walletResp.Success || string.IsNullOrWhiteSpace(walletResp.KeyId) || string.IsNullOrWhiteSpace(walletResp.PublicKey))
+            {
+                _error = walletResp.ErrorMessage ?? "Failed to generate wallet key for bank.";
+                return;
+            }
+
+            var bank = new BankInstitutionRecord(
+                Did: didResult.DID!,
+                Jurisdiction: _bankJurisdiction.Trim(),
+                WalletKeyId: walletResp.KeyId,
+                WalletPublicKey: walletResp.PublicKey,
+                CreatedAt: DateTimeOffset.UtcNow);
+            _registry.Banks.Add(bank);
+
+            // Issue BankCharterCredential (signed by Government wallet key)
+            var credId = Guid.NewGuid().ToString("N");
+            var capabilities = new List<string>
+            {
+                "cap.banking.payments.initiate",
+                "cap.banking.accounts.create"
+            };
+            var credentialPayload = $"bank_charter|{credId}|{issuer.Did}|{bank.Did}|{bank.Jurisdiction}|{_charterNumber}|{string.Join(',', capabilities)}|{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+            var sigResp = await WalletClient.Client.SignMessageAsync(new SignMessageRequest
+            {
+                KeyId = issuer.WalletKeyId,
+                Message = Google.Protobuf.ByteString.CopyFromUtf8(credentialPayload),
+                Password = ""
+            });
+            if (!sigResp.Success)
+            {
+                _error = $"Failed to sign BankCharterCredential: {sigResp.ErrorMessage}";
+                return;
+            }
+
+            var sigBytes = sigResp.Signature.ToByteArray();
+            if (sigBytes.Length == 0)
+            {
+                _error = "BankCharterCredential signature was empty.";
+                return;
+            }
+
+            _registry.BankCharterCredentials.Add(new BankCharterCredentialRecord(
+                Id: credId,
+                IssuerDid: issuer.Did,
+                SubjectDid: bank.Did,
+                IssuedAt: DateTimeOffset.UtcNow,
+                ExpiresAt: null,
+                Capabilities: capabilities,
+                CharterNumber: _charterNumber.Trim(),
+                Jurisdiction: bank.Jurisdiction,
+                SignatureHex: Convert.ToHexString(sigBytes).ToLowerInvariant(),
+                PublicKeyId: issuer.WalletKeyId
+            ));
+
+            await Store.SaveAsync(_registry);
+            _info = $"Chartered bank {bank.Did} and issued BankCharterCredential {credId}.";
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private static string NormalizeControllerComponent(string value)
+    {
+        // Node validation allows only [A-Za-z0-9_-]
+        var chars = value.Trim().ToCharArray();
+        for (var i = 0; i < chars.Length; i++)
+        {
+            var c = chars[i];
+            var ok = char.IsLetterOrDigit(c) || c is '_' or '-';
+            if (!ok)
+            {
+                chars[i] = '_';
+            }
+        }
+        return new string(chars);
+    }
+}
+

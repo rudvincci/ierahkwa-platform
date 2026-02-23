@@ -1,0 +1,41 @@
+﻿ 
+@page "/auth-response"
+@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager NavManager
+<h3>Component1</h3>
+Access Token: @AccessToken
+<br />
+Token Type:   @TokenType
+<br />
+ExpiresIn:    @ExpiresIn
+<br />
+IdToken:      @IdToken
+<br />
+
+@code {
+    [SupplyParameterFromQuery(Name = "access_token")]
+    public string? AccessToken { get; set; }
+    [SupplyParameterFromQuery(Name = "token_type")]
+    public string? TokenType { get; set; }
+    [SupplyParameterFromQuery(Name = "expires_in")]
+    public long? ExpiresIn { get; set; }
+    [SupplyParameterFromQuery(Name = "id_token")]
+    public string? IdToken { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("access_token", out var _accessToken))
+        {
+            AccessToken = _accessToken;
+            
+            //currentCount = Convert.ToInt32(_initialCount);
+        }
+    }
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+}
+ 

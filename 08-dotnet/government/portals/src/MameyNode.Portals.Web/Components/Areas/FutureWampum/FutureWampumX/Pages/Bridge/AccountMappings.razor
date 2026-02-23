@@ -1,0 +1,94 @@
+@page "/bridge/account-mappings"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<AccountMappings> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Account Mappings" Icon="fas fa-users" Subtitle="Account mapping management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Mappings" Value="@_mappings.Count.ToString()" Icon="fas fa-users" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Chains" Value="@_chainCount.ToString()" Icon="fas fa-link" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Verified" Value="@_verifiedCount.ToString()" Icon="fas fa-shield-alt" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Account Mappings" Class="mt-4">
+        <MudTable T="AccountMappingInfo" Items="@_mappings" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Mapping ID</MudTh>
+                <MudTh>Banking Account</MudTh>
+                <MudTh>Blockchain Account</MudTh>
+                <MudTh>Account Type</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.MappingId</MudTd>
+                <MudTd>@context.BankingAccountId</MudTd>
+                <MudTd>@context.BlockchainAccount</MudTd>
+                <MudTd>@context.AccountType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == MappingStatus.Active ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<AccountMappingInfo> _mappings = new();
+    private int _activeCount;
+    private int _chainCount;
+    private int _verifiedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _mappings = await FutureWampumXClient.GetAccountMappingsAsync();
+            _activeCount = _mappings.Count(m => m.Status == MappingStatus.Active);
+            _chainCount = _mappings.Select(m => m.AccountType).Distinct().Count();
+            _verifiedCount = _mappings.Count(m => m.Status == MappingStatus.Active);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading account mappings");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

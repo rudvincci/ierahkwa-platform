@@ -1,0 +1,175 @@
+﻿@* @page "/register" *@
+@* @using System.ComponentModel.DataAnnotations *@
+@* @using System.Net *@
+@* *@
+@* @#1#inject NotificationService NotificationService#1# *@
+@* @inject IUsersService UsersService *@
+@* @inject IApiResponseHandler ApiResponseHandler *@
+@* @inject NavigationManager NavigationManager *@
+@* @inject IConfiguration Configuration *@
+@* *@
+@* <h2>Register</h2> *@
+@* *@
+@* @*<Title Level="3">Register</Title> *@
+@* *@
+@*     <Row> *@
+@*         <Col Span="12"> *@
+@*         <Form Loading="_loading" Model="@_registerModel" Style="padding-top: 50px" *@
+@*               LabelCol="new ColLayoutParam {Span = 8}" *@
+@*               WrapperCol="new ColLayoutParam {Span = 16}" *@
+@*               OnFinish="RegisterAsync"> *@
+@*             <FormItem Label="Email"> *@
+@*                 <Input @bind-Value="@context.Email" /> *@
+@*             </FormItem> *@
+@*             <FormItem Label="First Name"> *@
+@*                 <Input @bind-Value="@context.FirstName" /> *@
+@*             </FormItem> *@
+@*             <FormItem Label="Last name"> *@
+@*                 <Input @bind-Value="@context.LastName+-" /> *@
+@*             </FormItem> *@
+@*             <FormItem Label="Password"> *@
+@*                 <InputPassword @bind-Value="@context.Password" /> *@
+@*             </FormItem> *@
+@*             <FormItem Label="Role"> *@
+@*                 <Select DefaultValue=@("user") Style="width:200px" @bind-Value="@context.Role"> *@
+@*                     <SelectOption Value="user">User</SelectOption> *@
+@*                     <SelectOption Value="admin">Admin</SelectOption> *@
+@*                 </Select> *@
+@*             </FormItem> *@
+@*             <FormItem WrapperCol="new ColLayoutParam {Offset = 8, Span = 16}"> *@
+@*                 <Button Type="@ButtonType.Primary" HtmlType="submit"> *@
+@*                     Register *@
+@*                 </Button> *@
+@*             </FormItem> *@
+@*         </Form> *@
+@*         <Text Style="padding: 50px">Already have an account? Click <a href="/login">here</a> to login.</Text> *@
+@*         </Col> *@
+@*     </Row>*@ 
+@* *@
+@* <style> *@
+@*     form .row { *@
+@*         margin-bottom: 16px; *@
+@*     } *@
+@* </style> *@
+@* *@
+@* @if (_registerModel == null) *@
+@* { *@
+@*     <p><em>Loading...</em></p> *@
+@* } *@
+@* else *@
+@* { *@
+@*     @*<RadzenTemplateForm Data="@_registerModel"> *@
+@*             <div class="row justify-content-center"> *@
+@*                 <div class="col-md-6"> *@
+@*                     <RadzenFieldset> *@
+@*                         <div class="row"> *@
+@*                             <div class="col-md-4 align-items-center d-flex"> *@
+@*                                 <RadzenLabel Text="Email" /> *@
+@*                             </div> *@
+@*                             <div class="col-md-8"> *@
+@*                                 <RadzenTextBox style="width: 100%;" Name="Email" @bind-Value="_registerModel.Email" /> *@
+@*                             </div> *@
+@*                         </div> *@
+@*                         <div class="row"> *@
+@*                             <div class="col-md-4 align-items-center d-flex"> *@
+@*                                 <RadzenLabel Text="First Name" /> *@
+@*                             </div> *@
+@*                             <div class="col-md-8"> *@
+@*                                 <RadzenTextBox style="width: 100%;" Name="FirstName" @bind-Value="_registerModel.FirstName" /> *@
+@*                             </div> *@
+@*                         </div> *@
+@*                         <div class="row"> *@
+@*                             <div class="col-md-4 align-items-center d-flex"> *@
+@*                                 <RadzenLabel Text="Last Name" /> *@
+@*                             </div> *@
+@*                             <div class="col-md-8"> *@
+@*                                 <RadzenTextBox style="width: 100%;" Name="LastName" @bind-Value="_registerModel.LastName" /> *@
+@*                             </div> *@
+@*                         </div> *@
+@*                         <div class="row"> *@
+@*                             <div class="col-md-4 align-items-center d-flex"> *@
+@*                                 <RadzenLabel Text="Password" /> *@
+@*                             </div> *@
+@*                             <div class="col-md-8"> *@
+@*                                 <RadzenPassword style="width: 100%;" Name="Password" @bind-Value="_registerModel.Password" /> *@
+@*                             </div> *@
+@*                         </div> *@
+@*                     </RadzenFieldset> *@
+@*                 </div> *@
+@*             </div> *@
+@*             <div class="row justify-content-center"> *@
+@*                 <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;"> *@
+@*                     <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" IsBusy="_loading" Click="@RegisterAsync" Text="Register" /> *@
+@*                     <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Secondary" Click="@Cancel" Text="Cancel" /> *@
+@*                 </div> *@
+@*             </div> *@
+@*         </RadzenTemplateForm>*@
+@* } *@
+@* *@
+@* @code *@
+@* { *@
+@*     private class RegisterModel *@
+@*     { *@
+@*         @*[Required] *@
+@*             public Guid OrganizationId { get; set; }*@ 
+@*         [Required] *@
+@*         [EmailAddress] *@
+@*         public string Email { get; set; } *@
+@* *@
+@*         [Required] *@
+@*         public string FirstName { get; set; } *@
+@* *@
+@*         [Required] *@
+@*         public string LastName { get; set; } *@
+@* *@
+@*         [Required] *@
+@*         public string Password { get; set; } *@
+@*     } *@
+@* *@
+@*     private bool _loading; *@
+@*     private readonly RegisterModel _registerModel = new(); *@
+@* *@
+@*     private async Task RegisterAsync() *@
+@*     { *@
+@*         try *@
+@*         { *@
+@*             _loading = true; *@
+@*             var response = await ApiResponseHandler.HandleAsync(UsersService.RegisterAsync(new RegisterRequest *@
+@*             { *@
+@*                 //OrganizationId = Configuration.GetValue<Guid>("app:organizationId"), *@
+@*                 Email = _registerModel.Email, *@
+@*                 FirstName = _registerModel.FirstName, *@
+@*                 LastName = _registerModel.LastName, *@
+@*                 Password = _registerModel.Password *@
+@*             })); *@
+@* *@
+@*             _loading = false; *@
+@* *@
+@*             if (response is null || response.HttpResponse.StatusCode == HttpStatusCode.BadGateway) *@
+@*             { *@
+@*                 $1$NotificationService.Notify(NotificationSeverity.Error, response.Error.Code, response.Error.Reason);#1# *@
+@*                 return; *@
+@*             } *@
+@* *@
+@*             if (response.Succeeded) *@
+@*             { *@
+@*                 _registerModel.Email = default; *@
+@*                 _registerModel.FirstName = default; *@
+@*                 _registerModel.LastName = default; *@
+@*                 _registerModel.Password = default; *@
+@*                 $1$NotificationService.Notify(NotificationSeverity.Success, "Account has been created.", "");#1# *@
+@*             } *@
+@*         } *@
+@*         catch (Exception ex) *@
+@*         { *@
+@*             $1$NotificationService.Notify(NotificationSeverity.Error, ex.Message, "");#1# *@
+@*             _loading = false; *@
+@*         } *@
+@* *@
+@*     } *@
+@* *@
+@*     private void Cancel() *@
+@*     { *@
+@*         NavigationManager.NavigateTo("/"); *@
+@*     } *@
+@* } *@

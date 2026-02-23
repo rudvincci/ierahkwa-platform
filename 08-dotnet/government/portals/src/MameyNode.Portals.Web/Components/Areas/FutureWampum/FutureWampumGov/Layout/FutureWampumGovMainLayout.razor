@@ -1,0 +1,51 @@
+@* FutureWampumGovMainLayout.razor *@
+@using MameyNode.Portals.Web.Components.Areas.FutureWampum.FutureWampumGov.Layout
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_theme" IsDarkMode="true" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudBreakpointProvider>
+<MudLayout>
+    <MudAppBar Elevation="0" Class="mud-appbar-glass">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h6" Class="ml-3">FutureWampumGov</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/Mamey-io/Mamey" Target="_blank" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Always" Class="mud-drawer-glass">
+        <FutureWampumGovNavLayout DrawerOpen="_drawerOpen" />
+    </MudDrawer>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+</MudBreakpointProvider>
+
+@code {
+    bool _drawerOpen = true;
+    private MudTheme _theme = new MudTheme()
+    {
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#6366F1", // Indigo - for government financial theme
+            Secondary = "#8B5CF6", // Purple
+            Tertiary = "#3B82F6", // Blue
+            AppbarBackground = "rgba(55, 48, 163, 0.8)", // Indigo glass
+            Background = "#3730A3", // Indigo 800
+            Surface = "rgba(99, 102, 241, 0.6)", // Indigo glass
+            DrawerBackground = "rgba(55, 48, 163, 0.9)", // Dark glass
+            DrawerText = "#E0E7FF", // Indigo 100
+            TextPrimary = "#F8FAFC",
+            TextSecondary = "#A5B4FC",
+        }
+    };
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

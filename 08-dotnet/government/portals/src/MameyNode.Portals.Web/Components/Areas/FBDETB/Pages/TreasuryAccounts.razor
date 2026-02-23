@@ -1,0 +1,29 @@
+@page "/banking/treasury-accounts"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFBDETBClient FBDETBClient
+@inject ILogger<TreasuryAccounts> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Treasury Accounts" Icon="fas fa-vault" Subtitle="Treasury account management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <CardContainer Title="Treasury Accounts" Class="mt-4">
+        <MudText Typo="Typo.body1">Treasury account management and monitoring.</MudText>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private async Task RefreshData()
+    {
+        StateHasChanged();
+    }
+}
+

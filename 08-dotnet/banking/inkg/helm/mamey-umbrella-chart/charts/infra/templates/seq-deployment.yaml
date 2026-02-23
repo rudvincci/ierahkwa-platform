@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "infra.fullname" . }}-seq
+  labels:
+    app: seq
+spec:
+  replicas: {{ .Values.seq.replicaCount }}
+  selector:
+    matchLabels:
+      app: seq
+  template:
+    metadata:
+      labels:
+        app: seq
+    spec:
+      containers:
+      - name: seq
+        image: "{{ .Values.seq.image }}"
+        imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+        env:
+        - name: ACCEPT_EULA
+          value: "{{ .Values.seq.env.ACCEPT_EULA }}"
+        ports:
+        - containerPort: {{ .Values.seq.port }}
+        volumeMounts:
+        - name: seq-data
+          mountPath: /data
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.seq.port }}
+          initialDelaySeconds: 20
+          periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.seq.port }}
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+          requests:
+            cpu: "150m"
+            memory: "128Mi"
+      volumes:
+      - name: seq-data
+        persistentVolumeClaim:
+          claimName: seq-pvc

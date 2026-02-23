@@ -1,0 +1,373 @@
+@using Mamey.FWID.Identities.BlazorWasm.Services
+@inject IBiometricCaptureService BiometricService
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<MudCard Elevation="2" Class="pa-4">
+    <MudText Typo="Typo.h6" Class="mb-3">
+        <MudIcon Icon="@Icons.Material.Filled.Face" Class="mr-2" />
+        Face Capture
+    </MudText>
+
+    @if (!_cameraReady && !_hasError)
+    {
+        <!-- Privacy Notice -->
+        <MudAlert Severity="Severity.Info" Class="mb-4">
+            <MudText Typo="Typo.body2">
+                <strong>Privacy Notice:</strong> Your facial data will be processed locally and only a secure template 
+                will be stored. The original image is never saved.
+            </MudText>
+        </MudAlert>
+
+        <div class="text-center">
+            <MudButton Color="Color.Primary" 
+                       Variant="Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.PhotoCamera"
+                       OnClick="@InitializeCameraAsync"
+                       Disabled="@_isInitializing">
+                @if (_isInitializing)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                Start Camera
+            </MudButton>
+        </div>
+    }
+    else if (_hasError)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">
+            <MudText Typo="Typo.body2">@_errorMessage</MudText>
+        </MudAlert>
+        <MudButton Color="Color.Primary" Variant="Variant.Outlined" OnClick="@RetryAsync">
+            Try Again
+        </MudButton>
+    }
+    else
+    {
+        <!-- Camera View -->
+        <div class="camera-container" style="position: relative; width: 100%; max-width: 480px; margin: 0 auto;">
+            <video id="@_videoId" 
+                   autoplay 
+                   playsinline 
+                   muted
+                   style="width: 100%; border-radius: 8px; transform: scaleX(-1);">
+            </video>
+            
+            <!-- Face Guide Overlay -->
+            <div class="face-guide" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                        width: 60%; height: 75%; border: 3px dashed @GetGuideColor(); border-radius: 50%; 
+                        pointer-events: none;">
+            </div>
+            
+            <!-- Quality Indicator -->
+            @if (_faceQuality != null)
+            {
+                <div style="position: absolute; top: 10px; right: 10px;">
+                    <MudChip T="string" Size="Size.Small" Color="@(_faceQuality.IsValid ? Color.Success : Color.Warning)">
+                        @(_faceQuality.IsValid ? "Good" : "Adjust")
+                    </MudChip>
+                </div>
+            }
+            
+            <!-- Hidden canvas for capture -->
+            <canvas id="@_canvasId" style="display: none;"></canvas>
+        </div>
+
+        <!-- Quality Feedback -->
+        @if (_faceQuality != null && _faceQuality.Issues.Any())
+        {
+            <MudAlert Severity="Severity.Warning" Class="mt-3" Dense="true">
+                @string.Join(". ", _faceQuality.Issues)
+            </MudAlert>
+        }
+
+        <!-- Liveness Check Progress -->
+        @if (_isPerformingLiveness)
+        {
+            <LivenessCheck Actions="@_livenessActions"
+                           CurrentAction="@_currentLivenessAction"
+                           CurrentStep="@_livenessStep"
+                           OnComplete="@OnLivenessCompleteAsync" />
+        }
+
+        <!-- Instructions -->
+        <MudText Typo="Typo.body2" Align="Align.Center" Class="mt-3 mud-text-secondary">
+            @GetInstructionText()
+        </MudText>
+
+        <!-- Action Buttons -->
+        <div class="d-flex justify-center gap-3 mt-4">
+            <MudButton Color="Color.Default" 
+                       Variant="Variant.Outlined"
+                       OnClick="@CancelAsync">
+                Cancel
+            </MudButton>
+            
+            @if (!_isPerformingLiveness && !_capturedImage.HasValue)
+            {
+                @if (RequireLiveness)
+                {
+                    <MudButton Color="Color.Primary" 
+                               Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.Security"
+                               OnClick="@StartLivenessCheckAsync"
+                               Disabled="@(!_faceQuality?.IsValid ?? true)">
+                        Start Liveness Check
+                    </MudButton>
+                }
+                else
+                {
+                    <MudButton Color="Color.Primary" 
+                               Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.PhotoCamera"
+                               OnClick="@CaptureAsync"
+                               Disabled="@(!_faceQuality?.IsValid ?? true)">
+                        Capture
+                    </MudButton>
+                }
+            }
+            else if (_capturedImage.HasValue)
+            {
+                <MudButton Color="Color.Warning" 
+                           Variant="Variant.Outlined"
+                           OnClick="@RetakeAsync">
+                    Retake
+                </MudButton>
+                <MudButton Color="Color.Success" 
+                           Variant="Variant.Filled"
+                           OnClick="@ConfirmCaptureAsync">
+                    Confirm
+                </MudButton>
+            }
+        </div>
+    }
+</MudCard>
+
+@code {
+    [Parameter]
+    public bool RequireLiveness { get; set; } = true;
+
+    [Parameter]
+    public string[] LivenessActions { get; set; } = new[] { "blink", "turn_left", "turn_right" };
+
+    [Parameter]
+    public EventCallback<FaceCaptureResult> OnCapture { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private readonly string _videoId = $"face-video-{Guid.NewGuid():N}";
+    private readonly string _canvasId = $"face-canvas-{Guid.NewGuid():N}";
+
+    private bool _cameraReady = false;
+    private bool _isInitializing = false;
+    private bool _hasError = false;
+    private string? _errorMessage;
+
+    private FaceQualityResult? _faceQuality;
+    private FacePositionResult? _facePosition;
+    private (string Data, DateTime CapturedAt)? _capturedImage;
+
+    private bool _isPerformingLiveness = false;
+    private string[] _livenessActions = Array.Empty<string>();
+    private string? _currentLivenessAction;
+    private int _livenessStep = 0;
+    private LivenessCheckResult? _livenessResult;
+
+    private System.Threading.Timer? _qualityCheckTimer;
+
+    protected override void OnInitialized()
+    {
+        _livenessActions = LivenessActions;
+    }
+
+    private async Task InitializeCameraAsync()
+    {
+        _isInitializing = true;
+        _hasError = false;
+        StateHasChanged();
+
+        try
+        {
+            // Check permission first
+            var permission = await BiometricService.CheckPermissionAsync("camera");
+            if (permission == "denied")
+            {
+                throw new Exception("Camera access denied. Please enable camera permissions in your browser settings.");
+            }
+
+            // Check for available camera
+            var devices = await BiometricService.GetAvailableDevicesAsync();
+            if (!devices.HasCamera)
+            {
+                throw new Exception("No camera detected. Please connect a camera and try again.");
+            }
+
+            // Initialize camera
+            var success = await BiometricService.InitCameraAsync(_videoId, new CameraOptions
+            {
+                FacingMode = "user",
+                Width = 640,
+                Height = 480
+            });
+
+            if (success)
+            {
+                _cameraReady = true;
+                // Start quality check timer
+                _qualityCheckTimer = new System.Threading.Timer(async _ => await CheckQualityAsync(), null, 500, 500);
+            }
+            else
+            {
+                throw new Exception("Failed to initialize camera. Please try again.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _hasError = true;
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _isInitializing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CheckQualityAsync()
+    {
+        if (!_cameraReady || _isPerformingLiveness || _capturedImage.HasValue) return;
+
+        try
+        {
+            // Capture temporary frame for quality check
+            await BiometricService.CaptureFrameAsync(_videoId, _canvasId);
+            _faceQuality = await BiometricService.AssessFaceQualityAsync(_canvasId);
+            _facePosition = await BiometricService.DetectFacePositionAsync(_canvasId);
+            await InvokeAsync(StateHasChanged);
+        }
+        catch
+        {
+            // Ignore quality check errors
+        }
+    }
+
+    private async Task StartLivenessCheckAsync()
+    {
+        _isPerformingLiveness = true;
+        _livenessStep = 0;
+        _currentLivenessAction = _livenessActions.FirstOrDefault();
+        StateHasChanged();
+    }
+
+    private async Task OnLivenessCompleteAsync(LivenessCheckResult result)
+    {
+        _livenessResult = result;
+        _isPerformingLiveness = false;
+
+        if (result.Passed)
+        {
+            // Automatically capture after successful liveness
+            await CaptureAsync();
+        }
+        else
+        {
+            _hasError = true;
+            _errorMessage = "Liveness check failed. Please try again.";
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task CaptureAsync()
+    {
+        try
+        {
+            var imageData = await BiometricService.CaptureFrameAsync(_videoId, _canvasId);
+            _capturedImage = (imageData, DateTime.UtcNow);
+
+            // Stop quality checks during review
+            _qualityCheckTimer?.Dispose();
+            _qualityCheckTimer = null;
+        }
+        catch (Exception ex)
+        {
+            _hasError = true;
+            _errorMessage = $"Capture failed: {ex.Message}";
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task RetakeAsync()
+    {
+        _capturedImage = null;
+        _livenessResult = null;
+        
+        // Restart quality checks
+        _qualityCheckTimer = new System.Threading.Timer(async _ => await CheckQualityAsync(), null, 500, 500);
+        StateHasChanged();
+    }
+
+    private async Task ConfirmCaptureAsync()
+    {
+        if (!_capturedImage.HasValue) return;
+
+        var result = new FaceCaptureResult
+        {
+            ImageData = _capturedImage.Value.Data,
+            CapturedAt = _capturedImage.Value.CapturedAt,
+            LivenessVerified = _livenessResult?.Passed ?? false,
+            LivenessConfidence = _livenessResult?.Confidence ?? 0,
+            Quality = _faceQuality
+        };
+
+        await OnCapture.InvokeAsync(result);
+    }
+
+    private async Task CancelAsync()
+    {
+        await CleanupAsync();
+        await OnCancel.InvokeAsync();
+    }
+
+    private async Task RetryAsync()
+    {
+        _hasError = false;
+        _errorMessage = null;
+        await InitializeCameraAsync();
+    }
+
+    private async Task CleanupAsync()
+    {
+        _qualityCheckTimer?.Dispose();
+        _qualityCheckTimer = null;
+        
+        if (_cameraReady)
+        {
+            await BiometricService.StopCameraAsync();
+            _cameraReady = false;
+        }
+    }
+
+    private string GetGuideColor()
+    {
+        if (_facePosition == null) return "var(--mud-palette-primary)";
+        if (_facePosition.Centered && (_faceQuality?.IsValid ?? false)) return "var(--mud-palette-success)";
+        return "var(--mud-palette-warning)";
+    }
+
+    private string GetInstructionText()
+    {
+        if (_isPerformingLiveness) return "Follow the prompts for liveness verification";
+        if (_capturedImage.HasValue) return "Review your photo. Click Confirm to proceed or Retake to try again.";
+        if (_faceQuality == null) return "Position your face within the oval guide";
+        if (!_faceQuality.IsValid) return "Adjust lighting or position for better quality";
+        return "Hold still. Click the button when ready.";
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await CleanupAsync();
+    }
+}

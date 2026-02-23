@@ -1,0 +1,259 @@
+@typeparam TModel
+@using System.Collections.ObjectModel
+@using System.Linq.Expressions
+@using Mamey.BlazorWasm.Components.Table
+@inherits ComponentBase
+
+<MudPaper Class="@Class" Elevation="@Elevation">
+    @if (!DisableToolbar)
+    {
+        <MudStack Row="true" AlignItems="AlignItems.Center" Class="pa-2">
+            <MudText Typo="@ToolbarTextTypo">@ToolbarText</MudText>
+            <MudSpacer />
+            @if (!DisableSearch)
+            {
+                <MudTextField T="string"
+                              @ref="_searchBox"
+                              Immediate="true"
+                              Placeholder="@Placeholder"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search"
+                              Value="@_searchString"
+                              ValueChanged="@(v => OnSearchTextChanged(v))"
+                              ValueExpression="@(() => _searchString)"
+                              Class="mx-2" />
+            }
+            @ToolbarContent
+        </MudStack>
+        <MudDivider />
+    }
+
+    <MudTable T="TModel"
+              @ref="_table"
+              Dense="@Dense"
+              Hover="@Hover"
+              Bordered="@Bordered"
+              Striped="@Striped"
+              Virtualize="@Virtualize"
+              Breakpoint="@Breakpoint"
+              MultiSelection="@MultiSelection"
+              @bind-SelectedItem="SelectedItem"
+              @bind-SelectedItems="SelectedItems"
+              ServerData="@(UseServerData ? ServerDataInternal : null)"
+              Items="@(UseServerData ? null : _clientItems)"
+              RowClassFunc="SelectedRowClassFunc">
+
+        <HeaderContent>
+            @if (Header is not null)
+            {
+                @Header
+            }
+            else
+            {
+                <MudTh></MudTh>
+                @foreach (var col in Columns)
+                {
+                    var sortKey = GetSortKey(col.Metadata.Property);
+                    <MudTh class="cursor-pointer">
+                        @if (UseServerData && col.Metadata.IsSortable)
+                        {
+                            <!-- Server-mode: let Mud drive state.SortLabel -->
+                            <MudTableSortLabel T="string" SortLabel="@sortKey">
+                                @col.Metadata.Header
+                            </MudTableSortLabel>
+                        }
+                        else
+                        {
+                            <!-- Client-mode: manual sort -->
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1" @onclick="(() => ApplySort(col.Metadata.Property))">
+                                <MudText>@col.Metadata.Header</MudText>
+                                @if (col.Metadata.IsSortable)
+                                {
+                                    var dir = GetSortDirection(col.Metadata.Property);
+                                    <MudIcon Icon="@(dir == SortDirection.Ascending ? Icons.Material.Filled.North : Icons.Material.Filled.South)"
+                                             Class="opacity-60" />
+                                }
+                            </MudStack>
+                        }
+                    </MudTh>
+                }
+            }
+        </HeaderContent>
+
+        <RowTemplate>
+            @if (RowTemplate is not null)
+            {
+                @RowTemplate(context)
+            }
+            else
+            {
+                <MudTd></MudTd>
+                @foreach (var col in Columns)
+                {
+                    <MudTd>@(col.Metadata.ValueAccessor(context))</MudTd>
+                }
+            }
+        </RowTemplate>
+
+        <PagerContent>
+            @if (!HidePager)
+            {
+                <MudTablePager />
+            }
+        </PagerContent>
+    </MudTable>
+
+    @if (!UseServerData && (_clientItems is null || !_clientItems.Any()))
+    {
+        <div class="pa-4">
+            <MudPaper Class="pa-6 d-flex align-center justify-center text-center rounded-lg">
+                <div>
+                    <MudIcon Icon="@Icons.Material.Filled.Inbox" Size="Size.Large" Class="mb-2" />
+                    <MudText Typo="Typo.h6">@EmptyTitle</MudText>
+                    <MudText Class="opacity-70">@EmptySubtitle</MudText>
+                </div>
+            </MudPaper>
+        </div>
+    }
+</MudPaper>
+
+@code {
+    // Visual / Toolbar
+    [Parameter] public Breakpoint Breakpoint { get; set; } = Breakpoint.Sm;
+    [Parameter] public Typo ToolbarTextTypo { get; set; } = Typo.h6;
+    [Parameter] public bool DisableToolbar { get; set; } = false;
+    [Parameter] public bool DisableSearch  { get; set; } = false;
+    [Parameter] public string ToolbarText  { get; set; } = string.Empty;
+    [Parameter] public string Placeholder  { get; set; } = "Search";
+    [Parameter] public RenderFragment? ToolbarContent { get; set; }
+    [Parameter] public bool Dense { get; set; } = true;
+    [Parameter] public bool Hover { get; set; } = true;
+    [Parameter] public bool Bordered { get; set; } = false;
+    [Parameter] public bool Striped { get; set; } = false;
+    [Parameter] public bool Virtualize { get; set; } = false;
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public int Elevation { get; set; } = 0;
+
+    // Data sources
+    [Parameter] public List<TModel>? Items { get; set; }
+    [Parameter] public ObservableCollection<TModel>? ObservableItems { get; set; }
+    [Parameter] public Func<TableState, CancellationToken, Task<TableData<TModel>>>? ServerReload { get; set; }
+    [Parameter] public Func<TableState, string?, CancellationToken, Task<TableData<TModel>>>? ServerReloadWithQuery { get; set; }
+
+    // Selection
+    [Parameter] public bool MultiSelection { get; set; } = false;
+    [Parameter] public TModel? SelectedItem { get; set; }
+    [Parameter] public EventCallback<TModel?> SelectedItemChanged { get; set; }
+    [Parameter] public HashSet<TModel> SelectedItems { get; set; } = new();
+    [Parameter] public Func<TModel, string>? DetailPageLinkGenerator { get; set; }
+
+    // Columns & templates
+    [Parameter] public List<MameyTableColumn<TModel>> Columns { get; set; } = new();
+    [Parameter] public RenderFragment? Header { get; set; }
+    [Parameter] public RenderFragment<TModel>? RowTemplate { get; set; }
+
+    // Sorting (client)
+    [Parameter] public bool AllowUnsorted { get; set; } = false;
+
+    // Empty state
+    [Parameter] public bool HidePager { get; set; } = false;
+    [Parameter] public string EmptyTitle { get; set; } = "No results";
+    [Parameter] public string EmptySubtitle { get; set; } = "Try adjusting filters or search terms.";
+
+    // Internals
+    private MudTable<TModel>? _table;
+    private MudTextField<string>? _searchBox;
+    private readonly Debouncer _debouncer = new(TimeSpan.FromMilliseconds(300));
+    private string _searchString = string.Empty;
+    private IEnumerable<TModel>? _clientItems;
+    private string _currentSortKey = string.Empty;
+    private bool _ascending = true;
+
+    private bool UseServerData => ServerReload is not null || ServerReloadWithQuery is not null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (DetailPageLinkGenerator == null)
+        {
+            DetailPageLinkGenerator = item => "#";
+            // _Logger.LogWarning("DetailPageLinkGenerator not provided. Defaulting to '#' for detail page links.");
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!UseServerData)
+        {
+            _clientItems = Items ?? ObservableItems?.ToList() ?? Enumerable.Empty<TModel>();
+            ApplyClientFilteringAndSorting();
+        }
+    }
+
+    private Task OnSearchTextChanged(string? value)
+        => _debouncer.DebounceAsync(async () =>
+        {
+            _searchString = value ?? string.Empty;
+            if (UseServerData)
+            {
+                if (_table is not null)
+                    await _table.ReloadServerData();
+            }
+            else
+            {
+                ApplyClientFilteringAndSorting();
+            }
+            await InvokeAsync(StateHasChanged);
+        });
+
+    private void ApplySort(Expression<Func<TModel, object>> expr)
+    {
+        var key = GetSortKey(expr);
+        if (_currentSortKey == key) _ascending = !_ascending; else { _currentSortKey = key; _ascending = true; }
+        if (!UseServerData) ApplyClientFilteringAndSorting();
+    }
+
+    private SortDirection GetSortDirection(Expression<Func<TModel, object>> expr)
+        => (GetSortKey(expr) == _currentSortKey) ? (_ascending ? SortDirection.Ascending : SortDirection.Descending) : SortDirection.Ascending;
+
+    private void ApplyClientFilteringAndSorting()
+    {
+        IEnumerable<TModel> src = Items ?? ObservableItems?.ToList() ?? Enumerable.Empty<TModel>();
+
+        if (!string.IsNullOrWhiteSpace(_searchString) && Columns.Any(c => c.Metadata.IsFilterable))
+        {
+            var s = _searchString.Trim();
+            src = src.Where(item => Columns.Where(c => c.Metadata.IsFilterable)
+                                           .Any(c => c.Metadata.ValueAccessor(item)?.ToString()?.Contains(s, StringComparison.OrdinalIgnoreCase) == true));
+        }
+
+        if (!string.IsNullOrEmpty(_currentSortKey))
+        {
+            var col = Columns.FirstOrDefault(c => GetSortKey(c.Metadata.Property) == _currentSortKey);
+            if (col is not null)
+            {
+                src = _ascending
+                    ? src.OrderBy(col.Metadata.ValueAccessor)
+                    : src.OrderByDescending(col.Metadata.ValueAccessor);
+            }
+        }
+
+        _clientItems = src.ToList();
+    }
+
+    private Task<TableData<TModel>> ServerDataInternal(TableState state, CancellationToken ct)
+        => ServerReloadWithQuery is not null
+            ? ServerReloadWithQuery(state, _searchString, ct)
+            : ServerReload!(state, ct);
+
+    private static string GetSortKey(Expression<Func<TModel, object>> expr)
+    {
+        Expression body = expr.Body;
+        if (body is UnaryExpression u && u.NodeType == ExpressionType.Convert) body = u.Operand;
+        if (body is MemberExpression m) return m.Member.Name;
+        return expr.ToString(); // fallback
+    }
+
+    private string SelectedRowClassFunc(TModel model, int rowNumber)
+        => (_table is { SelectedItem: not null } && _table.SelectedItem!.Equals(model)) ? "selected" : string.Empty;
+}

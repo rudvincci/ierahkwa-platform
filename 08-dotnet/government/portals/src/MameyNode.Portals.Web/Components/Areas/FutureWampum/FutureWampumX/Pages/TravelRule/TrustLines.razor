@@ -1,0 +1,96 @@
+@page "/travel-rule/trust-lines"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<TrustLines> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Trust Lines" Icon="fas fa-link" Subtitle="Trust line management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Trust Lines" Value="@_trustLines.Count.ToString()" Icon="fas fa-link" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Limit" Value="@_totalLimit.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Used" Value="@_usedLimit.ToString("C")" Icon="fas fa-chart-pie" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Trust Lines" Class="mt-4">
+        <MudTable T="TrustLineInfo" Items="@_trustLines" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Trust Line ID</MudTh>
+                <MudTh>Account A</MudTh>
+                <MudTh>Account B</MudTh>
+                <MudTh>Currency</MudTh>
+                <MudTh>Balance</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.TrustLineId</MudTd>
+                <MudTd>@context.AccountA</MudTd>
+                <MudTd>@context.AccountB</MudTd>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd>@decimal.Parse(context.Balance ?? "0").ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.IsActive ? Color.Success : Color.Default)">
+                        @(context.IsActive ? "Active" : "Inactive")
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<TrustLineInfo> _trustLines = new();
+    private int _activeCount;
+    private decimal _totalLimit;
+    private decimal _usedLimit;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _trustLines = await FutureWampumXClient.GetTrustLinesAsync();
+            _activeCount = _trustLines.Count(t => t.IsActive);
+            _totalLimit = _trustLines.Sum(t => decimal.Parse(t.Limit ?? "0"));
+            _usedLimit = _trustLines.Sum(t => decimal.Parse(t.Balance ?? "0"));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading trust lines");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

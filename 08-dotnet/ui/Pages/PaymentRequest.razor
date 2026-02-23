@@ -1,0 +1,367 @@
+@page "/paymentrequest"
+@inject IMameyBankingClient BankingClient
+@inject IMetadataService MetadataService
+@inject ILogger<PaymentRequest> Logger
+
+<PageTitle>Payment Request - MameyNode UI</PageTitle>
+
+<h1>Payment Request</h1>
+
+<ErrorDisplay HasError="@hasError" ErrorMessage="@errorMessage" ErrorDetails="@errorDetails" OnDismiss="ClearError" />
+
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Create Payment Request</h5>
+            </div>
+            <div class="card-body">
+                <EditForm Model="@createRequest" OnValidSubmit="CreatePaymentRequest">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger" />
+
+                    <div class="mb-3">
+                        <label for="requester" class="form-label">Requester Account</label>
+                        <InputText id="requester" class="form-control" @bind-Value="createRequest.Requester" />
+                        <ValidationMessage For="@(() => createRequest.Requester)" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="payer" class="form-label">Payer Account</label>
+                        <InputText id="payer" class="form-control" @bind-Value="createRequest.Payer" />
+                        <ValidationMessage For="@(() => createRequest.Payer)" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <InputText id="amount" class="form-control" @bind-Value="createRequest.Amount" placeholder="100.00" />
+                        <ValidationMessage For="@(() => createRequest.Amount)" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="currency" class="form-label">Currency</label>
+                        <InputText id="currency" class="form-control" @bind-Value="createRequest.Currency" placeholder="USD" />
+                        <ValidationMessage For="@(() => createRequest.Currency)" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description (Optional)</label>
+                        <InputText id="description" class="form-control" @bind-Value="createRequest.Description" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="expiresAt" class="form-label">Expires At (Unix timestamp, 0 for no expiry)</label>
+                        <InputNumber id="expiresAt" class="form-control" @bind-Value="createRequest.ExpiresAt" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" disabled="@isCreating">
+                        @if (isCreating)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <text>Creating...</text>
+                        }
+                        else
+                        {
+                            <text>Create Payment Request</text>
+                        }
+                    </button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Get Payment Request</h5>
+                <button class="btn btn-secondary" @onclick="LoadPaymentRequest" disabled="@isLoading">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Loading...</text>
+                    }
+                    else
+                    {
+                        <text>Load</text>
+                    }
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="requestId" class="form-label">Request ID</label>
+                    <div class="input-group">
+                        <InputText id="requestId" class="form-control" @bind-Value="requestId" placeholder="Enter request ID" />
+                        <button class="btn btn-outline-secondary" type="button" @onclick="LoadPaymentRequest" disabled="@isLoading">Load</button>
+                    </div>
+                </div>
+
+                @if (paymentRequest == null && !isLoading && string.IsNullOrEmpty(requestId))
+                {
+                    <p class="text-muted">Enter a request ID and click "Load" to retrieve payment request details.</p>
+                }
+                else if (isLoading)
+                {
+                    <p class="text-muted">Loading payment request...</p>
+                }
+                else if (paymentRequest != null)
+                {
+                    @if (paymentRequest.Exists)
+                    {
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Request ID:</dt>
+                            <dd class="col-sm-8"><code>@paymentRequest.Request.RequestId</code></dd>
+
+                            <dt class="col-sm-4">Requester:</dt>
+                            <dd class="col-sm-8"><code>@paymentRequest.Request.Requester</code></dd>
+
+                            <dt class="col-sm-4">Payer:</dt>
+                            <dd class="col-sm-8"><code>@paymentRequest.Request.Payer</code></dd>
+
+                            <dt class="col-sm-4">Amount:</dt>
+                            <dd class="col-sm-8">@paymentRequest.Request.Amount @paymentRequest.Request.Currency</dd>
+
+                            <dt class="col-sm-4">Description:</dt>
+                            <dd class="col-sm-8">@(string.IsNullOrEmpty(paymentRequest.Request.Description) ? "N/A" : paymentRequest.Request.Description)</dd>
+
+                            <dt class="col-sm-4">Status:</dt>
+                            <dd class="col-sm-8">
+                                @{
+                                    var statusValue = (int)paymentRequest.Request.Status;
+                                }
+                                @switch (statusValue)
+                                {
+                                    case 1:
+                                        <span class="badge bg-warning">Pending</span>
+                                        break;
+                                    case 5:
+                                        <span class="badge bg-success">Completed</span>
+                                        break;
+                                    case 3:
+                                        <span class="badge bg-danger">Rejected</span>
+                                        break;
+                                    case 2:
+                                        <span class="badge bg-info">Approved</span>
+                                        break;
+                                    case 4:
+                                        <span class="badge bg-secondary">Cancelled</span>
+                                        break;
+                                    case 6:
+                                        <span class="badge bg-warning">Expired</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">Unknown (@statusValue)</span>
+                                        break;
+                                }
+                            </dd>
+
+                            <dt class="col-sm-4">Created At:</dt>
+                            <dd class="col-sm-8">@DateTimeOffset.FromUnixTimeSeconds((long)paymentRequest.Request.CreatedAt).ToString("yyyy-MM-dd HH:mm:ss UTC")</dd>
+
+                            @if (paymentRequest.Request.ExpiresAt > 0)
+                            {
+                                <dt class="col-sm-4">Expires At:</dt>
+                                <dd class="col-sm-8">@DateTimeOffset.FromUnixTimeSeconds((long)paymentRequest.Request.ExpiresAt).ToString("yyyy-MM-dd HH:mm:ss UTC")</dd>
+                            }
+                        </dl>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            Payment request not found.
+                        </div>
+                        @if (!string.IsNullOrEmpty(paymentRequest.ErrorMessage))
+                        {
+                            <p class="text-danger"><small>@paymentRequest.ErrorMessage</small></p>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<MetadataDisplay />
+
+@code {
+    private CreatePaymentRequestModel createRequest = new();
+    private string requestId = string.Empty;
+    private Mamey.Banking.GetPaymentRequestResponse? paymentRequest;
+    private bool isLoading = false;
+    private bool isCreating = false;
+    private bool hasError = false;
+    private string? errorMessage;
+    private string? errorDetails;
+    private string? correlationId;
+
+    private async Task CreatePaymentRequest()
+    {
+        isCreating = true;
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+        StateHasChanged();
+
+        try
+        {
+            correlationId = MetadataService.GetCorrelationId();
+            Logger.LogInformation("Creating payment request with correlation ID: {CorrelationId}", correlationId);
+
+            var credentialProvider = new Mamey.Blockchain.Banking.CredentialProvider
+            {
+                InstitutionId = MetadataService.GetInstitutionId(),
+                CredentialChain = ConvertCredentialChain(MetadataService.GetCredentialChain()),
+                CorrelationIdGenerator = () => correlationId
+            };
+
+            var request = new Mamey.Banking.CreatePaymentRequestRequest
+            {
+                Requester = createRequest.Requester,
+                Payer = createRequest.Payer,
+                Amount = createRequest.Amount,
+                Currency = createRequest.Currency,
+                Description = createRequest.Description ?? string.Empty,
+                ExpiresAt = (ulong)createRequest.ExpiresAt
+            };
+
+            var response = await BankingClient.CreatePaymentRequestAsync(
+                request: request,
+                credentialProvider: credentialProvider,
+                correlationId: correlationId);
+
+            if (response.Success)
+            {
+                Logger.LogInformation("Payment request created successfully: RequestId={RequestId}", response.RequestId);
+                requestId = response.RequestId;
+                
+                // Automatically load the created payment request
+                await LoadPaymentRequest();
+                
+                // Reset form
+                createRequest = new CreatePaymentRequestModel();
+            }
+            else
+            {
+                hasError = true;
+                errorMessage = "Failed to create payment request.";
+                errorDetails = response.ErrorMessage;
+                Logger.LogWarning("Payment request creation failed: {ErrorMessage}", response.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to create payment request.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to create payment request with correlation ID: {CorrelationId}", correlationId);
+        }
+        finally
+        {
+            isCreating = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadPaymentRequest()
+    {
+        if (string.IsNullOrWhiteSpace(requestId))
+        {
+            hasError = true;
+            errorMessage = "Please enter a request ID.";
+            return;
+        }
+
+        isLoading = true;
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+        StateHasChanged();
+
+        try
+        {
+            correlationId = MetadataService.GetCorrelationId();
+            Logger.LogInformation("Loading payment request {RequestId} with correlation ID: {CorrelationId}", requestId, correlationId);
+
+            var credentialProvider = new Mamey.Blockchain.Banking.CredentialProvider
+            {
+                InstitutionId = MetadataService.GetInstitutionId(),
+                CredentialChain = ConvertCredentialChain(MetadataService.GetCredentialChain()),
+                CorrelationIdGenerator = () => correlationId
+            };
+
+            var request = new Mamey.Banking.GetPaymentRequestRequest
+            {
+                RequestId = requestId
+            };
+
+            paymentRequest = await BankingClient.GetPaymentRequestAsync(
+                request: request,
+                credentialProvider: credentialProvider,
+                correlationId: correlationId);
+
+            if (paymentRequest.Exists)
+            {
+                Logger.LogInformation("Payment request loaded successfully: RequestId={RequestId}", requestId);
+            }
+            else
+            {
+                Logger.LogWarning("Payment request not found: RequestId={RequestId}", requestId);
+            }
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to load payment request.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to load payment request {RequestId} with correlation ID: {CorrelationId}", requestId, correlationId);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearError()
+    {
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+    }
+
+    private class CreatePaymentRequestModel
+    {
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Requester account is required")]
+        public string Requester { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Payer account is required")]
+        public string Payer { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Amount is required")]
+        public string Amount { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Currency is required")]
+        public string Currency { get; set; } = "USD";
+
+        public string? Description { get; set; }
+
+        public long ExpiresAt { get; set; } = 0;
+    }
+
+    private List<Mamey.Blockchain.Banking.Credential>? ConvertCredentialChain(List<Mamey.Blockchain.Node.Credential>? nodeCredentials)
+    {
+        if (nodeCredentials == null) return null;
+        
+        return nodeCredentials.Select(c => new Mamey.Blockchain.Banking.Credential
+        {
+            Id = c.Id,
+            Type = c.Type,
+            Issuer = c.Issuer,
+            Subject = c.Subject,
+            Capabilities = c.Capabilities,
+            IssuedAt = c.IssuedAt,
+            ExpiresAt = c.ExpiresAt,
+            Signature = c.Signature,
+            Metadata = c.Metadata
+        }).ToList();
+    }
+}

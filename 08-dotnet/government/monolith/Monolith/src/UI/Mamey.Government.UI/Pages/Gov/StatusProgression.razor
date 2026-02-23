@@ -1,0 +1,227 @@
+@page "/gov/status-progression"
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+
+<PageTitle>Status Progression | Government Portal</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-4">
+    <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
+    
+    <MudText Typo="Typo.h4" Class="mb-4">Citizenship Status Progression</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Default" Class="mb-4">
+        Manage citizenship status progressions. Citizens advance from Probationary (2 years) → Resident (3 years) → Citizen (permanent).
+    </MudText>
+
+    @* Status Progression Pipeline *@
+    <MudGrid Class="mb-4">
+        <MudItem xs="12">
+            <MudPaper Class="pa-4">
+                <div class="d-flex align-center justify-space-between">
+                    <div class="text-center" style="flex: 1;">
+                        <MudAvatar Color="Color.Primary" Size="Size.Large">
+                            <MudIcon Icon="@Icons.Material.Filled.Person" />
+                        </MudAvatar>
+                        <MudText Typo="Typo.subtitle2" Class="mt-2">Probationary</MudText>
+                        <MudText Typo="Typo.h5" Color="Color.Primary">@_probationaryCount</MudText>
+                        <MudText Typo="Typo.caption">2 year period</MudText>
+                    </div>
+                    <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Default" Size="Size.Large" />
+                    <div class="text-center" style="flex: 1;">
+                        <MudAvatar Color="Color.Secondary" Size="Size.Large">
+                            <MudIcon Icon="@Icons.Material.Filled.Home" />
+                        </MudAvatar>
+                        <MudText Typo="Typo.subtitle2" Class="mt-2">Resident</MudText>
+                        <MudText Typo="Typo.h5" Color="Color.Secondary">@_residentCount</MudText>
+                        <MudText Typo="Typo.caption">3 year period</MudText>
+                    </div>
+                    <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Default" Size="Size.Large" />
+                    <div class="text-center" style="flex: 1;">
+                        <MudAvatar Color="Color.Success" Size="Size.Large">
+                            <MudIcon Icon="@Icons.Material.Filled.Star" />
+                        </MudAvatar>
+                        <MudText Typo="Typo.subtitle2" Class="mt-2">Citizen</MudText>
+                        <MudText Typo="Typo.h5" Color="Color.Success">@_citizenCount</MudText>
+                        <MudText Typo="Typo.caption">Permanent</MudText>
+                    </div>
+                </div>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    @* Tabs for different progression actions *@
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-4">
+        <MudTabPanel Text="Eligible for Progression" Icon="@Icons.Material.Filled.ArrowUpward">
+            <MudTable Items="@_eligibleCitizens" Hover="true" Loading="@_isLoading" Dense="true">
+                <HeaderContent>
+                    <MudTh><MudTableSortLabel SortBy="new Func<CitizenProgressionDto, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
+                    <MudTh>Current Status</MudTh>
+                    <MudTh>Next Status</MudTh>
+                    <MudTh>Status Since</MudTh>
+                    <MudTh>Eligible Since</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Name">
+                        <div class="d-flex align-center">
+                            <MudAvatar Color="Color.Primary" Size="Size.Small" Class="mr-2">@context.Name[0]</MudAvatar>
+                            @context.Name
+                        </div>
+                    </MudTd>
+                    <MudTd DataLabel="Current Status">
+                        <MudChip T="string" Color="@GetStatusColor(context.CurrentStatus)" Size="Size.Small">@context.CurrentStatus</MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Next Status">
+                        <MudChip T="string" Color="@GetStatusColor(context.NextStatus)" Size="Size.Small">@context.NextStatus</MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Status Since">@context.StatusSince.ToString("MMM dd, yyyy")</MudTd>
+                    <MudTd DataLabel="Eligible Since">@context.EligibleSince.ToString("MMM dd, yyyy")</MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" Size="Size.Small"
+                                   OnClick="@(() => ProgressCitizen(context))">
+                            Progress
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText>No citizens currently eligible for progression</MudText>
+                </NoRecordsContent>
+            </MudTable>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Bulk Progression" Icon="@Icons.Material.Filled.PlaylistAddCheck">
+            <MudPaper Class="pa-4 mb-4">
+                <MudText Typo="Typo.h6" Class="mb-3">Bulk Status Progression</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Default" Class="mb-4">
+                    Progress all eligible citizens to their next status at once.
+                </MudText>
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <MudSelect @bind-Value="_selectedTransition" Label="Select Transition">
+                            <MudSelectItem Value="@("Probationary → Resident")">Probationary → Resident</MudSelectItem>
+                            <MudSelectItem Value="@("Resident → Citizen")">Resident → Citizen</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudText Typo="Typo.caption">Eligible Citizens</MudText>
+                        <MudText Typo="Typo.h4">@_bulkEligibleCount</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="4" Class="d-flex align-end">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                                   OnClick="BulkProgress" Disabled="_bulkEligibleCount == 0">
+                            Progress All Eligible
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Progression History" Icon="@Icons.Material.Filled.History">
+            <MudTable Items="@_progressionHistory" Hover="true" Loading="@_isLoading" Dense="true">
+                <HeaderContent>
+                    <MudTh>Citizen</MudTh>
+                    <MudTh>Previous Status</MudTh>
+                    <MudTh>New Status</MudTh>
+                    <MudTh>Progressed At</MudTh>
+                    <MudTh>Progressed By</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Citizen">@context.CitizenName</MudTd>
+                    <MudTd DataLabel="Previous">
+                        <MudChip T="string" Color="@GetStatusColor(context.PreviousStatus)" Size="Size.Small">@context.PreviousStatus</MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="New">
+                        <MudChip T="string" Color="@GetStatusColor(context.NewStatus)" Size="Size.Small">@context.NewStatus</MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Progressed At">@context.ProgressedAt.ToString("MMM dd, yyyy HH:mm")</MudTd>
+                    <MudTd DataLabel="Progressed By">@context.ProgressedBy</MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText>No progression history available</MudText>
+                </NoRecordsContent>
+            </MudTable>
+        </MudTabPanel>
+    </MudTabs>
+</MudContainer>
+
+@code {
+    private List<BreadcrumbItem> _breadcrumbs = new()
+    {
+        new("Dashboard", "/gov/dashboard"),
+        new("Status Progression", null, true)
+    };
+
+    private bool _isLoading;
+    private string? _selectedTransition = "Probationary → Resident";
+    
+    private int _probationaryCount = 125;
+    private int _residentCount = 89;
+    private int _citizenCount = 456;
+    private int _bulkEligibleCount = 12;
+
+    private List<CitizenProgressionDto> _eligibleCitizens = new();
+    private List<ProgressionHistoryDto> _progressionHistory = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        _isLoading = true;
+        try
+        {
+            // TODO: Load from API
+            _eligibleCitizens = new List<CitizenProgressionDto>
+            {
+                new() { Name = "John Smith", CurrentStatus = "Probationary", NextStatus = "Resident", StatusSince = DateTime.Now.AddYears(-2).AddMonths(-1), EligibleSince = DateTime.Now.AddMonths(-1) },
+                new() { Name = "Jane Doe", CurrentStatus = "Resident", NextStatus = "Citizen", StatusSince = DateTime.Now.AddYears(-3).AddDays(-15), EligibleSince = DateTime.Now.AddDays(-15) },
+            };
+
+            _progressionHistory = new List<ProgressionHistoryDto>
+            {
+                new() { CitizenName = "Bob Wilson", PreviousStatus = "Probationary", NewStatus = "Resident", ProgressedAt = DateTime.Now.AddDays(-7), ProgressedBy = "Admin" },
+                new() { CitizenName = "Alice Johnson", PreviousStatus = "Resident", NewStatus = "Citizen", ProgressedAt = DateTime.Now.AddDays(-14), ProgressedBy = "Agent Smith" },
+            };
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Probationary" => Color.Primary,
+        "Resident" => Color.Secondary,
+        "Citizen" => Color.Success,
+        _ => Color.Default
+    };
+
+    private async Task ProgressCitizen(CitizenProgressionDto citizen)
+    {
+        // TODO: Call API to progress citizen
+    }
+
+    private async Task BulkProgress()
+    {
+        // TODO: Call API to bulk progress eligible citizens
+    }
+
+    private class CitizenProgressionDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public string CurrentStatus { get; set; } = string.Empty;
+        public string NextStatus { get; set; } = string.Empty;
+        public DateTime StatusSince { get; set; }
+        public DateTime EligibleSince { get; set; }
+    }
+
+    private class ProgressionHistoryDto
+    {
+        public string CitizenName { get; set; } = string.Empty;
+        public string PreviousStatus { get; set; } = string.Empty;
+        public string NewStatus { get; set; } = string.Empty;
+        public DateTime ProgressedAt { get; set; }
+        public string ProgressedBy { get; set; } = string.Empty;
+    }
+}

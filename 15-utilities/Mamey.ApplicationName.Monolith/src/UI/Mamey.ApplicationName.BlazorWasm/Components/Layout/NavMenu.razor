@@ -1,0 +1,315 @@
+﻿@using System.Text.Json
+@using Mamey.BlazorWasm.Routing
+@using Mamey.BlazorWasm.Components
+@using FontAwesomeIcon = Mamey.BlazorWasm.Icons.FontAwesomeIcon
+@* @using FontAwesomeIcon = Mamey.BlazorWasm.Icons.FontAwesomeIcon *@
+@inject NavigationManager NavigationManager
+
+<MudNavMenu>
+    <BaseNav Routes="Routes" DrawerOpen="DrawerOpen" DrawerMiniEnabled="false" />
+</MudNavMenu>
+@code {
+
+    [Parameter] public List<Route> Routes { get; set; } = new List<Route>();
+    [Parameter] public bool DrawerOpen { get; set; } = true;
+
+    protected override Task OnInitializedAsync()
+    {
+        Routes = GetRoutes();
+        Console.WriteLine(JsonSerializer.Serialize(Routes));
+        return base.OnInitializedAsync();
+    }
+
+    private List<Route> GetRoutes()
+    {
+        return new List<Route>()
+        {
+            new Route
+            {
+                AuthenticationRequired = false,
+                Icon = Icons.Material.Filled.Dashboard,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Page = "/dashboard",
+                Title = "Dashboard",
+                RequiredScopes = new List<string>(),
+            },
+            new Route
+            {
+                AuthenticationRequired = false,
+                Icon = Icons.Material.Filled.AssuredWorkload,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Page = "/master-trust",
+                Title = "Master Trust",
+                RequiredScopes = new List<string>(),
+            },
+            new Route
+            {
+            AuthenticationRequired = false,
+            Icon = Icons.Material.Filled.Wallet,
+            Match = NavLinkMatch.All,
+            RequiredRoles = new List<string>(),
+            Page = "/wallet",
+            Title = "Wallet",
+            RequiredScopes = new List<string>(),
+
+            },
+            new Route
+            {
+                AuthenticationRequired = false,
+                // Icon = Icons.Material.Filled.Dashboard,
+                Icon = FontAwesomeIcon.MoneyBillTransfer,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Page = "/wire-transfers",
+                Title = "Wire Money",
+                RequiredScopes = new List<string>(),
+                
+            },
+            new Route
+            {
+                AuthenticationRequired = false,
+                Icon = FontAwesomeIcon.FileInvoiceDollar,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Page = "/payment-links",
+                Title = "Payment Links",
+                RequiredScopes = new List<string>(),
+                
+            },
+            
+            // new Route
+            // {
+            //     AuthenticationRequired = false,
+            //     Icon = Icons.Material.Filled.Dashboard,
+            //     Match = NavLinkMatch.All,
+            //     RequiredRoles = new List<string>(),
+            //     Page = "/bill-payments",
+            //     Title = "Bill Payments",
+            //     RequiredScopes = new List<string>(),
+            //     
+            // },
+            // new Route
+            // {
+            //     AuthenticationRequired = false,
+            //     Icon = Icons.Material.Filled.Dashboard,
+            //     Match = NavLinkMatch.All,
+            //     RequiredRoles = new List<string>(),
+            //     Page = "/budgeting",
+            //     Title = "Budgeting",
+            //     RequiredScopes = new List<string>(),
+            //     
+            // },
+            // new Route
+            // {
+            //     AuthenticationRequired = false,
+            //     Icon = Icons.Material.Filled.Dashboard,
+            //     Match = NavLinkMatch.All,
+            //     RequiredRoles = new List<string>(),
+            //     Page = "/investments",
+            //     Title = "Investments",
+            //     RequiredScopes = new List<string>(),
+            //     
+            // },
+            // new Route
+            // {
+            //     AuthenticationRequired = false,
+            //     Icon = Icons.Material.Filled.Dashboard,
+            //     Match = NavLinkMatch.All,
+            //     RequiredRoles = new List<string>(),
+            //     Page = "/loans",
+            //     Title = "Loans",
+            //     RequiredScopes = new List<string>(),
+            //     
+            // },
+            
+            new Route
+            {
+                AuthenticationRequired = false,
+                Icon = Icons.Material.Filled.Drafts,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Page = "/statements",
+                Title = "Statements",
+                RequiredScopes = new List<string>(),
+                
+            },
+            new Route
+            {
+                AuthenticationRequired = false,
+                Icon = FontAwesomeIcon.UserTie,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Title = "Manage",
+                RequiredScopes = [],
+                ChildRoutes = new List<Route>()
+                {
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = FontAwesomeIcon.LayerGroup,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/manage/accounts",
+                        Title = "Accounts",
+                        RequiredScopes = new List<string>(),
+                        ChildRoutes = new List<Route>()
+                        {
+                            new Route
+                            {
+                                AuthenticationRequired = false,
+                                Icon = FontAwesomeIcon.LayerGroup,
+                                Match = NavLinkMatch.All,
+                                RequiredRoles = new List<string>(),
+                                Page = "/manage/master-trusts",
+                                Title = "Master Trust Accounts",
+                                RequiredScopes = new List<string>(),
+                            },
+                            new Route
+                            {
+                                AuthenticationRequired = false,
+                                Icon = FontAwesomeIcon.FileLines,
+                                Match = NavLinkMatch.All,
+                                RequiredRoles = new List<string>(),
+                                Page = "/manage/account-applications",
+                                Title = "Account Applications",
+                                RequiredScopes = new List<string>(),
+                            },
+                        }
+                    },
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = FontAwesomeIcon.BuildingColumns,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/manage/branches",
+                        Title = "Branches",
+                        RequiredScopes = new List<string>(),
+                    },
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = FontAwesomeIcon.PersonCircleQuestion,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/user-roles",
+                        Title = "Roles",
+                        RequiredScopes = new List<string>(),
+                    },
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = FontAwesomeIcon.ClipboardUser,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/manage/employees",
+                        Title = "Employees",
+                        RequiredScopes = new List<string>(),
+                    },
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = Icons.Material.Filled.Dashboard,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/manage/banking-products",
+                        Title = "Banking Products",
+                        RequiredScopes = new List<string>()
+                    },
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = Icons.Material.Filled.Dashboard,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/marketing-campaigns",
+                        Title = "Marketing Campaigns",
+                        RequiredScopes = new List<string>(),
+                
+                    },
+                    
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = FontAwesomeIcon.Gears,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/manage/bank-settings",
+                        Title = "Bank Settings",
+                        RequiredScopes = new List<string>(),
+                    },
+                    
+                    
+                    // new Route
+                    // {
+                    //     AuthenticationRequired = false,
+                    //     Icon = Icons.Material.Filled.Dashboard,
+                    //     Match = NavLinkMatch.All,
+                    //     RequiredRoles = new List<string>(),
+                    //     Page = "/secure/store/pos",
+                    //     Title = "POS",
+                    //     RequiredScopes = new List<string>(),
+                    // },
+                    // new Route
+                    // {
+                    //     AuthenticationRequired = false,
+                    //     Icon = Icons.Material.Filled.Dashboard,
+                    //     Match = NavLinkMatch.All,
+                    //     RequiredRoles = new List<string>(),
+                    //     Page = "/manage/marketing",
+                    //     Title = "Marketing",
+                    //     RequiredScopes = new List<string>(),
+                    //     ChildRoutes = new List<Route>()
+                    //     {
+                    //         new Route
+                    //         {
+                    //             AuthenticationRequired = false,
+                    //             Icon = Icons.Material.Filled.Dashboard,
+                    //             Match = NavLinkMatch.All,
+                    //             RequiredRoles = new List<string>(),
+                    //             Page = "/store/marketing/Campaigns",
+                    //             Title = "Campaigns",
+                    //             RequiredScopes = new List<string>(),
+                    //         },
+                    //     }
+                    // },
+                    //
+                    // new Route
+                    // {
+                    //     AuthenticationRequired = false,
+                    //     Icon = Icons.Material.Filled.Dashboard,
+                    //     Match = NavLinkMatch.All,
+                    //     RequiredRoles = new List<string>(),
+                    //     Page = "/manage/loyalty",
+                    //     Title = "Loyalty",
+                    //     RequiredScopes = new List<string>(),
+                    // },
+                }
+            },
+            new Route
+            {
+                AuthenticationRequired = false,
+                Icon = FontAwesomeIcon.Headset,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Page = "/support",
+                Title = "Support",
+                RequiredScopes = new List<string>(),
+            },
+            new Route
+            {
+                AuthenticationRequired = false,
+                Icon = FontAwesomeIcon.Sliders,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Page = "/secure/settings",
+                Title = "Settings",
+                RequiredScopes = new List<string>(),
+            },
+        };
+    }
+
+}
+    

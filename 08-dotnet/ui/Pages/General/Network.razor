@@ -1,0 +1,206 @@
+@page "/general/network"
+@inject IMameyNodeClient NodeClient
+@inject IMetadataService MetadataService
+@inject ILogger<Network> Logger
+
+<PageTitle>Network & Peers - MameyNode UI</PageTitle>
+
+<h1>Network & Peers</h1>
+
+<ErrorDisplay HasError="@hasError" ErrorMessage="@errorMessage" ErrorDetails="@errorDetails" OnDismiss="ClearError" />
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Peers</h5>
+                <button class="btn btn-primary" @onclick="LoadAsync" disabled="@isLoading">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Loading...</text>
+                    }
+                    else
+                    {
+                        <text>Refresh</text>
+                    }
+                </button>
+            </div>
+            <div class="card-body">
+                @if (peers == null && !isLoading)
+                {
+                    <p class="text-muted">Click "Refresh" to load peers.</p>
+                }
+                else if (isLoading)
+                {
+                    <p class="text-muted">Loading peers...</p>
+                }
+                else if (peers != null)
+                {
+                    <div class="mb-2">
+                        <span class="badge bg-secondary">@peers.TotalCount peer(s)</span>
+                    </div>
+
+                    @if (peers.Peers.Count == 0)
+                    {
+                        <div class="alert alert-info mb-0">No peers reported by the node.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th>Peer ID</th>
+                                    <th>Address</th>
+                                    <th>State</th>
+                                    <th>Last seen (UTC)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var p in peers.Peers)
+                                {
+                                    <tr>
+                                        <td><code>@p.PeerId</code></td>
+                                        <td><code>@p.Address</code></td>
+                                        <td>@p.State</td>
+                                        <td>@(p.LastSeen == 0 ? "-" : DateTimeOffset.FromUnixTimeSeconds((long)p.LastSeen).UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Network Info</h5>
+            </div>
+            <div class="card-body">
+                @if (networkInfo == null && !isLoading)
+                {
+                    <p class="text-muted">Network info will appear after refresh.</p>
+                }
+                else if (isLoading)
+                {
+                    <p class="text-muted">Loading...</p>
+                }
+                else if (networkInfo != null)
+                {
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Active peers</dt>
+                        <dd class="col-sm-7">@networkInfo.ActivePeers</dd>
+
+                        <dt class="col-sm-5">Max peers</dt>
+                        <dd class="col-sm-7">@networkInfo.MaxPeers</dd>
+
+                        <dt class="col-sm-5">Active tx</dt>
+                        <dd class="col-sm-7">@networkInfo.ActiveTransactions</dd>
+
+                        <dt class="col-sm-5">Avg latency</dt>
+                        <dd class="col-sm-7">@networkInfo.AverageLatencyMs.ToString("N1") ms</dd>
+
+                        <dt class="col-sm-5">Protocol</dt>
+                        <dd class="col-sm-7"><code>@networkInfo.ProtocolVersion</code></dd>
+                    </dl>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mt-3 mt-lg-0">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Bootstrap</h5>
+            </div>
+            <div class="card-body">
+                @if (bootstrapStatus == null && !isLoading)
+                {
+                    <p class="text-muted">Bootstrap status will appear after refresh.</p>
+                }
+                else if (isLoading)
+                {
+                    <p class="text-muted">Loading...</p>
+                }
+                else if (bootstrapStatus != null)
+                {
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Phase</dt>
+                        <dd class="col-sm-7">@bootstrapStatus.Phase</dd>
+
+                        <dt class="col-sm-5">Connections</dt>
+                        <dd class="col-sm-7">@bootstrapStatus.Connections</dd>
+
+                        <dt class="col-sm-5">Remaining</dt>
+                        <dd class="col-sm-7">@bootstrapStatus.RemainingBlocks.ToString("N0")</dd>
+                    </dl>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<MetadataDisplay />
+
+@code {
+    private GetPeersResponse? peers;
+    private GetNetworkInfoResponse? networkInfo;
+    private GetBootstrapStatusResponse? bootstrapStatus;
+
+    private bool isLoading;
+    private bool hasError;
+    private string? errorMessage;
+    private string? errorDetails;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        isLoading = true;
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+        StateHasChanged();
+
+        try
+        {
+            var correlationId = MetadataService.GetCorrelationId();
+            var metadata = MetadataService.GetMetadata(correlationId);
+            var callOptions = new Grpc.Core.CallOptions(metadata, deadline: DateTime.UtcNow.AddSeconds(30));
+
+            peers = await NodeClient.Client.GetPeersAsync(new GetPeersRequest(), callOptions);
+            networkInfo = await NodeClient.Client.GetNetworkInfoAsync(new GetNetworkInfoRequest(), callOptions);
+            bootstrapStatus = await NodeClient.Client.GetBootstrapStatusAsync(new GetBootstrapStatusRequest(), callOptions);
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to load network/peer information.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to load peers/network");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearError()
+    {
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+    }
+}
+

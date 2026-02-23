@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IERAHKWA FarmFactory | Staking & Yield Farming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --gold-dark: #B8860B;
+            --neon-green: #00FF41;
+            --neon-cyan: #00FFFF;
+            --neon-magenta: #FF00FF;
+            --bg-dark: #0a0e17;
+            --bg-card: #0d1a2d;
+            --border: #1e3a5f;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17 0%, #0d1a2d 50%, #1a0a2e 100%); color: #fff; min-height: 100vh; }
+        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background: radial-gradient(circle at 20% 80%, rgba(255,215,0,0.05) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0,255,65,0.05) 0%, transparent 50%); }
+        .container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .header { background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(0,255,65,0.05) 100%); border: 2px solid var(--gold); border-radius: 15px; padding: 40px; margin-bottom: 30px; text-align: center; box-shadow: 0 10px 40px rgba(255,215,0,0.2); }
+        .header h1 { font-family: 'Orbitron', sans-serif; font-size: 2.5em; color: var(--gold); margin-bottom: 8px; text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+        .header .subtitle { font-size: 1.2em; color: var(--neon-green); }
+        .back-link { display: inline-block; color: var(--gold); text-decoration: none; margin-bottom: 20px; font-size: 1em; }
+        .back-link:hover { color: var(--neon-green); }
+        .card { background: linear-gradient(135deg, rgba(13,26,45,0.8) 0%, rgba(10,14,23,0.9) 100%); border: 2px solid var(--border); border-radius: 15px; padding: 24px; margin-bottom: 20px; transition: all 0.3s; }
+        .card:hover { border-color: var(--gold); box-shadow: 0 8px 24px rgba(255,215,0,0.15); }
+        .card h3 { color: var(--gold); font-family: 'Orbitron', sans-serif; margin-bottom: 8px; font-size: 1.2em; }
+        .card .meta { color: #888; font-size: 0.9em; margin-bottom: 12px; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold; margin-right: 8px; }
+        .badge-eth { background: #627eea; color: #fff; }
+        .badge-bsc { background: #f3ba2f; color: #000; }
+        .badge-polygon { background: #8247e5; color: #fff; }
+        .badge-ierahkwa { background: var(--gold); color: #000; }
+        .badge-aurora { background: #70d44b; color: #000; }
+        .badge-xdai { background: #0faa91; color: #fff; }
+        .form-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-top: 12px; }
+        input, button { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.4); color: #fff; font-size: 0.95em; }
+        input { flex: 1; min-width: 140px; }
+        input::placeholder { color: #666; }
+        .btn { padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; border: 2px solid; transition: all 0.2s; }
+        .btn-deposit { background: var(--neon-green); color: #000; border-color: var(--neon-green); }
+        .btn-deposit:hover { background: transparent; color: var(--neon-green); }
+        .btn-withdraw { background: #ff6b35; color: #fff; border-color: #ff6b35; }
+        .btn-withdraw:hover { background: transparent; color: #ff6b35; }
+        .btn-claim { background: var(--gold); color: #000; border-color: var(--gold); }
+        .btn-claim:hover { background: transparent; color: var(--gold); }
+        .btn-sm { padding: 6px 12px; font-size: 0.85em; }
+        .section-title { font-family: 'Orbitron', sans-serif; color: var(--gold); margin: 28px 0 16px; font-size: 1.3em; }
+        .wallet-global { margin-bottom: 20px; }
+        .wallet-global label { display: block; color: #aaa; margin-bottom: 6px; }
+        .dep-list { list-style: none; }
+        .dep-list li { padding: 12px; border-bottom: 1px solid rgba(255,215,0,0.1); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+        .dep-list li:last-child { border-bottom: none; }
+        .err { color: #ff6b6b; font-size: 0.9em; margin-top: 6px; }
+        .ok { color: var(--neon-green); font-size: 0.9em; margin-top: 6px; }
+        .footer { text-align: center; padding: 24px; color: #666; border-top: 2px solid var(--border); margin-top: 40px; }
+        .footer .logo { color: var(--gold); font-weight: bold; }
+        .version-badge { display: inline-block; background: var(--gold); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="container">
+        <a href="#" class="back-link" onclick="if(history.length>1)history.back();else window.location='http://localhost:8545/platform';return false"><i class="bi bi-arrow-left"></i> Back to IERAHKWA Platform</a>
+
+        <div class="header">
+            <h1><i class="bi bi-flower1"></i> IERAHKWA FARMFACTORY</h1>
+            <div class="subtitle">Staking & Yield Farming · ETH · BSC · Polygon · Aurora · xDai · IERAHKWA</div>
+            <p style="color:#aaa; max-width:600px; margin:12px auto 0; font-size:0.95em;">Deposit ERC20/BEP20 staking tokens, earn reward tokens. Your share = (amount × time) / total. Withdraw and claim anytime.</p>
+            <span class="version-badge">v1.0 · .NET 10</span>
+        </div>
+
+        <div class="wallet-global card">
+            <label>Your wallet (for Deposit / Withdraw / Claim)</label>
+            <input type="text" id="globalWallet" placeholder="0x..." style="max-width:480px;" />
+        </div>
+
+        <div class="section-title"><i class="bi bi-bank"></i> Farming Pools</div>
+        <div id="pools"></div>
+
+        <div class="section-title"><i class="bi bi-wallet2"></i> My Deposits</div>
+        <div id="deposits"></div>
+    </div>
+
+    <div class="footer">
+        <div class="logo">🏛️ Sovereign Government of Ierahkwa Ne Kanienke</div>
+        <p>IERAHKWA FarmFactory v1.0 · .NET 10 · Integrated with IERAHKWA Platform</p>
+    </div>
+
+    <script>
+        const API = '';
+        function netBadge(n) {
+            const c = { ETH: 'badge-eth', BSC: 'badge-bsc', POLYGON: 'badge-polygon', IERAHKWA: 'badge-ierahkwa', AURORA: 'badge-aurora', XDAI: 'badge-xdai' };
+            return '<span class="badge ' + (c[n] || '') + '">' + (n || '') + '</span>';
+        }
+        function poolCard(p) {
+            const id = p.id;
+            const rewardRate = p.periodSeconds > 0 ? (p.totalRewardAmount / (p.periodSeconds / 86400)).toFixed(2) : '0';
+            return `
+<div class="card" data-pool-id="${id}">
+  <h3>${p.name}</h3>
+  <div class="meta">${p.description || ''} ${netBadge(p.network)}</div>
+  <div class="meta">Stake <strong>${p.stakingTokenSymbol}</strong> → Farm <strong>${p.rewardTokenSymbol}</strong> · Total rewards: ${p.totalRewardAmount} ${p.rewardTokenSymbol} · ~${rewardRate} ${p.rewardTokenSymbol}/day</div>
+  <div class="form-row">
+    <input type="text" class="dep-amount" data-pool="${id}" placeholder="Amount to stake" />
+    <button class="btn btn-deposit" data-pool="${id}">Deposit</button>
+  </div>
+  <div class="err dep-err" data-pool="${id}"></div>
+  <div class="ok dep-ok" data-pool="${id}"></div>
+</div>`;
+        }
+        async function loadPools() {
+            try {
+                const r = await fetch(API + '/api/pools');
+                const arr = await r.json();
+                document.getElementById('pools').innerHTML = arr.length ? arr.map(poolCard).join('') : '<p class="card">No pools.</p>';
+                document.querySelectorAll('.btn-deposit').forEach(btn => {
+                    btn.onclick = () => deposit(btn.dataset.pool);
+                });
+            } catch (e) {
+                document.getElementById('pools').innerHTML = '<p class="card err">Error loading pools: ' + e.message + '</p>';
+            }
+        }
+        async function deposit(poolId) {
+            const wallet = document.getElementById('globalWallet').value.trim();
+            const input = document.querySelector('.dep-amount[data-pool="' + poolId + '"]');
+            const amount = parseFloat(input?.value || '0');
+            const errEl = document.querySelector('.dep-err[data-pool="' + poolId + '"]');
+            const okEl = document.querySelector('.dep-ok[data-pool="' + poolId + '"]');
+            if (errEl) errEl.textContent = '';
+            if (okEl) okEl.textContent = '';
+            if (!wallet) { if (errEl) errEl.textContent = 'Set your wallet above.'; return; }
+            if (!amount || amount <= 0) { if (errEl) errEl.textContent = 'Enter a valid amount.'; return; }
+            try {
+                const r = await fetch(API + '/api/farms/deposit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ poolId, userWallet: wallet, amount }) });
+                const j = await r.json().catch(() => ({}));
+                if (!r.ok) { if (errEl) errEl.textContent = j.error || r.statusText; return; }
+                if (okEl) okEl.textContent = 'Deposited. Refresh My Deposits.';
+                if (input) input.value = '';
+                loadDeposits();
+            } catch (e) { if (errEl) errEl.textContent = e.message; }
+        }
+        function depRow(d, poolSymbol, rewardSymbol) {
+            const active = !d.unstakedAt;
+            const claimId = d.id;
+            const poolId = d.poolId;
+            return `
+<li>
+  <span>${d.amount} ${poolSymbol} ${active ? '<span class="badge badge-eth">Active</span>' : ' (withdrawn)'} · Staked: ${new Date(d.stakedAt).toLocaleString()}</span>
+  <span>
+    <button class="btn btn-claim btn-sm" data-action="claim-one" data-id="${claimId}" data-wallet="${d.userWallet}" data-pool="${poolId}">Claim</button>
+    ${active ? '<button class="btn btn-withdraw btn-sm" data-action="withdraw" data-id="' + claimId + '" data-wallet="' + d.userWallet + '">Withdraw</button>' : ''}
+  </span>
+</li>`;
+        }
+        async function loadDeposits() {
+            const wallet = document.getElementById('globalWallet').value.trim();
+            const el = document.getElementById('deposits');
+            if (!wallet) { el.innerHTML = '<p class="card">Enter your wallet above to see deposits.</p>'; return; }
+            try {
+                const r = await fetch(API + '/api/farms/deposits?wallet=' + encodeURIComponent(wallet));
+                const arr = await r.json();
+                const pools = {};
+                (await fetch(API + '/api/pools').then(x=>x.json())).forEach(p=>{ pools[p.id]=p; });
+                el.innerHTML = arr.length ? '<ul class="dep-list card">' + arr.map(d => {
+                    const p = pools[d.poolId] || {};
+                    return depRow(d, p.stakingTokenSymbol || 'STAKE', p.rewardTokenSymbol || 'REWARD');
+                }).join('') + '</ul>' : '<p class="card">No deposits. Make a deposit above.</p>';
+                el.querySelectorAll('[data-action="claim-one"]').forEach(btn => {
+                    btn.onclick = () => claim(btn.dataset.id, btn.dataset.wallet, btn.dataset.pool);
+                });
+                el.querySelectorAll('[data-action="withdraw"]').forEach(btn => {
+                    btn.onclick = () => withdraw(btn.dataset.id, btn.dataset.wallet);
+                });
+            } catch (e) {
+                el.innerHTML = '<p class="card err">Error: ' + e.message + '</p>';
+            }
+        }
+        async function claim(depositId, wallet, poolId) {
+            try {
+                const body = { userWallet: wallet, depositId: depositId || null, poolId: poolId || null };
+                const r = await fetch(API + '/api/farms/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                const j = await r.json().catch(() => ({}));
+                if (!r.ok) { alert(j.error || r.statusText); return; }
+                alert('Claimed: ' + (j.claimedAmount || 0));
+                loadDeposits();
+            } catch (e) { alert(e.message); }
+        }
+        async function withdraw(depositId, wallet) {
+            if (!confirm('Withdraw this deposit?')) return;
+            try {
+                const r = await fetch(API + '/api/farms/withdraw', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ depositId, userWallet: wallet }) });
+                const j = await r.json().catch(() => ({}));
+                if (!r.ok) { alert(j.error || r.statusText); return; }
+                loadDeposits();
+            } catch (e) { alert(e.message); }
+        }
+        document.getElementById('globalWallet').addEventListener('change', loadDeposits);
+        document.getElementById('globalWallet').addEventListener('blur', loadDeposits);
+        loadPools();
+        loadDeposits();
+    </script>
+</body>
+</html>

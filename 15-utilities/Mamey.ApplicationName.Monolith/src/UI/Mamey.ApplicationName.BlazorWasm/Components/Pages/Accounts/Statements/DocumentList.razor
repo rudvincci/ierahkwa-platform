@@ -1,0 +1,22 @@
+@using Mamey.ApplicationName.BlazorWasm.Models.Statements
+
+@code {
+    [Parameter] public IEnumerable<Document> Documents { get; set; }
+}
+
+<MudTable Items="Documents" Hover="true">
+    <HeaderContent>
+        <MudTh>File Name</MudTh>
+        <MudTh>Category</MudTh>
+        <MudTh>Uploaded Date</MudTh>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.FileName</MudTd>
+        <MudTd>@context.Category</MudTd>
+        <MudTd>@context.UploadedDate.ToShortDateString()</MudTd>
+        <MudTd>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary">Download</MudButton>
+        </MudTd>
+    </RowTemplate>
+</MudTable>

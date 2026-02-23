@@ -1,0 +1,400 @@
+syntax = "proto3";
+
+package mamey.ledger;
+
+// Ledger integration service for MameyNode blockchain
+service LedgerIntegrationService {
+    // Transaction logging
+    rpc LogTransaction(LogTransactionRequest) returns (LogTransactionResponse);
+    rpc GetTransactionLog(GetTransactionLogRequest) returns (GetTransactionLogResponse);
+    rpc ListTransactionLogs(ListTransactionLogsRequest) returns (ListTransactionLogsResponse);
+    
+    // Compliance flagging
+    rpc FlagTransaction(FlagTransactionRequest) returns (FlagTransactionResponse);
+    rpc GetTransactionFlags(GetTransactionFlagsRequest) returns (GetTransactionFlagsResponse);
+    rpc ResolveFlag(ResolveFlagRequest) returns (ResolveFlagResponse);
+    
+    // Currency registry
+    rpc RegisterCurrency(RegisterCurrencyRequest) returns (RegisterCurrencyResponse);
+    rpc GetCurrency(GetCurrencyRequest) returns (GetCurrencyResponse);
+    rpc ListCurrencies(ListCurrenciesRequest) returns (ListCurrenciesResponse);
+    rpc UpdateCurrency(UpdateCurrencyRequest) returns (UpdateCurrencyResponse);
+    
+    // Credit tracking
+    rpc TrackCredit(TrackCreditRequest) returns (TrackCreditResponse);
+    rpc GetCreditHistory(GetCreditHistoryRequest) returns (GetCreditHistoryResponse);
+    rpc GetCreditSummary(GetCreditSummaryRequest) returns (GetCreditSummaryResponse);
+    
+    // Transparency dashboard
+    rpc GetDashboardData(GetDashboardDataRequest) returns (GetDashboardDataResponse);
+    rpc GetTransactionStatistics(GetTransactionStatisticsRequest) returns (GetTransactionStatisticsResponse);
+    
+    // Audit trail
+    rpc GetAuditTrail(GetAuditTrailRequest) returns (GetAuditTrailResponse);
+    rpc ExportAuditTrail(ExportAuditTrailRequest) returns (ExportAuditTrailResponse);
+}
+
+// Log transaction request
+message LogTransactionRequest {
+    string transaction_id = 1;
+    string transaction_type = 2;
+    string from_account = 3;
+    string to_account = 4;
+    string amount = 5;
+    string currency = 6;
+    map<string, string> metadata = 7;
+}
+
+// Log transaction response
+message LogTransactionResponse {
+    string log_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get transaction log request
+message GetTransactionLogRequest {
+    string transaction_id = 1;
+}
+
+// Get transaction log response
+message GetTransactionLogResponse {
+    TransactionLog log = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// List transaction logs request
+message ListTransactionLogsRequest {
+    string account_id = 1;
+    string transaction_type = 2;
+    uint64 start_date = 3;
+    uint64 end_date = 4;
+    uint32 limit = 5;
+    uint32 offset = 6;
+}
+
+// List transaction logs response
+message ListTransactionLogsResponse {
+    repeated TransactionLog logs = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Flag transaction request
+message FlagTransactionRequest {
+    string transaction_id = 1;
+    string flag_type = 2;
+    string severity = 3;
+    string reason = 4;
+}
+
+// Flag transaction response
+message FlagTransactionResponse {
+    string flag_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get transaction flags request
+message GetTransactionFlagsRequest {
+    string transaction_id = 1;
+}
+
+// Get transaction flags response
+message GetTransactionFlagsResponse {
+    repeated TransactionFlag flags = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Resolve flag request
+message ResolveFlagRequest {
+    string flag_id = 1;
+    string resolution = 2;
+}
+
+// Resolve flag response
+message ResolveFlagResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Register currency request
+message RegisterCurrencyRequest {
+    string currency_code = 1;
+    string currency_name = 2;
+    string symbol = 3;
+    uint32 decimals = 4;
+    string issuer = 5;
+    map<string, string> metadata = 6;
+}
+
+// Register currency response
+message RegisterCurrencyResponse {
+    string currency_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get currency request
+message GetCurrencyRequest {
+    string currency_code = 1;
+}
+
+// Get currency response
+message GetCurrencyResponse {
+    CurrencyInfo currency = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// List currencies request
+message ListCurrenciesRequest {
+    uint32 limit = 1;
+    uint32 offset = 2;
+}
+
+// List currencies response
+message ListCurrenciesResponse {
+    repeated CurrencyInfo currencies = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Update currency request
+message UpdateCurrencyRequest {
+    string currency_code = 1;
+    map<string, string> updates = 2;
+}
+
+// Update currency response
+message UpdateCurrencyResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Track credit request
+message TrackCreditRequest {
+    string account_id = 1;
+    string credit_type = 2;
+    string amount = 3;
+    string currency = 4;
+    string description = 5;
+}
+
+// Track credit response
+message TrackCreditResponse {
+    string credit_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get credit history request
+message GetCreditHistoryRequest {
+    string account_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// Get credit history response
+message GetCreditHistoryResponse {
+    repeated CreditEntry entries = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get credit summary request
+message GetCreditSummaryRequest {
+    string account_id = 1;
+}
+
+// Get credit summary response
+message GetCreditSummaryResponse {
+    CreditSummary summary = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get dashboard data request
+message GetDashboardDataRequest {
+    uint64 start_date = 1;
+    uint64 end_date = 2;
+}
+
+// Get dashboard data response
+message GetDashboardDataResponse {
+    DashboardData data = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get transaction statistics request
+message GetTransactionStatisticsRequest {
+    uint64 start_date = 1;
+    uint64 end_date = 2;
+    string currency = 3;
+}
+
+// Get transaction statistics response
+message GetTransactionStatisticsResponse {
+    TransactionStatistics statistics = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get audit trail request
+message GetAuditTrailRequest {
+    string entity_type = 1;
+    string entity_id = 2;
+    uint32 limit = 3;
+    uint32 offset = 4;
+}
+
+// Get audit trail response
+message GetAuditTrailResponse {
+    repeated AuditEntry entries = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Export audit trail request
+message ExportAuditTrailRequest {
+    string entity_type = 1;
+    string entity_id = 2;
+    uint64 start_date = 3;
+    uint64 end_date = 4;
+    string format = 5;  // "json", "csv", "xml"
+}
+
+// Export audit trail response
+message ExportAuditTrailResponse {
+    bytes export_data = 1;
+    string format = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Transaction log
+message TransactionLog {
+    string log_id = 1;
+    string transaction_id = 2;
+    string transaction_type = 3;
+    string from_account = 4;
+    string to_account = 5;
+    string amount = 6;
+    string currency = 7;
+    uint64 timestamp = 8;
+    map<string, string> metadata = 9;
+}
+
+// Transaction flag
+message TransactionFlag {
+    string flag_id = 1;
+    string transaction_id = 2;
+    string flag_type = 3;
+    string severity = 4;
+    string reason = 5;
+    FlagStatus status = 6;
+    uint64 created_at = 7;
+}
+
+// Currency info
+message CurrencyInfo {
+    string currency_id = 1;
+    string currency_code = 2;
+    string currency_name = 3;
+    string symbol = 4;
+    uint32 decimals = 5;
+    string issuer = 6;
+    uint64 registered_at = 7;
+    CurrencyStatus status = 8;
+    map<string, string> metadata = 9;
+}
+
+// Credit entry
+message CreditEntry {
+    string credit_id = 1;
+    string account_id = 2;
+    string credit_type = 3;
+    string amount = 4;
+    string currency = 5;
+    string description = 6;
+    uint64 timestamp = 7;
+}
+
+// Credit summary
+message CreditSummary {
+    string account_id = 1;
+    string total_credit = 2;
+    string available_credit = 3;
+    string used_credit = 4;
+    string currency = 5;
+    uint64 last_updated = 6;
+}
+
+// Dashboard data
+message DashboardData {
+    string total_transactions = 1;
+    string total_volume = 2;
+    string active_accounts = 3;
+    repeated CurrencyVolume currency_volumes = 4;
+    uint64 last_updated = 5;
+}
+
+// Currency volume
+message CurrencyVolume {
+    string currency = 1;
+    string volume = 2;
+    uint32 transaction_count = 3;
+}
+
+// Transaction statistics
+message TransactionStatistics {
+    uint32 total_transactions = 1;
+    string total_volume = 2;
+    string average_transaction = 3;
+    string largest_transaction = 4;
+    string smallest_transaction = 5;
+    repeated TransactionTypeCount type_counts = 6;
+}
+
+// Transaction type count
+message TransactionTypeCount {
+    string transaction_type = 1;
+    uint32 count = 2;
+    string volume = 3;
+}
+
+// Audit entry
+message AuditEntry {
+    string entry_id = 1;
+    string entity_type = 2;
+    string entity_id = 3;
+    string action = 4;
+    string actor = 5;
+    uint64 timestamp = 6;
+    map<string, string> details = 7;
+}
+
+// Flag status enum
+enum FlagStatus {
+    FLAG_STATUS_ACTIVE = 0;
+    FLAG_STATUS_RESOLVED = 1;
+    FLAG_STATUS_DISMISSED = 2;
+}
+
+// Currency status enum
+enum CurrencyStatus {
+    CURRENCY_STATUS_ACTIVE = 0;
+    CURRENCY_STATUS_SUSPENDED = 1;
+    CURRENCY_STATUS_DEPRECATED = 2;
+}
+
+
+
+

@@ -1,0 +1,71 @@
+@using Mamey.BlazorWasm.Components.Foundation
+
+<MudDatePicker T="DateTime?"
+               Label="@Label"
+               Placeholder="@Placeholder"
+               Date="@_date"
+               DateChanged="@OnDateChanged"
+               Required="@Required"
+               Disabled="@Disabled"
+               Variant="@Variant"
+               Error="_error"
+               HelperText="@HelperText"
+               Class="@Class"
+               Style="@Style" />
+<FieldMessages HelperText="@HelperText" />
+
+@code {
+    [Parameter] public string Label { get; set; } = "Date";
+    [Parameter] public string HelperText { get; set; } = "Select a date";
+    [Parameter] public string Placeholder { get; set; } = "Select date";
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public DateTime? MinDate { get; set; }
+    [Parameter] public DateTime? MaxDate { get; set; }
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public DateTime? Value { get; set; }
+    [Parameter] public EventCallback<DateTime?> ValueChanged { get; set; }
+
+    private DateTime? _date;
+    private bool _error = false;
+
+    protected override void OnParametersSet()
+    {
+        _date = Value;
+    }
+
+    private async Task OnDateChanged(DateTime? date)
+    {
+        _error = false;
+
+        if (date.HasValue)
+        {
+            if (MinDate.HasValue && date.Value < MinDate.Value)
+            {
+                _error = true;
+                await ValueChanged.InvokeAsync(null);
+                StateHasChanged();
+                return;
+            }
+
+            if (MaxDate.HasValue && date.Value > MaxDate.Value)
+            {
+                _error = true;
+                await ValueChanged.InvokeAsync(null);
+                StateHasChanged();
+                return;
+            }
+        }
+
+        _date = date;
+        await ValueChanged.InvokeAsync(date);
+        StateHasChanged();
+    }
+}
+
+
+
+

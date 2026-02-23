@@ -1,0 +1,59 @@
+@page "/upg/protocol-support"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IUPGClient UPGClient
+@inject ILogger<ProtocolSupport> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Protocol Support" Icon="fas fa-network-wired" Subtitle="Supported payment protocols">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <CardContainer Title="Supported Protocols" Class="mt-4">
+        <MudGrid Spacing="3">
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="2">
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">Visa</MudText>
+                        <MudChip T="string" Size="Size.Small" Color="Color.Success">Supported</MudChip>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="2">
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">Mastercard</MudText>
+                        <MudChip T="string" Size="Size.Small" Color="Color.Success">Supported</MudChip>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="2">
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">SWIFT</MudText>
+                        <MudChip T="string" Size="Size.Small" Color="Color.Success">Supported</MudChip>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.CompletedTask;
+    }
+
+    private async Task RefreshData()
+    {
+        StateHasChanged();
+    }
+}
+

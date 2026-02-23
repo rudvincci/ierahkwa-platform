@@ -1,0 +1,87 @@
+@page "/banking/treasury"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFBDETBClient FBDETBClient
+@inject ILogger<Treasury> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Treasury" Icon="fas fa-coins" Subtitle="Treasury management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Supply" Value="@_totalSupply.ToString("C")" Icon="fas fa-coins" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Circulating" Value="@_circulatingSupply.ToString("C")" Icon="fas fa-chart-line" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Treasury Balance" Value="@_treasuryBalance.ToString("C")" Icon="fas fa-vault" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Treasury Information" Class="mt-4">
+        <MudTable T="TreasuryInfo" Items="@_treasuryInfo" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Treasury ID</MudTh>
+                <MudTh>Currency</MudTh>
+                <MudTh>Total Supply</MudTh>
+                <MudTh>Circulating</MudTh>
+                <MudTh>Treasury Balance</MudTh>
+                <MudTh>Updated</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.TreasuryId</MudTd>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd>@decimal.Parse(context.TotalSupply).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.CirculatingSupply).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.TreasuryBalance).ToString("C")</MudTd>
+                <MudTd>@context.LastUpdated.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<TreasuryInfo> _treasuryInfo = new();
+    private decimal _totalSupply;
+    private decimal _circulatingSupply;
+    private decimal _treasuryBalance;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _treasuryInfo = await FBDETBClient.GetTreasuryInfoAsync();
+            _totalSupply = _treasuryInfo.Sum(t => decimal.Parse(t.TotalSupply));
+            _circulatingSupply = _treasuryInfo.Sum(t => decimal.Parse(t.CirculatingSupply));
+            _treasuryBalance = _treasuryInfo.Sum(t => decimal.Parse(t.TreasuryBalance));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading treasury info");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

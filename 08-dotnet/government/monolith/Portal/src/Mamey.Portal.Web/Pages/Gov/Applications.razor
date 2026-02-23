@@ -1,0 +1,59 @@
+@page "/gov/applications"
+@attribute [Authorize(Roles = "GovernmentAgent,Admin")]
+@using Mamey.Portal.Citizenship.Application.Models
+@using Mamey.Portal.Citizenship.Application.Services
+@inject ICitizenshipBackofficeService Backoffice
+
+<PageTitle>Applications (Backoffice)</PageTitle>
+
+@code {
+    private IReadOnlyList<BackofficeApplicationSummary> _apps = Array.Empty<BackofficeApplicationSummary>();
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _apps = await Backoffice.GetRecentApplicationsAsync(50);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+}
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h4">Citizenship Applications</MudText>
+    <MudText Typo="Typo.body2">
+        This is Phase 4 wiring: data is loaded from PostgreSQL and includes the upload count per application.
+    </MudText>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+
+    <MudTable Items="_apps" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Application</MudTh>
+            <MudTh>Applicant</MudTh>
+            <MudTh>DOB</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh Align="Align.Right">Uploads</MudTh>
+            <MudTh>Created</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Application">
+                <MudLink Href="@($"/gov/applications/{context.Id}")">@context.ApplicationNumber</MudLink>
+            </MudTd>
+            <MudTd DataLabel="Applicant">@context.ApplicantName</MudTd>
+            <MudTd DataLabel="DOB">@context.DateOfBirth</MudTd>
+            <MudTd DataLabel="Status">@context.Status</MudTd>
+            <MudTd DataLabel="Uploads" Align="Align.Right">@context.UploadCount</MudTd>
+            <MudTd DataLabel="Created">@context.CreatedAt.LocalDateTime</MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudStack>
+
+

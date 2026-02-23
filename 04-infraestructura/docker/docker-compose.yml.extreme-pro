@@ -1,0 +1,382 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# IERAHKWA BANKING SYSTEM - DOCKER COMPOSE
+# Orquestación completa de todos los servicios
+# ═══════════════════════════════════════════════════════════════════════════════
+# 
+# USO:
+#   docker compose up -d                    # Iniciar todo
+#   docker compose up -d node bridge        # Solo algunos servicios
+#   docker compose logs -f node             # Ver logs
+#   docker compose down                     # Detener todo
+#   docker compose down -v                  # Detener y eliminar volúmenes
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+version: '3.9'
+
+name: ierahkwa-banking
+
+services:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # CORE SERVICES
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  # Node.js - Mamey Node (Main Server)
+  node:
+    build:
+      context: ./node
+      dockerfile: Dockerfile
+    image: ierahkwa/node:latest
+    container_name: ierahkwa-node
+    ports:
+      - "8545:8545"
+    environment:
+      - NODE_ENV=production
+      - PORT=8545
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URL=mongodb://mongo:27017/ierahkwa
+      - BRIDGE_URL=http://bridge:3001
+      - JWT_SECRET=${JWT_SECRET:-dev-insecure-change-in-production}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dev-refresh-insecure-change-in-production}
+      - CORS_ORIGIN=${CORS_ORIGIN:-}
+    depends_on:
+      - redis
+      - mongo
+    volumes:
+      - ./node:/app
+      - /app/node_modules
+      - node_logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Banking Bridge API
+  bridge:
+    build:
+      context: ./node
+      dockerfile: Dockerfile.bridge
+    image: ierahkwa/bridge:latest
+    container_name: ierahkwa-bridge
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URL=mongodb://mongo:27017/ierahkwa
+    depends_on:
+      - redis
+      - mongo
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Editor API
+  editor:
+    build:
+      context: ./platform
+      dockerfile: Dockerfile.editor
+    image: ierahkwa/editor:latest
+    container_name: ierahkwa-editor
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+    volumes:
+      - ./platform:/app
+      - /app/node_modules
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # .NET SERVICES
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  dotnet:
+    build:
+      context: ./IerahkwaBanking.NET10
+      dockerfile: Dockerfile
+    image: ierahkwa/dotnet:latest
+    container_name: ierahkwa-dotnet
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=ierahkwa;Username=ierahkwa;Password=${POSTGRES_PASSWORD:-ierahkwa123}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # GO SERVICES
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  gateway:
+    build:
+      context: ./services/go
+      dockerfile: Dockerfile
+    image: ierahkwa/gateway:latest
+    container_name: ierahkwa-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - RATE_LIMIT=1000
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # PYTHON ML SERVICES
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  ml:
+    build:
+      context: ./services/python
+      dockerfile: Dockerfile
+    image: ierahkwa/ml:latest
+    container_name: ierahkwa-ml
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MODEL_PATH=/app/models
+    volumes:
+      - ml_models:/app/models
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # RUST CRYPTO SERVICES
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  crypto:
+    build:
+      context: ./services/rust
+      dockerfile: Dockerfile
+    image: ierahkwa/crypto:latest
+    container_name: ierahkwa-crypto
+    ports:
+      - "8088:8088"
+    environment:
+      - RUST_LOG=info
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # TRADING SERVICES
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  tradex:
+    build:
+      context: ./servers
+      dockerfile: Dockerfile.tradex
+    image: ierahkwa/tradex:latest
+    container_name: ierahkwa-tradex
+    ports:
+      - "3005:3005"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - WS_PORT=3006
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DATABASES
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  # Redis - Cache & Sessions
+  redis:
+    image: redis:7-alpine
+    container_name: ierahkwa-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB - NoSQL Database
+  mongo:
+    image: mongo:7
+    container_name: ierahkwa-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-ierahkwa123}
+      - MONGO_INITDB_DATABASE=ierahkwa
+    volumes:
+      - mongo_data:/data/db
+      - ./database/mongo-init.js:/docker-entrypoint-initdb.d/init.js:ro
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  # PostgreSQL - SQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: ierahkwa-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=ierahkwa
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-ierahkwa123}
+      - POSTGRES_DB=ierahkwa
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ierahkwa"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # MESSAGE QUEUE
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: ierahkwa-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=ierahkwa
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-ierahkwa123}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # MONITORING & OBSERVABILITY
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  # Prometheus - Metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ierahkwa-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+
+  # Grafana - Dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ierahkwa-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-ierahkwa123}
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # REVERSE PROXY
+  # ═══════════════════════════════════════════════════════════════════════════
+  
+  nginx:
+    image: nginx:alpine
+    container_name: ierahkwa-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      # LetsEncrypt (ver deploy/SSL-SETUP.md): crear /var/www/certbot y ejecutar certbot antes
+      - /var/www/certbot:/var/www/certbot:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - node
+      - bridge
+      - dotnet
+    restart: unless-stopped
+    networks:
+      - ierahkwa-network
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# NETWORKS
+# ═══════════════════════════════════════════════════════════════════════════════
+networks:
+  ierahkwa-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# VOLUMES
+# ═══════════════════════════════════════════════════════════════════════════════
+volumes:
+  redis_data:
+  mongo_data:
+  postgres_data:
+  rabbitmq_data:
+  prometheus_data:
+  grafana_data:
+  node_logs:
+  nginx_logs:
+  ml_models:

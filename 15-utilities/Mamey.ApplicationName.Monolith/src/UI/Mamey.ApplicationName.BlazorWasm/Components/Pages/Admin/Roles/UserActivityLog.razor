@@ -1,0 +1,19 @@
+@using System.Collections.ObjectModel
+@using Mamey.ApplicationName.BlazorWasm.Models.Roles
+
+@code {
+    [Parameter] public ObservableCollection<UserActivity> Activities { get; set; }
+}
+
+<MudTable T="UserActivity" Items="Activities" Hover="true" Striped="true">
+    <HeaderContent>
+        <MudTh>User</MudTh>
+        <MudTh>Activity</MudTh>
+        <MudTh>Timestamp</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.UserName</MudTd>
+        <MudTd>@context.Activity</MudTd>
+        <MudTd>@context.Timestamp.ToString("g")</MudTd>
+    </RowTemplate>
+</MudTable>

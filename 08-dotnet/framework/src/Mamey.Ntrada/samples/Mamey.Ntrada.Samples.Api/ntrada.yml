@@ -1,0 +1,134 @@
+auth:
+  enabled: true
+  global: false
+  claims:
+    role: http://schemas.microsoft.com/ws/2008/06/identity/claims/role
+
+http:
+  retries: 2
+  interval: 2.0
+  exponential: true
+
+useErrorHandler: true
+useJaeger: true
+useForwardedHeaders: true
+passQueryString: true
+modulesPath: Modules
+payloadsFolder: Payloads
+forwardRequestHeaders: true
+forwardResponseHeaders: true
+generateRequestId: true
+generateTraceId: true
+resourceId:
+  generate: true
+  property: id
+useLocalUrl: true
+loadBalancer:
+  enabled: false
+  url: localhost:9999
+
+extensions:
+  customErrors:
+    includeExceptionMessage: true
+  
+  cors:
+    allowCredentials: true
+    allowedOrigins:
+      - '*'
+    allowedMethods:
+      - post
+      - delete
+    allowedHeaders:
+      - '*'
+    exposedHeaders:
+      - Request-ID
+      - Resource-ID
+      - Trace-ID
+      - Total-Count
+    
+  jwt:
+    key: eiquief5phee9pazo0Faegaez9gohThailiur5woy2befiech1oarai4aiLi6ahVecah3ie9Aiz6Peij
+    issuer: ntrada
+    issuers:
+    validateIssuer: true
+    audience:
+    audiences:
+    validateAudience: false
+    validateLifetime: true
+    
+  rabbitmq:
+    enabled: true
+    connectionName: ntrada
+    hostnames:
+      - localhost
+    port: 5672
+    virtualHost: /
+    username: guest
+    password: guest
+    requestedConnectionTimeout: 3000
+    socketReadTimeout: 3000
+    socketWriteTimeout: 3000
+    requestedHeartbeat: 60
+    exchange:
+      declareExchange: true
+      durable: true
+      autoDelete: false
+      type: topic
+    messageContext:
+      enabled: true
+      header: message_context
+    logger:
+      enabled: true
+    spanContextHeader: span_context
+
+  swagger:
+    name: v1
+    reDocEnabled: false
+    title: API
+    version: v1
+    routePrefix: docs
+    includeSecurity: true
+
+  tracing:
+    serviceName: ntrada
+    udpHost: localhost
+    udpPort: 6831
+    maxPacketSize: 0
+    sampler: const
+    useEmptyTracer: false
+    excludePaths:
+      - /ping
+      - /metrics
+
+modules:
+  home:
+    routes:
+      - upstream: /
+        method: GET
+        use: return_value
+        returnValue: Welcome to Mamey.Ntrada API!
+        
+      - upstream: /
+        method: POST
+        auth: false
+        use: rabbitmq
+        config:
+          exchange: sample.exchange
+          routing_key: sample.routing.key
+
+  orders:
+    routes:
+      - upstream: /orders
+#        method: GET
+        methods:
+          - GET
+          - POST
+          - DELETE
+        matchAll: true
+        use: downstream
+        downstream: orders-service/orders
+          
+    services:
+      orders-service:
+        localUrl: localhost:5001
+        url: orders-service

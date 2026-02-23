@@ -1,0 +1,14 @@
+networks:
+  mamey:
+    name: mamey
+    external: true
+services:
+  bagetter:
+    image: bagetter/bagetter:latest
+    container_name: bagetter
+    ports:
+      - "4000:8080"
+    volumes:
+      - ./bagetter-data:/data
+    networks:
+      - mamey

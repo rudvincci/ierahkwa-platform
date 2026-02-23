@@ -1,0 +1,109 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_theme" IsDarkMode="@_isDarkMode" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Primary">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" />
+        <MudText Typo="Typo.h6">@_appTitle</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)" 
+                       Color="Color.Inherit" OnClick="ToggleDarkMode" Title="Toggle dark mode" />
+        <UserMenu />
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" Variant="DrawerVariant.Responsive" Elevation="1" ClipMode="DrawerClipMode.Always">
+        <MudNavMenu>
+            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+
+            <MudDivider Class="my-2" />
+
+            <MudText Typo="Typo.overline" Class="px-4 pt-2">Public</MudText>
+            <MudNavLink Href="/about-us" Icon="@Icons.Material.Filled.Info">About</MudNavLink>
+            <MudNavLink Href="/our-history" Icon="@Icons.Material.Filled.HistoryEdu">Our History</MudNavLink>
+            <MudNavLink Href="/cabinet" Icon="@Icons.Material.Filled.Groups">Cabinet</MudNavLink>
+            <MudNavLink Href="/recognitions" Icon="@Icons.Material.Filled.Verified">Recognitions</MudNavLink>
+            <MudNavLink Href="/library" Icon="@Icons.Material.Filled.LibraryBooks">Library</MudNavLink>
+            <MudNavLink Href="/become-a-citizen" Icon="@Icons.Material.Filled.AssignmentInd">Become a Citizen</MudNavLink>
+            <MudNavLink Href="/public/validate-citizen" Icon="@Icons.Material.Filled.Badge">Validate Citizen ID</MudNavLink>
+            <MudNavLink Href="/faq" Icon="@Icons.Material.Filled.QuestionAnswer">FAQ</MudNavLink>
+            <MudNavLink Href="/public/application-status" Icon="@Icons.Material.Filled.QuestionAnswer">Contact Us</MudNavLink>
+
+            <MudDivider Class="my-2" />
+
+            <AuthorizeView>
+                <Authorized>
+                    <MudText Typo="Typo.overline" Class="px-4 pt-2">Portals</MudText>
+                    <MudNavLink Href="/citizen/dashboard" Icon="@Icons.Material.Filled.Person">Citizen Portal</MudNavLink>
+                    
+                    <AuthorizeView Roles="Admin,GovernmentAgent">
+                        <Authorized Context="govContext">
+                            <MudNavLink Href="/gov/dashboard" Icon="@Icons.Material.Filled.AdminPanelSettings">Government Portal</MudNavLink>
+                        </Authorized>
+                    </AuthorizeView>
+                    
+                    <AuthorizeView Roles="Admin,ContentEditor">
+                        <Authorized Context="cmsContext">
+                            <MudNavLink Href="/cms" Icon="@Icons.Material.Filled.EditNote">CMS</MudNavLink>
+                        </Authorized>
+                    </AuthorizeView>
+                </Authorized>
+            </AuthorizeView>
+        </MudNavMenu>
+    </MudDrawer>
+
+    <MudMainContent Class="pa-4 " style="margin-top:64px;">
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+    private bool _isDarkMode = false;
+    private string _appTitle = "Mamey Government Portal";
+
+    private MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight
+        {
+            Primary = "#1565C0",
+            Secondary = "#00897B",
+            AppbarBackground = "#1565C0",
+            Background = "#FAFAFA",
+            Surface = "#FFFFFF",
+            DrawerBackground = "#FFFFFF",
+            DrawerText = "#424242",
+            TextPrimary = "#212121",
+            TextSecondary = "#757575"
+        },
+        PaletteDark = new PaletteDark
+        {
+            Primary = "#42A5F5",
+            Secondary = "#4DB6AC",
+            AppbarBackground = "#1E1E1E",
+            Background = "#121212",
+            Surface = "#1E1E1E",
+            DrawerBackground = "#1E1E1E",
+            DrawerText = "#E0E0E0",
+            TextPrimary = "#E0E0E0",
+            TextSecondary = "#BDBDBD"
+        }
+    };
+
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+    private void ToggleDarkMode() => _isDarkMode = !_isDarkMode;
+
+    [Parameter]
+    public string? TenantDisplayName { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrWhiteSpace(TenantDisplayName))
+        {
+            _appTitle = TenantDisplayName;
+        }
+    }
+}

@@ -1,0 +1,100 @@
+@page "/biis/identity-compliance"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IBIISClient BIISClient
+@inject ILogger<IdentityCompliance> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Identity & Treaty Compliance" Icon="fas fa-id-card" Subtitle="Identity verification and treaty compliance checks">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Checks" Value="@_checks.Count.ToString()" Icon="fas fa-clipboard-check" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Compliant" Value="@_compliantCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Non-Compliant" Value="@_nonCompliantCount.ToString()" Icon="fas fa-exclamation-triangle" Color="#EF4444" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Compliance Checks" Class="mt-4">
+        <MudTable T="IdentityComplianceInfo" Items="@_checks" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Compliance ID</MudTh>
+                <MudTh>Account ID</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Compliant</MudTh>
+                <MudTh>Violations</MudTh>
+                <MudTh>Verified</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.ComplianceId</MudTd>
+                <MudTd>@context.AccountId</MudTd>
+                <MudTd>@context.ComplianceType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Verified" ? Color.Success : context.Status == "Pending" ? Color.Warning : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.IsCompliant ? Color.Success : Color.Error)">
+                        @(context.IsCompliant ? "Yes" : "No")
+                    </MudChip>
+                </MudTd>
+                <MudTd>@(context.Violations.Any() ? string.Join(", ", context.Violations) : "None")</MudTd>
+                <MudTd>@context.VerifiedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<IdentityComplianceInfo> _checks = new();
+    private int _compliantCount;
+    private int _nonCompliantCount;
+    private int _pendingCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _checks = await BIISClient.GetIdentityComplianceChecksAsync();
+            _compliantCount = _checks.Count(c => c.IsCompliant);
+            _nonCompliantCount = _checks.Count(c => !c.IsCompliant);
+            _pendingCount = _checks.Count(c => c.Status == "Pending");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading compliance checks");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

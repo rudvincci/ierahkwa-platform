@@ -1,0 +1,185 @@
+@using Mamey.FWID.Identities.BlazorWasm.Services
+
+<MudPaper Elevation="0" Class="pa-4 text-center" Style="background: var(--mud-palette-surface);">
+    <MudText Typo="Typo.h6" Class="mb-3">Liveness Verification</MudText>
+    
+    <!-- Progress Indicator -->
+    <MudProgressLinear Value="@GetProgressPercent()" Color="Color.Primary" Class="mb-4" />
+    
+    <!-- Action Prompt -->
+    <div class="liveness-prompt mb-4">
+        @if (!string.IsNullOrEmpty(CurrentAction))
+        {
+            <MudIcon Icon="@GetActionIcon()" 
+                     Style="font-size: 4rem;" 
+                     Color="@GetActionColor()" />
+            
+            <MudText Typo="Typo.h5" Class="mt-2">@GetActionPrompt()</MudText>
+            
+            @if (_isDetecting)
+            {
+                <MudProgressCircular Color="Color.Primary" 
+                                     Size="Size.Small" 
+                                     Indeterminate="true" 
+                                     Class="mt-2" />
+                <MudText Typo="Typo.body2" Class="mt-2 mud-text-secondary">
+                    Detecting...
+                </MudText>
+            }
+        }
+    </div>
+    
+    <!-- Step Indicators -->
+    <div class="d-flex justify-center gap-2 mb-4">
+        @for (int i = 0; i < Actions.Length; i++)
+        {
+            var index = i;
+            <MudAvatar Size="Size.Small" 
+                       Color="@GetStepColor(index)" 
+                       Variant="Variant.Outlined">
+                @if (index < CurrentStep)
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" />
+                }
+                else
+                {
+                    @(index + 1)
+                }
+            </MudAvatar>
+        }
+    </div>
+    
+    <!-- Results Summary (after completion) -->
+    @if (_isComplete)
+    {
+        <MudAlert Severity="@(_result?.Passed == true ? Severity.Success : Severity.Error)" Class="mt-4">
+            @if (_result?.Passed == true)
+            {
+                <MudText Typo="Typo.body1">
+                    <strong>Liveness verified!</strong> Confidence: @((_result.Confidence * 100).ToString("F0"))%
+                </MudText>
+            }
+            else
+            {
+                <MudText Typo="Typo.body1">
+                    <strong>Verification failed.</strong> Please try again.
+                </MudText>
+            }
+        </MudAlert>
+    }
+</MudPaper>
+
+@code {
+    [Parameter]
+    public string[] Actions { get; set; } = Array.Empty<string>();
+
+    [Parameter]
+    public string? CurrentAction { get; set; }
+
+    [Parameter]
+    public int CurrentStep { get; set; }
+
+    [Parameter]
+    public EventCallback<LivenessCheckResult> OnComplete { get; set; }
+
+    [Parameter]
+    public string VideoElementId { get; set; } = string.Empty;
+
+    [CascadingParameter]
+    public IBiometricCaptureService? BiometricService { get; set; }
+
+    private bool _isDetecting = false;
+    private bool _isComplete = false;
+    private LivenessCheckResult? _result;
+    private List<LivenessActionResult> _stepResults = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(CurrentAction) && !_isDetecting && !_isComplete)
+        {
+            await DetectCurrentActionAsync();
+        }
+    }
+
+    private async Task DetectCurrentActionAsync()
+    {
+        if (BiometricService == null || string.IsNullOrEmpty(CurrentAction)) return;
+
+        _isDetecting = true;
+        StateHasChanged();
+
+        try
+        {
+            // Perform detection
+            var result = await BiometricService.DetectLivenessActionAsync(CurrentAction, VideoElementId);
+            _stepResults.Add(result);
+
+            if (CurrentStep >= Actions.Length - 1)
+            {
+                // All steps complete
+                _isComplete = true;
+                _result = new LivenessCheckResult
+                {
+                    Passed = _stepResults.All(r => r.Detected),
+                    Confidence = _stepResults.Average(r => r.Confidence),
+                    Results = _stepResults
+                };
+                await OnComplete.InvokeAsync(_result);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Liveness detection error: {ex.Message}");
+        }
+        finally
+        {
+            _isDetecting = false;
+            StateHasChanged();
+        }
+    }
+
+    private double GetProgressPercent()
+    {
+        if (Actions.Length == 0) return 0;
+        return (double)(CurrentStep + (_isDetecting ? 0.5 : 0)) / Actions.Length * 100;
+    }
+
+    private string GetActionIcon()
+    {
+        return CurrentAction?.ToLower() switch
+        {
+            "blink" => Icons.Material.Filled.RemoveRedEye,
+            "turn_left" => Icons.Material.Filled.TurnLeft,
+            "turn_right" => Icons.Material.Filled.TurnRight,
+            "smile" => Icons.Material.Filled.SentimentSatisfiedAlt,
+            "nod" => Icons.Material.Filled.SwapVert,
+            _ => Icons.Material.Filled.Face
+        };
+    }
+
+    private string GetActionPrompt()
+    {
+        return CurrentAction?.ToLower() switch
+        {
+            "blink" => "Please blink twice",
+            "turn_left" => "Turn your head slightly left",
+            "turn_right" => "Turn your head slightly right",
+            "smile" => "Please smile",
+            "nod" => "Nod your head slowly",
+            _ => "Follow the instruction"
+        };
+    }
+
+    private Color GetActionColor()
+    {
+        if (_isDetecting) return Color.Primary;
+        return Color.Default;
+    }
+
+    private Color GetStepColor(int index)
+    {
+        if (index < CurrentStep) return Color.Success;
+        if (index == CurrentStep) return Color.Primary;
+        return Color.Default;
+    }
+}

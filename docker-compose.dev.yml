@@ -1,0 +1,179 @@
+# Docker Compose for MameyFutureNode Development
+#
+# Sprint 8.4: Service Interconnection
+#
+# Flow: Commercial → BIIS → Central → BIIS → Commercial
+# Central Bank is the ONLY settlement authority.
+#
+# Usage:
+#   docker-compose -f docker-compose.dev.yml up -d
+#   docker-compose -f docker-compose.dev.yml logs -f
+
+version: '3.8'
+
+services:
+  # =========================================================================
+  # Core Services
+  # =========================================================================
+
+  commercial-core:
+    build:
+      context: .
+      dockerfile: MameyFutureNode/MameyFutureNode.Services/docker/Dockerfile.commercial
+    container_name: commercial-core
+    ports:
+      - "50144:50144"  # HTTP API
+      - "50145:50145"  # Metrics
+    environment:
+      # Service configuration
+      - RUN_ENV=development
+      - RUST_LOG=info,commercial_core_service=debug
+      
+      # Database
+      - COMMERCIAL_CORE__DATABASE__URL=postgres://mamey:mamey@postgres:5432/mamey_commercial
+      
+      # Inter-service endpoints (Sprint 8.4)
+      # Commercial banks ONLY talk to BIIS, never directly to Central
+      - BIIS_ENDPOINT=http://biis-core:50140
+      - SERVICE_TIMEOUT_SECS=30
+      - SERVICE_MAX_RETRIES=3
+      
+      # Bank identity
+      - BANK_ID=BANK-COMMERCIAL-DEV
+    depends_on:
+      - postgres
+      - biis-core
+    networks:
+      - mamey-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50144/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  biis-core:
+    build:
+      context: .
+      dockerfile: MameyFutureNode/MameyFutureNode.Services/docker/Dockerfile.biis
+    container_name: biis-core
+    ports:
+      - "50140:50140"  # HTTP API
+      - "50141:50141"  # Metrics
+    environment:
+      # Service configuration
+      - RUN_ENV=development
+      - RUST_LOG=info,biis_core_service=debug
+      
+      # Database
+      - BIIS_CORE__DATABASE__URL=postgres://mamey:mamey@postgres:5432/mamey_biis
+      
+      # Inter-service endpoints (Sprint 8.4)
+      # BIIS is the infrastructure layer connecting Commercial and Central
+      - CENTRAL_ENDPOINT=http://central-core:50142
+      - COMMERCIAL_ENDPOINTS=http://commercial-core:50144
+      - SERVICE_TIMEOUT_SECS=30
+      - SERVICE_MAX_RETRIES=3
+      
+      # Bank-specific endpoints (for multi-bank setups)
+      # Format: COMMERCIAL_ENDPOINT_{BANK_ID}=http://host:port
+      - COMMERCIAL_ENDPOINT_BANK_A=http://commercial-core:50144
+    depends_on:
+      - postgres
+      - central-core
+    networks:
+      - mamey-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50140/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  central-core:
+    build:
+      context: .
+      dockerfile: MameyFutureNode/MameyFutureNode.Services/docker/Dockerfile.central
+    container_name: central-core
+    ports:
+      - "50142:50142"  # HTTP API
+      - "50143:50143"  # Metrics
+    environment:
+      # Service configuration
+      - RUN_ENV=development
+      - RUST_LOG=info,central_core_service=debug
+      
+      # Database
+      - CENTRAL_CORE__DATABASE__URL=postgres://mamey:mamey@postgres:5432/mamey_central
+      
+      # Central Bank domain ID (settlement authority)
+      - CENTRAL_BANK_DOMAIN_ID=10
+      
+      # Inter-service endpoints (Sprint 8.4)
+      # Central Bank only talks back to BIIS, never directly to commercial banks
+      - BIIS_ENDPOINT=http://biis-core:50140
+      - SERVICE_TIMEOUT_SECS=30
+      - SERVICE_MAX_RETRIES=3
+      
+      # Reserve requirements
+      - RESERVE_RATIO_REQUIRED=0.10
+      - RESERVE_RATIO_EXCESS_THRESHOLD=0.15
+    depends_on:
+      - postgres
+    networks:
+      - mamey-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50142/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # =========================================================================
+  # Infrastructure
+  # =========================================================================
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: mamey-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=mamey
+      - POSTGRES_PASSWORD=mamey
+      - POSTGRES_DB=mamey
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init-db.sql:ro
+    networks:
+      - mamey-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mamey"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for session/cache (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: mamey-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - mamey-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+# =========================================================================
+# Networks and Volumes
+# =========================================================================
+
+networks:
+  mamey-network:
+    driver: bridge
+
+volumes:
+  postgres-data:

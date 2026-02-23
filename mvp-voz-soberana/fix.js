@@ -1,0 +1,1 @@
+var fs=require("fs"),p="/Users/ruddie/Desktop/files/Soberano-Organizado/mvp-voz-soberana/";["server.js","public/index.html"].forEach(function(f){var c=fs.readFileSync(p+f,"utf8");c=c.replace(/\\!/g,"\!");fs.writeFileSync(p+f,c);console.log("Fixed: "+f)})

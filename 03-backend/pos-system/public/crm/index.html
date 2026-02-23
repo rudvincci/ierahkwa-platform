@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM - Smart Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+    .dashboard { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 260px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+    }
+    .sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .sidebar-header h1 {
+      font-size: 1.25rem;
+      background: linear-gradient(135deg, #818cf8, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+    .nav-section { margin-bottom: 1rem; }
+    .nav-section-title {
+      padding: 0.5rem 1.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.5rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-left: 3px solid var(--primary);
+    }
+    .nav-item svg { width: 20px; height: 20px; }
+    .sidebar-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-color);
+    }
+    .user-info { display: flex; align-items: center; gap: 0.75rem; }
+    .user-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+    .user-details .name { font-weight: 500; font-size: 0.9375rem; }
+    .user-details .role { color: var(--text-secondary); font-size: 0.75rem; }
+    .main-content { flex: 1; margin-left: 260px; padding: 1.5rem 2rem; }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .page-header h2 { font-size: 1.5rem; font-weight: 600; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .stat-icon {
+      width: 48px; height: 48px;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .stat-icon.primary { background: rgba(79, 70, 229, 0.2); color: #818cf8; }
+    .stat-icon.success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .stat-icon.warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .stat-icon.info { background: rgba(6, 182, 212, 0.2); color: var(--info); }
+    .stat-value { font-size: 2rem; font-weight: 700; line-height: 1.2; }
+    .stat-label { color: var(--text-secondary); font-size: 0.875rem; margin-top: 0.25rem; }
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-header h3 { font-size: 1rem; font-weight: 600; }
+    .card-body { padding: 1.5rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .chart-container { position: relative; height: 300px; width: 100%; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+    th {
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--bg-tertiary);
+    }
+    td { font-size: 0.9375rem; }
+    tr:hover { background: var(--bg-tertiary); }
+    .badge {
+      display: inline-flex;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 9999px;
+    }
+    .badge-primary { background: rgba(79, 70, 229, 0.2); color: #818cf8; }
+    .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+    .badge-info { background: rgba(6, 182, 212, 0.2); color: var(--info); }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      color: var(--text-primary);
+      font-size: 1rem;
+    }
+    .form-control:focus { outline: none; border-color: var(--primary); }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; font-weight: 500; }
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+    .modal {
+      background: var(--bg-secondary);
+      border-radius: 0.75rem;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.9);
+      transition: transform 0.3s;
+    }
+    .modal-overlay.active .modal { transform: scale(1); }
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { font-size: 1.125rem; font-weight: 600; }
+    .modal-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.5rem; }
+    .modal-body { padding: 1.5rem; }
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+    .text-muted { color: var(--text-secondary); }
+    .text-success { color: var(--success); }
+    .text-center { text-align: center; }
+    .mt-2 { margin-top: 1rem; }
+    @media (max-width: 1024px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .main-content { margin-left: 0; padding: 1rem; }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>Smart Platform</h1>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">CRM + POS System</div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">CRM</div>
+          <div class="nav-item active" data-section="dashboard">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            Dashboard
+          </div>
+          <div class="nav-item" data-section="customers">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Customers
+          </div>
+          <div class="nav-item" data-section="leads">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            Leads
+          </div>
+          <div class="nav-item" data-section="tickets">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+            Tickets
+          </div>
+          <div class="nav-item" data-section="invoices">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Invoices
+          </div>
+          <div class="nav-item" data-section="qa">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            QA Reviews
+          </div>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">POS System</div>
+          <a href="/" class="nav-item">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            Point of Sale
+          </a>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">A</div>
+          <div class="user-details">
+            <div class="name" id="userName">Administrator</div>
+            <div class="role" id="userRole">Admin</div>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 0.75rem;" onclick="logout()">Sign Out</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <!-- Dashboard Section -->
+      <section id="dashboard-section" class="section">
+        <div class="page-header">
+          <h2>CRM Dashboard</h2>
+          <button class="btn btn-secondary btn-sm" onclick="loadDashboard()">Refresh</button>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="totalCustomers">-</div>
+                <div class="stat-label">Customers</div>
+              </div>
+              <div class="stat-icon primary"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="activeLeads">-</div>
+                <div class="stat-label">Active Leads</div>
+              </div>
+              <div class="stat-icon success"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg></div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="openTickets">-</div>
+                <div class="stat-label">Open Tickets</div>
+              </div>
+              <div class="stat-icon warning"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg></div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="totalRevenue">-</div>
+                <div class="stat-label">Revenue</div>
+              </div>
+              <div class="stat-icon info"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h3>Leads Pipeline</h3></div>
+            <div class="card-body">
+              <div class="chart-container"><canvas id="leadsChart"></canvas></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Tickets by Priority</h3></div>
+            <div class="card-body">
+              <div class="chart-container"><canvas id="ticketsChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Customers Section -->
+      <section id="customers-section" class="section" style="display: none;">
+        <div class="page-header">
+          <h2>Customers</h2>
+          <button class="btn btn-primary btn-sm" onclick="showModal('customerModal')">Add Customer</button>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <table>
+              <thead>
+                <tr><th>Name</th><th>Company</th><th>Email</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="customersTable"><tr><td colspan="5" class="text-center text-muted">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Leads Section -->
+      <section id="leads-section" class="section" style="display: none;">
+        <div class="page-header">
+          <h2>Leads</h2>
+          <button class="btn btn-primary btn-sm" onclick="showModal('leadModal')">Add Lead</button>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <table>
+              <thead>
+                <tr><th>Title</th><th>Customer</th><th>Value</th><th>Status</th><th>Priority</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="leadsTable"><tr><td colspan="6" class="text-center text-muted">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tickets Section -->
+      <section id="tickets-section" class="section" style="display: none;">
+        <div class="page-header">
+          <h2>Tickets</h2>
+          <button class="btn btn-primary btn-sm" onclick="showModal('ticketModal')">Create Ticket</button>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <table>
+              <thead>
+                <tr><th>Ticket #</th><th>Subject</th><th>Customer</th><th>Priority</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="ticketsTable"><tr><td colspan="6" class="text-center text-muted">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Invoices Section -->
+      <section id="invoices-section" class="section" style="display: none;">
+        <div class="page-header">
+          <h2>Invoices</h2>
+          <button class="btn btn-primary btn-sm" onclick="showModal('invoiceModal')">Create Invoice</button>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <table>
+              <thead>
+                <tr><th>Invoice #</th><th>Customer</th><th>Total</th><th>Paid</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="invoicesTable"><tr><td colspan="6" class="text-center text-muted">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- QA Section -->
+      <section id="qa-section" class="section" style="display: none;">
+        <div class="page-header">
+          <h2>QA Reviews</h2>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h3>Pending Reviews</h3></div>
+            <div class="card-body">
+              <table>
+                <thead><tr><th>Ticket</th><th>Agent</th><th>Actions</th></tr></thead>
+                <tbody id="pendingReviewsTable"><tr><td colspan="3" class="text-center text-muted">Loading...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Agent Performance</h3></div>
+            <div class="card-body">
+              <table>
+                <thead><tr><th>Agent</th><th>Tickets</th><th>Avg Score</th></tr></thead>
+                <tbody id="performanceTable"><tr><td colspan="3" class="text-center text-muted">Loading...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal-overlay" id="customerModal">
+    <div class="modal">
+      <div class="modal-header"><h3>Add Customer</h3><button class="modal-close" onclick="closeModal('customerModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="customerForm">
+          <div class="form-group"><label>First Name *</label><input type="text" class="form-control" name="firstName" required></div>
+          <div class="form-group"><label>Last Name *</label><input type="text" class="form-control" name="lastName" required></div>
+          <div class="form-group"><label>Email *</label><input type="email" class="form-control" name="email" required></div>
+          <div class="form-group"><label>Company</label><input type="text" class="form-control" name="companyName"></div>
+          <div class="form-group"><label>Phone</label><input type="tel" class="form-control" name="phone"></div>
+          <div class="form-group"><label>Status</label><select class="form-control" name="status"><option value="lead">Lead</option><option value="prospect">Prospect</option><option value="active">Active</option></select></div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('customerModal')">Cancel</button><button class="btn btn-primary" onclick="submitCustomer()">Add Customer</button></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="leadModal">
+    <div class="modal">
+      <div class="modal-header"><h3>Add Lead</h3><button class="modal-close" onclick="closeModal('leadModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="leadForm">
+          <div class="form-group"><label>Title *</label><input type="text" class="form-control" name="title" required></div>
+          <div class="form-group"><label>Description</label><textarea class="form-control" name="description" rows="3"></textarea></div>
+          <div class="form-group"><label>Value ($)</label><input type="number" class="form-control" name="value" min="0" step="0.01"></div>
+          <div class="form-group"><label>Priority</label><select class="form-control" name="priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="urgent">Urgent</option></select></div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('leadModal')">Cancel</button><button class="btn btn-primary" onclick="submitLead()">Add Lead</button></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="ticketModal">
+    <div class="modal">
+      <div class="modal-header"><h3>Create Ticket</h3><button class="modal-close" onclick="closeModal('ticketModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="ticketForm">
+          <div class="form-group"><label>Subject *</label><input type="text" class="form-control" name="subject" required></div>
+          <div class="form-group"><label>Description</label><textarea class="form-control" name="description" rows="3"></textarea></div>
+          <div class="form-group"><label>Category</label><select class="form-control" name="category"><option value="technical">Technical</option><option value="billing">Billing</option><option value="support">Support</option><option value="feature">Feature Request</option></select></div>
+          <div class="form-group"><label>Priority</label><select class="form-control" name="priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="urgent">Urgent</option></select></div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('ticketModal')">Cancel</button><button class="btn btn-primary" onclick="submitTicket()">Create Ticket</button></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal">
+      <div class="modal-header"><h3>Submit Review</h3><button class="modal-close" onclick="closeModal('reviewModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="reviewForm">
+          <input type="hidden" name="ticketId" id="reviewTicketId">
+          <input type="hidden" name="agentId" id="reviewAgentId">
+          <div class="form-group"><label>Score (0-100)</label><input type="number" class="form-control" name="score" min="0" max="100" required></div>
+          <div class="form-group"><label>Feedback</label><textarea class="form-control" name="feedback" rows="3"></textarea></div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('reviewModal')">Cancel</button><button class="btn btn-primary" onclick="submitReview()">Submit Review</button></div>
+    </div>
+  </div>
+
+  <script>
+    // Check auth
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/me');
+        if (!res.ok) {
+          window.location.href = '/login';
+          return null;
+        }
+        return await res.json();
+      } catch {
+        window.location.href = '/login';
+        return null;
+      }
+    }
+
+    let user = null;
+    let leadsChart, ticketsChart;
+
+    // Init
+    (async () => {
+      user = await checkAuth();
+      if (user) {
+        document.getElementById('userName').textContent = user.full_name || user.username;
+        document.getElementById('userRole').textContent = user.role || 'User';
+        document.getElementById('userAvatar').textContent = (user.full_name || user.username).charAt(0).toUpperCase();
+        loadDashboard();
+      }
+    })();
+
+    // Navigation
+    document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+      item.addEventListener('click', () => {
+        const section = item.dataset.section;
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.getElementById(`${section}-section`).style.display = 'block';
+        if (section === 'dashboard') loadDashboard();
+        else if (section === 'customers') loadCustomers();
+        else if (section === 'leads') loadLeads();
+        else if (section === 'tickets') loadTickets();
+        else if (section === 'invoices') loadInvoices();
+        else if (section === 'qa') loadQA();
+      });
+    });
+
+    // Format currency
+    const formatCurrency = (amount) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
+
+    // Get status badge
+    const getStatusBadge = (status) => {
+      const colors = {
+        active: 'success', won: 'success', paid: 'success', resolved: 'success', completed: 'success',
+        lead: 'primary', new: 'primary', draft: 'primary', open: 'primary', pending: 'primary',
+        prospect: 'info', contacted: 'info', sent: 'info', in_progress: 'info',
+        qualified: 'warning', proposal: 'warning', partial: 'warning',
+        lost: 'danger', overdue: 'danger', cancelled: 'danger'
+      };
+      return `<span class="badge badge-${colors[status] || 'primary'}">${status}</span>`;
+    };
+
+    const getPriorityBadge = (priority) => {
+      const colors = { low: 'success', medium: 'warning', high: 'danger', urgent: 'danger' };
+      return `<span class="badge badge-${colors[priority] || 'primary'}">${priority}</span>`;
+    };
+
+    // API Helper
+    async function api(endpoint, options = {}) {
+      const res = await fetch(`/api/crm${endpoint}`, {
+        ...options,
+        headers: { 'Content-Type': 'application/json', ...options.headers },
+        body: options.body ? JSON.stringify(options.body) : undefined
+      });
+      return res.json();
+    }
+
+    // Dashboard
+    async function loadDashboard() {
+      try {
+        const data = await api('/dashboard');
+        document.getElementById('totalCustomers').textContent = data.customers.total;
+        document.getElementById('activeLeads').textContent = data.leads.active;
+        document.getElementById('openTickets').textContent = data.tickets.open;
+        document.getElementById('totalRevenue').textContent = formatCurrency(data.invoices.paidAmount);
+
+        // Charts
+        if (leadsChart) leadsChart.destroy();
+        const leadsCtx = document.getElementById('leadsChart').getContext('2d');
+        leadsChart = new Chart(leadsCtx, {
+          type: 'doughnut',
+          data: {
+            labels: data.leads.byStatus.map(s => s.status),
+            datasets: [{ data: data.leads.byStatus.map(s => s.count), backgroundColor: ['#4f46e5', '#06b6d4', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#64748b'] }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#94a3b8' } } } }
+        });
+
+        if (ticketsChart) ticketsChart.destroy();
+        const ticketsCtx = document.getElementById('ticketsChart').getContext('2d');
+        ticketsChart = new Chart(ticketsCtx, {
+          type: 'bar',
+          data: {
+            labels: data.tickets.byPriority.map(p => p.priority),
+            datasets: [{ data: data.tickets.byPriority.map(p => p.count), backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#dc2626'] }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, x: { ticks: { color: '#94a3b8' }, grid: { display: false } } } }
+        });
+      } catch (err) { console.error('Dashboard error:', err); }
+    }
+
+    // Customers
+    async function loadCustomers() {
+      try {
+        const data = await api('/customers');
+        document.getElementById('customersTable').innerHTML = data.customers.map(c => `
+          <tr>
+            <td>${c.firstName} ${c.lastName}</td>
+            <td>${c.companyName || '-'}</td>
+            <td>${c.email}</td>
+            <td>${getStatusBadge(c.status)}</td>
+            <td><button class="btn btn-secondary btn-sm">Edit</button></td>
+          </tr>
+        `).join('') || '<tr><td colspan="5" class="text-center text-muted">No customers</td></tr>';
+      } catch (err) { console.error('Customers error:', err); }
+    }
+
+    // Leads
+    async function loadLeads() {
+      try {
+        const data = await api('/leads');
+        document.getElementById('leadsTable').innerHTML = data.leads.map(l => `
+          <tr>
+            <td>${l.title}</td>
+            <td>${l.customerName || l.companyName || '-'}</td>
+            <td>${formatCurrency(l.value)}</td>
+            <td>${getStatusBadge(l.status)}</td>
+            <td>${getPriorityBadge(l.priority)}</td>
+            <td><button class="btn btn-secondary btn-sm" onclick="updateLeadStatus(${l.id}, '${l.status}')">Update</button></td>
+          </tr>
+        `).join('') || '<tr><td colspan="6" class="text-center text-muted">No leads</td></tr>';
+      } catch (err) { console.error('Leads error:', err); }
+    }
+
+    // Tickets
+    async function loadTickets() {
+      try {
+        const data = await api('/tickets');
+        document.getElementById('ticketsTable').innerHTML = data.tickets.map(t => `
+          <tr>
+            <td>${t.ticketNumber}</td>
+            <td>${t.subject}</td>
+            <td>${t.customerName || '-'}</td>
+            <td>${getPriorityBadge(t.priority)}</td>
+            <td>${getStatusBadge(t.status)}</td>
+            <td><button class="btn btn-secondary btn-sm" onclick="updateTicketStatus(${t.id}, '${t.status}')">Update</button></td>
+          </tr>
+        `).join('') || '<tr><td colspan="6" class="text-center text-muted">No tickets</td></tr>';
+      } catch (err) { console.error('Tickets error:', err); }
+    }
+
+    // Invoices
+    async function loadInvoices() {
+      try {
+        const data = await api('/invoices');
+        document.getElementById('invoicesTable').innerHTML = data.invoices.map(i => `
+          <tr>
+            <td>${i.invoiceNumber}</td>
+            <td>${i.customerName || i.companyName || '-'}</td>
+            <td>${formatCurrency(i.total)}</td>
+            <td>${formatCurrency(i.paidAmount)}</td>
+            <td>${getStatusBadge(i.status)}</td>
+            <td><button class="btn btn-secondary btn-sm">Update</button></td>
+          </tr>
+        `).join('') || '<tr><td colspan="6" class="text-center text-muted">No invoices</td></tr>';
+      } catch (err) { console.error('Invoices error:', err); }
+    }
+
+    // QA
+    async function loadQA() {
+      try {
+        const [pending, performance] = await Promise.all([api('/qa/tickets/pending'), api('/qa/agents/performance')]);
+        
+        document.getElementById('pendingReviewsTable').innerHTML = pending.tickets.map(t => `
+          <tr>
+            <td>${t.ticketNumber} - ${t.subject}</td>
+            <td>${t.agentName || '-'}</td>
+            <td><button class="btn btn-primary btn-sm" onclick="openReviewModal(${t.id}, ${t.assignedAgentId || 1})">Review</button></td>
+          </tr>
+        `).join('') || '<tr><td colspan="3" class="text-center text-muted">No pending reviews</td></tr>';
+
+        document.getElementById('performanceTable').innerHTML = performance.agents.map(a => `
+          <tr>
+            <td>${a.name}</td>
+            <td>${a.resolvedTickets}/${a.totalTickets}</td>
+            <td>${a.avgQaScore ? a.avgQaScore + '%' : 'N/A'}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="3" class="text-center text-muted">No data</td></tr>';
+      } catch (err) { console.error('QA error:', err); }
+    }
+
+    // Modal functions
+    function showModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function openReviewModal(ticketId, agentId) {
+      document.getElementById('reviewTicketId').value = ticketId;
+      document.getElementById('reviewAgentId').value = agentId;
+      showModal('reviewModal');
+    }
+
+    // Form submissions
+    async function submitCustomer() {
+      const form = document.getElementById('customerForm');
+      const data = Object.fromEntries(new FormData(form));
+      try {
+        await api('/customers', { method: 'POST', body: data });
+        closeModal('customerModal');
+        form.reset();
+        loadCustomers();
+      } catch (err) { alert('Error: ' + err.message); }
+    }
+
+    async function submitLead() {
+      const form = document.getElementById('leadForm');
+      const data = Object.fromEntries(new FormData(form));
+      if (data.value) data.value = parseFloat(data.value);
+      try {
+        await api('/leads', { method: 'POST', body: data });
+        closeModal('leadModal');
+        form.reset();
+        loadLeads();
+      } catch (err) { alert('Error: ' + err.message); }
+    }
+
+    async function submitTicket() {
+      const form = document.getElementById('ticketForm');
+      const data = Object.fromEntries(new FormData(form));
+      try {
+        await api('/tickets', { method: 'POST', body: data });
+        closeModal('ticketModal');
+        form.reset();
+        loadTickets();
+      } catch (err) { alert('Error: ' + err.message); }
+    }
+
+    async function submitReview() {
+      const form = document.getElementById('reviewForm');
+      const data = Object.fromEntries(new FormData(form));
+      data.score = parseInt(data.score);
+      data.ticketId = parseInt(data.ticketId);
+      data.agentId = parseInt(data.agentId);
+      try {
+        await api('/qa/reviews', { method: 'POST', body: data });
+        closeModal('reviewModal');
+        form.reset();
+        loadQA();
+      } catch (err) { alert('Error: ' + err.message); }
+    }
+
+    async function updateLeadStatus(id, currentStatus) {
+      const statuses = ['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost'];
+      const status = prompt('New status (' + statuses.join(', ') + '):', currentStatus);
+      if (status && statuses.includes(status)) {
+        try {
+          await api(`/leads/${id}`, { method: 'PUT', body: { status } });
+          loadLeads();
+        } catch (err) { alert('Error: ' + err.message); }
+      }
+    }
+
+    async function updateTicketStatus(id, currentStatus) {
+      const statuses = ['open', 'in_progress', 'pending', 'resolved', 'closed'];
+      const status = prompt('New status (' + statuses.join(', ') + '):', currentStatus);
+      if (status && statuses.includes(status)) {
+        try {
+          await api(`/tickets/${id}`, { method: 'PUT', body: { status } });
+          loadTickets();
+        } catch (err) { alert('Error: ' + err.message); }
+      }
+    }
+
+    // Logout
+    async function logout() {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      window.location.href = '/login';
+    }
+  </script>
+</body>
+</html>

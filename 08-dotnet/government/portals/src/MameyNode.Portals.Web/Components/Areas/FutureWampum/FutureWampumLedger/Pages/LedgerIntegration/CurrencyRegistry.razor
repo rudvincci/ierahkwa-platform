@@ -1,0 +1,91 @@
+@page "/ledger-integration/currency-registry"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumLedgerClient FutureWampumLedgerClient
+@inject ILogger<CurrencyRegistry> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Currency Registry" Icon="fas fa-coins" Subtitle="Currency registry management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Currencies" Value="@_currencies.Count.ToString()" Icon="fas fa-coins" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Issuers" Value="@_issuerCount.ToString()" Icon="fas fa-building" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Currencies" Class="mt-4">
+        <MudTable T="CurrencyInfo" Items="@_currencies" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Currency ID</MudTh>
+                <MudTh>Currency Code</MudTh>
+                <MudTh>Currency Name</MudTh>
+                <MudTh>Symbol</MudTh>
+                <MudTh>Decimals</MudTh>
+                <MudTh>Issuer</MudTh>
+                <MudTh>Status</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.CurrencyId</MudTd>
+                <MudTd>@context.CurrencyCode</MudTd>
+                <MudTd>@context.CurrencyName</MudTd>
+                <MudTd>@context.Symbol</MudTd>
+                <MudTd>@context.Decimals</MudTd>
+                <MudTd>@context.Issuer</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == CurrencyStatus.Active ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<CurrencyInfo> _currencies = new();
+    private int _activeCount;
+    private int _issuerCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _currencies = await FutureWampumLedgerClient.GetCurrenciesAsync();
+            _activeCount = _currencies.Count(c => c.Status == CurrencyStatus.Active);
+            _issuerCount = _currencies.Select(c => c.Issuer).Distinct().Count();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading currencies");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

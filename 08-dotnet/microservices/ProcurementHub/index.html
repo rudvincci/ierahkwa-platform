@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛒 PROCUREMENT HUB | Ierahkwa Purchasing System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --green: #00FF41; --cyan: #00FFFF; --red: #FF1744; --purple: #9D4EDD; --orange: #FF6B35; --bg: #0a0e17; --card: #0d1a2d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17, #1a0a1a, #0a0e17); color: #fff; min-height: 100vh; }
+        
+        .header { background: var(--card); padding: 15px 30px; border-bottom: 3px solid var(--orange); display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--orange), var(--red)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+        .logo h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--orange); }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .nav-link { padding: 10px 20px; background: rgba(255,107,53,0.2); border: 1px solid var(--orange); border-radius: 10px; color: var(--orange); text-decoration: none; }
+        .create-btn { padding: 10px 25px; background: var(--orange); border: none; border-radius: 10px; color: #fff; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        .main { padding: 25px; max-width: 1600px; margin: 0 auto; }
+        
+        /* Stats Row */
+        .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--card); border-radius: 15px; padding: 20px; border: 1px solid rgba(255,107,53,0.2); }
+        .stat-icon { font-size: 1.5em; margin-bottom: 10px; }
+        .stat-label { color: #888; font-size: 0.8em; margin-bottom: 5px; }
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 1.5em; color: var(--orange); }
+        .stat-change { font-size: 0.8em; margin-top: 5px; }
+        .stat-change.up { color: var(--green); }
+        
+        /* Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; }
+        .tab { padding: 12px 25px; background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.3); border-radius: 10px; color: #888; cursor: pointer; font-size: 0.9em; }
+        .tab.active { background: var(--orange); color: #fff; border-color: var(--orange); }
+        
+        /* Table */
+        .section { background: var(--card); border-radius: 20px; padding: 25px; margin-bottom: 25px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section-title { font-family: 'Orbitron', sans-serif; color: var(--gold); display: flex; align-items: center; gap: 10px; }
+        .section-actions { display: flex; gap: 10px; }
+        .action-btn { padding: 8px 15px; background: rgba(255,107,53,0.1); border: 1px solid var(--orange); border-radius: 8px; color: var(--orange); cursor: pointer; font-size: 0.85em; }
+        
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: rgba(255,107,53,0.15); padding: 15px; text-align: left; font-family: 'Orbitron', sans-serif; color: var(--orange); font-size: 0.85em; }
+        .data-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .data-table tr:hover { background: rgba(255,107,53,0.05); }
+        
+        .status-badge { padding: 5px 12px; border-radius: 15px; font-size: 0.8em; }
+        .status-badge.pending { background: rgba(255,215,0,0.2); color: var(--gold); }
+        .status-badge.approved { background: rgba(0,255,65,0.2); color: var(--green); }
+        .status-badge.rejected { background: rgba(255,23,68,0.2); color: var(--red); }
+        .status-badge.in-progress { background: rgba(0,255,255,0.2); color: var(--cyan); }
+        .status-badge.completed { background: rgba(157,78,221,0.2); color: var(--purple); }
+        
+        .priority-badge { padding: 3px 10px; border-radius: 10px; font-size: 0.75em; }
+        .priority-badge.high { background: rgba(255,23,68,0.2); color: var(--red); }
+        .priority-badge.medium { background: rgba(255,107,53,0.2); color: var(--orange); }
+        .priority-badge.low { background: rgba(0,255,65,0.2); color: var(--green); }
+        
+        .vendor-cell { display: flex; align-items: center; gap: 10px; }
+        .vendor-avatar { width: 35px; height: 35px; border-radius: 8px; background: linear-gradient(135deg, var(--purple), var(--cyan)); display: flex; align-items: center; justify-content: center; font-size: 0.9em; }
+        
+        /* Vendor Grid */
+        .vendor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .vendor-card { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .vendor-card:hover { border-color: var(--orange); }
+        .vendor-card-avatar { width: 60px; height: 60px; border-radius: 15px; background: linear-gradient(135deg, var(--gold), var(--orange)); display: flex; align-items: center; justify-content: center; font-size: 1.5em; margin: 0 auto 15px; }
+        .vendor-card-name { font-weight: 600; margin-bottom: 5px; }
+        .vendor-card-category { font-size: 0.8em; color: #888; margin-bottom: 10px; }
+        .vendor-card-rating { color: var(--gold); font-size: 0.9em; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); border: 2px solid var(--orange); border-radius: 20px; padding: 30px; width: 700px; max-width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .modal-title { font-family: 'Orbitron', sans-serif; color: var(--orange); }
+        .close-btn { background: none; border: none; color: #fff; font-size: 1.5em; cursor: pointer; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: var(--cyan); margin-bottom: 8px; font-size: 0.9em; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid rgba(255,107,53,0.3); border-radius: 10px; background: rgba(0,0,0,0.3); color: #fff; font-size: 1em; }
+        .form-group.full { grid-column: span 2; }
+        .submit-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--orange), var(--red)); border: none; border-radius: 12px; color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🛒</div>
+            <div>
+                <h1>PROCUREMENT HUB</h1>
+                <p style="color: #888; font-size: 0.75em;">Government Purchasing System</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="create-btn" onclick="openModal()"><i class="bi bi-plus"></i> New Request</button>
+            <a href="/platform" class="nav-link"><i class="bi bi-arrow-left"></i> Platform</a>
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-label">Total Requests</div>
+                <div class="stat-value">234</div>
+                <div class="stat-change up">+12 this month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-label">Pending Approval</div>
+                <div class="stat-value" style="color: var(--gold);">18</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔄</div>
+                <div class="stat-label">In Progress</div>
+                <div class="stat-value" style="color: var(--cyan);">12</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-label">Total Spent</div>
+                <div class="stat-value">$2.4M</div>
+                <div class="stat-change">This year</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏢</div>
+                <div class="stat-label">Active Vendors</div>
+                <div class="stat-value">45</div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active">All Requests</div>
+            <div class="tab">Pending</div>
+            <div class="tab">Approved</div>
+            <div class="tab">In Progress</div>
+            <div class="tab">Completed</div>
+            <div class="tab">Vendors</div>
+        </div>
+        
+        <!-- Requests Table -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title"><i class="bi bi-list-ul"></i> Purchase Requests</div>
+                <div class="section-actions">
+                    <input type="text" placeholder="Search..." style="padding: 8px 15px; border: 1px solid rgba(255,107,53,0.3); border-radius: 8px; background: rgba(0,0,0,0.3); color: #fff;">
+                    <button class="action-btn"><i class="bi bi-filter"></i> Filter</button>
+                    <button class="action-btn"><i class="bi bi-download"></i> Export</button>
+                </div>
+            </div>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Item/Service</th>
+                        <th>Department</th>
+                        <th>Vendor</th>
+                        <th>Amount</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-family: monospace; color: var(--cyan);">PR-2026-001</td>
+                        <td>Server Infrastructure</td>
+                        <td>IT Department</td>
+                        <td>
+                            <div class="vendor-cell">
+                                <div class="vendor-avatar">TC</div>
+                                <span>Tech Corp</span>
+                            </div>
+                        </td>
+                        <td style="font-family: 'Orbitron', sans-serif; color: var(--gold);">$45,000</td>
+                        <td><span class="priority-badge high">🔴 High</span></td>
+                        <td><span class="status-badge pending">⏳ Pending</span></td>
+                        <td>Jan 21, 2026</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace; color: var(--cyan);">PR-2026-002</td>
+                        <td>Office Supplies</td>
+                        <td>Administration</td>
+                        <td>
+                            <div class="vendor-cell">
+                                <div class="vendor-avatar">OS</div>
+                                <span>Office Store</span>
+                            </div>
+                        </td>
+                        <td style="font-family: 'Orbitron', sans-serif; color: var(--gold);">$2,500</td>
+                        <td><span class="priority-badge low">🟢 Low</span></td>
+                        <td><span class="status-badge approved">✅ Approved</span></td>
+                        <td>Jan 20, 2026</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace; color: var(--cyan);">PR-2026-003</td>
+                        <td>Medical Equipment</td>
+                        <td>Healthcare</td>
+                        <td>
+                            <div class="vendor-cell">
+                                <div class="vendor-avatar">MS</div>
+                                <span>MedSupply Inc</span>
+                            </div>
+                        </td>
+                        <td style="font-family: 'Orbitron', sans-serif; color: var(--gold);">$28,500</td>
+                        <td><span class="priority-badge high">🔴 High</span></td>
+                        <td><span class="status-badge in-progress">🔄 In Progress</span></td>
+                        <td>Jan 18, 2026</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace; color: var(--cyan);">PR-2026-004</td>
+                        <td>Consulting Services</td>
+                        <td>Legal</td>
+                        <td>
+                            <div class="vendor-cell">
+                                <div class="vendor-avatar">LC</div>
+                                <span>Legal Consult</span>
+                            </div>
+                        </td>
+                        <td style="font-family: 'Orbitron', sans-serif; color: var(--gold);">$15,000</td>
+                        <td><span class="priority-badge medium">🟡 Medium</span></td>
+                        <td><span class="status-badge completed">✓ Completed</span></td>
+                        <td>Jan 15, 2026</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family: monospace; color: var(--cyan);">PR-2026-005</td>
+                        <td>Vehicle Fleet</td>
+                        <td>Transportation</td>
+                        <td>
+                            <div class="vendor-cell">
+                                <div class="vendor-avatar">AM</div>
+                                <span>AutoMotors</span>
+                            </div>
+                        </td>
+                        <td style="font-family: 'Orbitron', sans-serif; color: var(--gold);">$120,000</td>
+                        <td><span class="priority-badge medium">🟡 Medium</span></td>
+                        <td><span class="status-badge pending">⏳ Pending</span></td>
+                        <td>Jan 12, 2026</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Vendors Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title"><i class="bi bi-building"></i> Preferred Vendors</div>
+                <div class="section-actions">
+                    <button class="action-btn"><i class="bi bi-plus"></i> Add Vendor</button>
+                </div>
+            </div>
+            
+            <div class="vendor-grid">
+                <div class="vendor-card">
+                    <div class="vendor-card-avatar">TC</div>
+                    <div class="vendor-card-name">Tech Corp Inc.</div>
+                    <div class="vendor-card-category">IT & Technology</div>
+                    <div class="vendor-card-rating">⭐⭐⭐⭐⭐ 5.0</div>
+                </div>
+                <div class="vendor-card">
+                    <div class="vendor-card-avatar">MS</div>
+                    <div class="vendor-card-name">MedSupply Inc</div>
+                    <div class="vendor-card-category">Medical Equipment</div>
+                    <div class="vendor-card-rating">⭐⭐⭐⭐⭐ 4.8</div>
+                </div>
+                <div class="vendor-card">
+                    <div class="vendor-card-avatar">OS</div>
+                    <div class="vendor-card-name">Office Store</div>
+                    <div class="vendor-card-category">Office Supplies</div>
+                    <div class="vendor-card-rating">⭐⭐⭐⭐ 4.5</div>
+                </div>
+                <div class="vendor-card">
+                    <div class="vendor-card-avatar">AM</div>
+                    <div class="vendor-card-name">AutoMotors</div>
+                    <div class="vendor-card-category">Vehicles & Fleet</div>
+                    <div class="vendor-card-rating">⭐⭐⭐⭐⭐ 4.9</div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- New Request Modal -->
+    <div class="modal" id="requestModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📋 New Purchase Request</div>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form onsubmit="submitRequest(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Item/Service Name</label>
+                        <input type="text" placeholder="What do you need?" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select required>
+                            <option value="">Select category...</option>
+                            <option>IT & Technology</option>
+                            <option>Office Supplies</option>
+                            <option>Medical Equipment</option>
+                            <option>Vehicles</option>
+                            <option>Consulting Services</option>
+                            <option>Construction</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select required>
+                            <option value="">Select department...</option>
+                            <option>IT Department</option>
+                            <option>Administration</option>
+                            <option>Healthcare</option>
+                            <option>Legal</option>
+                            <option>Transportation</option>
+                            <option>Finance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select required>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Estimated Amount (USD)</label>
+                        <input type="number" placeholder="10000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Preferred Vendor</label>
+                        <select>
+                            <option value="">Any vendor</option>
+                            <option>Tech Corp Inc.</option>
+                            <option>MedSupply Inc</option>
+                            <option>Office Store</option>
+                            <option>AutoMotors</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" value="1" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Need By Date</label>
+                        <input type="date" required>
+                    </div>
+                </div>
+                <div class="form-group full">
+                    <label>Description & Justification</label>
+                    <textarea rows="3" placeholder="Describe why this purchase is needed..." required></textarea>
+                </div>
+                <div class="form-group full">
+                    <label>Attachments</label>
+                    <input type="file" multiple>
+                </div>
+                <button type="submit" class="submit-btn">Submit Request</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function openModal() { document.getElementById('requestModal').classList.add('active'); }
+        function closeModal() { document.getElementById('requestModal').classList.remove('active'); }
+        function submitRequest(e) {
+            e.preventDefault();
+            alert('✅ Purchase Request Submitted!\n\nRequest ID: PR-2026-XXX\nStatus: Pending Approval\n\nYou will be notified when approved.');
+            closeModal();
+        }
+        
+        console.log('🛒 PROCUREMENT HUB - Purchasing System Initialized');
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+@page "/bridge/bridged-identities"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<BridgedIdentities> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Bridged Identities" Icon="fas fa-id-card" Subtitle="Bridged identity management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Identities" Value="@_identities.Count.ToString()" Icon="fas fa-id-card" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Chains" Value="@_chainCount.ToString()" Icon="fas fa-link" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Verified" Value="@_verifiedCount.ToString()" Icon="fas fa-shield-alt" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Bridged Identities" Class="mt-4">
+        <MudTable T="BridgedIdentityInfo" Items="@_identities" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Bridge ID</MudTh>
+                <MudTh>Source System</MudTh>
+                <MudTh>Source Identity</MudTh>
+                <MudTh>Target System</MudTh>
+                <MudTh>Target Identity</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Bridged At</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.BridgeId</MudTd>
+                <MudTd>@context.SourceSystem</MudTd>
+                <MudTd>@context.SourceIdentityId</MudTd>
+                <MudTd>@context.TargetSystem</MudTd>
+                <MudTd>@context.TargetIdentityId</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == BridgeStatus.Completed ? Color.Success : context.Status == BridgeStatus.Failed ? Color.Error : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.BridgedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<BridgedIdentityInfo> _identities = new();
+    private int _activeCount;
+    private int _chainCount;
+    private int _verifiedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _identities = await FutureWampumXClient.GetBridgedIdentitiesAsync();
+            _activeCount = _identities.Count(i => i.Status == BridgeStatus.Completed);
+            _chainCount = _identities.SelectMany(i => new[] { i.SourceSystem, i.TargetSystem }).Distinct().Count();
+            _verifiedCount = _identities.Count(i => i.Status == BridgeStatus.Completed);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading bridged identities");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

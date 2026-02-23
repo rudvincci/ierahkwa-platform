@@ -1,0 +1,361 @@
+@* AddressInputPro.razor — ISO3166-backed address editor with correct binding and dynamic US/non-US layout *@
+@using System.Globalization
+@using Mamey.Types
+@using Mamey.ISO
+@using Mamey.ISO3166
+@inject IISO3166Service Iso
+
+<MudPaper Class="@PaperClass" Style="@Style">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudTextField T="string" Label="Firm/Name" @bind-Value="_firm" />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudTextField T="string" Label="Address Line 1" @bind-Value="_line" Required="true" />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudTextField T="string" Label="Address Line 2" @bind-Value="_line2" />
+        </MudItem>
+
+        <MudItem xs="12" sm="6">
+            <MudTextField T="string" Label="City" @bind-Value="_city" Required="true" />
+        </MudItem>
+
+        <MudItem xs="12" sm="6">
+            <MudSelect T="string"
+                       Label="Country"
+                       Value="@_country"
+                       ValueChanged="@OnCountryChanged"
+                       Required="true"
+                       Dense="true">
+                @if (_countries.Count == 0)
+                {
+                    <MudSelectItem T="string" Value="@("US")">United States</MudSelectItem>
+                }
+                else
+                {
+                    @foreach (var c in _countries)
+                    {
+                        <MudSelectItem T="string" Value="@c.Alpha2">@c.Name</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+        </MudItem>
+
+        @if (IsUS)
+        {
+            <MudItem xs="12" sm="3">
+                @if (_subdivisions.Count > 0)
+                {
+                    <MudSelect T="string"
+                               Label="State"
+                               Value="@_state"
+                               ValueChanged="@OnStateChanged"
+                               Required="true"
+                               Dense="true">
+                        @foreach (var s in _subdivisions)
+                        {
+                            <MudSelectItem T="string" Value="@s.Code">@s.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                }
+                else
+                {
+                    <MudTextField T="string" Label="State" @bind-Value="_state" Required="true" />
+                }
+            </MudItem>
+
+            <MudItem xs="12" sm="3">
+                <MudTextField T="string" Label="ZIP (5)" @bind-Value="_zip5" MaxLength="5" Required="true" />
+            </MudItem>
+
+            <MudItem xs="12" sm="3">
+                <MudTextField T="string" Label="ZIP+4" @bind-Value="_zip4" MaxLength="4" />
+            </MudItem>
+
+            <MudItem xs="12" sm="3">
+                <MudTextField T="string" Label="Urbanization" @bind-Value="_urbanization" />
+            </MudItem>
+        }
+        else
+        {
+            <MudItem xs="12" sm="4">
+                @if (_subdivisions.Count > 0)
+                {
+                    <MudSelect T="string"
+                               Label="Province/Region"
+                               Value="@_province"
+                               ValueChanged="@OnProvinceChanged"
+                               Required="true"
+                               Dense="true">
+                        @foreach (var s in _subdivisions)
+                        {
+                            <MudSelectItem T="string" Value="@s.Code">@s.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                }
+                else
+                {
+                    <MudTextField T="string" Label="Province/Region" @bind-Value="_province" Required="true" />
+                }
+            </MudItem>
+
+            <MudItem xs="12" sm="4">
+                <MudTextField T="string" Label="Postal Code" @bind-Value="_postal" Required="true" />
+            </MudItem>
+
+            <MudItem xs="12" sm="4">
+                <MudTextField T="string" Label="State (optional)" @bind-Value="_state" />
+            </MudItem>
+        }
+    </MudGrid>
+
+    <MudStack Row="true" Spacing="2" Class="mt-3">
+        <MudButton Variant="Variant.Filled" OnClick="Save">Save</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="Reset">Reset</MudButton>
+    </MudStack>
+
+    <FieldMessages HelperText="@HelperText" />
+</MudPaper>
+
+@code {
+    // -------- parameters --------
+    [Parameter] public string HelperText { get; set; } = "US vs non-US automatically toggles ZIP vs Postal and uses ISO-3166 subdivisions when available.";
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public Address? Value { get; set; }
+    [Parameter] public EventCallback<Address?> ValueChanged { get; set; }
+
+    // -------- local state (never construct Address here) --------
+    string _firm = "", _line = "", _line2 = "", _line3 = "", _urbanization = "";
+    string _city = "", _state = "", _zip5 = "", _zip4 = "", _postal = "", _country = "US", _province = "";
+    Address.AddressType _type = Address.AddressType.Main;
+
+    // Country & subdivision options from ISO service
+    private readonly List<CountryOpt> _countries = new();
+    private readonly List<SubdivisionOpt> _subdivisions = new();
+
+    private (string firm, string line, string? line2, string? line3, string? urban,
+        string city, string state, string zip5, string? zip4, string? postal,
+        string country, string? prov, Address.AddressType type)? _lastSnapshot;
+
+    private bool _initialized;
+
+    private bool IsUS => _country.Equals("US", StringComparison.OrdinalIgnoreCase);
+
+    // -------- lifecycle --------
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCountriesAsync();
+        await LoadSubdivisionsForAsync(_country);
+        _initialized = true;
+    }
+
+    protected override async void OnParametersSet()
+    {
+        // adopt external value only if changed vs last snapshot
+        if (Value is null)
+            return;
+
+        var snap = (_firm, _line, _line2, _line3, _urbanization, _city, _state, _zip5, _zip4, _postal, _country, _province, _type);
+        var incoming = (Value.FirmName, Value.Line, Value.Line2, Value.Line3, Value.Urbanization, Value.City,
+            Value.State, Value.Zip5 ?? "", Value.Zip4, Value.PostalCode, Value.Country,
+            Value.Province, Value.Type);
+
+        if (_lastSnapshot is null || !_lastSnapshot.Value.Equals(incoming))
+        {
+            _firm = Value.FirmName;
+            _line = Value.Line;
+            _line2 = Value.Line2 ?? "";
+            _line3 = Value.Line3 ?? "";
+            _urbanization = Value.Urbanization ?? "";
+            _city = Value.City;
+            _state = Value.State ?? "";
+            _zip5 = Value.Zip5 ?? "";
+            _zip4 = Value.Zip4 ?? "";
+            _postal = Value.PostalCode ?? "";
+            _country = string.IsNullOrWhiteSpace(Value.Country) ? "US" : Value.Country;
+            _province = Value.Province ?? "";
+            _type = Value.Type;
+
+            _lastSnapshot = incoming;
+
+            if (_initialized)
+            {
+                // reload subdivisions when parent changes country
+                await LoadSubdivisionsForAsync(_country);
+                StateHasChanged();
+            }
+        }
+    }
+
+    // -------- ISO data loaders --------
+    private async Task LoadCountriesAsync()
+    {
+        _countries.Clear();
+        var dict = await Iso.GetAllCountriesAsync(); // Alpha2 -> ISOCountry
+        foreach (var kv in dict.Values.OrderBy(v => v.ISOShortName, StringComparer.OrdinalIgnoreCase))
+        {
+            // keep only countries with sensible short names + alpha2
+            if (!string.IsNullOrWhiteSpace(kv.ISOShortName) && !string.IsNullOrWhiteSpace(kv.Alpha2))
+                _countries.Add(new CountryOpt(kv.Alpha2, kv.ISOShortName));
+        }
+
+        // ensure United States appears (and default selected) even if service is late
+        if (_countries.All(c => !c.Alpha2.Equals("US", StringComparison.OrdinalIgnoreCase)))
+            _countries.Insert(0, new CountryOpt("US", "United States"));
+
+        // default to US if external value not set
+        if (string.IsNullOrWhiteSpace(_country))
+            _country = "US";
+    }
+
+    private async Task LoadSubdivisionsForAsync(string alpha2)
+    {
+        _subdivisions.Clear();
+
+        // Try pulling all and filtering by key or code prefix "US-"
+        var all = await Iso.GetAllSubdivisionsAsync(); // Dictionary<string, ISOSubdivision>
+        var matches = all
+            .Where(kv =>
+                (kv.Key?.StartsWith(alpha2 + "-", true, CultureInfo.InvariantCulture) ?? false) ||
+                (!string.IsNullOrWhiteSpace(kv.Value.Code) &&
+                 kv.Value.Code!.StartsWith(alpha2 + "-", StringComparison.OrdinalIgnoreCase)))
+            .Select(kv => new SubdivisionOpt(
+                Code: ExtractSubCode(alpha2, kv.Key, kv.Value.Code),
+                Name: kv.Value.Name))
+            .OrderBy(s => s.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (matches.Count == 0 && alpha2.Equals("US", StringComparison.OrdinalIgnoreCase))
+        {
+            // Fallback list for US if dataset codes aren't discoverable
+            foreach (var (code, name) in USStates)
+                _subdivisions.Add(new SubdivisionOpt(code, name));
+        }
+        else
+        {
+            _subdivisions.AddRange(matches);
+        }
+
+        // If current selection no longer valid, clear it
+        if (IsUS)
+        {
+            if (_subdivisions.Count > 0 && !_subdivisions.Any(s => s.Code.Equals(_state, StringComparison.OrdinalIgnoreCase)))
+                _state = ""; // force user to pick a valid state
+        }
+        else
+        {
+            if (_subdivisions.Count > 0 && !_subdivisions.Any(s => s.Code.Equals(_province, StringComparison.OrdinalIgnoreCase)))
+                _province = "";
+        }
+    }
+
+    private static string ExtractSubCode(string alpha2, string dictKey, string? dtoCode)
+    {
+        string raw = dtoCode ?? dictKey ?? "";
+        // Prefer trailing part after "US-" -> "CA"
+        var idx = raw.IndexOf(alpha2 + "-", StringComparison.OrdinalIgnoreCase);
+        if (idx >= 0) raw = raw[(idx + alpha2.Length + 1)..];
+        // Trim whitespace
+        return raw.Trim();
+    }
+
+    // -------- events --------
+    private async Task OnCountryChanged(string newAlpha2)
+    {
+        _country = newAlpha2;
+        // clear country-specific fields
+        _zip5 = _zip4 = _postal = _province = "";
+        _state = "";
+
+        await LoadSubdivisionsForAsync(_country);
+        StateHasChanged();
+    }
+
+    private Task OnStateChanged(string s)
+    {
+        _state = s;
+        return Task.CompletedTask;
+    }
+
+    private Task OnProvinceChanged(string p)
+    {
+        _province = p;
+        return Task.CompletedTask;
+    }
+
+    private async Task Save()
+    {
+        try
+        {
+            Address addr;
+            if (IsUS)
+            {
+                // US requires State + Zip5 (5-digit). VO enforces.
+                addr = new Address(_firm, _line, _line2, _line3, _urbanization, _city,
+                    _state, _zip5, _zip4, null, _country, null, false, _type);
+            }
+            else
+            {
+                // Non-US requires PostalCode + Province per VO.
+                addr = new Address(_firm, _line, _line2, _line3, _urbanization, _city,
+                    _state, "", null, _postal, _country, _province, false, _type);
+            }
+
+            _lastSnapshot = (_firm, _line, _line2, _line3, _urbanization, _city,
+                _state, _zip5, _zip4, _postal, _country, _province, _type);
+
+            await ValueChanged.InvokeAsync(addr);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+            await ValueChanged.InvokeAsync(null);
+        }
+    }
+
+    private Task Reset()
+    {
+        Value = null;
+        _firm = _line = _line2 = _line3 = _urbanization = "";
+        _city = _state = _zip5 = _zip4 = _postal = "";
+        _country = "US";
+        _province = "";
+        _type = Address.AddressType.Main;
+        _lastSnapshot = null;
+        _ = LoadSubdivisionsForAsync(_country);
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    public string PaperClass => $"pa-4 {Class}";
+
+    // -------- option models --------
+    private record CountryOpt(string Alpha2, string Name);
+    private record SubdivisionOpt(string Code, string Name);
+
+    // -------- constants --------
+    // Fallback US states (code -> name) if ISO service can't map subdivisions
+    private static readonly (string Code, string Name)[] USStates = new[]
+    {
+        ("AL","Alabama"), ("AK","Alaska"), ("AZ","Arizona"), ("AR","Arkansas"),
+        ("CA","California"), ("CO","Colorado"), ("CT","Connecticut"), ("DE","Delaware"),
+        ("FL","Florida"), ("GA","Georgia"), ("HI","Hawaii"), ("ID","Idaho"),
+        ("IL","Illinois"), ("IN","Indiana"), ("IA","Iowa"), ("KS","Kansas"),
+        ("KY","Kentucky"), ("LA","Louisiana"), ("ME","Maine"), ("MD","Maryland"),
+        ("MA","Massachusetts"), ("MI","Michigan"), ("MN","Minnesota"), ("MS","Mississippi"),
+        ("MO","Missouri"), ("MT","Montana"), ("NE","Nebraska"), ("NV","Nevada"),
+        ("NH","New Hampshire"), ("NJ","New Jersey"), ("NM","New Mexico"), ("NY","New York"),
+        ("NC","North Carolina"), ("ND","North Dakota"), ("OH","Ohio"), ("OK","Oklahoma"),
+        ("OR","Oregon"), ("PA","Pennsylvania"), ("RI","Rhode Island"), ("SC","South Carolina"),
+        ("SD","South Dakota"), ("TN","Tennessee"), ("TX","Texas"), ("UT","Utah"),
+        ("VT","Vermont"), ("VA","Virginia"), ("WA","Washington"), ("WV","West Virginia"),
+        ("WI","Wisconsin"), ("WY","Wyoming"), ("DC","District of Columbia"),
+        ("AS","American Samoa"), ("GU","Guam"), ("MP","Northern Mariana Islands"),
+        ("PR","Puerto Rico"), ("VI","U.S. Virgin Islands")
+    };
+}

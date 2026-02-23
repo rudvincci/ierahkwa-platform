@@ -1,0 +1,109 @@
+@page "/development"
+@using Mamey.BlazorWasm.Models
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="ma-10 development-page-container">
+    <!-- Header Section -->
+    <MudPaper Class="header-section" Elevation="0">
+        <h1 class="page-title animate-slide-in">Development Initiatives</h1>
+        <p class="page-subtitle animate-fade-in">
+            Empowering Indigenous Communities with Skills, Resources, and Cultural Preservation
+        </p>
+    </MudPaper>
+
+    <!-- Introduction Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Overview</h2>
+            <p class="section-content animate-fade-in">
+                Our development initiatives aim to equip Indigenous communities with essential tools for economic independence, cultural preservation, and modern skill-building.
+                These programs bridge the gap between tradition and innovation, fostering sustainable growth for future generations.
+            </p>
+        </MudPaper>
+    </section>
+
+    <!-- Workshops Section -->
+    <CardHighlight Items="GetWorkshops()" />
+    @* <section class="section"> *@
+    @*     <MudGrid Class="workshops-grid"> *@
+    @*         <MudItem xs="12" md="6" lg="4" Class="workshop-item animate-zoom-in"> *@
+    @*             <MudPaper Class="workshop-card"> *@
+    @*                 <h3>Financial Literacy</h3> *@
+    @*                 <p> *@
+    @*                     Workshops that teach budgeting, saving, and investing principles to empower participants in managing their finances effectively. *@
+    @*                 </p> *@
+    @*             </MudPaper> *@
+    @*         </MudItem> *@
+    @*         <MudItem xs="12" md="6" lg="4" Class="workshop-item animate-zoom-in"> *@
+    @*             <MudPaper Class="workshop-card"> *@
+    @*                 <h3>Business Planning</h3> *@
+    @*                 <p> *@
+    @*                     Programs that guide participants through creating, launching, and sustaining successful business ventures. *@
+    @*                 </p> *@
+    @*             </MudPaper> *@
+    @*         </MudItem> *@
+    @*         <MudItem xs="12" md="6" lg="4" Class="workshop-item animate-zoom-in"> *@
+    @*             <MudPaper Class="workshop-card"> *@
+    @*                 <h3>Technology Skills</h3> *@
+    @*                 <p> *@
+    @*                     Training in digital tools, coding, and other technologies to prepare participants for modern economic opportunities. *@
+    @*                 </p> *@
+    @*             </MudPaper> *@
+    @*         </MudItem> *@
+    @*     </MudGrid> *@
+    @* </section> *@
+
+    <!-- Financial Support Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Financial Support</h2>
+            <p class="section-content animate-fade-in">
+                We provide access to microloans and grants, enabling Indigenous entrepreneurs to launch, grow, and sustain their businesses. These resources foster
+                economic independence and create opportunities for community development.
+            </p>
+        </MudPaper>
+    </section>
+
+    <!-- Cultural Preservation Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Cultural Preservation</h2>
+            <p class="section-content animate-fade-in">
+                Our initiatives honor Indigenous traditions and languages, ensuring they are passed down to future generations. By celebrating cultural identity,
+                we promote economic growth while preserving the rich heritage of Indigenous communities.
+            </p>
+        </MudPaper>
+    </section>
+</MudContainer>
+
+
+@code {
+
+    private List<FeaturedProduct> GetWorkshops()
+    {
+        return new List<FeaturedProduct>()
+        {
+            new FeaturedProduct()
+            {
+                Title = "Financial Literacy",
+                Description = "Workshops that teach budgeting, saving, and investing principles to empower participants in managing their finances effectively.",
+                ImageUrl = "images/financial-literacy.png",
+                Id = 1,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Business Planning",
+                Description = "Programs that guide participants through creating, launching, and sustaining successful business ventures.",
+                ImageUrl = "images/business-planning.png",
+                Id = 2,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Technology Skills",
+                Description = "Training in digital tools, coding, and other technologies to prepare participants for modern economic opportunities.",
+                ImageUrl = "images/technology-skills.png",
+                Id = 3,
+            }
+        };
+    }
+
+}

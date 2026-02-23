@@ -1,0 +1,220 @@
+@page "/login"
+@inject MameyWalletClient WalletClient
+@inject IDIDClient DidClient
+@inject DidAuthService DidAuthService
+@inject AuthSessionService Session
+@using System.Security.Cryptography
+
+<PageTitle>Login - MameyNode Authority</PageTitle>
+
+<h1>Authority Login (DID)</h1>
+
+@if (Session.IsAuthenticated)
+{
+    <div class="alert alert-success">
+        <strong>Authenticated</strong>
+        <div><strong>Institution DID:</strong> <code>@Session.InstitutionDid</code></div>
+        <div><strong>Wallet Key ID:</strong> <code>@Session.WalletKeyId</code></div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5>DID Challenge-Response</h5>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <label class="form-label">Root Authority Controller (dev)</label>
+            <div class="input-group">
+                <input class="form-control" @bind="_rootController" placeholder="root_authority" />
+                <button class="btn btn-outline-secondary" @onclick="IssueRootDidAsync" disabled="@_busy">
+                    Issue Root DID (Dev)
+                </button>
+            </div>
+            <div class="form-text">
+                This issues a DID on the node for the given controller. Allowed: letters, numbers, <code>_</code>, <code>-</code>.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Institution DID</label>
+            <input class="form-control" @bind="_institutionDid" placeholder="did:futurewampum:..." />
+            <div class="form-text">This is the DID that will be treated as the institution identity.</div>
+        </div>
+
+        <div class="mb-3">
+            <button class="btn btn-outline-primary" @onclick="GenerateKeyAsync" disabled="@_busy">
+                Generate Wallet Key (Dev)
+            </button>
+            @if (!string.IsNullOrWhiteSpace(_walletKeyId))
+            {
+                <div class="mt-2">
+                    <div><strong>Key ID:</strong> <code>@_walletKeyId</code></div>
+                    <div><strong>Public Key:</strong> <code>@_walletPublicKey</code></div>
+                </div>
+            }
+            <div class="form-text">For dev, we generate a key via WalletService. Later this should be backed by HSM/Vault.</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Wallet Password (optional)</label>
+            <input class="form-control" @bind="_walletPassword" type="password" />
+        </div>
+
+        <button class="btn btn-primary" @onclick="LoginAsync" disabled="@_busy">
+            Login
+        </button>
+
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="alert alert-danger mt-3">@_error</div>
+        }
+        @if (!string.IsNullOrWhiteSpace(_info))
+        {
+            <div class="alert alert-info mt-3">@_info</div>
+        }
+    </div>
+</div>
+
+@code {
+    private bool _busy;
+    private string _rootController = "root_authority";
+    private string _institutionDid = "";
+    private string? _walletKeyId;
+    private string? _walletPublicKey;
+    private string? _walletPassword;
+    private string? _error;
+    private string? _info;
+
+    private async Task IssueRootDidAsync()
+    {
+        _busy = true;
+        _error = null;
+        _info = null;
+
+        try
+        {
+            var controller = NormalizeControllerComponent(_rootController);
+            if (string.IsNullOrWhiteSpace(controller))
+            {
+                _error = "Root controller is required.";
+                return;
+            }
+
+            var issued = await DidClient.IssueDIDAsync(controller);
+            if (!issued.Success || string.IsNullOrWhiteSpace(issued.DID))
+            {
+                _error = issued.ErrorMessage ?? "Failed to issue DID.";
+                return;
+            }
+
+            _institutionDid = issued.DID!;
+            _info = $"Issued Root DID: {issued.DID}";
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task GenerateKeyAsync()
+    {
+        _busy = true;
+        _error = null;
+        _info = null;
+
+        try
+        {
+            var resp = await WalletClient.Client.GenerateKeyAsync(new GenerateKeyRequest
+            {
+                KeyType = "ed25519",
+                Algorithm = "ed25519",
+                Password = _walletPassword ?? string.Empty,
+                EnableMigrationMode = false,
+                LegacyKeyId = ""
+            });
+
+            if (!resp.Success)
+            {
+                _error = resp.ErrorMessage;
+                return;
+            }
+
+            _walletKeyId = resp.KeyId;
+            _walletPublicKey = resp.PublicKey;
+            _info = "Key generated.";
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private static string NormalizeControllerComponent(string value)
+    {
+        // Node validation allows only [A-Za-z0-9_-]
+        var chars = value.Trim().ToCharArray();
+        for (var i = 0; i < chars.Length; i++)
+        {
+            var c = chars[i];
+            var ok = char.IsLetterOrDigit(c) || c is '_' or '-';
+            if (!ok)
+            {
+                chars[i] = '_';
+            }
+        }
+        return new string(chars);
+    }
+
+    private async Task LoginAsync()
+    {
+        _busy = true;
+        _error = null;
+        _info = null;
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_institutionDid))
+            {
+                _error = "Institution DID is required.";
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(_walletKeyId) || string.IsNullOrWhiteSpace(_walletPublicKey))
+            {
+                _error = "Generate a wallet key first.";
+                return;
+            }
+
+            var result = await DidAuthService.LoginWithDidAsync(
+                _institutionDid.Trim(),
+                _walletKeyId,
+                _walletPublicKey,
+                _walletPassword);
+
+            if (!result.Success)
+            {
+                _error = result.ErrorMessage;
+                return;
+            }
+
+            _info = "Login successful.";
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+}
+

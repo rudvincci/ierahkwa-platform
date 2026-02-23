@@ -1,0 +1,121 @@
+@inject ISnackbar Snackbar
+
+<MudPaper Elevation="0" Class="pa-4" Style="border: 2px dashed var(--mud-palette-lines-default); border-radius: 8px;">
+    <MudStack AlignItems="AlignItems.Center" Spacing="2">
+        <MudIcon Icon="@Icons.Material.Filled.CloudUpload" Size="Size.Large" Class="mud-text-secondary" />
+        <MudText Typo="Typo.body1" Class="mud-text-secondary">@Label</MudText>
+        <MudText Typo="Typo.caption" Class="mud-text-secondary">@HelpText</MudText>
+        <InputFile id="@_inputId" OnChange="OnFilesChanged" accept="@Accept" multiple="@Multiple" hidden />
+        <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" for="@_inputId" StartIcon="@Icons.Material.Filled.Upload">
+            Choose @(Multiple ? "Files" : "File")
+        </MudButton>
+    </MudStack>
+</MudPaper>
+
+@if (_uploadedFiles.Any())
+{
+    <MudStack Spacing="1" Class="mt-2">
+        @foreach (var file in _uploadedFiles)
+        {
+            <MudPaper Elevation="0" Class="pa-2" Style="background: var(--mud-palette-background-grey);">
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@GetFileIcon(file.Name)" Size="Size.Small" />
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.body2">@file.Name</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">@FormatFileSize(file.Size)</MudText>
+                        </MudStack>
+                    </MudStack>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="() => RemoveFile(file)" />
+                </MudStack>
+            </MudPaper>
+        }
+    </MudStack>
+}
+
+@code {
+    private readonly string _inputId = $"file-input-{Guid.NewGuid():N}";
+    private readonly List<IBrowserFile> _uploadedFiles = new();
+
+    [Parameter]
+    public string Label { get; set; } = "Drag & drop files here or click to browse";
+
+    [Parameter]
+    public string HelpText { get; set; } = "Supported formats: PDF, JPG, PNG (max 10MB)";
+
+    [Parameter]
+    public string Accept { get; set; } = ".pdf,.jpg,.jpeg,.png";
+
+    [Parameter]
+    public bool Multiple { get; set; } = true;
+
+    [Parameter]
+    public long MaxFileSize { get; set; } = 10 * 1024 * 1024; // 10MB
+
+    [Parameter]
+    public int MaxFiles { get; set; } = 5;
+
+    [Parameter]
+    public EventCallback<IReadOnlyList<IBrowserFile>> FilesChanged { get; set; }
+
+    private async Task OnFilesChanged(InputFileChangeEventArgs e)
+    {
+        var files = e.GetMultipleFiles(MaxFiles);
+        
+        foreach (var file in files)
+        {
+            if (file.Size > MaxFileSize)
+            {
+                Snackbar.Add($"File '{file.Name}' exceeds maximum size of {FormatFileSize(MaxFileSize)}", Severity.Error);
+                continue;
+            }
+
+            if (!Multiple)
+            {
+                _uploadedFiles.Clear();
+            }
+
+            if (_uploadedFiles.Count >= MaxFiles)
+            {
+                Snackbar.Add($"Maximum of {MaxFiles} files allowed", Severity.Warning);
+                break;
+            }
+
+            _uploadedFiles.Add(file);
+        }
+
+        await FilesChanged.InvokeAsync(_uploadedFiles.AsReadOnly());
+    }
+
+    private async Task RemoveFile(IBrowserFile file)
+    {
+        _uploadedFiles.Remove(file);
+        await FilesChanged.InvokeAsync(_uploadedFiles.AsReadOnly());
+    }
+
+    private static string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        var order = 0;
+        double size = bytes;
+        while (size >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            size /= 1024;
+        }
+        return $"{size:0.##} {sizes[order]}";
+    }
+
+    private static string GetFileIcon(string fileName)
+    {
+        var ext = System.IO.Path.GetExtension(fileName).ToLowerInvariant();
+        return ext switch
+        {
+            ".pdf" => Icons.Custom.FileFormats.FilePdf,
+            ".jpg" or ".jpeg" or ".png" or ".gif" => Icons.Custom.FileFormats.FileImage,
+            ".doc" or ".docx" => Icons.Custom.FileFormats.FileDocument,
+            ".xls" or ".xlsx" => Icons.Custom.FileFormats.FileExcel,
+            _ => Icons.Material.Filled.InsertDriveFile
+        };
+    }
+}

@@ -1,0 +1,34 @@
+@namespace MameyNode.Portals.Shared.Components.Specialized
+
+<MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="3" Class="pa-8">
+    @if (!string.IsNullOrEmpty(Icon))
+    {
+        <MudIcon Icon="@Icon" Size="Size.Large" Color="@IconColor" Style="font-size: 64px; opacity: 0.5;" />
+    }
+    <MudText Typo="Typo.h6" Align="Align.Center">@Title</MudText>
+    @if (!string.IsNullOrEmpty(Message))
+    {
+        <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">@Message</MudText>
+    }
+    @if (ActionButton != null)
+    {
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnAction">
+            @ActionText
+        </MudButton>
+    }
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+</MudStack>
+
+@code {
+    [Parameter] public string Title { get; set; } = "No items found";
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public string? Icon { get; set; } = Icons.Material.Filled.Inbox;
+    [Parameter] public Color IconColor { get; set; } = Color.Default;
+    [Parameter] public string? ActionText { get; set; }
+    [Parameter] public EventCallback OnAction { get; set; }
+    [Parameter] public RenderFragment? ActionButton { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

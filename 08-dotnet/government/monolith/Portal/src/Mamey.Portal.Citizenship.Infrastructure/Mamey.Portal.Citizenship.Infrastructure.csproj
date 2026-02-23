@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.11">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="QuestPDF" Version="2024.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mamey.Portal.Shared\Mamey.Portal.Shared.csproj" />
+    <ProjectReference Include="..\Mamey.Portal.Citizenship.Application\Mamey.Portal.Citizenship.Application.csproj" />
+    <ProjectReference Include="..\Mamey.Portal.Citizenship.Domain\Mamey.Portal.Citizenship.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMameyProjects)'=='true'">
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Persistence.Minio\src\Mamey.Persistence.Minio\Mamey.Persistence.Minio.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMameyProjects)'!='true'">
+    <PackageReference Include="Mamey.Persistence.Minio" Version="2.0.*" />
+    <PackageReference Include="Mamey.AmvvaStandards" Version="2.0.*" />
+    <PackageReference Include="Mamey.Barcode" Version="2.0.*" />
+    <PackageReference Include="Mamey.Http" Version="2.0.*" />
+    <PackageReference Include="Mamey.Word" Version="2.0.*" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMameyProjects)'=='true'">
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.AmvvaStandards\src\Mamey.AmvvaStandards\Mamey.AmvvaStandards.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Barcode\src\Mamey.Barcode\Mamey.Barcode.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Http\src\Mamey.Http\Mamey.Http.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Word\src\Mamey.Word\Mamey.Word.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,97 @@
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">MameyNode</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="nodeinfo">
+                <span class="oi oi-info" aria-hidden="true"></span> Node Info
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="login">
+                <span class="oi oi-lock-locked" aria-hidden="true"></span> Login (DID)
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="authority/governments">
+                <span class="oi oi-briefcase" aria-hidden="true"></span> Government Onboarding
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="authority/banks">
+                <span class="oi oi-badge" aria-hidden="true"></span> Bank Charters
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="version">
+                <span class="oi oi-code" aria-hidden="true"></span> Version
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="paymentrequest">
+                <span class="oi oi-credit-card" aria-hidden="true"></span> Payment Request
+            </NavLink>
+        </div>
+        <div class="nav-item px-3 mt-2">
+            <span class="text-muted small">General Node</span>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="general">
+                <span class="oi oi-dashboard" aria-hidden="true"></span> Dashboard
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="general/network">
+                <span class="oi oi-project" aria-hidden="true"></span> Network & Peers
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="general/metrics">
+                <span class="oi oi-graph" aria-hidden="true"></span> Metrics
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="general/wallet">
+                <span class="oi oi-key" aria-hidden="true"></span> Wallet Tools
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="general/crypto">
+                <span class="oi oi-lock-unlocked" aria-hidden="true"></span> Crypto Tools
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="general/service">
+                <span class="oi oi-puzzle-piece" aria-hidden="true"></span> General Service
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="general/did">
+                <span class="oi oi-fingerprint" aria-hidden="true"></span> DID Tools
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

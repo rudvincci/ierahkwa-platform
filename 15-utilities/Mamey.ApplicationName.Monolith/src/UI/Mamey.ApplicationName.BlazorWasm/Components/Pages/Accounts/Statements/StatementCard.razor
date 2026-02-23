@@ -1,0 +1,13 @@
+@using Mamey.ApplicationName.BlazorWasm.Models.Statements
+
+<MudPaper Class="p-4" Elevation="3">
+    <MudText Typo="Typo.h6">@Statement.AccountName</MudText>
+    <MudText Typo="Typo.body2">Date: @Statement.Date.ToShortDateString()</MudText>
+    <MudText Typo="Typo.body2">Amount: @Statement.Amount.ToString("C")</MudText>
+    <MudText Typo="Typo.body2">Type: @Statement.Type</MudText>
+    <MudButton Variant="Variant.Outlined" Color="Color.Primary">Download @Statement.Format</MudButton>
+</MudPaper>
+
+@code {
+    [Parameter] public Statement Statement { get; set; }
+}

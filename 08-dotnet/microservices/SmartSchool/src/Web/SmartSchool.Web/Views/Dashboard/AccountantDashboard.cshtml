@@ -1,0 +1,108 @@
+@model AccountantDashboardViewModel
+@{
+    ViewData["Title"] = "Accountant Dashboard";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Accountant Dashboard</h1>
+</div>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Fees Collected</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">$@Model.TotalFeesCollected.ToString("N2")</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-cash-coin text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Fees Due</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">$@Model.TotalFeesDue.ToString("N2")</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-exclamation-triangle text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Monthly Revenue</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">$@Model.MonthlyRevenue.ToString("N2")</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-graph-up-arrow text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Products</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalProducts</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-box-seam text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Invoices" asp-action="ReceiveFees" class="btn btn-primary w-100">
+                            <i class="bi bi-receipt me-2"></i>Receive Fees
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Invoices" asp-action="Purchase" class="btn btn-success w-100">
+                            <i class="bi bi-cart-plus me-2"></i>New Purchase
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Journals" asp-action="Create" class="btn btn-info w-100 text-white">
+                            <i class="bi bi-journal-plus me-2"></i>New Journal
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Reports" asp-action="Index" class="btn btn-warning w-100">
+                            <i class="bi bi-file-earmark-bar-graph me-2"></i>Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

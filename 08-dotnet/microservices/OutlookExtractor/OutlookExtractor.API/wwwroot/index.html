@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IERAHKWA Outlook Email Extractor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            color: #1e3a8a;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #1e3a8a;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #3b82f6;
+            margin-bottom: 5px;
+        }
+
+        .header .subtext {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .api-section {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .api-section h2 {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+        }
+
+        .endpoint {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .endpoint .method {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .endpoint .method.post {
+            background: #10b981;
+        }
+
+        .endpoint .method.get {
+            background: #3b82f6;
+        }
+
+        .endpoint .method.delete {
+            background: #ef4444;
+        }
+
+        .endpoint .path {
+            font-family: 'Courier New', monospace;
+            color: #1e3a8a;
+            font-weight: bold;
+        }
+
+        .endpoint .description {
+            margin-top: 8px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .cta-button:hover {
+            background: #1e3a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(30, 58, 138, 0.4);
+        }
+
+        .button-group {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            color: #64748b;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📧 IERAHKWA OUTLOOK EMAIL EXTRACTOR</h1>
+            <p class="subtitle">Sovereign Government Communication Tool</p>
+            <p class="subtext">Office 365 • Outlook • Hotmail • Exchange Integration</p>
+            <div style="margin-top: 15px;">
+                <span class="badge">v1.0</span>
+                <span class="badge">.NET 10</span>
+                <span class="badge">Microsoft Graph API</span>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <h3>📨 Email Extraction</h3>
+                <p>Extract email addresses from Inbox, Sent Items, Archive, and Deleted folders automatically.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📅 Calendar Integration</h3>
+                <p>Extract contacts from calendar events, meetings, and appointments with full metadata.</p>
+            </div>
+            <div class="feature-card">
+                <h3>👥 Contacts Export</h3>
+                <p>Extract complete contact information including company, job title, and phone numbers.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📊 Excel Export</h3>
+                <p>Export to professionally formatted Excel files with custom styling and organization.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📄 Text Export</h3>
+                <p>Generate clean text files with email lists for easy integration with other tools.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📈 Analytics</h3>
+                <p>Get statistics by domain, source, frequency, and more with detailed insights.</p>
+            </div>
+        </div>
+
+        <div class="api-section">
+            <h2>API Endpoints</h2>
+            
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/authentication/authenticate</span>
+                <p class="description">Authenticate with Microsoft 365 using service principal credentials</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/authentication/authenticate-interactive</span>
+                <p class="description">Authenticate using interactive browser login</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <span class="path">/api/authentication/status</span>
+                <p class="description">Check current authentication status</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/extraction/all</span>
+                <p class="description">Extract email addresses from all sources (emails, calendar, contacts)</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/extraction/emails</span>
+                <p class="description">Extract email addresses from emails only</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/extraction/calendar</span>
+                <p class="description">Extract email addresses from calendar events</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <span class="path">/api/extraction/statistics</span>
+                <p class="description">Get statistics and analytics on extracted emails</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/export/text</span>
+                <p class="description">Export extracted emails to text file</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/export/excel</span>
+                <p class="description">Export extracted emails to Excel file</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/export/both</span>
+                <p class="description">Export to both text and Excel files</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method delete">DELETE</span>
+                <span class="path">/api/extraction/clear</span>
+                <p class="description">Clear all extracted data</p>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <a href="/swagger" class="cta-button">📖 View API Documentation</a>
+        </div>
+
+        <div class="footer">
+            <p><strong>Sovereign Government of Ierahkwa Ne Kanienke</strong></p>
+            <p>© 2026 All Rights Reserved</p>
+            <p style="margin-top: 10px; font-size: 0.85rem;">Built with .NET 10 • Microsoft Graph API • ClosedXML</p>
+        </div>
+    </div>
+</body>
+</html>

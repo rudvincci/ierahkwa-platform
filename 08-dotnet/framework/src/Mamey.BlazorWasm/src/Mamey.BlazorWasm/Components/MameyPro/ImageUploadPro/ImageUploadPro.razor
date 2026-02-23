@@ -1,0 +1,189 @@
+@using Mamey.BlazorWasm.Components.Foundation
+@using Microsoft.AspNetCore.Components.Forms
+@using System.IO
+
+<MudPaper Elevation="1" Class="@PaperClass" Style="@Style">
+    <MudStack Spacing="2">
+        <MudText Typo="Typo.subtitle2">@Label</MudText>
+        
+        <MudFileUpload T="IReadOnlyList<IBrowserFile>"
+                       Accept="@ImageAccept"
+                       Multiple="@Multiple"
+                       OnFilesChanged="OnInputFilesChanged"
+                       Hidden="@false">
+            <ActivatorContent>
+                <MudPaper Height="@DropZoneHeight"
+                          Outlined="true"
+                          Class="@_dragClass">
+                    <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="2" Style="height: 100%;">
+                        <MudIcon Icon="@Icons.Material.Filled.Image" Size="Size.Large" />
+                        <MudText Typo="Typo.body1">@DropZoneText</MudText>
+                        @if (_files.Count > 0)
+                        {
+                            <MudText Typo="Typo.caption">@_files.Count image(s) selected</MudText>
+                        }
+                    </MudStack>
+                </MudPaper>
+            </ActivatorContent>
+        </MudFileUpload>
+
+        @if (_files.Count > 0)
+        {
+            <MudGrid Spacing="2">
+                @foreach (var file in _files)
+                {
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudPaper Elevation="2" Class="pa-2">
+                            <MudStack Spacing="1">
+                                @if (_previews.ContainsKey(file.Name))
+                                {
+                                    <img src="@_previews[file.Name]" alt="@file.Name" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;" />
+                                }
+                                else
+                                {
+                                    <MudProgressLinear Indeterminate="true" />
+                                }
+                                <MudText Typo="Typo.caption">@file.Name</MudText>
+                                <MudText Typo="Typo.caption">@FormatFileSize(file.Size)</MudText>
+                                <MudButton Size="Size.Small" 
+                                          Variant="Variant.Text" 
+                                          Color="Color.Error"
+                                          StartIcon="@Icons.Material.Filled.Delete"
+                                          OnClick="@(() => RemoveFile(file))">
+                                    Remove
+                                </MudButton>
+                            </MudStack>
+                        </MudPaper>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+
+        @if (_error)
+        {
+            <MudAlert Severity="Severity.Error" Variant="Variant.Text">@_errorText</MudAlert>
+        }
+    </MudStack>
+    <FieldMessages HelperText="@HelperText" />
+</MudPaper>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Image Upload";
+    [Parameter] public string HelperText { get; set; } = "Upload image files (JPG, PNG, GIF, etc.)";
+    [Parameter] public string ImageAccept { get; set; } = "image/*";
+    [Parameter] public long MaxAllowedSize { get; set; } = 5 * 1024 * 1024; // 5MB
+    [Parameter] public bool Multiple { get; set; } = false;
+    [Parameter] public string DropZoneText { get; set; } = "Drag and drop images here or click to browse";
+    [Parameter] public string DropZoneHeight { get; set; } = "200px";
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public IReadOnlyList<IBrowserFile>? Files { get; set; }
+    [Parameter] public EventCallback<IReadOnlyList<IBrowserFile>?> FilesChanged { get; set; }
+
+    private List<IBrowserFile> _files = new();
+    private Dictionary<string, string> _previews = new();
+    private bool _error = false;
+    private string _errorText = "";
+    private string _dragClass = "relative rounded-lg border-2 border-dashed pa-4 mud-width-full mud-height-full";
+
+    protected override void OnParametersSet()
+    {
+        if (Files is not null)
+        {
+            _files = Files.ToList();
+        }
+    }
+
+    private async Task OnInputFilesChanged(InputFileChangeEventArgs e)
+    {
+        var files = e.GetMultipleFiles(int.MaxValue);
+        await ProcessFiles(files);
+    }
+
+    private async Task ProcessFiles(IReadOnlyList<IBrowserFile>? files)
+    {
+        _error = false;
+        _errorText = "";
+
+        if (files is null || files.Count == 0)
+        {
+            _files.Clear();
+            _previews.Clear();
+            await FilesChanged.InvokeAsync(null);
+            StateHasChanged();
+            return;
+        }
+
+        var validFiles = new List<IBrowserFile>();
+        foreach (var file in files)
+        {
+            if (file.Size > MaxAllowedSize)
+            {
+                _error = true;
+                _errorText = $"File {file.Name} exceeds maximum size of {FormatFileSize(MaxAllowedSize)}";
+                continue;
+            }
+
+            if (!file.ContentType.StartsWith("image/"))
+            {
+                _error = true;
+                _errorText = $"File {file.Name} is not a valid image file";
+                continue;
+            }
+
+            validFiles.Add(file);
+            await LoadPreview(file);
+        }
+
+        _files = validFiles;
+        await FilesChanged.InvokeAsync(_files);
+        StateHasChanged();
+    }
+
+    private async Task LoadPreview(IBrowserFile file)
+    {
+        try
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream(MaxAllowedSize).ReadAsync(buffer);
+            var base64 = Convert.ToBase64String(buffer);
+            var dataUrl = $"data:{file.ContentType};base64,{base64}";
+            _previews[file.Name] = dataUrl;
+        }
+        catch
+        {
+            // Preview loading failed, continue without preview
+        }
+    }
+
+    private async Task RemoveFile(IBrowserFile file)
+    {
+        _files.Remove(file);
+        _previews.Remove(file.Name);
+        if (_files.Count == 0)
+        {
+            await FilesChanged.InvokeAsync(null);
+        }
+        else
+        {
+            await FilesChanged.InvokeAsync(_files);
+        }
+        StateHasChanged();
+    }
+
+    private static string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    private string PaperClass => $"pa-4 mamey-image-upload-pro {Class}";
+}

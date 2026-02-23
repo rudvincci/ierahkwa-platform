@@ -1,0 +1,43 @@
+﻿@page "/Account/ConfirmEmail"
+
+@using System.Text
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.AspNetCore.Http
+@using Mamey.Auth.Identity.Managers
+@using Mamey.Types
+@using Mamey.BlazorWasm.Shared
+@using Mamey.Government.Identity.BlazorWasm.Services
+@attribute [ExcludeFromInteractiveRouting]
+
+@inject IAuthService AuthService
+@inject IIdentityRedirectManager RedirectManager
+
+<PageTitle>Confirm email</PageTitle>
+
+<h1>Confirm email</h1>
+<StatusMessage Message="@statusMessage" />
+
+@code {
+    private string? statusMessage;
+    
+    [Inject] private IHttpContextAccessor ContextAccessor { get; set; }
+
+    [SupplyParameterFromQuery]
+    private UserId? UserId { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? Code { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (UserId is null || Code is null)
+        {
+            RedirectManager.RedirectTo("");
+        }
+
+        var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
+        var succeeded = await AuthService.ConfirmEmailAsync(UserId, code);
+        statusMessage = succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+    }
+}

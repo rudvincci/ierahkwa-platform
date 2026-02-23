@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Parents.Api.Protos";
+
+package Pupitre.Parents;
+
+// gRPC service for Parent operations
+service ParentService {
+    // Get a single Parent by ID
+    rpc GetParent (GetParentRequest) returns (ParentResponse) {};
+    
+    // List all Parents with pagination
+    rpc ListParents (ListParentsRequest) returns (ListParentsResponse) {};
+    
+    // Stream Parent updates
+    rpc StreamParentUpdates (StreamParentUpdatesRequest) returns (stream ParentResponse) {};
+}
+
+message GetParentRequest {
+    string id = 1;
+}
+
+message ListParentsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListParentsResponse {
+    repeated ParentResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message ParentResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamParentUpdatesRequest {
+    string filter = 1;
+}

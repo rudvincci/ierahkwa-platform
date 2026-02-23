@@ -1,0 +1,16 @@
+namespace Mamey.Persistence.SQL.Contracts;
+
+// public interface IApplicationDbContext
+// {
+//     EntityEntry Entry(object entity);
+//
+//     EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
+//
+//     int SaveChanges();
+//     Task<int> SaveChangesAsync();
+//
+//
+//     //DbSet Set(Type entityType);
+//
+//     DbSet<TEntity> Set<TEntity>() where TEntity : class;
+// }

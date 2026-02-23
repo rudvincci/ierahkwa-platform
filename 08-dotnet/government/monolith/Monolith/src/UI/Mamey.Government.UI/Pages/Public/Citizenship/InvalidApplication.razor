@@ -1,0 +1,53 @@
+@page "/apply-citizenship/invalid"
+@using MudBlazor
+@inject NavigationManager NavigationManager
+@layout MainLayout
+<PageTitle>Invalid Application Link</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="py-4">
+    <MudCard>
+        <MudCardContent>
+            <MudText Typo="Typo.h4" Class="mb-4">Invalid Application Link</MudText>
+            
+            <MudAlert Severity="Severity.Warning" Class="my-4">
+                The application link you used is invalid, expired, or has already been used.
+            </MudAlert>
+
+            <MudText Typo="Typo.body1" Class="my-4">
+                This could happen if:
+            </MudText>
+            
+            <MudList T="string">
+                <MudListItem T="string" Icon="@Icons.Material.Filled.Info">The link has expired (links are valid for 30 days)</MudListItem>
+                <MudListItem T="string" Icon="@Icons.Material.Filled.Info">The link has already been used</MudListItem>
+                <MudListItem T="string" Icon="@Icons.Material.Filled.Info">The link is incorrect or corrupted</MudListItem>
+            </MudList>
+
+            <MudText Typo="Typo.body1" Class="my-4">
+                Please check your email for a new application link, or contact support if you need assistance.
+            </MudText>
+
+            <MudStack Row="true" Spacing="2" Class="mt-4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="NavigateToHome">
+                    Return to Home
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="StartNewApplication">
+                    Start New Application
+                </MudButton>
+            </MudStack>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private void NavigateToHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void StartNewApplication()
+    {
+        // Navigate to application start page if it exists, otherwise home
+        NavigationManager.NavigateTo("/");
+    }
+}

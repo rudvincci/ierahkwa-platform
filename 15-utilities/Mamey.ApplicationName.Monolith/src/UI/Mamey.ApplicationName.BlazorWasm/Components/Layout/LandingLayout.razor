@@ -1,0 +1,95 @@
+@inherits LayoutComponentBase
+@inject NavigationManager _NavigationManager
+
+<MudThemeProvider Theme="@(GlobalSettings?.GetLandingTheme())"  IsDarkMode="@(GlobalSettings is { IsDarkMode: true })" />
+
+<MudBreakpointProvider>
+    
+@* <HNav /> *@
+<MudLayout>
+    <MudThemeManagerButton OnClick="@((e) => OpenThemeManager(true))" />
+    <MudThemeManager Open="_themeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager" ThemeChanged="UpdateTheme" />
+    
+    <MudAppBar Fixed="true">
+        <MudImage Src="@(GlobalSettings != null && GlobalSettings.IsDarkMode ? "/images/logo/fhg-logo-long-bw.svg" : "/images/logo/fhg-logo-long-bw.svg")" Height="70" ></MudImage>
+        @* <MudHidden Breakpoint="Breakpoint.LgAndUp"> *@
+        @*      *@
+        @* </MudHidden> *@
+        @* <div style="height: 200vh; position: relative;"> <!-- Allow enough height to scroll --> *@
+        @* <div style="background-color: #2c3034; position: sticky; top: 0; z-index: 30; text-align: left;"> *@
+        @* <img src="/images/logo/fbdet-logo.svg" style="height:70px;"/> *@
+        @* </div> *@
+
+        @* </div> *@
+        <MudSpacer/>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
+    </MudAppBar>
+    @* <MudDrawerContainer Class="mud-height-full" Style="position: fixed; top: 9%; left: 0; height: 100vh; z-index: 30;"> *@
+    <MudDrawer @ref="_menuDrawer"
+               @bind-Open="@_drawerOpen" Fixed="true" Elevation="0"
+               ClipMode="DrawerClipMode.Docked"
+               Variant="DrawerVariant.Persistent"
+               OpenMiniOnHover="false" Anchor="Anchor.Right">
+
+        @if (_drawerOpen)
+        {
+            <MudDrawerHeader>
+                <MudText Typo="Typo.h5" Class="mt-1">Menu</MudText>
+            </MudDrawerHeader>
+        }
+        <LandingNavMenu DrawerOpen="_drawerOpen"/>
+    </MudDrawer>
+    @* </MudDrawerContainer> *@
+    <MudMainContent Class="pt-16 px-16">
+
+        <MudContainer Class="mt-6">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+</MudBreakpointProvider>
+@code {
+    bool _drawerOpen = false;
+    [CascadingParameter]
+    public GlobalSettings? GlobalSettings { get; set; }
+    
+    //DrawerVariant _drawerVariant => _drawerPinned ? DrawerVariant.Responsive : DrawerVariant.Mini;
+    MudDrawer _menuDrawer = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (GlobalSettings is not null)
+            {
+                // Initialize the theme
+                await GlobalSettings.InitializeAsync();
+            }
+            
+        }
+    }
+   
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+    
+    private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
+    public bool _themeManagerOpen = false;
+
+    void OpenThemeManager(bool value)
+    {
+        _themeManagerOpen = value;
+    }
+
+    void UpdateTheme(ThemeManagerTheme value)
+    {
+        _themeManager = value;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        StateHasChanged();
+    }
+}

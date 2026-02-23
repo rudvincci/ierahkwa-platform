@@ -1,0 +1,521 @@
+syntax = "proto3";
+
+package mamey.rpc;
+
+// RPC service for JSON-RPC, WebSocket, and IPC operations
+service RpcService {
+    // Account Operations (JSON-RPC compatible)
+    rpc AccountBalance(AccountBalanceRequest) returns (AccountBalanceResponse);
+    rpc AccountInfo(AccountInfoRequest) returns (AccountInfoResponse);
+    rpc AccountHistory(AccountHistoryRequest) returns (AccountHistoryResponse);
+    rpc AccountsPending(AccountsPendingRequest) returns (AccountsPendingResponse);
+    rpc AccountsBalances(AccountsBalancesRequest) returns (AccountsBalancesResponse);
+    
+    // Block Operations (JSON-RPC compatible)
+    rpc BlockInfo(BlockInfoRequest) returns (BlockInfoResponse);
+    rpc BlocksInfo(BlocksInfoRequest) returns (BlocksInfoResponse);
+    rpc BlockCount(BlockCountRequest) returns (BlockCountResponse);
+    rpc BlockConfirm(BlockConfirmRequest) returns (BlockConfirmResponse);
+    rpc Process(ProcessRequest) returns (ProcessResponse);
+    
+    // Representative Operations (JSON-RPC compatible)
+    rpc Representatives(RepresentativesRequest) returns (RepresentativesResponse);
+    rpc RepresentativesOnline(RepresentativesOnlineRequest) returns (RepresentativesOnlineResponse);
+    
+    // Work Operations (JSON-RPC compatible)
+    rpc WorkGenerate(WorkGenerateRequest) returns (WorkGenerateResponse);
+    rpc WorkValidate(WorkValidateRequest) returns (WorkValidateResponse);
+    rpc WorkCancel(WorkCancelRequest) returns (WorkCancelResponse);
+    
+    // Wallet Operations (JSON-RPC compatible)
+    rpc WalletCreate(WalletCreateRequest) returns (WalletCreateResponse);
+    rpc WalletDestroy(WalletDestroyRequest) returns (WalletDestroyResponse);
+    rpc WalletBalanceTotal(WalletBalanceTotalRequest) returns (WalletBalanceTotalResponse);
+    rpc WalletPending(WalletPendingRequest) returns (WalletPendingResponse);
+    
+    // Node Operations (JSON-RPC compatible)
+    rpc Version(VersionRequest) returns (VersionResponse);
+    rpc Telemetry(TelemetryRequest) returns (TelemetryResponse);
+    rpc StatsType(StatsTypeRequest) returns (StatsTypeResponse);
+    rpc StopNode(StopNodeRequest) returns (StopNodeResponse);
+    
+    // WebSocket Subscriptions
+    rpc SubscribeConfirmation(SubscribeConfirmationRequest) returns (stream ConfirmationEvent);
+    rpc SubscribeBlock(SubscribeBlockRequest) returns (stream BlockEvent);
+    rpc SubscribeVote(SubscribeVoteRequest) returns (stream VoteEvent);
+    rpc SubscribeAccount(SubscribeAccountRequest) returns (stream AccountEvent);
+    
+    // Advanced Operations
+    rpc BatchProcess(BatchProcessRequest) returns (BatchProcessResponse);
+    rpc AccountWeight(AccountWeightRequest) returns (AccountWeightResponse);
+    rpc DelegatorsCount(DelegatorsCountRequest) returns (DelegatorsCountResponse);
+    rpc Delegators(DelegatorsRequest) returns (DelegatorsResponse);
+}
+
+// Account balance request (account_balance)
+message AccountBalanceRequest {
+    string account = 1;
+}
+
+message AccountBalanceResponse {
+    string balance = 1;
+    string pending = 2;
+    bool success = 3;
+    string error = 4;
+}
+
+// Account info request (account_info)
+message AccountInfoRequest {
+    string account = 1;
+    bool representative = 2;
+    bool weight = 3;
+    bool pending = 4;
+}
+
+message AccountInfoResponse {
+    string frontier = 1;
+    string open_block = 2;
+    string representative_block = 3;
+    string balance = 4;
+    uint64 modified_timestamp = 5;
+    uint64 block_count = 6;
+    string account_version = 7;
+    string confirmation_height = 8;
+    string confirmation_height_frontier = 9;
+    string representative = 10;
+    string weight = 11;
+    string pending = 12;
+    bool success = 13;
+    string error = 14;
+}
+
+// Account history request (account_history)
+message AccountHistoryRequest {
+    string account = 1;
+    uint32 count = 2;
+    bool raw = 3;
+    string head = 4;  // Optional: start from specific block
+    uint32 offset = 5;
+    bool reverse = 6;
+}
+
+message AccountHistoryResponse {
+    string account = 1;
+    repeated HistoryEntry history = 2;
+    string previous = 3;
+    bool success = 4;
+    string error = 5;
+}
+
+message HistoryEntry {
+    string type = 1;
+    string account = 2;
+    string amount = 3;
+    uint64 local_timestamp = 4;
+    uint64 height = 5;
+    string hash = 6;
+}
+
+// Accounts pending request (accounts_pending)
+message AccountsPendingRequest {
+    repeated string accounts = 1;
+    uint32 count = 2;
+    string threshold = 3;  // Optional: minimum amount
+    bool source = 4;
+    bool include_active = 5;
+}
+
+message AccountsPendingResponse {
+    map<string, PendingBlocks> blocks = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+message PendingBlocks {
+    repeated PendingBlock blocks = 1;
+}
+
+message PendingBlock {
+    string hash = 1;
+    string amount = 2;
+    string source = 3;
+}
+
+// Accounts balances request (accounts_balances)
+message AccountsBalancesRequest {
+    repeated string accounts = 1;
+}
+
+message AccountsBalancesResponse {
+    map<string, BalanceInfo> balances = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+message BalanceInfo {
+    string balance = 1;
+    string pending = 2;
+}
+
+// Block info request (block_info)
+message BlockInfoRequest {
+    string hash = 1;
+    bool json_block = 2;
+}
+
+message BlockInfoResponse {
+    string block_account = 1;
+    string amount = 2;
+    string balance = 3;
+    uint64 height = 4;
+    uint64 local_timestamp = 5;
+    bool confirmed = 6;
+    bytes contents = 7;
+    string subtype = 8;
+    bool success = 9;
+    string error = 10;
+}
+
+// Blocks info request (blocks_info)
+message BlocksInfoRequest {
+    repeated string hashes = 1;
+    bool json_block = 2;
+    bool pending = 3;
+    bool source = 4;
+}
+
+message BlocksInfoResponse {
+    map<string, BlockInfoResponse> blocks = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+// Block count request (block_count)
+message BlockCountRequest {
+}
+
+message BlockCountResponse {
+    uint64 count = 1;
+    uint64 unchecked = 2;
+    uint64 cemented = 3;
+    bool success = 4;
+    string error = 5;
+}
+
+// Block confirm request (block_confirm)
+message BlockConfirmRequest {
+    string hash = 1;
+}
+
+message BlockConfirmResponse {
+    bool started = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+// Process request (process)
+message ProcessRequest {
+    bytes block = 1;
+    bool force = 2;
+    string subtype = 3;
+    bool json_block = 4;
+}
+
+message ProcessResponse {
+    string hash = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+// Representatives request (representatives)
+message RepresentativesRequest {
+    uint32 count = 2;
+    bool sorting = 3;
+}
+
+message RepresentativesResponse {
+    map<string, string> representatives = 1;  // account -> weight
+    bool success = 2;
+    string error = 3;
+}
+
+// Representatives online request (representatives_online)
+message RepresentativesOnlineRequest {
+    bool weight = 1;
+}
+
+message RepresentativesOnlineResponse {
+    repeated string representatives = 1;
+    map<string, string> weights = 2;
+    bool success = 3;
+    string error = 4;
+}
+
+// Work generate request (work_generate)
+message WorkGenerateRequest {
+    string hash = 1;
+    string difficulty = 2;
+    string multiplier = 3;
+    string account = 4;
+    uint32 version = 5;
+}
+
+message WorkGenerateResponse {
+    string work = 1;
+    string difficulty = 2;
+    string multiplier = 3;
+    string hash = 4;
+    bool success = 5;
+    string error = 6;
+}
+
+// Work validate request (work_validate)
+message WorkValidateRequest {
+    string work = 1;
+    string hash = 2;
+    string difficulty = 3;
+    string multiplier = 4;
+}
+
+message WorkValidateResponse {
+    bool valid = 1;
+    string difficulty = 2;
+    string multiplier = 3;
+    bool success = 4;
+    string error = 5;
+}
+
+// Work cancel request (work_cancel)
+message WorkCancelRequest {
+    string hash = 1;
+}
+
+message WorkCancelResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+// Wallet create request (wallet_create)
+message WalletCreateRequest {
+    string seed = 1;  // Optional: use specific seed
+}
+
+message WalletCreateResponse {
+    string wallet = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+// Wallet destroy request (wallet_destroy)
+message WalletDestroyRequest {
+    string wallet = 1;
+}
+
+message WalletDestroyResponse {
+    bool destroyed = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+// Wallet balance total request (wallet_balance_total)
+message WalletBalanceTotalRequest {
+    string wallet = 1;
+}
+
+message WalletBalanceTotalResponse {
+    string balance = 1;
+    string pending = 2;
+    bool success = 3;
+    string error = 4;
+}
+
+// Wallet pending request (wallet_pending)
+message WalletPendingRequest {
+    string wallet = 1;
+    uint32 count = 2;
+    string threshold = 3;
+    bool source = 4;
+}
+
+message WalletPendingResponse {
+    map<string, PendingBlocks> blocks = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+// Version request (version)
+message VersionRequest {
+}
+
+message VersionResponse {
+    uint32 rpc_version = 1;
+    uint32 store_version = 2;
+    uint32 protocol_version = 3;
+    string node_vendor = 4;
+    string store_vendor = 5;
+    string network = 6;
+    string network_identifier = 7;
+    string build_info = 8;
+    bool success = 9;
+    string error = 10;
+}
+
+// Telemetry request (telemetry)
+message TelemetryRequest {
+}
+
+message TelemetryResponse {
+    uint64 block_count = 1;
+    uint64 cemented_count = 2;
+    uint64 unchecked_count = 3;
+    uint64 account_count = 4;
+    uint64 bandwidth_cap = 5;
+    uint32 peer_count = 6;
+    uint32 protocol_version = 7;
+    uint64 uptime = 8;
+    string genesis_block = 9;
+    string major_version = 10;
+    string minor_version = 11;
+    string patch_version = 12;
+    string pre_release_version = 13;
+    string maker = 14;
+    uint64 timestamp = 15;
+    bool success = 16;
+    string error = 17;
+}
+
+// Stats type request (stats)
+message StatsTypeRequest {
+    string type = 1;  // "counters", "samples", "objects"
+}
+
+message StatsTypeResponse {
+    map<string, string> stats = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+// Stop node request (stop)
+message StopNodeRequest {
+}
+
+message StopNodeResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+// Subscribe confirmation request (WebSocket)
+message SubscribeConfirmationRequest {
+    repeated string accounts = 1;  // Optional: filter by accounts
+    bool all_local_accounts = 2;
+    bool include_block = 3;
+    bool include_election_info = 4;
+}
+
+message ConfirmationEvent {
+    string account = 1;
+    string amount = 2;
+    string hash = 3;
+    uint64 confirmation_type = 4;
+    bytes block = 5;
+    ElectionInfo election_info = 6;
+}
+
+message ElectionInfo {
+    string duration = 1;
+    string time = 2;
+    string tally = 3;
+    string request_count = 4;
+    string blocks = 5;
+    string voters = 6;
+}
+
+// Subscribe block request (WebSocket)
+message SubscribeBlockRequest {
+    repeated string accounts = 1;
+    bool all_accounts = 2;
+}
+
+message BlockEvent {
+    string account = 1;
+    string hash = 2;
+    bytes block = 3;
+    string amount = 4;
+    bool is_send = 5;
+    string subtype = 6;
+}
+
+// Subscribe vote request (WebSocket)
+message SubscribeVoteRequest {
+    repeated string representatives = 1;
+    bool all_representatives = 2;
+}
+
+message VoteEvent {
+    string account = 1;
+    string signature = 2;
+    uint64 sequence = 3;
+    uint64 timestamp = 4;
+    repeated string hashes = 5;
+}
+
+// Subscribe account request (WebSocket)
+message SubscribeAccountRequest {
+    string account = 1;
+}
+
+message AccountEvent {
+    string account = 1;
+    string balance = 2;
+    string pending = 3;
+    string representative = 4;
+    uint64 block_count = 5;
+}
+
+// Batch process request
+message BatchProcessRequest {
+    repeated ProcessRequest requests = 1;
+}
+
+message BatchProcessResponse {
+    repeated ProcessResponse responses = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+// Account weight request (account_weight)
+message AccountWeightRequest {
+    string account = 1;
+}
+
+message AccountWeightResponse {
+    string weight = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+// Delegators count request (delegators_count)
+message DelegatorsCountRequest {
+    string account = 1;
+}
+
+message DelegatorsCountResponse {
+    uint64 count = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+// Delegators request (delegators)
+message DelegatorsRequest {
+    string account = 1;
+    uint32 count = 2;
+    string threshold = 3;
+    uint32 start = 4;
+}
+
+message DelegatorsResponse {
+    map<string, string> delegators = 1;  // account -> balance
+    bool success = 2;
+    string error = 3;
+}
+

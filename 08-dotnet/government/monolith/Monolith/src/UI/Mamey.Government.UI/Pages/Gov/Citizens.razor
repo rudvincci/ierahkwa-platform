@@ -1,0 +1,392 @@
+@page "/gov/citizens"
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+@inject ICitizensService CitizensService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<PageTitle>Citizens - Government Portal</PageTitle>
+
+<MudPaper Elevation="0" Class="pa-6">
+    <MudStack Spacing="4">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h4" Color="Color.Primary">Citizens Registry</MudText>
+            <MudStack Row="true" Spacing="2">
+                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FileDownload">
+                    Export
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Refresh"
+                           OnClick="RefreshData" Disabled="@_loading">
+                    Refresh
+                </MudButton>
+            </MudStack>
+        </MudStack>
+
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Elevation="2" Class="@GetCardClass("All")" @onclick="@(() => SetStatusFilter("All"))">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.body2" Color="Color.Primary">Total Citizens</MudText>
+                                <MudText Typo="Typo.h4">@_totalCount</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.Groups" Size="Size.Large" Color="Color.Primary" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Elevation="2" Class="@GetCardClass("Active")" @onclick="@(() => SetStatusFilter("Active"))">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.body2" Color="Color.Success">Active</MudText>
+                                <MudText Typo="Typo.h4">@_activeCount</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Large" Color="Color.Success" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Elevation="2" Class="@GetCardClass("Inactive")" @onclick="@(() => SetStatusFilter("Inactive"))">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.body2" Color="Color.Warning">Inactive</MudText>
+                                <MudText Typo="Typo.h4">@_inactiveCount</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.PauseCircle" Size="Size.Large" Color="Color.Warning" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Elevation="2" Class="@GetCardClass("Suspended")" @onclick="@(() => SetStatusFilter("Suspended"))">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.body2" Color="Color.Error">Suspended</MudText>
+                                <MudText Typo="Typo.h4">@_suspendedCount</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.Block" Size="Size.Large" Color="Color.Error" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-4" />
+
+        <MudStack Row="true" Spacing="2">
+            <MudTextField @bind-Value="_searchQuery" Label="Search" Variant="Variant.Outlined"
+                          Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                          Placeholder="Search by name, ID, or email..." Class="flex-grow-1"
+                          Immediate="true" DebounceInterval="300" OnDebounceIntervalElapsed="SearchChanged" />
+            <MudSelect @bind-Value="_statusFilter" Label="Status" Variant="Variant.Outlined" Style="width: 200px;">
+                <MudSelectItem Value="@("All")">All Status</MudSelectItem>
+                <MudSelectItem Value="@("Active")">Active</MudSelectItem>
+                <MudSelectItem Value="@("Inactive")">Inactive</MudSelectItem>
+                <MudSelectItem Value="@("Suspended")">Suspended</MudSelectItem>
+            </MudSelect>
+            @if (_statusFilter != "All")
+            {
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="ClearFilter">
+                    Clear Filter
+                </MudButton>
+            }
+        </MudStack>
+
+        <MudTable ServerData="@ServerReload" @ref="_table" Hover="true" Striped="true" Elevation="2"
+                  Loading="@_loading" LoadingProgressColor="Color.Primary">
+            <HeaderContent>
+                <MudTh>Citizen ID</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Registered</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Citizen ID">
+                    <MudLink Href="@($"/gov/citizens/{context.Id}")" Color="Color.Primary">
+                        @context.Id.ToString()[..8]...
+                    </MudLink>
+                </MudTd>
+                <MudTd DataLabel="Name">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudAvatar Size="Size.Small" Color="Color.Primary">@context.FullName[0]</MudAvatar>
+                        <MudText>@context.FullName</MudText>
+                    </MudStack>
+                </MudTd>
+                <MudTd DataLabel="Email">@(context.Email ?? "-")</MudTd>
+                <MudTd DataLabel="Status">
+                    <MudChip T="string" Color="@GetStatusColor(context.Status)" Size="Size.Small">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="Registered">@context.CreatedAt.ToString("MMM dd, yyyy")</MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
+                        <MudButton Color="Color.Primary" Href="@($"/gov/citizens/{context.Id}")">
+                            <MudIcon Icon="@Icons.Material.Filled.Visibility" Size="Size.Small" Class="mr-1" />
+                            View
+                        </MudButton>
+                        <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Dense="true">
+                            <MudMenuItem Icon="@Icons.Material.Filled.Edit" Href="@($"/gov/citizens/{context.Id}/edit")">
+                                Edit
+                            </MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.CreditCard">Issue ID Card</MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.Book">Issue Passport</MudMenuItem>
+                            @if (context.Status == "Active" || context.IsActive)
+                            {
+                                <MudMenuItem Icon="@Icons.Material.Filled.Block" IconColor="Color.Error"
+                                             OnClick="@(() => OpenSuspendDialog(context))">Suspend</MudMenuItem>
+                            }
+                            else if (context.Status == "Suspended" || !context.IsActive)
+                            {
+                                <MudMenuItem Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Success"
+                                             OnClick="@(() => ReactivateCitizen(context))">Reactivate</MudMenuItem>
+                            }
+                        </MudMenu>
+                    </MudButtonGroup>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Align="Align.Center" Class="pa-8">
+                    <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Default" Class="mb-2" />
+                    <br />
+                    No citizens found matching your criteria.
+                </MudText>
+            </NoRecordsContent>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+            </PagerContent>
+        </MudTable>
+    </MudStack>
+</MudPaper>
+
+@* Suspend Dialog *@
+<MudDialog @bind-Visible="_suspendDialogVisible">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Class="mr-2" />
+            Suspend Citizen
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-4">
+            Are you sure you want to suspend citizen <strong>@_citizenToSuspend?.FullName</strong>?
+        </MudText>
+        <MudTextField @bind-Value="_suspendReason" Label="Reason for Suspension" Variant="Variant.Outlined"
+                      Lines="3" Required="true" RequiredError="Please provide a reason" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _suspendDialogVisible = false)">Cancel</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="SuspendCitizen" Disabled="@_suspending">
+            @if (_suspending)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            Suspend
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private MudTable<CitizenSummaryModel>? _table;
+    private string _searchQuery = "";
+    private string _statusFilter = "All";
+    private bool _loading = false;
+    private bool _suspendDialogVisible = false;
+    private bool _suspending = false;
+    private string _suspendReason = "";
+    private CitizenSummaryModel? _citizenToSuspend;
+    
+    private long _totalCount = 0;
+    private int _activeCount = 0;
+    private int _inactiveCount = 0;
+    private int _suspendedCount = 0;
+    
+    // TODO: Get from user context or tenant service
+    private Guid _tenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStatusCountsAsync();
+    }
+
+    private async Task LoadStatusCountsAsync()
+    {
+        try
+        {
+            var allResult = await CitizensService.BrowseAsync(_tenantId, null, null, null, 1, 1);
+            _totalCount = allResult.TotalResults;
+            
+            var activeResult = await CitizensService.BrowseAsync(_tenantId, "Active", null, true, 1, 1);
+            _activeCount = (int)activeResult.TotalResults;
+            
+            var inactiveResult = await CitizensService.BrowseAsync(_tenantId, "Inactive", null, null, 1, 1);
+            _inactiveCount = (int)inactiveResult.TotalResults;
+            
+            var suspendedResult = await CitizensService.BrowseAsync(_tenantId, "Suspended", null, false, 1, 1);
+            _suspendedCount = (int)suspendedResult.TotalResults;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading status counts: {ex.Message}");
+        }
+    }
+
+    private async Task<TableData<CitizenSummaryModel>> ServerReload(TableState state, CancellationToken cancellationToken)
+    {
+        _loading = true;
+        StateHasChanged();
+        
+        try
+        {
+            var status = _statusFilter == "All" ? null : _statusFilter;
+            var result = await CitizensService.BrowseAsync(
+                _tenantId,
+                status,
+                string.IsNullOrWhiteSpace(_searchQuery) ? null : _searchQuery,
+                null,
+                state.Page + 1, // MudTable is 0-based, API is 1-based
+                state.PageSize,
+                cancellationToken);
+
+            return new TableData<CitizenSummaryModel>
+            {
+                Items = result.Items,
+                TotalItems = (int)result.TotalResults
+            };
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading citizens: {ex.Message}", Severity.Error);
+            return new TableData<CitizenSummaryModel>
+            {
+                Items = Array.Empty<CitizenSummaryModel>(),
+                TotalItems = 0
+            };
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SetStatusFilter(string status)
+    {
+        _statusFilter = status;
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+    }
+
+    private async Task ClearFilter()
+    {
+        _statusFilter = "All";
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+    }
+
+    private async Task SearchChanged(string value)
+    {
+        _searchQuery = value;
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadStatusCountsAsync();
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+        Snackbar.Add("Data refreshed", Severity.Success);
+    }
+
+    private void OpenSuspendDialog(CitizenSummaryModel citizen)
+    {
+        _citizenToSuspend = citizen;
+        _suspendReason = "";
+        _suspendDialogVisible = true;
+    }
+
+    private async Task SuspendCitizen()
+    {
+        if (string.IsNullOrWhiteSpace(_suspendReason))
+        {
+            Snackbar.Add("Please provide a reason for suspension", Severity.Warning);
+            return;
+        }
+
+        if (_citizenToSuspend == null) return;
+
+        _suspending = true;
+        try
+        {
+            var success = await CitizensService.SuspendAsync(_citizenToSuspend.Id, _suspendReason);
+            if (success)
+            {
+                Snackbar.Add($"Citizen suspended successfully", Severity.Success);
+                _suspendDialogVisible = false;
+                await RefreshData();
+            }
+            else
+            {
+                Snackbar.Add("Failed to suspend citizen", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _suspending = false;
+            _citizenToSuspend = null;
+            _suspendReason = "";
+        }
+    }
+
+    private async Task ReactivateCitizen(CitizenSummaryModel citizen)
+    {
+        try
+        {
+            var success = await CitizensService.ReactivateAsync(citizen.Id);
+            if (success)
+            {
+                Snackbar.Add($"Citizen reactivated successfully", Severity.Success);
+                await RefreshData();
+            }
+            else
+            {
+                Snackbar.Add("Failed to reactivate citizen", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Active" => Color.Success,
+        "Inactive" => Color.Warning,
+        "Suspended" => Color.Error,
+        _ => Color.Default
+    };
+
+    private string GetCardClass(string status) => 
+        _statusFilter == status ? "cursor-pointer border-2 border-primary" : "cursor-pointer";
+}

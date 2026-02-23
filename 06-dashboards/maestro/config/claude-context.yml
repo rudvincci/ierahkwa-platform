@@ -1,0 +1,65 @@
+# Claude Context Configuration
+# Configuration for smart context loading
+
+mode: smart  # minimal | smart | full | off
+
+smart_rules:
+  - trigger: conversation_start
+    description: Load latest session and project overview
+    load:
+      - "memory/sessions/latest.md"
+      - "memory/public/roles/dev/long-term/project-overview.md"
+    max_size: "30KB"
+    enabled: true
+
+  - trigger: "keyword:authentication"
+    description: Load authentication patterns
+    search:
+      query: "authentication jwt redis"
+      sources: ["patterns", "sessions"]
+      return: "summaries_only"
+      max_results: 5
+    max_size: "20KB"
+    enabled: true
+
+  - trigger: "file_pattern:.cs"
+    description: Load C# development context
+    search:
+      query: "csharp dotnet"
+      sources: ["skmemory"]
+      return: "summaries_only"
+      max_results: 3
+    max_size: "25KB"
+    enabled: true
+
+limits:
+  max_context_size: "50KB"
+  max_load_time: "1000ms"
+  max_search_time: "500ms"
+  max_files_loaded: 10
+  max_search_results: 10
+
+sessions:
+  auto_save: true
+  save_interval: 15  # minutes
+  retention_days: 90
+  format: enhanced
+  include_metadata: true
+
+patterns:
+  auto_extract: true
+  min_frequency: 3
+  categories:
+    - authentication
+    - service-registration
+    - repository-patterns
+    - error-resolutions
+    - build-fixes
+    - test-patterns
+
+skmemory:
+  enabled: true
+  path: "../.skmemory/v1"
+  use_search: true
+  use_indexes: true
+

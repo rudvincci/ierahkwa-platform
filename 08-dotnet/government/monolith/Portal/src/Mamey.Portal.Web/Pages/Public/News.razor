@@ -1,0 +1,66 @@
+@page "/news"
+@using Microsoft.AspNetCore.Components
+@using Mamey.Portal.Cms.Application.Models
+@using Mamey.Portal.Cms.Application.Services
+@inject ICmsContentService Cms
+@inject NavigationManager Nav
+
+<PageTitle>News</PageTitle>
+
+@code {
+    private IReadOnlyList<NewsItem> _news = Array.Empty<NewsItem>();
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _news = await Cms.GetPublishedNewsAsync(25);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private static MarkupString AsMarkup(string html) => new(html ?? string.Empty);
+    private static string DetailsHref(Guid id) => $"/news/{id}";
+}
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h4">News</MudText>
+    <MudText Typo="Typo.body2" Class="mud-text-secondary">
+        Published news for the current tenant. Body HTML is sanitized before rendering.
+    </MudText>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+
+    @if (_news.Count == 0)
+    {
+        <MudAlert Severity="Severity.Info">No published news.</MudAlert>
+    }
+    else
+    {
+        @foreach (var n in _news)
+        {
+            <MudPaper Class="pa-4">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h6">@n.Title</MudText>
+                    <MudButton Variant="Variant.Text" Href="@DetailsHref(n.Id)">Read more</MudButton>
+                </MudStack>
+                <MudText Typo="Typo.caption" Class="mud-text-secondary" GutterBottom="true">
+                    Published: @((n.PublishedAt ?? n.UpdatedAt).LocalDateTime)
+                </MudText>
+                <MudText Typo="Typo.body2" GutterBottom="true">@n.Summary</MudText>
+                <div class="cms-news-body">
+                    @AsMarkup(n.BodyHtml)
+                </div>
+            </MudPaper>
+        }
+    }
+</MudStack>
+
+

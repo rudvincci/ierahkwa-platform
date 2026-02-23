@@ -1,0 +1,94 @@
+@page "/compliance/kyc"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<KYC> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="KYC" Icon="fas fa-user-check" Subtitle="Know Your Customer compliance">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total KYC" Value="@_kycStatuses.Count.ToString()" Icon="fas fa-user-check" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Verified" Value="@_verifiedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Rejected" Value="@_rejectedCount.ToString()" Icon="fas fa-times-circle" Color="#EF4444" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="KYC Status" Class="mt-4">
+        <MudTable T="KYCStatusInfo" Items="@_kycStatuses" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Account ID</MudTh>
+                <MudTh>KYC Level</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Verified</MudTh>
+                <MudTh>Expires</MudTh>
+                <MudTh>Attributes</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.AccountId</MudTd>
+                <MudTd>@context.KYCLevel</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Verified" ? Color.Success : context.Status == "Pending" ? Color.Warning : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.VerifiedAt.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@(context.ExpiresAt?.ToString("yyyy-MM-dd") ?? "-")</MudTd>
+                <MudTd>@string.Join(", ", context.VerifiedAttributes)</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<KYCStatusInfo> _kycStatuses = new();
+    private int _verifiedCount;
+    private int _pendingCount;
+    private int _rejectedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _kycStatuses = await GovernmentClient.GetKYCStatusesAsync();
+            _verifiedCount = _kycStatuses.Count(k => k.Status == "Verified");
+            _pendingCount = _kycStatuses.Count(k => k.Status == "Pending");
+            _rejectedCount = _kycStatuses.Count(k => k.Status == "Rejected");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading KYC statuses");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

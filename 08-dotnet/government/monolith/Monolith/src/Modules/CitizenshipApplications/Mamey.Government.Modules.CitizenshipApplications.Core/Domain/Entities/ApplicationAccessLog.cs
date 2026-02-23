@@ -1,0 +1,27 @@
+namespace Mamey.Government.Modules.CitizenshipApplications.Core.Domain.Entities;
+
+internal record ApplicationAccessLog(
+    DateTime Timestamp,
+    string Action,
+    string? DeviceType,
+    string? DeviceId,
+    string? IpAddress,
+    string? MacAddress,
+    string? UserAgent,
+    string? Platform,
+    string? Browser,
+    string? OsVersion,
+    string? AppVersion,
+    string? ScreenResolution,
+    string? Language,
+    string? Timezone,
+    string? Referrer,
+    string? NetworkType,
+    string? Country,
+    string? CountryCode,
+    string? Region,
+    string? City,
+    string? PostalCode,
+    string? GeoTimezone,
+    double? Latitude,
+    double? Longitude);

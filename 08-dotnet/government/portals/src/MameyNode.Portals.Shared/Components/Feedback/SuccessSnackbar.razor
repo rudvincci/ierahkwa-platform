@@ -1,0 +1,22 @@
+@namespace MameyNode.Portals.Shared.Components.Feedback
+
+<MudSnackbarProvider />
+@if (Show)
+{
+    <MudSnackbar 
+        Message="@Message"
+        Severity="Severity.Success"
+        Visible="true"
+        Duration="@Duration"
+        Position="@Position"
+        OnClose="@OnClose" />
+}
+
+@code {
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public bool Show { get; set; } = false;
+    [Parameter] public int Duration { get; set; } = 4000;
+    [Parameter] public Origin Position { get; set; } = Origin.BottomRight;
+    [Parameter] public EventCallback OnClose { get; set; }
+}
+

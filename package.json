@@ -1,0 +1,34 @@
+{
+  "name": "ierahkwa-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sovereign Digital Platform for 72M Indigenous People — 296 platforms replacing Big Tech",
+  "workspaces": [
+    "03-backend/*",
+    "mvp-voz-soberana"
+  ],
+  "scripts": {
+    "start": "bash scripts/levantar-todo.sh",
+    "stop": "docker compose -f docker-compose.sovereign.yml down",
+    "status": "bash scripts/estado.sh",
+    "build:docker": "docker compose -f docker-compose.sovereign.yml build",
+    "build:dotnet": "find 08-dotnet -name '*.sln' -maxdepth 4 -exec dotnet build {} \\;",
+    "build:rust": "cd 12-rust/mamey-forge && cargo build",
+    "clean": "find . -name 'node_modules' -type d -prune -exec rm -rf {} +",
+    "docs:serve": "npx http-server 16-docs -p 8080"
+  },
+  "keywords": [
+    "sovereign",
+    "ierahkwa",
+    "indigenous",
+    "blockchain",
+    "wampum",
+    "mameynode",
+    "digital-sovereignty"
+  ],
+  "author": "Sovereign Government of Ierahkwa Ne Kanienke / FutureHead Group",
+  "license": "SEE LICENSE",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,42 @@
+@namespace MameyNode.Portals.Shared.Components.DataDisplay
+
+<MudText Typo="@Typo" Color="@Color" Style="@GetStyle()">
+    @GetFormattedAmount()
+</MudText>
+
+@code {
+    [Parameter] public decimal Amount { get; set; }
+    [Parameter] public string Currency { get; set; } = "USD";
+    [Parameter] public Typo Typo { get; set; } = Typo.body1;
+    [Parameter] public Color Color { get; set; } = Color.Default;
+    [Parameter] public bool ShowCurrencySymbol { get; set; } = true;
+    [Parameter] public int DecimalPlaces { get; set; } = 2;
+    [Parameter] public bool IsCredit { get; set; } = false;
+
+    private string GetFormattedAmount()
+    {
+        var formatted = Amount.ToString($"N{DecimalPlaces}");
+        var prefix = IsCredit ? "+" : "";
+        var symbol = ShowCurrencySymbol ? GetCurrencySymbol() : "";
+        return $"{prefix}{symbol}{formatted}";
+    }
+
+    private string GetCurrencySymbol()
+    {
+        return Currency switch
+        {
+            "USD" => "$",
+            "EUR" => "€",
+            "GBP" => "£",
+            "JPY" => "¥",
+            _ => $"{Currency} "
+        };
+    }
+
+    private string GetStyle()
+    {
+        return IsCredit ? "color: var(--mud-palette-success);" : "";
+    }
+}
+
+

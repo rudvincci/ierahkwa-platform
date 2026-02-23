@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Notifications.Api.Protos";
+
+package Pupitre.Notifications;
+
+// gRPC service for Notification operations
+service NotificationService {
+    // Get a single Notification by ID
+    rpc GetNotification (GetNotificationRequest) returns (NotificationResponse) {};
+    
+    // List all Notifications with pagination
+    rpc ListNotifications (ListNotificationsRequest) returns (ListNotificationsResponse) {};
+    
+    // Stream Notification updates
+    rpc StreamNotificationUpdates (StreamNotificationUpdatesRequest) returns (stream NotificationResponse) {};
+}
+
+message GetNotificationRequest {
+    string id = 1;
+}
+
+message ListNotificationsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListNotificationsResponse {
+    repeated NotificationResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message NotificationResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamNotificationUpdatesRequest {
+    string filter = 1;
+}

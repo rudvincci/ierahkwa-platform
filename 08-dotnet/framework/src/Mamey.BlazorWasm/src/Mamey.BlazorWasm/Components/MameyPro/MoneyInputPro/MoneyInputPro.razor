@@ -1,0 +1,73 @@
+@using Mamey.Types
+@using Mamey.BlazorWasm.Components.Foundation
+
+<MudGrid Class="@Class" Style="@Style">
+    <MudItem xs="6">
+        <MudNumericField T="decimal" Label="@($"Amount ({_currency})")" Immediate="true"
+                         @bind-Value="_amountRaw"
+                         DecimalPlaces="_decimalPlaces" Min="0" Step="@(1m / (decimal)Math.Pow(10, _decimalPlaces))"
+                         Error="_error" ErrorText="@_errorText" />
+    </MudItem>
+    <MudItem xs="6">
+        <MudSelect T="string" Label="Currency"  ValueChanged="@(v => RebuildMoney())">
+            @foreach (var code in AllowedCurrencies)
+            {
+                <MudSelectItem Value="@(code)">@(code) </MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+</MudGrid>
+<FieldMessages HelperText="@HelperText" />
+
+@code {
+    [Parameter] public string HelperText { get; set; } = "Validated Amount (precision) + Currency";
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public Money? Value { get; set; }
+    [Parameter] public EventCallback<Money?> ValueChanged { get; set; }
+
+    [Parameter] public IReadOnlyList<string> AllowedCurrencies { get; set; } = new[] { "USD", "EUR", "JPY", "GBP", "PLN" }; // default matches your class :contentReference[oaicite:7]{index=7}
+    [Parameter] public int DecimalPlaces { get; set; } = 2;
+
+    private decimal _amountRaw;
+    private string _currency = "USD";
+    private int _decimalPlaces => DecimalPlaces;
+
+    private bool _error;
+    private string _errorText = "";
+
+    protected override void OnInitialized()
+    {
+        // Configure allowed currencies once (safe no-op if called repeatedly).
+        Currency.ConfigureAllowedValues(AllowedCurrencies); // throws if empty :contentReference[oaicite:8]{index=8}
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Value is not null)
+        {
+            _amountRaw = Value.Amount.Value;
+            _currency = Value.Currency.Code;
+        }
+    }
+
+    private async Task RebuildMoney()
+    {
+        _error = false; _errorText = "";
+        try
+        {
+            var amt = new Amount(_amountRaw, _decimalPlaces);    // precision enforced :contentReference[oaicite:9]{index=9}
+            var cur = new Currency(_currency);                    // 3-letter + allowlist :contentReference[oaicite:10]{index=10}
+            await ValueChanged.InvokeAsync(new Money(amt, cur));  // non-null enforced :contentReference[oaicite:11]{index=11}
+        }
+        catch (Exception ex)
+        {
+            _error = true; _errorText = ex.Message;
+            await ValueChanged.InvokeAsync(null);
+        }
+        StateHasChanged();
+    }
+
+    private Task OnAmountChanged(decimal v) { _amountRaw = v; return RebuildMoney(); }
+}

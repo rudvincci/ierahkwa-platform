@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageVersion>2.0.4</PackageVersion>
+    <PackageId>Mamey.Microservice.Template</PackageId>
+    <Title>Mamey Microservice Template</Title>
+    <Authors>Mamey Digital Solutions</Authors>
+    <Description>Templates to use when creating a microservice for MDS.</Description>
+    <PackageTags>dotnet-new;templates;mds</PackageTags>
+
+    <TargetFramework>net9.0</TargetFramework>
+
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+
+     <!-- Include files starting with '.' (e.g., .gitignore, .env, etc.) -->
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+
+    <!-- Optional: silence NU5128 for template packages (no lib assemblies) -->
+    <!-- <NoWarn>$(NoWarn);NU5128</NoWarn> -->
+
+    <!-- Restoring files -->
+    <!-- Mark that this target file has been loaded.  -->
+    <IsPaketRestoreTargetsFileLoaded>true</IsPaketRestoreTargetsFileLoaded>
+    <PaketToolsPath>$(MSBuildThisFileDirectory)</PaketToolsPath>
+    <MonoPath Condition="'$(MonoPath)' == '' And Exists('/Library/Frameworks/Mono.framework/Commands/mono')">/Library/Frameworks/Mono.framework/Commands/mono</MonoPath>
+    <MonoPath Condition="'$(MonoPath)' == ''">mono</MonoPath>
+    <!-- Paket command -->
+    <PaketExePath Condition=" '$(PaketExePath)' == '' AND Exists('$(PaketRootPath)paket.exe')">$(PaketRootPath)paket.exe</PaketExePath>
+    <PaketCommand>"$(PaketExePath)"</PaketCommand>
+    <PaketBootStrapperExePath Condition=" '$(PaketBootStrapperExePath)' == '' AND Exists('$(PaketRootPath)paket.bootstrapper.exe')">$(PaketRootPath)paket.bootstrapper.exe</PaketBootStrapperExePath>
+    <PaketBootStrapperCommand>"$(PaketBootStrapperExePath)"</PaketBootStrapperCommand>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\mds-srv\content\**\obj\**" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+  <ItemGroup>
+  <!-- Explicitly drop macOS junk files anywhere -->
+    <Content Remove="**/.DS_Store" />
+    <None Remove="**/.DS_Store" />
+
+</ItemGroup>
+
+</Project>

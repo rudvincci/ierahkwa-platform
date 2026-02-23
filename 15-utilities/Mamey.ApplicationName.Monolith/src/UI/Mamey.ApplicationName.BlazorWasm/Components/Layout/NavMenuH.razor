@@ -1,0 +1,161 @@
+<MudStack Row="true" AlignItems="AlignItems.End" Spacing="2">
+    <!-- Home Link -->
+    <MudButton Variant="Variant.Text" Color="Color.Primary" Component="a" Href="/">Home</MudButton>
+
+    <!-- Products Dropdown Menu -->
+    <div @onmouseenter="ProductsMenuMouseEnter"  style="position: relative;">
+        <MudButton Variant="Variant.Text" Color="Color.Primary">
+            Products
+        </MudButton>
+        <MudPopover Open="@ShowProductsMenu"
+                    AnchorOrigin="Origin.TopCenter"
+                    TransformOrigin="Origin.TopCenter"
+                    Style="position: absolute; top: 100%; left: 0;" @onmouseleave="ProductsMenuMouseLeave">
+            <MudPaper Elevation="8" Class="pa-4">
+                <MudList T="string">
+                    <MudListItem T="string">
+                        <MudLink Href="/products/product1">Product 1</MudLink>
+                    </MudListItem>
+                    <MudListItem T="string">
+                        <MudLink Href="/products/product2">Product 2</MudLink>
+                    </MudListItem>
+                    <MudListItem T="string">
+                        <div @onmouseenter="MoreProductsMenuMouseEnter" @onmouseleave="MoreProductsMenuMouseLeave" style="position: relative;">
+                            <MudLink>
+                                More Products
+                            </MudLink>
+                            <!-- Submenu -->
+                            <MudPopover Open="@ShowMoreProductsMenu"
+                                        AnchorOrigin="Origin.TopRight"
+                                        TransformOrigin="Origin.TopLeft"
+                                        Style="position: absolute; top: 0; left: 100%;">
+                                <MudPaper Elevation="8" Class="pa-4">
+                                    <MudList T="string">
+                                        <MudListItem T="string">
+                                            <MudLink Href="/products/product3">Product 3</MudLink>
+                                        </MudListItem>
+                                        <MudListItem T="string">
+                                            <MudLink Href="/products/product4">Product 4</MudLink>
+                                        </MudListItem>
+                                        <MudListItem T="string">
+                                            <div @onmouseenter="EvenMoreProductsMenuMouseEnter" @onmouseleave="EvenMoreProductsMenuMouseLeave" style="position: relative;">
+                                                <MudLink>
+                                                    Even More Products
+                                                </MudLink>
+                                                <!-- Sub-submenu -->
+                                                <MudPopover Open="@ShowEvenMoreProductsMenu"
+                                                            AnchorOrigin="Origin.TopRight"
+                                                            TransformOrigin="Origin.TopLeft"
+                                                            Style="position: absolute; top: 0; left: 100%;">
+                                                    <MudPaper Elevation="8" Class="pa-4">
+                                                        <MudList>
+                                                            <MudListItem>
+                                                                <MudLink Href="/products/product5">Product 5</MudLink>
+                                                            </MudListItem>
+                                                        </MudList>
+                                                    </MudPaper>
+                                                </MudPopover>
+                                            </div>
+                                        </MudListItem>
+                                    </MudList>
+                                </MudPaper>
+                            </MudPopover>
+                        </div>
+                    </MudListItem>
+                </MudList>
+            </MudPaper>
+        </MudPopover>
+    </div>
+
+    <!-- Mega Menu -->
+    <div @onmouseenter="MegaMenuMouseEnter"  style="position: relative;">
+        <MudButton Variant="Variant.Text" Color="Color.Primary">
+            Mega Menu
+        </MudButton>
+        <MudPopover Open="@ShowMegaMenu" @onmouseleave="MegaMenuMouseLeave"
+                    AnchorOrigin="Origin.TopCenter"
+                    TransformOrigin="Origin.TopCenter"
+                    Style="position: absolute; top: 100%; left: 0;">
+            <MudPaper Elevation="8" Class="pa-4">
+                <!-- Content of the mega menu -->
+                <MudGrid>
+                    <MudItem xs="4">
+                        <MudList T="string">
+                            <MudListItem T="string">
+                                <MudLink Href="/category1/item1">Category 1 - Item 1</MudLink>
+                            </MudListItem>
+                            <MudListItem T="string">
+                                <MudLink Href="/category1/item2">Category 1 - Item 2</MudLink>
+                            </MudListItem>
+                        </MudList>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudList T="string">
+                            <MudListItem T="string">
+                                <MudLink Href="/category2/item1">Category 2 - Item 1</MudLink>
+                            </MudListItem>
+                            <MudListItem T="string">
+                                <MudLink Href="/category2/item2">Category 2 - Item 2</MudLink>
+                            </MudListItem>
+                        </MudList>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudList T="string">
+                            <MudListItem T="string">
+                                <MudLink Href="/category3/item1">Category 3 - Item 1</MudLink>
+                            </MudListItem>
+                            <MudListItem T="string">
+                                <MudLink Href="/category3/item2">Category 3 - Item 2</MudLink>
+                            </MudListItem>
+                        </MudList>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudPopover>
+    </div>
+
+    <!-- About Link -->
+    <MudButton Variant="Variant.Text" Color="Color.Primary" Component="a" Href="/about">About</MudButton>
+
+    <!-- Contact Link -->
+    <MudButton Variant="Variant.Text" Color="Color.Primary" Component="a" Href="/contact">Contact</MudButton>
+</MudStack>
+
+@code {
+    // Mouse over flags
+    bool ProductsMenuMouseOver = false;
+    bool MoreProductsMenuMouseOver = false;
+    bool EvenMoreProductsMenuMouseOver = false;
+    bool MegaMenuMouseOver = false;
+
+    // Computed properties for menu visibility
+    bool ShowProductsMenu => ProductsMenuMouseOver;
+    bool ShowMoreProductsMenu => MoreProductsMenuMouseOver;
+    bool ShowEvenMoreProductsMenu => EvenMoreProductsMenuMouseOver;
+    bool ShowMegaMenu => MegaMenuMouseOver;
+
+    // Event handlers for Products menu
+    void ProductsMenuMouseEnter() => ProductsMenuMouseOver = true;
+    void ProductsMenuMouseLeave()
+    {
+        MegaMenuMouseOver = false;  
+        ProductsMenuMouseOver = false;
+    }
+
+    // Event handlers for More Products submenu
+    void MoreProductsMenuMouseEnter() => MoreProductsMenuMouseOver = true;
+    void MoreProductsMenuMouseLeave() => MoreProductsMenuMouseOver = false;
+
+    // Event handlers for Even More Products submenu
+    void EvenMoreProductsMenuMouseEnter() => EvenMoreProductsMenuMouseOver = true;
+    void EvenMoreProductsMenuMouseLeave() => EvenMoreProductsMenuMouseOver = false;
+
+    // Event handlers for Mega Menu
+    void MegaMenuMouseEnter() => MegaMenuMouseOver = true;
+    void MegaMenuMouseLeave()
+    {
+        ProductsMenuMouseOver = false;
+        MegaMenuMouseOver = false;
+    }
+
+}

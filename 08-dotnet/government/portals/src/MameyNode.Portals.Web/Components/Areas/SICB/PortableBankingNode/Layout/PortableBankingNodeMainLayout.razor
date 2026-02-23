@@ -1,0 +1,51 @@
+@* PortableBankingNodeMainLayout.razor *@
+@using MameyNode.Portals.Web.Components.Areas.SICB.PortableBankingNode.Layout
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_theme" IsDarkMode="true" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudBreakpointProvider>
+<MudLayout>
+    <MudAppBar Elevation="0" Class="mud-appbar-glass">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h6" Class="ml-3">Portable Banking Node</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/Mamey-io/Mamey" Target="_blank" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Always" Class="mud-drawer-glass">
+        <PortableBankingNodeNavLayout DrawerOpen="_drawerOpen" />
+    </MudDrawer>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+</MudBreakpointProvider>
+
+@code {
+    bool _drawerOpen = true;
+    private MudTheme _theme = new MudTheme()
+    {
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#14B8A6", // Teal - for portable/mobile banking theme
+            Secondary = "#06B6D4", // Cyan
+            Tertiary = "#10B981", // Emerald
+            AppbarBackground = "rgba(13, 148, 136, 0.8)", // Teal glass
+            Background = "#0D9488", // Teal 600
+            Surface = "rgba(20, 184, 166, 0.6)", // Teal glass
+            DrawerBackground = "rgba(13, 148, 136, 0.9)", // Dark glass
+            DrawerText = "#CCFBF1", // Teal 100
+            TextPrimary = "#F8FAFC",
+            TextSecondary = "#5EEAD4",
+        }
+    };
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

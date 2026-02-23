@@ -1,0 +1,22 @@
+[package]
+name = "erc20-token"
+version = "0.1.0"
+edition = "2021"
+description = "Standard fungible token (ERC-20 pattern) for MameyFutureNode"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+mamey-contracts-base = { git = "https://github.com/Mamey-io/mamey-contracts.git", package = "mamey-contracts-base" }
+mamey-contracts-shared = { git = "https://github.com/Mamey-io/mamey-contracts.git", package = "mamey-contracts-shared" }
+mamey-token-std = { git = "https://github.com/Mamey-io/mamey-contracts.git", package = "mamey-token-std" }
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+panic = "abort"

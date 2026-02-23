@@ -1,0 +1,114 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard-data"></i> Stock Report</h2>
+        <div>
+            <a href="/reports/export/excel/stock" class="btn btn-success"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+            <a href="/reports/export/pdf/stock" class="btn btn-danger"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3><%= totals.products %></h3>
+                    <small>Total Products</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3><%= totals.items.toLocaleString() %></h3>
+                    <small>Total Items</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>$<%= totals.value.toLocaleString('en-US', {minimumFractionDigits: 2}) %></h3>
+                    <small>Total Value</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <select name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        <% categories.forEach(cat => { %>
+                        <option value="<%= cat.id %>" <%= filters.category == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="low" <%= filters.status === 'low' ? 'selected' : '' %>>Low Stock</option>
+                        <option value="over" <%= filters.status === 'over' ? 'selected' : '' %>>Over Stock</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="/reports/stock" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Report Table -->
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-hover" id="reportTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Code</th>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th class="text-end">Stock</th>
+                        <th class="text-end">Min</th>
+                        <th class="text-end">Purchase $</th>
+                        <th class="text-end">Sale $</th>
+                        <th class="text-end">Value</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% products.forEach(p => { %>
+                    <tr class="<%= p.current_stock <= p.min_stock ? 'table-danger' : '' %>">
+                        <td><%= p.code %></td>
+                        <td><a href="/products/<%= p.id %>"><%= p.name %></a></td>
+                        <td><%= p.category_name || '-' %></td>
+                        <td class="text-end"><%= p.current_stock %></td>
+                        <td class="text-end"><%= p.min_stock %></td>
+                        <td class="text-end">$<%= p.purchase_price.toFixed(2) %></td>
+                        <td class="text-end">$<%= p.sale_price.toFixed(2) %></td>
+                        <td class="text-end"><strong>$<%= p.stock_value.toFixed(2) %></strong></td>
+                        <td>
+                            <% if (p.current_stock <= p.min_stock) { %>
+                            <span class="badge bg-danger">Low</span>
+                            <% } else if (p.max_stock > 0 && p.current_stock >= p.max_stock) { %>
+                            <span class="badge bg-warning">Over</span>
+                            <% } else { %>
+                            <span class="badge bg-success">OK</span>
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>$(document).ready(function() { $('#reportTable').DataTable({ pageLength: 50 }); });</script>
+
+<%- include('../partials/footer') %>

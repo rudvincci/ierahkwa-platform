@@ -1,0 +1,613 @@
+name: Mamey Banking
+services:
+######################################################################
+#                         Client Applications
+######################################################################
+  - name: fbdetb-landing
+    project: FutureBDETBank.Landing/src/FutureBDETBank.Landing/FutureBDETBank.Landing.csproj
+    # dockerFile: MoviesApp/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: https
+        protocol: https
+        port: 7210
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+
+  - name: mamey-bank-web-online-banking
+    project: Mamey.Bank.Web.OnlineBanking/src/Server/Mamey.Bank.Web.OnlineBanking.Server.csproj
+    # dockerFile: MoviesApp/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: https
+        protocol: https
+        port: 7166
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+
+  - name: mamey-bank-web-bms
+    project: Mamey.Bank.Web.OnlineBanking/src/Server/Mamey.Bank.Web.OnlineBanking.Server.csproj
+    # dockerFile: MoviesApp/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: https
+        protocol: https
+        port: 7041
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+
+    ######################################################################
+    #                         API Gateways
+    ######################################################################
+
+######################################################################
+#                         API Gateways
+######################################################################
+  # - name: mamey-web-online-banking-api-gateway
+  #   project: Mamey.Bank.OnlineBanking.ApiGateway/src/Mamey.Bank.OnlineBanking.ApiGateway/Mamey.Bank.OnlineBanking.ApiGateway.csproj
+  #   # dockerFile: MoviesApp/Dockerfile
+  #   buildProperties:
+  #     - name: TargetFramework
+  #       value: net7.0
+  #   bindings:
+  #     - name: https
+  #       protocol: https
+  #       port: 5001
+  #   env:
+  #     - name: ASPNETCORE_ENVIRONMENT
+  #       value: local
+  #   # liveness:
+  #   #   http:
+  #   #     path: /lively
+  #   #   initialDelay: 1
+  #   # readiness:
+  #   #   http:
+  #   #     path: /ready
+  #   #   initialDelay: 1
+
+  # - name: fbdetb-web-bms-api-gateway
+  #   project: Mamey.Bank.BMS.ApiGateway/src/Mamey.Bank.BMS.ApiGateway/Mamey.Bank.BMS.ApiGateway.csproj
+  #   # dockerFile: MoviesApp/Dockerfile
+  #   buildProperties:
+  #     - name: TargetFramework
+  #       value: net7.0
+  #   bindings:
+  #     - name: https
+  #       protocol: https
+  #       port: 5002
+  #   env:
+  #     - name: ASPNETCORE_ENVIRONMENT
+  #       value: local
+  #   # liveness:
+  #   #   http:
+  #   #     path: /lively
+  #   #   initialDelay: 1
+  #   # readiness:
+  #   #   http:
+  #   #     path: /ready
+  #   #   initialDelay: 1
+
+######################################################################
+#                         Core Microservices
+######################################################################
+
+  # - name: mamey-identity
+  #   project: Mamey.Identity/src/Mamey.Identity/Mamey.Identity.csproj
+  #   # dockerFile: Mamey.Identity/src/Mamey.Identity/Dockerfile
+  #   buildProperties:
+  #     - name: TargetFramework
+  #       value: net7.0
+  #   bindings:
+  #     - name: http
+  #       protocol: http
+  #       port: 5001
+  #   env:
+  #     - name: ASPNETCORE_ENVIRONMENT
+  #       value: local
+  #   liveness:
+  #     http:
+  #       path: /lively
+  #     initialDelay: 1
+  #   readiness:
+  #     http:
+  #       path: /ready
+  #     initialDelay: 1
+  - name: mamey-organizations
+    project: Mamey.Organizations/src/Mamey.Organizations/Mamey.Organizations.csproj
+    # dockerFile: Mamey.Organizations/src/Mamey.Organizations/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5002
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+
+  - name: mamey-notifications
+    project: Mamey.Notifications/src/Mamey.Notifications/Mamey.Notifications.csproj
+    # dockerFile: Mamey.Notifications/src/Mamey.Notifications/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5008
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+  
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-documents
+    project: Mamey.Documents/src/Mamey.Documents/Mamey.Documents.csproj
+    # dockerFile: MoviesApp/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 50001
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-employees
+    project: Mamey.Employees/src/Mamey.Employees/Mamey.Employees.csproj
+    # dockerFile: MoviesApp/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5005
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+
+######################################################################
+#                         Bank Microservices
+######################################################################
+  - name: mamey-bank-accounts
+    project: Mamey.Bank.Accounts/src/Mamey.Bank.Accounts/Mamey.Bank.Accounts.csproj
+    # dockerFile: Mamey.Bank.Accounts/src/Mamey.Bank.Accounts/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5009
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-branches
+    project: Mamey.Bank.Branches/src/Mamey.Bank.Branches/Mamey.Bank.Branches.csproj
+    # dockerFile: Mamey.Bank.Branches/src/Mamey.Bank.Branches/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5016
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  
+  # - name: mamey-bank-cards
+  #   project: Mamey.Bank.Cards/src/Mamey.Bank.Cards/Mamey.Bank.Cards.csproj
+  #   # dockerFile: Mamey.Bank.Cards/src/Mamey.Bank.Cards/Dockerfile
+  #   buildProperties:
+  #     - name: TargetFramework
+  #       value: net7.0
+  #   bindings:
+  #     - name: http
+  #       protocol: http
+  #       port: 38295
+  #   env:
+  #     - name: ASPNETCORE_ENVIRONMENT
+  #       value: local
+
+  - name: mamey-bank-deposits
+    project: Mamey.Bank.Deposits/src/Mamey.Bank.Deposits/Mamey.Bank.Deposits.csproj
+    # dockerFile: Mamey.Bank.Deposits/src/Mamey.Bank.Deposits/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 32156
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-documents
+    project: Mamey.Bank.Documents/src/Mamey.Bank.Documents/Mamey.Bank.Documents.csproj
+    # dockerFile: Mamey.Bank.Documents/src/Mamey.Bank.Documents/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 13275
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-help-desk
+    project: Mamey.Bank.HelpDesk/src/Mamey.Bank.HelpDesk/Mamey.Bank.HelpDesk.csproj
+    # dockerFile: MoviesApp/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5025
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-ktt
+    project: Mamey.Bank.Ktt/src/Mamey.Bank.Ktt/Mamey.Bank.Ktt.csproj
+    # dockerFile: Mamey.Bank.Ktt/src/Mamey.Bank.Ktt/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5028
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-loans
+    project: Mamey.Bank.Loans/src/Mamey.Bank.Loans/Mamey.Bank.Loans.csproj
+    # dockerFile: MoviesApp/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: https
+        protocol: https
+        port: 7067
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-members
+    project: Mamey.Bank.Members/src/Mamey.Bank.Members/Mamey.Bank.Members.csproj
+    # dockerFile: Mamey.Bank.Members/src/Mamey.Bank.Members/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5015
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-rewards
+    project: Mamey.Bank.Rewards/src/Mamey.Bank.Rewards/Mamey.Bank.Rewards.csproj
+    # dockerFile: MoviesApp/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5030
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-savings
+    project: Mamey.Bank.Savings/src/Mamey.Bank.Savings/Mamey.Bank.Savings.csproj
+    # dockerFile: Mamey.Bank.Savings/src/Mamey.Bank.Savings/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5017
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-transactions
+    project: Mamey.Bank.Transactions/src/Mamey.Bank.Transactions/Mamey.Bank.Transactions.csproj
+    # dockerFile: Mamey.Bank.Transactions/src/Mamey.Bank.Transactions/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5021
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-transfers
+    project: Mamey.Bank.Transfers/src/Mamey.Bank.Transfers/Mamey.Bank.Transfers.csproj
+    # dockerFile: Mamey.Bank.Transfers/src/Mamey.Bank.Transfers/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5019
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-treasury
+    project: Mamey.Bank.Treasury/src/Mamey.Bank.Treasury/Mamey.Bank.Treasury.csproj
+    # dockerFile: Mamey.Bank.Treasury/src/Mamey.Bank.Treasury/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5027
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-trusts
+    project: Mamey.Bank.Trusts/src/Mamey.Bank.Trusts/Mamey.Bank.Trusts.csproj
+    # dockerFile: Mamey.Bank.Trusts/src/Mamey.Bank.Trusts/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5018
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-withdraws
+    project: Mamey.Bank.Withdraws/src/Mamey.Bank.Withdraws/Mamey.Bank.Withdraws.csproj
+    # dockerFile: Mamey.Bank.Withdraws/src/Mamey.Bank.Withdraws/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 54443
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-wallets
+    project: Mamey.Wallets/src/Mamey.Wallets/Mamey.Wallets.csproj
+    # dockerFile: Mamey.Wallets/src/Mamey.Wallets/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 5007
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  - name: mamey-bank-commercial-account-management-online-banking
+    project: Mamey.Bank.AccountManagement.Onboarding/src/Mamey.Bank.AccountManagement.Onboarding/Mamey.Bank.AccountManagement.Onboarding.csproj
+    # dockerFile: MoviesApp/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 17001
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1  
+
+######################################################################
+#                         END
+######################################################################

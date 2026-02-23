@@ -1,0 +1,96 @@
+@page "/dex/pools"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<Pools> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Liquidity Pools" Icon="fas fa-swimming-pool" Subtitle="Liquidity pool management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Pools" Value="@_pools.Count.ToString()" Icon="fas fa-swimming-pool" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Liquidity" Value="@_totalLiquidity.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-chart-line" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Liquidity Pools" Class="mt-4">
+        <MudTable T="PoolInfo" Items="@_pools" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Pool ID</MudTh>
+                <MudTh>Token A</MudTh>
+                <MudTh>Token B</MudTh>
+                <MudTh>Liquidity</MudTh>
+                <MudTh>Volume</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.PoolId</MudTd>
+                <MudTd>@context.TokenA</MudTd>
+                <MudTd>@context.TokenB</MudTd>
+                <MudTd>@(decimal.Parse(context.ReserveA ?? "0") + decimal.Parse(context.ReserveB ?? "0")).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.TotalVolume24h ?? "0").ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == PoolStatus.Active ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<PoolInfo> _pools = new();
+    private int _activeCount;
+    private decimal _totalLiquidity;
+    private decimal _totalVolume;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _pools = await FutureWampumXClient.GetPoolsAsync();
+            _activeCount = _pools.Count(p => p.Status == PoolStatus.Active);
+            _totalLiquidity = _pools.Sum(p => decimal.Parse(p.ReserveA ?? "0") + decimal.Parse(p.ReserveB ?? "0"));
+            _totalVolume = _pools.Sum(p => decimal.Parse(p.TotalVolume24h ?? "0"));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading pools");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

@@ -1,0 +1,516 @@
+@* CIT-001-A: Citizenship Application (Main Form) *@
+@using Mamey.Portal.Web.ViewModels.Citizenship
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h6">CIT-001-A: Citizenship Application</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary">
+        Main application form. This section will be populated with all fields from CIT-001-A Citizenship Application.pdf
+    </MudText>
+
+    <MudGrid Spacing="2">
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Personal Information</MudText>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.FirstName" 
+                         Label="First name" 
+                         Variant="Variant.Outlined" 
+                         Required="true"
+                         HelperText="Maximum 35 characters (AAMVA limit)" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.MiddleName" 
+                         Label="Middle name(s)" 
+                         Variant="Variant.Outlined"
+                         HelperText="Maximum 35 characters (AAMVA limit)" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.LastName" 
+                         Label="Last name" 
+                         Variant="Variant.Outlined" 
+                         Required="true"
+                         HelperText="Maximum 35 characters (AAMVA limit)" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudDatePicker @bind-Date="ViewModel.DateOfBirth" 
+                          Label="Date of birth" 
+                          Variant="Variant.Outlined" 
+                          Required="true" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.PlaceOfBirth" 
+                         Label="Place of birth" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.CountryOfOrigin" 
+                         Label="Country of origin" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudSelect T="string" @bind-Value="ViewModel.Sex" 
+                      Label="Sex" 
+                      Variant="Variant.Outlined">
+                <MudSelectItem Value="@((string?)null)">Select...</MudSelectItem>
+                <MudSelectItem Value="@("M")">Male</MudSelectItem>
+                <MudSelectItem Value="@("F")">Female</MudSelectItem>
+                <MudSelectItem Value="@("X")">Non-binary</MudSelectItem>
+                <MudSelectItem Value="@("O")">Other</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.Height" 
+                         Label="Height" 
+                         Variant="Variant.Outlined"
+                         HelperText="Enter height in inches (e.g., 70) or feet and inches (e.g., 5'10\")" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudSelect T="string" @bind-Value="ViewModel.EyeColor" 
+                      Label="Eye color" 
+                      Variant="Variant.Outlined"
+                      HelperText="AAMVA codes: BLK, BLU, BRO, GRN, GRY, HAZ, MAR, PNK, DIC, UNK">
+                <MudSelectItem Value="@((string?)null)">Select...</MudSelectItem>
+                <MudSelectItem Value="@("BLK")">Black (BLK)</MudSelectItem>
+                <MudSelectItem Value="@("BLU")">Blue (BLU)</MudSelectItem>
+                <MudSelectItem Value="@("BRO")">Brown (BRO)</MudSelectItem>
+                <MudSelectItem Value="@("GRN")">Green (GRN)</MudSelectItem>
+                <MudSelectItem Value="@("GRY")">Gray (GRY)</MudSelectItem>
+                <MudSelectItem Value="@("HAZ")">Hazel (HAZ)</MudSelectItem>
+                <MudSelectItem Value="@("MAR")">Maroon (MAR)</MudSelectItem>
+                <MudSelectItem Value="@("PNK")">Pink (PNK)</MudSelectItem>
+                <MudSelectItem Value="@("DIC")">Dichromatic (DIC)</MudSelectItem>
+                <MudSelectItem Value="@("UNK")">Unknown (UNK)</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudSelect T="string" @bind-Value="ViewModel.HairColor" 
+                      Label="Hair color" 
+                      Variant="Variant.Outlined"
+                      HelperText="AAMVA codes: BAL, BLK, BLN, BRO, GRY, RED, SDY, WHI, UNK">
+                <MudSelectItem Value="@((string?)null)">Select...</MudSelectItem>
+                <MudSelectItem Value="@("BAL")">Bald (BAL)</MudSelectItem>
+                <MudSelectItem Value="@("BLK")">Black (BLK)</MudSelectItem>
+                <MudSelectItem Value="@("BLN")">Blonde (BLN)</MudSelectItem>
+                <MudSelectItem Value="@("BRO")">Brown (BRO)</MudSelectItem>
+                <MudSelectItem Value="@("GRY")">Gray (GRY)</MudSelectItem>
+                <MudSelectItem Value="@("RED")">Red (RED)</MudSelectItem>
+                <MudSelectItem Value="@("SDY")">Sandy (SDY)</MudSelectItem>
+                <MudSelectItem Value="@("WHI")">White (WHI)</MudSelectItem>
+                <MudSelectItem Value="@("UNK")">Unknown (UNK)</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudSelect T="string" @bind-Value="ViewModel.MaritalStatus" 
+                      Label="Marital status" 
+                      Variant="Variant.Outlined">
+                <MudSelectItem Value="@((string?)null)">Select...</MudSelectItem>
+                <MudSelectItem Value="@("Single")">Single</MudSelectItem>
+                <MudSelectItem Value="@("Married")">Married</MudSelectItem>
+                <MudSelectItem Value="@("Divorced")">Divorced</MudSelectItem>
+                <MudSelectItem Value="@("Widowed")">Widowed</MudSelectItem>
+                <MudSelectItem Value="@("Other")">Other</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.PreviousNames" 
+                         Label="Previous names (if any)" 
+                         Variant="Variant.Outlined" 
+                         HelperText="List any previous legal names" />
+        </MudItem>
+
+        <MudItem xs="12" Class="mt-4">
+            <MudDivider />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Contact Information</MudText>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.Email" 
+                         Label="Email" 
+                         Variant="Variant.Outlined" 
+                         InputType="InputType.Email"
+                         Required="true"
+                         HelperText="Required for application notifications" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.PhoneNumber" 
+                         Label="Phone number" 
+                         Variant="Variant.Outlined" 
+                         InputType="InputType.Telephone" />
+        </MudItem>
+
+        <MudItem xs="12" Class="mt-4">
+            <MudDivider />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Address</MudText>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="ViewModel.AddressLine1" 
+                         Label="Address line 1" 
+                         Variant="Variant.Outlined"
+                         HelperText="Maximum 35 characters (AAMVA limit)" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.City" 
+                         Label="City" 
+                         Variant="Variant.Outlined"
+                         HelperText="Maximum 35 characters (AAMVA limit)" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.Region" 
+                         Label="State/Region" 
+                         Variant="Variant.Outlined"
+                         HelperText="2-letter state/province code (e.g., CA, NY, BC)" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.PostalCode" 
+                         Label="Postal code" 
+                         Variant="Variant.Outlined"
+                         HelperText="Maximum 11 characters (AAMVA limit, e.g., 12345-6789)" />
+        </MudItem>
+
+        <MudItem xs="12" Class="mt-4">
+            <MudDivider />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Emergency Contact Information</MudText>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.EmergencyContactName" 
+                         Label="Emergency contact name" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.EmergencyContactRelationship" 
+                         Label="Relationship" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.EmergencyContactPhone" 
+                         Label="Emergency contact phone" 
+                         Variant="Variant.Outlined" 
+                         InputType="InputType.Telephone" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.EmergencyContactEmail" 
+                         Label="Emergency contact email" 
+                         Variant="Variant.Outlined" 
+                         InputType="InputType.Email" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="ViewModel.EmergencyContactAddress" 
+                         Label="Emergency contact address" 
+                         Variant="Variant.Outlined" 
+                         Lines="2" />
+        </MudItem>
+
+        <MudItem xs="12" Class="mt-4">
+            <MudDivider />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Employment/Occupation Information</MudText>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.Occupation" 
+                         Label="Occupation/Profession" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.EmployerName" 
+                         Label="Employer name" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="ViewModel.EmployerAddress" 
+                         Label="Employer address" 
+                         Variant="Variant.Outlined" 
+                         Lines="2" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.EmploymentStartDate" 
+                         Label="Employment start date" 
+                         Variant="Variant.Outlined" 
+                         HelperText="MM/YYYY format" />
+        </MudItem>
+
+        <MudItem xs="12" Class="mt-4">
+            <MudDivider />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Education Information</MudText>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudSelect T="string" @bind-Value="ViewModel.HighestEducationLevel" 
+                      Label="Highest education level" 
+                      Variant="Variant.Outlined">
+                <MudSelectItem Value="@((string?)null)">Select...</MudSelectItem>
+                <MudSelectItem Value="@("Elementary")">Elementary</MudSelectItem>
+                <MudSelectItem Value="@("High School")">High School</MudSelectItem>
+                <MudSelectItem Value="@("Some College")">Some College</MudSelectItem>
+                <MudSelectItem Value="@("Associate Degree")">Associate Degree</MudSelectItem>
+                <MudSelectItem Value="@("Bachelor's Degree")">Bachelor's Degree</MudSelectItem>
+                <MudSelectItem Value="@("Master's Degree")">Master's Degree</MudSelectItem>
+                <MudSelectItem Value="@("Doctorate")">Doctorate</MudSelectItem>
+                <MudSelectItem Value="@("Other")">Other</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.SchoolName" 
+                         Label="School/Institution name" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.SchoolLocation" 
+                         Label="School location" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.GraduationYear" 
+                         Label="Graduation year" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+
+        <MudItem xs="12" Class="mt-4">
+            <MudDivider />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Family Information</MudText>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.SpouseName" 
+                         Label="Spouse name (if applicable)" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MudDatePicker @bind-Date="ViewModel.SpouseDateOfBirth" 
+                          Label="Spouse date of birth" 
+                          Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MudSelect T="string" @bind-Value="ViewModel.SpouseCitizenshipStatus" 
+                      Label="Spouse citizenship status" 
+                      Variant="Variant.Outlined">
+                <MudSelectItem Value="@((string?)null)">Select...</MudSelectItem>
+                <MudSelectItem Value="@("Citizen")">Citizen</MudSelectItem>
+                <MudSelectItem Value="@("Resident")">Resident</MudSelectItem>
+                <MudSelectItem Value="@("Probationary")">Probationary</MudSelectItem>
+                <MudSelectItem Value="@("Non-Citizen")">Non-Citizen</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.NumberOfChildren" 
+                         Label="Number of children" 
+                         Variant="Variant.Outlined" 
+                         InputType="InputType.Number" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.Parent1Name" 
+                         Label="Parent 1 name" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudSelect T="string" @bind-Value="ViewModel.Parent1CitizenshipStatus" 
+                      Label="Parent 1 citizenship status" 
+                      Variant="Variant.Outlined">
+                <MudSelectItem Value="@((string?)null)">Select...</MudSelectItem>
+                <MudSelectItem Value="@("Citizen")">Citizen</MudSelectItem>
+                <MudSelectItem Value="@("Resident")">Resident</MudSelectItem>
+                <MudSelectItem Value="@("Probationary")">Probationary</MudSelectItem>
+                <MudSelectItem Value="@("Non-Citizen")">Non-Citizen</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.Parent2Name" 
+                         Label="Parent 2 name" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudSelect T="string" @bind-Value="ViewModel.Parent2CitizenshipStatus" 
+                      Label="Parent 2 citizenship status" 
+                      Variant="Variant.Outlined">
+                <MudSelectItem Value="@((string?)null)">Select...</MudSelectItem>
+                <MudSelectItem Value="@("Citizen")">Citizen</MudSelectItem>
+                <MudSelectItem Value="@("Resident")">Resident</MudSelectItem>
+                <MudSelectItem Value="@("Probationary")">Probationary</MudSelectItem>
+                <MudSelectItem Value="@("Non-Citizen")">Non-Citizen</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+
+        <MudItem xs="12" Class="mt-4">
+            <MudDivider />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Additional Identification</MudText>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.PassportNumber" 
+                         Label="Passport number (if applicable)" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.PassportIssuingCountry" 
+                         Label="Passport issuing country" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudDatePicker @bind-Date="ViewModel.PassportExpiryDate" 
+                          Label="Passport expiry date" 
+                          Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.NationalIdNumber" 
+                         Label="National ID number (if applicable)" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="ViewModel.NationalIdIssuingCountry" 
+                         Label="National ID issuing country" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+
+        <MudItem xs="12" Class="mt-4">
+            <MudDivider />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Previous Address History</MudText>
+        </MudItem>
+        <MudItem xs="12" md="8">
+            <MudTextField @bind-Value="ViewModel.PreviousAddress1" 
+                         Label="Previous address 1" 
+                         Variant="Variant.Outlined" 
+                         Lines="2" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.PreviousAddress1Dates" 
+                         Label="Dates lived there (MM/YYYY - MM/YYYY)" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="8">
+            <MudTextField @bind-Value="ViewModel.PreviousAddress2" 
+                         Label="Previous address 2" 
+                         Variant="Variant.Outlined" 
+                         Lines="2" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.PreviousAddress2Dates" 
+                         Label="Dates lived there (MM/YYYY - MM/YYYY)" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+
+        <MudItem xs="12" Class="mt-4">
+            <MudDivider />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">References</MudText>
+        </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.body2" Class="mb-2">Reference 1</MudText>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.Reference1Name" 
+                         Label="Name" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.Reference1Relationship" 
+                         Label="Relationship" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.Reference1Phone" 
+                         Label="Phone" 
+                         Variant="Variant.Outlined" 
+                         InputType="InputType.Telephone" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="ViewModel.Reference1Address" 
+                         Label="Address" 
+                         Variant="Variant.Outlined" 
+                         Lines="2" />
+        </MudItem>
+        <MudItem xs="12" Class="mt-2">
+            <MudText Typo="Typo.body2" Class="mb-2">Reference 2</MudText>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.Reference2Name" 
+                         Label="Name" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.Reference2Relationship" 
+                         Label="Relationship" 
+                         Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudTextField @bind-Value="ViewModel.Reference2Phone" 
+                         Label="Phone" 
+                         Variant="Variant.Outlined" 
+                         InputType="InputType.Telephone" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="ViewModel.Reference2Address" 
+                         Label="Address" 
+                         Variant="Variant.Outlined" 
+                         Lines="2" />
+        </MudItem>
+
+        <MudItem xs="12" Class="mt-4">
+            <MudDivider />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Criminal History/Background</MudText>
+        </MudItem>
+        <MudItem xs="12">
+            <MudCheckBox T="bool" @bind-Selected="ViewModel.HasCriminalRecord" 
+                        Label="Have you ever been convicted of a crime or have a criminal record?"
+                        HelperText="Please check this box if you have any criminal convictions" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="ViewModel.CriminalRecordDetails" 
+                         Label="Criminal record details (if applicable)" 
+                         Variant="Variant.Outlined" 
+                         Lines="3"
+                         Disabled="@(!ViewModel.HasCriminalRecord)"
+                         HelperText="Please provide details of any criminal convictions" />
+        </MudItem>
+
+        <MudItem xs="12" Class="mt-4">
+            <MudDivider />
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Travel History</MudText>
+        </MudItem>
+        <MudItem xs="12">
+            <MudCheckBox T="bool" @bind-Selected="ViewModel.HasTraveledOutsideCountry" 
+                        Label="Have you traveled outside your country of origin in the past 5 years?"
+                        HelperText="Please check this box if you have traveled internationally" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="ViewModel.TravelHistoryDetails" 
+                         Label="Travel history details (if applicable)" 
+                         Variant="Variant.Outlined" 
+                         Lines="3"
+                         Disabled="@(!ViewModel.HasTraveledOutsideCountry)"
+                         HelperText="Please list countries visited and dates of travel" />
+        </MudItem>
+    </MudGrid>
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public BecomeCitizenViewModel ViewModel { get; set; } = null!;
+}
+
+

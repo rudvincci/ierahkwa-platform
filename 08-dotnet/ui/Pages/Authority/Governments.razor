@@ -1,0 +1,209 @@
+@page "/authority/governments"
+@inject IDIDClient DidClient
+@inject MameyWalletClient WalletClient
+@inject AuthorityRegistryStore Store
+@inject AuthSessionService Session
+@using System.Security.Cryptography
+
+<PageTitle>Government Onboarding - MameyNode Authority</PageTitle>
+
+<h1>Government Authorities</h1>
+
+@if (!Session.IsAuthenticated)
+{
+    <div class="alert alert-warning">
+        You must <a href="/login">login</a> as the Root Authority to onboard governments.
+    </div>
+}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5>Onboard Government Authority (Bootstrap stage)</h5>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <label class="form-label">Jurisdiction</label>
+            <input class="form-control" @bind="_jurisdiction" placeholder="e.g. US-FED, CA-ON, MX-CMX" />
+        </div>
+
+        <button class="btn btn-primary" @onclick="OnboardAsync" disabled="@(!_canOnboard || _busy)">
+            Onboard Government (Issue DID + Wallet Key + GovOperatorCredential)
+        </button>
+
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="alert alert-danger mt-3">@_error</div>
+        }
+        @if (!string.IsNullOrWhiteSpace(_info))
+        {
+            <div class="alert alert-info mt-3">@_info</div>
+        }
+    </div>
+    <div class="card-footer">
+        <small class="text-muted">
+            This stores dev artifacts in <code>MameyNode.UI/.data/authority-ui/registry.json</code>. No private keys are persisted.
+        </small>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>Registered Governments</h5>
+    </div>
+    <div class="card-body">
+        @if (_registry is null)
+        {
+            <p class="text-muted">Loading...</p>
+        }
+        else if (_registry.Governments.Count == 0)
+        {
+            <p class="text-muted">No governments onboarded yet.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                    <tr>
+                        <th>DID</th>
+                        <th>Jurisdiction</th>
+                        <th>Wallet Key</th>
+                        <th>Created</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var g in _registry.Governments.OrderByDescending(x => x.CreatedAt))
+                    {
+                        <tr>
+                            <td><code>@g.Did</code></td>
+                            <td>@g.Jurisdiction</td>
+                            <td><code>@g.WalletKeyId</code></td>
+                            <td>@g.CreatedAt.ToString("u")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private AuthorityRegistry? _registry;
+    private bool _busy;
+    private string _jurisdiction = "US-FED";
+    private string? _error;
+    private string? _info;
+
+    private bool _canOnboard => Session.IsAuthenticated && !string.IsNullOrWhiteSpace(Session.InstitutionDid) && !string.IsNullOrWhiteSpace(Session.WalletKeyId);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _registry = await Store.LoadAsync();
+    }
+
+    private async Task OnboardAsync()
+    {
+        _busy = true;
+        _error = null;
+        _info = null;
+        try
+        {
+            _registry ??= await Store.LoadAsync();
+
+            var controller = $"gov_{NormalizeControllerComponent(_jurisdiction)}".ToLowerInvariant();
+            var didResult = await DidClient.IssueDIDAsync(controller);
+            if (!didResult.Success || string.IsNullOrWhiteSpace(didResult.DID))
+            {
+                _error = didResult.ErrorMessage ?? "Failed to issue DID.";
+                return;
+            }
+
+            var walletResp = await WalletClient.Client.GenerateKeyAsync(new GenerateKeyRequest
+            {
+                KeyType = "ed25519",
+                Algorithm = "ed25519",
+                Password = "",
+                EnableMigrationMode = false,
+                LegacyKeyId = ""
+            });
+            if (!walletResp.Success || string.IsNullOrWhiteSpace(walletResp.KeyId) || string.IsNullOrWhiteSpace(walletResp.PublicKey))
+            {
+                _error = walletResp.ErrorMessage ?? "Failed to generate wallet key for government.";
+                return;
+            }
+
+            var gov = new GovernmentAuthorityRecord(
+                Did: didResult.DID!,
+                Jurisdiction: _jurisdiction.Trim(),
+                WalletKeyId: walletResp.KeyId,
+                WalletPublicKey: walletResp.PublicKey,
+                CreatedAt: DateTimeOffset.UtcNow);
+
+            _registry.Governments.Add(gov);
+
+            // Issue GovOperatorCredential (signed by RootAuthority wallet key)
+            var credId = Guid.NewGuid().ToString("N");
+            var capabilities = new List<string> { "cap.government.issue_bank_license" };
+            var credentialPayload = $"gov_operator|{credId}|{Session.InstitutionDid}|{gov.Did}|{gov.Jurisdiction}|{string.Join(',', capabilities)}|{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+            var sigResp = await WalletClient.Client.SignMessageAsync(new SignMessageRequest
+            {
+                KeyId = Session.WalletKeyId!,
+                Message = Google.Protobuf.ByteString.CopyFromUtf8(credentialPayload),
+                Password = Session.WalletPassword ?? ""
+            });
+            if (!sigResp.Success)
+            {
+                _error = $"Failed to sign GovOperatorCredential: {sigResp.ErrorMessage}";
+                return;
+            }
+
+            var sigBytes = sigResp.Signature.ToByteArray();
+            if (sigBytes.Length == 0)
+            {
+                _error = "GovOperatorCredential signature was empty.";
+                return;
+            }
+
+            _registry.GovOperatorCredentials.Add(new GovOperatorCredentialRecord(
+                Id: credId,
+                IssuerDid: Session.InstitutionDid!,
+                SubjectDid: gov.Did,
+                IssuedAt: DateTimeOffset.UtcNow,
+                ExpiresAt: null,
+                Capabilities: capabilities,
+                Jurisdiction: gov.Jurisdiction,
+                SignatureHex: Convert.ToHexString(sigBytes).ToLowerInvariant(),
+                PublicKeyId: Session.WalletKeyId!
+            ));
+
+            await Store.SaveAsync(_registry);
+            _info = $"Onboarded government {gov.Did} and issued GovOperatorCredential {credId}.";
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private static string NormalizeControllerComponent(string value)
+    {
+        // Node validation allows only [A-Za-z0-9_-]
+        var chars = value.Trim().ToCharArray();
+        for (var i = 0; i < chars.Length; i++)
+        {
+            var c = chars[i];
+            var ok = char.IsLetterOrDigit(c) || c is '_' or '-';
+            if (!ok)
+            {
+                chars[i] = '_';
+            }
+        }
+        return new string(chars);
+    }
+}
+

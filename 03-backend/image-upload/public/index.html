@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload | Plataforma Ierahkwa</title>
+    
+    <!-- Bootstrap 4.3.1 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" 
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
+    <!-- Dropzone CSS v5.7.2 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.css" 
+          integrity="sha512-bbUR1MeyQPzAg4lXBHrNROr+4A/2u37TIqAQkjb8kmnZQ5WqFQ1vPwghW7Okb/O5y1eCL2JPLSLyzLSH1F0VfA==" crossorigin="anonymous" />
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #1a237e;
+            --gold: #ffd700;
+            --dark: #0d1117;
+            --card-bg: #161b22;
+            --border: #30363d;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark);
+            color: #e6e6e6;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .navbar-brand {
+            color: var(--gold) !important;
+            font-weight: 600;
+        }
+
+        .nav-link {
+            color: #e6e6e6 !important;
+        }
+
+        .nav-link:hover {
+            color: var(--gold) !important;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #0d47a1 100%);
+            border-bottom: 1px solid var(--gold);
+            border-radius: 12px 12px 0 0 !important;
+        }
+
+        /* Tabs */
+        .nav-tabs {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-tabs .nav-link {
+            color: #8b949e;
+            border: none;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--gold);
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--gold);
+            background: var(--card-bg);
+            border-bottom: 2px solid var(--gold);
+        }
+
+        /* Dropzone Customization */
+        .dropzone {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #1e2530 100%);
+            border: 2px dashed var(--gold);
+            border-radius: 12px;
+            min-height: 280px;
+            transition: all 0.3s ease;
+        }
+
+        .dropzone:hover {
+            border-color: #fff;
+            background: linear-gradient(135deg, #1e2530 0%, #252d3a 100%);
+        }
+
+        .dropzone.dz-drag-hover {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .dropzone .dz-message {
+            margin: 3em 0;
+            color: #e6e6e6;
+        }
+
+        .dropzone .dz-message h4 {
+            color: var(--gold);
+        }
+
+        .dropzone .dz-preview .dz-image {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .dropzone .dz-preview .dz-details {
+            color: #e6e6e6;
+        }
+
+        .dropzone .dz-preview .dz-progress .dz-upload {
+            background: linear-gradient(90deg, var(--gold), #28a745);
+        }
+
+        /* Alerts */
+        .alert-info {
+            background: rgba(23, 162, 184, 0.2);
+            border: 1px solid #17a2b8;
+            color: #7dd3e1;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #0d47a1 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #283593 0%, #1565c0 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            border: none;
+        }
+
+        .btn-outline-danger {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-outline-danger:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Custom file input */
+        .custom-file-label {
+            background: var(--card-bg);
+            border-color: var(--border);
+            color: #e6e6e6;
+        }
+
+        .custom-file-label::after {
+            background: var(--primary);
+            color: var(--gold);
+        }
+
+        /* Image cards */
+        .image-card {
+            transition: all 0.3s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.15);
+        }
+
+        /* Progress */
+        .progress {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--gold), #28a745);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            color: #8b949e;
+        }
+
+        /* Modal */
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border);
+        }
+
+        /* Badge */
+        .badge-gold {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--gold);
+        }
+
+        /* Gallery styles */
+        .gallery-image {
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gallery-image:hover {
+            transform: scale(1.05);
+        }
+
+        /* Stats cards */
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--card-bg) 100%);
+            border: 1px solid var(--gold);
+        }
+
+        .stat-value {
+            color: var(--gold);
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-cloud-upload-alt mr-2"></i>Image Upload
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-tab="upload">
+                            <i class="fas fa-upload mr-1"></i>Subir
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-tab="gallery">
+                            <i class="fas fa-images mr-1"></i>Galería
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../platform/">
+                            <i class="fas fa-home mr-1"></i>Plataforma
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-4 mb-5">
+        <!-- Stats Row -->
+        <div class="row mb-4" id="statsRow">
+            <div class="col-md-4">
+                <div class="card stat-card p-3 text-center">
+                    <div class="stat-value" id="statFiles">0</div>
+                    <div class="text-muted">Imágenes</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card p-3 text-center">
+                    <div class="stat-value" id="statSize">0 B</div>
+                    <div class="text-muted">Almacenamiento</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card p-3 text-center">
+                    <div class="stat-value">10 MB</div>
+                    <div class="text-muted">Máx. por archivo</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div id="uploadSection">
+            <div class="card shadow">
+                <div class="card-header text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-cloud-upload-alt mr-2"></i>Subir Imágenes
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Upload Tabs -->
+                    <ul class="nav nav-tabs mb-4" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#dropzone-tab">
+                                <i class="fas fa-th-large mr-1"></i>Dropzone
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#single-tab">
+                                <i class="fas fa-file-image mr-1"></i>Archivo Individual
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#multiple-tab">
+                                <i class="fas fa-images mr-1"></i>Múltiples Archivos
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- Dropzone Tab -->
+                        <div class="tab-pane fade show active" id="dropzone-tab">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                <strong>Arrastra y suelta</strong> o haz clic para subir múltiples imágenes con vista previa y barras de progreso.
+                            </div>
+                            
+                            <form action="/api/upload" class="dropzone" id="imageDropzone">
+                                <div class="dz-message">
+                                    <i class="fas fa-cloud-upload-alt fa-4x mb-3" style="color: var(--gold);"></i>
+                                    <h4>Arrastra archivos aquí o haz clic para subir</h4>
+                                    <p class="text-muted">
+                                        Formatos: JPG, JPEG, PNG, GIF, BMP, WebP<br>
+                                        Tamaño máximo: 10 MB
+                                    </p>
+                                </div>
+                            </form>
+
+                            <div class="mt-3">
+                                <button type="button" id="clearDropzone" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash mr-1"></i>Limpiar Todo
+                                </button>
+                                <button type="button" id="uploadAll" class="btn btn-success ml-2">
+                                    <i class="fas fa-upload mr-1"></i>Subir Todo
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Single File Tab -->
+                        <div class="tab-pane fade" id="single-tab">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Selecciona una imagen para subir con vista previa.
+                            </div>
+
+                            <form id="singleForm" enctype="multipart/form-data">
+                                <div class="custom-file mb-3">
+                                    <input type="file" class="custom-file-input" id="singleFile" 
+                                           accept=".jpg,.jpeg,.png,.gif,.bmp,.webp">
+                                    <label class="custom-file-label" for="singleFile">Seleccionar archivo...</label>
+                                </div>
+
+                                <div id="singlePreview" class="mb-3 text-center" style="display: none;">
+                                    <img id="singlePreviewImg" src="" class="img-fluid rounded mb-2" style="max-height: 300px;">
+                                    <div class="progress" id="singleProgress" style="display: none;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                             id="singleProgressBar" style="width: 0%">0%</div>
+                                    </div>
+                                    <p id="singleFileName" class="text-muted mt-2"></p>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary" id="singleUploadBtn" disabled>
+                                    <i class="fas fa-upload mr-1"></i>Subir
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Multiple Files Tab -->
+                        <div class="tab-pane fade" id="multiple-tab">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Selecciona múltiples imágenes para subir simultáneamente.
+                            </div>
+
+                            <form id="multipleForm" enctype="multipart/form-data">
+                                <div class="custom-file mb-3">
+                                    <input type="file" class="custom-file-input" id="multipleFiles" 
+                                           accept=".jpg,.jpeg,.png,.gif,.bmp,.webp" multiple>
+                                    <label class="custom-file-label" for="multipleFiles">Seleccionar archivos...</label>
+                                </div>
+
+                                <div class="row mb-3" id="multiplePreview"></div>
+
+                                <div id="overallProgress" class="mb-3" style="display: none;">
+                                    <label>Progreso General</label>
+                                    <div class="progress">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                             id="overallProgressBar" style="width: 0%">0%</div>
+                                    </div>
+                                    <small id="uploadStatus" class="text-muted">Subiendo 0 de 0 archivos...</small>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary" id="multipleUploadBtn" disabled>
+                                    <i class="fas fa-upload mr-1"></i>Subir Todo
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary ml-2" id="clearMultiple">
+                                    <i class="fas fa-times mr-1"></i>Limpiar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Uploads -->
+            <div class="card shadow mt-4" id="recentUploads" style="display: none;">
+                <div class="card-header text-white bg-success">
+                    <h5 class="mb-0">
+                        <i class="fas fa-check-circle mr-2"></i>Subidas Recientes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="recentContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Section -->
+        <div id="gallerySection" style="display: none;">
+            <div class="card shadow">
+                <div class="card-header text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-images mr-2"></i>Galería de Imágenes
+                    </h4>
+                    <div>
+                        <button class="btn btn-sm btn-outline-light" id="refreshGallery">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text bg-dark border-secondary text-light">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                </div>
+                                <input type="text" id="searchGallery" class="form-control bg-dark border-secondary text-light" 
+                                       placeholder="Buscar imágenes...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-right mt-2 mt-md-0">
+                            <button class="btn btn-outline-danger" id="deleteSelected" style="display: none;">
+                                <i class="fas fa-trash mr-1"></i>Eliminar Seleccionados
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row" id="galleryContainer">
+                        <div class="col-12 text-center py-5">
+                            <i class="fas fa-spinner fa-spin fa-3x text-muted"></i>
+                            <p class="text-muted mt-2">Cargando imágenes...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer py-3 mt-auto">
+        <div class="container text-center">
+            <span>
+                <i class="fas fa-code mr-1"></i>
+                Plataforma Ierahkwa | DropzoneJS v5.7.2 | Bootstrap v4.3.1 | Node.js
+            </span>
+        </div>
+    </footer>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Vista Previa</h5>
+                    <button type="button" class="close text-light" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center p-0" style="background: #000;">
+                    <img id="modalImage" src="" class="img-fluid" style="max-height: 70vh;">
+                </div>
+                <div class="modal-footer">
+                    <a id="downloadBtn" href="" download class="btn btn-primary">
+                        <i class="fas fa-download mr-1"></i>Descargar
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery 3.5.1 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    
+    <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
+    
+    <!-- Dropzone JS v5.7.2 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.js"></script>
+
+    <script>
+        // Disable Dropzone auto-discover
+        Dropzone.autoDiscover = false;
+
+        $(document).ready(function() {
+            // Load stats
+            loadStats();
+
+            // Initialize Dropzone
+            var myDropzone = new Dropzone("#imageDropzone", {
+                url: "/api/upload",
+                paramName: "file",
+                maxFilesize: 10,
+                maxFiles: 20,
+                acceptedFiles: ".jpg,.jpeg,.png,.gif,.bmp,.webp",
+                addRemoveLinks: true,
+                parallelUploads: 2,
+                autoProcessQueue: false,
+                dictDefaultMessage: "",
+                dictRemoveFile: "Eliminar",
+                dictCancelUpload: "Cancelar",
+
+                init: function() {
+                    var dz = this;
+
+                    $("#uploadAll").on("click", function() {
+                        if (dz.getQueuedFiles().length > 0) {
+                            dz.processQueue();
+                        } else {
+                            showAlert('warning', 'No hay archivos en cola para subir.');
+                        }
+                    });
+
+                    $("#clearDropzone").on("click", function() {
+                        dz.removeAllFiles(true);
+                    });
+
+                    this.on("success", function(file, response) {
+                        addToRecent(response);
+                        loadStats();
+                    });
+
+                    this.on("error", function(file, errorMessage) {
+                        showAlert('danger', 'Error: ' + (errorMessage.errorMessage || errorMessage));
+                    });
+
+                    this.on("queuecomplete", function() {
+                        showAlert('success', 'Todos los archivos procesados.');
+                    });
+                }
+            });
+
+            // Single file upload
+            $('#singleFile').on('change', function() {
+                var file = this.files[0];
+                if (file) {
+                    $(this).next('.custom-file-label').text(file.name);
+                    
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#singlePreviewImg').attr('src', e.target.result);
+                        $('#singlePreview').show();
+                        $('#singleFileName').text(file.name + ' (' + formatSize(file.size) + ')');
+                        $('#singleUploadBtn').prop('disabled', false);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            $('#singleForm').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData();
+                formData.append('file', $('#singleFile')[0].files[0]);
+
+                $('#singleProgress').show();
+                $('#singleUploadBtn').prop('disabled', true);
+
+                $.ajax({
+                    url: '/api/upload/single',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    xhr: function() {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', function(e) {
+                            if (e.lengthComputable) {
+                                var percent = Math.round((e.loaded / e.total) * 100);
+                                $('#singleProgressBar').css('width', percent + '%').text(percent + '%');
+                            }
+                        }, false);
+                        return xhr;
+                    },
+                    success: function(response) {
+                        showAlert('success', 'Archivo subido exitosamente.');
+                        addToRecent(response);
+                        resetSingleForm();
+                        loadStats();
+                    },
+                    error: function(xhr) {
+                        var error = xhr.responseJSON ? xhr.responseJSON.errorMessage : 'Error en la subida';
+                        showAlert('danger', error);
+                        $('#singleUploadBtn').prop('disabled', false);
+                    }
+                });
+            });
+
+            // Multiple files upload
+            $('#multipleFiles').on('change', function() {
+                var files = this.files;
+                $(this).next('.custom-file-label').text(files.length + ' archivos seleccionados');
+                $('#multiplePreview').empty();
+
+                for (var i = 0; i < files.length; i++) {
+                    createPreviewCard(files[i], i);
+                }
+
+                $('#multipleUploadBtn').prop('disabled', files.length === 0);
+            });
+
+            $('#multipleForm').on('submit', function(e) {
+                e.preventDefault();
+                var files = $('#multipleFiles')[0].files;
+                var total = files.length;
+                var uploaded = 0;
+
+                $('#overallProgress').show();
+                $('#multipleUploadBtn').prop('disabled', true);
+
+                for (var i = 0; i < files.length; i++) {
+                    uploadFile(files[i], i, function(success) {
+                        uploaded++;
+                        var percent = Math.round((uploaded / total) * 100);
+                        $('#overallProgressBar').css('width', percent + '%').text(percent + '%');
+                        $('#uploadStatus').text('Subido ' + uploaded + ' de ' + total + ' archivos');
+
+                        if (uploaded === total) {
+                            showAlert('success', 'Todos los archivos subidos.');
+                            resetMultipleForm();
+                            loadStats();
+                        }
+                    });
+                }
+            });
+
+            $('#clearMultiple').on('click', resetMultipleForm);
+
+            // Tab navigation
+            $('[data-tab]').on('click', function(e) {
+                e.preventDefault();
+                var tab = $(this).data('tab');
+                
+                $('[data-tab]').removeClass('active');
+                $(this).addClass('active');
+
+                if (tab === 'upload') {
+                    $('#uploadSection').show();
+                    $('#gallerySection').hide();
+                } else if (tab === 'gallery') {
+                    $('#uploadSection').hide();
+                    $('#gallerySection').show();
+                    loadGallery();
+                }
+            });
+
+            // Gallery functions
+            $('#refreshGallery').on('click', loadGallery);
+
+            $('#searchGallery').on('keyup', function() {
+                var search = $(this).val().toLowerCase();
+                $('.gallery-item').each(function() {
+                    var name = $(this).data('filename').toLowerCase();
+                    $(this).toggle(name.includes(search));
+                });
+            });
+
+            // Delete handler
+            $(document).on('click', '.delete-btn', function() {
+                var fileName = $(this).data('filename');
+                var $item = $(this).closest('.gallery-item, .recent-item');
+
+                if (confirm('¿Eliminar esta imagen?')) {
+                    $.ajax({
+                        url: '/api/upload/' + fileName,
+                        type: 'DELETE',
+                        success: function() {
+                            $item.fadeOut(function() { $(this).remove(); });
+                            showAlert('success', 'Imagen eliminada.');
+                            loadStats();
+                        },
+                        error: function() {
+                            showAlert('danger', 'Error al eliminar.');
+                        }
+                    });
+                }
+            });
+
+            // Image modal
+            $(document).on('click', '.gallery-image', function() {
+                var src = $(this).data('src');
+                var name = $(this).data('filename');
+                $('#modalImage').attr('src', src);
+                $('#modalTitle').text(name);
+                $('#downloadBtn').attr('href', src);
+                $('#imageModal').modal('show');
+            });
+
+            // Helper functions
+            function loadStats() {
+                $.get('/api/stats', function(data) {
+                    $('#statFiles').text(data.totalFiles);
+                    $('#statSize').text(data.formattedSize);
+                });
+            }
+
+            function loadGallery() {
+                $.get('/api/upload/list', function(files) {
+                    var container = $('#galleryContainer');
+                    container.empty();
+
+                    if (files.length === 0) {
+                        container.html(`
+                            <div class="col-12 text-center py-5">
+                                <i class="fas fa-cloud-upload-alt fa-5x text-muted mb-3"></i>
+                                <h4 class="text-muted">No hay imágenes subidas</h4>
+                                <p class="text-muted">Sube algunas imágenes para comenzar</p>
+                            </div>
+                        `);
+                        return;
+                    }
+
+                    files.forEach(function(file) {
+                        var html = `
+                            <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-3 gallery-item" data-filename="${file.fileName}">
+                                <div class="card image-card h-100">
+                                    <img src="${file.filePath}" class="card-img-top gallery-image" 
+                                         alt="${file.fileName}" style="height: 120px; object-fit: cover; cursor: pointer;"
+                                         data-src="${file.filePath}" data-filename="${file.fileName}">
+                                    <div class="card-body p-2">
+                                        <small class="text-truncate d-block" title="${file.fileName}">${file.fileName}</small>
+                                        <small class="text-muted">${formatSize(file.fileSize)}</small>
+                                        <div class="mt-2">
+                                            <a href="${file.filePath}" download class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger delete-btn" data-filename="${file.fileName}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        container.append(html);
+                    });
+                });
+            }
+
+            function createPreviewCard(file, index) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var html = `
+                        <div class="col-md-3 col-sm-4 col-6 mb-3" id="preview-${index}">
+                            <div class="card h-100">
+                                <img src="${e.target.result}" class="card-img-top" style="height: 100px; object-fit: cover;">
+                                <div class="card-body p-2">
+                                    <small class="text-truncate d-block">${file.name}</small>
+                                    <small class="text-muted">${formatSize(file.size)}</small>
+                                    <div class="progress mt-1" style="height: 5px;">
+                                        <div class="progress-bar progress-${index}" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    $('#multiplePreview').append(html);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function uploadFile(file, index, callback) {
+                var formData = new FormData();
+                formData.append('file', file);
+
+                $.ajax({
+                    url: '/api/upload/single',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    xhr: function() {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', function(e) {
+                            if (e.lengthComputable) {
+                                var percent = Math.round((e.loaded / e.total) * 100);
+                                $('.progress-' + index).css('width', percent + '%');
+                            }
+                        }, false);
+                        return xhr;
+                    },
+                    success: function(response) {
+                        $('#preview-' + index + ' .progress-bar').addClass('bg-success');
+                        addToRecent(response);
+                        callback(true);
+                    },
+                    error: function() {
+                        $('#preview-' + index + ' .progress-bar').addClass('bg-danger');
+                        callback(false);
+                    }
+                });
+            }
+
+            function addToRecent(response) {
+                if (response.success && response.filePath) {
+                    $('#recentUploads').show();
+                    var html = `
+                        <div class="col-md-2 col-sm-3 col-4 mb-3 recent-item">
+                            <div class="card image-card h-100">
+                                <img src="${response.filePath}" class="card-img-top gallery-image" 
+                                     style="height: 80px; object-fit: cover; cursor: pointer;"
+                                     data-src="${response.filePath}" data-filename="${response.fileName}">
+                                <div class="card-body p-2">
+                                    <small class="text-truncate d-block">${response.fileName}</small>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn mt-1" 
+                                            data-filename="${response.fileName}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    $('#recentContainer').prepend(html);
+                }
+            }
+
+            function resetSingleForm() {
+                $('#singleFile').val('');
+                $('#singleFile').next('.custom-file-label').text('Seleccionar archivo...');
+                $('#singlePreview').hide();
+                $('#singleProgress').hide();
+                $('#singleProgressBar').css('width', '0%').text('0%');
+                $('#singleUploadBtn').prop('disabled', true);
+            }
+
+            function resetMultipleForm() {
+                $('#multipleFiles').val('');
+                $('#multipleFiles').next('.custom-file-label').text('Seleccionar archivos...');
+                $('#multiplePreview').empty();
+                $('#overallProgress').hide();
+                $('#overallProgressBar').css('width', '0%').text('0%');
+                $('#multipleUploadBtn').prop('disabled', true);
+            }
+
+            function formatSize(bytes) {
+                var sizes = ['B', 'KB', 'MB', 'GB'];
+                if (bytes === 0) return '0 B';
+                var i = Math.floor(Math.log(bytes) / Math.log(1024));
+                return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+            }
+
+            function showAlert(type, message) {
+                var icon = type === 'success' ? 'check' : type === 'danger' ? 'exclamation' : 'info';
+                var html = `
+                    <div class="alert alert-${type} alert-dismissible fade show" style="position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px;">
+                        <i class="fas fa-${icon}-circle mr-2"></i>${message}
+                        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                    </div>
+                `;
+                var $alert = $(html);
+                $('body').append($alert);
+                setTimeout(function() { $alert.alert('close'); }, 4000);
+            }
+        });
+    </script>
+</body>
+</html>

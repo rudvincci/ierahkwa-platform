@@ -1,0 +1,33 @@
+# Development Dockerfile
+# For development with live reload and source mounting
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install git and other tools
+RUN apk add --no-cache git openssh-client curl
+
+# Copy package files
+COPY package*.json ./
+COPY tsconfig.json ./
+
+# Install all dependencies (including dev)
+RUN npm ci
+
+# Copy source (will be mounted as volume in dev)
+COPY src/ ./src/
+COPY config/ ./config/
+COPY templates/ ./templates/
+COPY scripts/ ./scripts/
+COPY docs/ ./docs/
+COPY *.md ./
+
+# Build (will rebuild on changes)
+RUN npm run build
+
+# Expose ports
+EXPOSE 3000 3001
+
+# Default command (can be overridden)
+CMD ["npm", "run", "dev"]

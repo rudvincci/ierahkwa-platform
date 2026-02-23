@@ -1,0 +1,145 @@
+@page "/explorer"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IInfrastructureClient InfrastructureClient
+@inject ILogger<Explorer> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Block Explorer" Icon="fas fa-search" Subtitle="Blockchain transaction and block explorer">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    @if (_nodeInfo != null)
+    {
+        <MudGrid Spacing="3" Class="mt-4">
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Total Blocks" Value="@_nodeInfo.BlockCount.ToString("N0")" Icon="fas fa-cube" Color="#3B82F6" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Total Accounts" Value="@_nodeInfo.AccountCount.ToString("N0")" Icon="fas fa-users" Color="#10B981" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Peer Count" Value="@_nodeInfo.PeerCount.ToString()" Icon="fas fa-network-wired" Color="#F59E0B" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Confirmation Height" Value="@_nodeInfo.ConfirmationHeight.ToString("N0")" Icon="fas fa-layer-group" Color="#10B981" />
+            </MudItem>
+        </MudGrid>
+    }
+
+    @if (_nodeInfo != null)
+    {
+        <MudGrid Spacing="3" Class="mt-4">
+            <MudItem xs="12" md="6">
+                <CardContainer Title="Network Information" Class="mt-4">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.body1"><strong>Node ID:</strong> @_nodeInfo.NodeId</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.body1"><strong>Version:</strong> @_nodeInfo.Version</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.body1"><strong>Total Blocks:</strong> @_nodeInfo.BlockCount.ToString("N0")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.body1"><strong>Total Accounts:</strong> @_nodeInfo.AccountCount.ToString("N0")</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </CardContainer>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <CardContainer Title="Network Health" Class="mt-4">
+                    @if (_networkHealth != null)
+                    {
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.body1"><strong>Status:</strong> 
+                                    <MudChip T="string" Size="Size.Small" Color="@(_networkHealth.IsHealthy ? Color.Success : Color.Error)">
+                                        @(_networkHealth.IsHealthy ? "Healthy" : "Unhealthy")
+                                    </MudChip>
+                                </MudText>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.body1"><strong>Connected Peers:</strong> @_networkHealth.ConnectedPeers</MudText>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.body1"><strong>Health Score:</strong> @_networkHealth.HealthScore.ToString("F1")%</MudText>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.body1"><strong>Sync Status:</strong> @_networkHealth.SyncStatus</MudText>
+                            </MudItem>
+                        </MudGrid>
+                    }
+                </CardContainer>
+            </MudItem>
+        </MudGrid>
+    }
+
+    @if (_peers.Any())
+    {
+        <CardContainer Title="Network Peers" Class="mt-4">
+            <MudTable T="PeerInfo" Items="@_peers" Hover="true" Dense="false" Striped="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>Peer ID</MudTh>
+                    <MudTh>IP Address</MudTh>
+                    <MudTh>Port</MudTh>
+                    <MudTh>Version</MudTh>
+                    <MudTh>Status</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.PeerId</MudTd>
+                    <MudTd>@context.Address</MudTd>
+                    <MudTd>@context.Port</MudTd>
+                    <MudTd>@context.Version</MudTd>
+                    <MudTd>
+                        <MudChip T="string" Size="Size.Small" Color="@(context.IsOnline ? Color.Success : Color.Default)">
+                            @(context.IsOnline ? "Online" : "Offline")
+                        </MudChip>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </CardContainer>
+    }
+</PageContainer>
+
+@code {
+    private NodeInfo? _nodeInfo;
+    private NetworkHealthInfo? _networkHealth;
+    private List<PeerInfo> _peers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _nodeInfo = await InfrastructureClient.GetNodeInfoAsync();
+            _networkHealth = await InfrastructureClient.GetNetworkHealthAsync();
+            _peers = await InfrastructureClient.GetPeersAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading explorer data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

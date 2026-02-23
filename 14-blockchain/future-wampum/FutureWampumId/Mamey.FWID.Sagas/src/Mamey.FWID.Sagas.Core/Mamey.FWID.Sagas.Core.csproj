@@ -1,0 +1,85 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Data\" />
+    <None Remove="Sagas\" />
+    <None Remove="Events\" />
+    <None Remove="Commands\" />
+    <None Remove="Sagas\IdentityRegistration\" />
+    <None Remove="Sagas\CredentialIssuance\" />
+    <None Remove="Sagas\AccessControlGranting\" />
+    <None Remove="Exceptions\" />
+    <None Remove="Clients\" />
+    <None Remove="Repositories\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="Sagas\" />
+    <Folder Include="Events\" />
+    <Folder Include="Commands\" />
+    <Folder Include="Sagas\IdentityRegistration\" />
+    <Folder Include="Sagas\CredentialIssuance\" />
+    <Folder Include="Sagas\AccessControlGranting\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Clients\" />
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Chronicle_" Version="3.2.1" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Mamey.MessageBrokers.CQRS" Version="0.1.2" />
+    <PackageReference Include="Mamey.Microservice.Abstractions" Version="0.1.2" />
+    <PackageReference Include="Mamey.Tracing.Jaeger.RabbitMQ" Version="0.1.2" />
+    <PackageReference Include="Mamey.WebApi.Security" Version="0.1.2" />
+    <PackageReference Include="Mamey.WebApi.Swagger" Version="0.1.2" />
+    <PackageReference Include="Mamey.WebApi.CQRS" Version="0.1.2" />
+    <PackageReference Include="Mamey.CQRS.Queries" Version="0.1.2" />
+    <PackageReference Include="Mamey" Version="0.1.2" />
+    <PackageReference Include="Mamey.MessageBrokers" Version="0.1.2" />
+    <PackageReference Include="Mamey.MessageBrokers.Outbox" Version="0.1.2" />
+    <PackageReference Include="Mamey.MessageBrokers.RabbitMQ" Version="0.1.2" />
+    <PackageReference Include="Mamey.Metrics.AppMetrics" Version="0.1.2" />
+    <PackageReference Include="Mamey.Persistence.Redis" Version="0.1.2" />
+    <PackageReference Include="Mamey.WebApi" Version="0.1.2" />
+    <PackageReference Include="Mamey.LoadBalancing.Fabio" Version="0.1.2" />
+    <PackageReference Include="Mamey.Logging" Version="0.1.2" />
+    <PackageReference Include="Mamey.Discovery.Consul" Version="0.1.2" />
+    <PackageReference Include="Mamey.Security" Version="0.1.2" />
+    <PackageReference Include="Mamey.Chronicle.Persistance.Mongo" Version="0.1.2" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Microservice.Infrastructure\src\Mamey.Microservice.Infrastructure\Mamey.Microservice.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Microservice.Abstractions\src\Mamey.Microservice.Abstractions\Mamey.Microservice.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.MessageBrokers\src\Mamey.MessageBrokers\Mamey.MessageBrokers.csproj" />
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.WebApi\src\Mamey.WebApi\Mamey.WebApi.csproj" />
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.WebApi.CQRS\src\Mamey.WebApi.CQRS\Mamey.WebApi.CQRS.csproj" />
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.WebApi.Swagger\src\Mamey.WebApi.Swagger\Mamey.WebApi.Swagger.csproj" />
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.WebApi.Security\src\Mamey.WebApi.Security\Mamey.WebApi.Security.csproj" />
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.MessageBrokers.RabbitMQ\src\Mamey.MessageBrokers.RabbitMQ\Mamey.MessageBrokers.RabbitMQ.csproj" />
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.MessageBrokers.CQRS\src\Mamey.MessageBrokers.CQRS\Mamey.MessageBrokers.CQRS.csproj" />
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey\src\Mamey\Mamey.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Persistence.PostgreSQL\src\Mamey.Persistence.PostgreSQL\Mamey.Persistence.PostgreSQL.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- References to FWID services for events and commands -->
+    <ProjectReference Include="..\..\Mamey.FWID.Identities\src\Mamey.FWID.Identities.Domain\Mamey.FWID.Identities.Domain.csproj" />
+    <ProjectReference Include="..\..\Mamey.FWID.DIDs\src\Mamey.FWID.DIDs.Domain\Mamey.FWID.DIDs.Domain.csproj" />
+    <ProjectReference Include="..\..\Mamey.FWID.DIDs\src\Mamey.FWID.DIDs.Contracts\Mamey.FWID.DIDs.Contracts.csproj" />
+    <ProjectReference Include="..\..\Mamey.FWID.Credentials\src\Mamey.FWID.Credentials.Domain\Mamey.FWID.Credentials.Domain.csproj" />
+    <ProjectReference Include="..\..\Mamey.FWID.Credentials\src\Mamey.FWID.Credentials.Contracts\Mamey.FWID.Credentials.Contracts.csproj" />
+    <ProjectReference Include="..\..\Mamey.FWID.AccessControls\src\Mamey.FWID.AccessControls.Domain\Mamey.FWID.AccessControls.Domain.csproj" />
+    <ProjectReference Include="..\..\Mamey.FWID.AccessControls\src\Mamey.FWID.AccessControls.Contracts\Mamey.FWID.AccessControls.Contracts.csproj" />
+    <ProjectReference Include="..\..\Mamey.FWID.ZKPs\src\Mamey.FWID.ZKPs.Domain\Mamey.FWID.ZKPs.Domain.csproj" />
+    <ProjectReference Include="..\..\Mamey.FWID.ZKPs\src\Mamey.FWID.ZKPs.Contracts\Mamey.FWID.ZKPs.Contracts.csproj" />
+  </ItemGroup>
+</Project>
+

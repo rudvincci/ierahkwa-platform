@@ -1,0 +1,313 @@
+@page "/gov/manual-application"
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+@inject IApplicationsService ApplicationsService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<PageTitle>Manual Application Entry | Government Portal</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="py-4">
+    <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
+    
+    <MudText Typo="Typo.h4" Class="mb-4">Manual Application Entry</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Default" Class="mb-4">
+        Use this form to manually enter a citizenship application on behalf of an applicant.
+    </MudText>
+
+    <MudStepper @bind-ActiveStepIndex="_activeStep" Linear="true" PreventStepChange="OnPreventStepChange">
+        @* Step 1: Personal Information *@
+        <MudStep Title="Personal Info" Icon="@Icons.Material.Filled.Person">
+            <MudPaper Class="pa-4">
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <MudTextField @bind-Value="_firstName" Label="First Name" Required="true" RequiredError="First name is required" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudTextField @bind-Value="_middleName" Label="Middle Name" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudTextField @bind-Value="_lastName" Label="Last Name" Required="true" RequiredError="Last name is required" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudDatePicker @bind-Date="_dateOfBirth" Label="Date of Birth" Required="true" 
+                                       MaxDate="DateTime.Today.AddYears(-18)" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudSelect @bind-Value="_gender" Label="Gender" Required="true">
+                            <MudSelectItem Value="@("Male")">Male</MudSelectItem>
+                            <MudSelectItem Value="@("Female")">Female</MudSelectItem>
+                            <MudSelectItem Value="@("Other")">Other</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudStep>
+
+        @* Step 2: Contact Information *@
+        <MudStep Title="Contact Info" Icon="@Icons.Material.Filled.ContactMail">
+            <MudPaper Class="pa-4">
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="_email" Label="Email Address" Required="true" 
+                                      InputType="InputType.Email" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="_phone" Label="Phone Number" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_addressLine1" Label="Address Line 1" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_addressLine2" Label="Address Line 2" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudTextField @bind-Value="_city" Label="City" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudTextField @bind-Value="_state" Label="State/Province" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudTextField @bind-Value="_postalCode" Label="Postal Code" Required="true" />
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudStep>
+
+        @* Step 3: Documents *@
+        <MudStep Title="Documents" Icon="@Icons.Material.Filled.Description">
+            <MudPaper Class="pa-4">
+                <MudText Typo="Typo.h6" Class="mb-3">Required Documents</MudText>
+                <MudList T="string">
+                    <MudListItem>
+                        <MudFileUpload T="IBrowserFile" Accept=".pdf,.jpg,.png" OnFilesChanged="OnIdDocumentChanged">
+                            <ActivatorContent>
+                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Upload">
+                                    Upload ID Document
+                                </MudButton>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                        @if (_idDocument != null)
+                        {
+                            <MudChip T="string" Color="Color.Success" Size="Size.Small" Class="ml-2">@_idDocument.Name</MudChip>
+                        }
+                    </MudListItem>
+                    <MudListItem>
+                        <MudFileUpload T="IBrowserFile" Accept=".pdf,.jpg,.png" OnFilesChanged="OnAddressProofChanged">
+                            <ActivatorContent>
+                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Upload">
+                                    Upload Proof of Address
+                                </MudButton>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                        @if (_addressProof != null)
+                        {
+                            <MudChip T="string" Color="Color.Success" Size="Size.Small" Class="ml-2">@_addressProof.Name</MudChip>
+                        }
+                    </MudListItem>
+                    <MudListItem>
+                        <MudFileUpload T="IBrowserFile" Accept=".jpg,.png" OnFilesChanged="OnPhotoChanged">
+                            <ActivatorContent>
+                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Upload">
+                                    Upload Photo
+                                </MudButton>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                        @if (_photo != null)
+                        {
+                            <MudChip T="string" Color="Color.Success" Size="Size.Small" Class="ml-2">@_photo.Name</MudChip>
+                        }
+                    </MudListItem>
+                </MudList>
+            </MudPaper>
+        </MudStep>
+
+        @* Step 4: Review & Submit *@
+        <MudStep Title="Review" Icon="@Icons.Material.Filled.RateReview">
+            <MudPaper Class="pa-4">
+                <MudText Typo="Typo.h6" Class="mb-3">Application Summary</MudText>
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <MudText Typo="Typo.caption">Full Name</MudText>
+                        <MudText Typo="Typo.body1">@_firstName @_middleName @_lastName</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudText Typo="Typo.caption">Date of Birth</MudText>
+                        <MudText Typo="Typo.body1">@_dateOfBirth?.ToString("MMMM dd, yyyy")</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudText Typo="Typo.caption">Email</MudText>
+                        <MudText Typo="Typo.body1">@_email</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudText Typo="Typo.caption">Phone</MudText>
+                        <MudText Typo="Typo.body1">@_phone</MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.caption">Address</MudText>
+                        <MudText Typo="Typo.body1">@_addressLine1 @_addressLine2</MudText>
+                        <MudText Typo="Typo.body1">@_city, @_state @_postalCode</MudText>
+                    </MudItem>
+                </MudGrid>
+
+                <MudDivider Class="my-4" />
+
+                <MudText Typo="Typo.h6" Class="mb-3">Documents</MudText>
+                <MudChipSet T="string">
+                    @if (_idDocument != null)
+                    {
+                        <MudChip T="string" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">ID Document</MudChip>
+                    }
+                    @if (_addressProof != null)
+                    {
+                        <MudChip T="string" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Proof of Address</MudChip>
+                    }
+                    @if (_photo != null)
+                    {
+                        <MudChip T="string" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Photo</MudChip>
+                    }
+                </MudChipSet>
+            </MudPaper>
+        </MudStep>
+    </MudStepper>
+
+    <MudPaper Class="pa-4 mt-4 d-flex justify-end gap-2">
+        @if (_activeStep > 0)
+        {
+            <MudButton Variant="Variant.Outlined" OnClick="PreviousStep">Previous</MudButton>
+        }
+        @if (_activeStep < 3)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="NextStep">Next</MudButton>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="SubmitApplication" Disabled="_isSubmitting">
+                @if (_isSubmitting)
+                {
+                    <MudProgressCircular Indeterminate="true" Size="Size.Small" Class="mr-2" />
+                }
+                Submit Application
+            </MudButton>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private List<BreadcrumbItem> _breadcrumbs = new()
+    {
+        new("Dashboard", "/gov/dashboard"),
+        new("Manual Application", null, true)
+    };
+
+    private int _activeStep;
+    private bool _isSubmitting;
+
+    // Personal Info
+    private string? _firstName;
+    private string? _middleName;
+    private string? _lastName;
+    private DateTime? _dateOfBirth;
+    private string? _gender;
+
+    // Contact Info
+    private string? _email;
+    private string? _phone;
+    private string? _addressLine1;
+    private string? _addressLine2;
+    private string? _city;
+    private string? _state;
+    private string? _postalCode;
+
+    // Documents
+    private IBrowserFile? _idDocument;
+    private IBrowserFile? _addressProof;
+    private IBrowserFile? _photo;
+
+    private bool OnPreventStepChange(int direction, int targetIndex)
+    {
+        // Validate current step before allowing navigation
+        // direction: -1 = previous, 1 = next
+        return false; // Allow navigation
+    }
+
+    private void NextStep()
+    {
+        if (_activeStep < 3)
+        {
+            _activeStep++;
+        }
+    }
+
+    private void PreviousStep()
+    {
+        if (_activeStep > 0)
+        {
+            _activeStep--;
+        }
+    }
+
+    private void OnIdDocumentChanged(InputFileChangeEventArgs e)
+    {
+        _idDocument = e.File;
+    }
+
+    private void OnAddressProofChanged(InputFileChangeEventArgs e)
+    {
+        _addressProof = e.File;
+    }
+
+    private void OnPhotoChanged(InputFileChangeEventArgs e)
+    {
+        _photo = e.File;
+    }
+
+    private async Task SubmitApplication()
+    {
+        if (string.IsNullOrWhiteSpace(_firstName) || string.IsNullOrWhiteSpace(_lastName) || _dateOfBirth == null)
+        {
+            Snackbar.Add("Please fill in all required fields", Severity.Warning);
+            return;
+        }
+
+        _isSubmitting = true;
+        try
+        {
+            var tenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+            
+            var request = new CreateApplicationRequest
+            {
+                TenantId = tenantId,
+                FirstName = _firstName,
+                LastName = _lastName,
+                DateOfBirth = _dateOfBirth.Value,
+                Email = _email,
+                Phone = _phone,
+                Street = _addressLine1,
+                City = _city,
+                State = _state,
+                PostalCode = _postalCode,
+                Country = "United States"
+            };
+
+            var applicationId = await ApplicationsService.CreateAsync(request);
+            
+            if (applicationId.HasValue)
+            {
+                Snackbar.Add($"Application created successfully! ID: {applicationId.Value}", Severity.Success);
+                Navigation.NavigateTo("/gov/applications");
+            }
+            else
+            {
+                Snackbar.Add("Failed to create application. Please try again.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error creating application: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

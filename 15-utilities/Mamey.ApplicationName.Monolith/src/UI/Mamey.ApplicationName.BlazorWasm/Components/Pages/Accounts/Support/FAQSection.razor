@@ -1,0 +1,29 @@
+@using System.Collections.ObjectModel
+
+<MudPaper Class="p-4 mb-4" Elevation="3">
+    <MudText Typo="Typo.h5">Frequently Asked Questions</MudText>
+    @if (FAQs != null && FAQs.Any())
+    {
+        @foreach (var faq in FilteredFAQs)
+        {
+            <MudExpansionPanels Class="mt-3">
+                <MudExpansionPanel Text="@faq">
+                    <MudText Typo="Typo.body2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur malesuada...</MudText>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        }
+    }
+    else
+    {
+        <MudText Typo="Typo.body2">No FAQs found.</MudText>
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public string SearchQuery { get; set; }
+    [Parameter] public ObservableCollection<string> FAQs { get; set; }
+
+    private IEnumerable<string> FilteredFAQs => string.IsNullOrWhiteSpace(SearchQuery)
+        ? FAQs
+        : FAQs.Where(faq => faq.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase));
+}

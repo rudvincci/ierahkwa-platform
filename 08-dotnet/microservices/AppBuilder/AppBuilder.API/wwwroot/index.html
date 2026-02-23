@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IERAHKWA Appy | AI-Powered No-Code Mobile App Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --gold-dark: #B8860B;
+            --neon-green: #00FF41;
+            --neon-cyan: #00FFFF;
+            --neon-magenta: #FF00FF;
+            --bg-dark: #0a0e17;
+            --bg-card: #0d1a2d;
+            --border: #1e3a5f;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17 0%, #0d1a2d 50%, #1a0a2e 100%); color: #fff; min-height: 100vh; }
+        .bg-anim { position: fixed; top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0; background: radial-gradient(circle at 20% 80%, rgba(255,215,0,0.05) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0,255,65,0.05) 0%, transparent 50%); }
+        .container { position:relative;z-index:1; max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+        .header { background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(0,255,65,0.05) 100%); border: 2px solid var(--gold); border-radius: 15px; padding: 24px 32px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .header h1 { font-family: 'Orbitron', sans-serif; font-size: 1.8em; color: var(--gold); }
+        .header .sub { color: var(--neon-cyan); font-size: 0.95em; }
+        .back-link { color: var(--gold); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .back-link:hover { color: var(--neon-green); }
+        .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+        .step { background: var(--bg-card); border: 2px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
+        .step.active { border-color: var(--gold); box-shadow: 0 0 20px rgba(255,215,0,0.2); }
+        .step .num { width: 36px; height: 36px; border-radius: 50%; background: var(--gold); color: #000; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+        .step .label { font-size: 0.9em; color: #ccc; }
+        .card { background: var(--bg-card); border: 2px solid var(--border); border-radius: 15px; padding: 28px; margin-bottom: 24px; }
+        .card h2 { font-family: 'Orbitron'; color: var(--gold); margin-bottom: 16px; font-size: 1.2em; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; color: #aaa; margin-bottom: 6px; font-size: 0.9em; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: rgba(10,14,23,0.8); color: #fff; font-size: 1em; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .btn { padding: 12px 24px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; font-size: 1em; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; }
+        .btn-gold:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-cyan { background: var(--neon-cyan); color: #000; }
+        .btn-cyan:hover { opacity: 0.9; }
+        .btn-green { background: var(--neon-green); color: #000; }
+        .projects-list { display: grid; gap: 12px; }
+        .proj-item { background: rgba(30,58,95,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .proj-item:hover { border-color: var(--gold); }
+        .proj-item .name { font-weight: 600; color: var(--gold); }
+        .proj-item .url { font-size: 0.85em; color: #888; }
+        .build-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75em; }
+        .badge.pending { background: #444; color: #aaa; }
+        .badge.building { background: #0066cc; color: #fff; }
+        .badge.success { background: var(--neon-green); color: #000; }
+        .badge.failed { background: #cc3333; color: #fff; }
+        .color-preview { width: 48px; height: 28px; border-radius: 8px; border: 2px solid var(--border); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 900px) { .steps { grid-template-columns: 1fr 1fr; } .form-row, .grid-2 { grid-template-columns: 1fr; } }
+        .footer { text-align: center; padding: 24px; color: #666; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="bg-anim"></div>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1><i class="bi bi-phone"></i> IERAHKWA Appy</h1>
+                <p class="sub">AI-Powered No-Code App Builder • Enter URL → 5 min • PayPal & Bank • GDPR</p>
+            </div>
+            <span>
+                <a href="/login.html" class="back-link"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                <a href="/admin/" class="back-link"><i class="bi bi-gear"></i> Admin</a>
+                <a href="/swagger" class="back-link" target="_blank"><i class="bi bi-file-code"></i> API</a>
+            </span>
+        </div>
+
+        <div class="steps">
+            <div class="step active"><div class="num">1</div><div class="label">Enter URL</div></div>
+            <div class="step"><div class="num">2</div><div class="label">Customize Design</div></div>
+            <div class="step"><div class="num">3</div><div class="label">Build App</div></div>
+            <div class="step"><div class="num">4</div><div class="label">Download & Publish</div></div>
+        </div>
+
+        <div class="card">
+            <h2><i class="bi bi-link-45deg"></i> 1. Enter Your URL</h2>
+            <div class="form-row">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Website URL</label>
+                    <input type="url" id="sourceUrl" placeholder="https://example.com" value="https://appy.titansystems.ph">
+                </div>
+                <div class="form-group">
+                    <label>App Name</label>
+                    <input type="text" id="appName" placeholder="My App">
+                </div>
+                <div class="form-group">
+                    <label>Description (optional)</label>
+                    <input type="text" id="appDesc" placeholder="Short description">
+                </div>
+            </div>
+            <button class="btn btn-gold" onclick="createOrUpdateProject()"><i class="bi bi-plus-lg"></i> Create / Update Project</button>
+        </div>
+
+        <div class="card">
+            <h2><i class="bi bi-palette"></i> 2. Customize Design</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Primary Color</label>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <input type="color" id="primaryColor" value="#FFD700" style="width:56px;height:36px;padding:2px;cursor:pointer;">
+                        <input type="text" id="primaryColorHex" value="#FFD700" style="flex:1;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Secondary Color</label>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <input type="color" id="secondaryColor" value="#00FF41" style="width:56px;height:36px;padding:2px;cursor:pointer;">
+                        <input type="text" id="secondaryColorHex" value="#00FF41" style="flex:1;">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Target Platforms</label>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                    <label><input type="checkbox" id="pfAndroid" checked> Android</label>
+                    <label><input type="checkbox" id="pfWindows" checked> Windows</label>
+                    <label><input type="checkbox" id="pfMac"> macOS</label>
+                    <label><input type="checkbox" id="pfLinux"> Linux</label>
+                </div>
+            </div>
+            <button class="btn btn-cyan" onclick="saveDesign()" id="btnSaveDesign" disabled><i class="bi bi-check2"></i> Save Design</button>
+        </div>
+
+        <div class="card">
+            <h2><i class="bi bi-hammer"></i> 3. Build App</h2>
+            <div class="form-group">
+                <label>Select project and platform to build</label>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                    <select id="buildProject" style="max-width:280px;"><option value="">-- Select Project --</option></select>
+                    <select id="buildPlatform"><option value="Android">Android</option><option value="Windows">Windows</option><option value="MacOS">macOS</option><option value="Linux">Linux</option></select>
+                    <button class="btn btn-green" onclick="startBuild()" id="btnBuild" disabled><i class="bi bi-play-fill"></i> Start Build</button>
+                </div>
+            </div>
+            <div id="buildLog" style="margin-top:16px; font-family:monospace; font-size:0.85em; color:#8af; background:rgba(0,0,0,0.3); padding:12px; border-radius:8px; min-height:80px; max-height:200px; overflow-y:auto;"></div>
+        </div>
+
+        <div class="card">
+            <h2><i class="bi bi-collection"></i> Your Projects & Builds</h2>
+            <div class="projects-list" id="projectsList"></div>
+        </div>
+
+        <div class="footer">IERAHKWA Appy v1.0 • .NET 10 • Free/Pro/Enterprise • GDPR • Sovereign Government of Ierahkwa Ne Kanienke • © 2026</div>
+    </div>
+
+    <script>
+        const API = '';
+        let currentProjectId = null;
+
+        document.getElementById('primaryColor').oninput = e => { document.getElementById('primaryColorHex').value = e.target.value; };
+        document.getElementById('secondaryColor').oninput = e => { document.getElementById('secondaryColorHex').value = e.target.value; };
+        document.getElementById('primaryColorHex').oninput = e => { document.getElementById('primaryColor').value = e.target.value || '#FFD700'; };
+        document.getElementById('secondaryColorHex').oninput = e => { document.getElementById('secondaryColor').value = e.target.value || '#00FF41'; };
+
+        async function loadProjects() {
+            const r = await fetch(API + '/api/projects');
+            const list = await r.json();
+            const sel = document.getElementById('buildProject');
+            sel.innerHTML = '<option value="">-- Select Project --</option>' + list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            if (currentProjectId) sel.value = currentProjectId;
+            document.getElementById('btnBuild').disabled = !sel.value;
+            document.getElementById('btnSaveDesign').disabled = !currentProjectId;
+
+            const html = list.map(p => {
+                const builds = (p._builds || []).map(b => `<span class="badge ${(b.status||'').toLowerCase()}">${b.platform} ${b.status}</span>`).join('');
+                return `<div class="proj-item">
+                    <div>
+                        <div class="name">${p.name}</div>
+                        <div class="url">${p.sourceUrl || '-'}</div>
+                        <div class="build-badges" id="badges-${p.id}">-</div>
+                    </div>
+                    <div>
+                        <a href="/api/preview/${p.id}" target="_blank" class="btn btn-cyan" style="padding:8px 14px;font-size:0.9em;text-decoration:none;"><i class="bi bi-display"></i> Preview</a>
+                        <button class="btn btn-cyan" style="padding:8px 14px;font-size:0.9em;" onclick="loadBuilds('${p.id}')"><i class="bi bi-list"></i> Builds</button>
+                        <button class="btn btn-gold" style="padding:8px 14px;font-size:0.9em;" onclick="selectProject('${p.id}')"><i class="bi bi-pencil"></i> Edit</button>
+                    </div>
+                </div>`;
+            }).join('') || '<p style="color:#666;">No projects yet. Create one above.</p>';
+            document.getElementById('projectsList').innerHTML = html;
+            list.forEach(p => loadBuilds(p.id, true));
+        }
+
+        async function loadBuilds(projectId, silent) {
+            const r = await fetch(API + `/api/builds/project/${projectId}`);
+            const arr = await r.json();
+            const el = document.querySelector(`#badges-${projectId}`);
+            if (el) el.innerHTML = arr.length ? arr.slice(0,4).map(b => `<span class="badge ${(b.status||'').toLowerCase()}">${b.platform} ${b.status}</span>`).join('') : '-';
+        }
+
+        function selectProject(id) {
+            currentProjectId = id;
+            fetch(API + '/api/projects/' + id).then(r=>r.json()).then(p => {
+                document.getElementById('sourceUrl').value = p.sourceUrl || '';
+                document.getElementById('appName').value = p.name || '';
+                document.getElementById('appDesc').value = p.description || '';
+                const d = p.design || {};
+                document.getElementById('primaryColor').value = d.primaryColor || '#FFD700';
+                document.getElementById('primaryColorHex').value = d.primaryColor || '#FFD700';
+                document.getElementById('secondaryColor').value = d.secondaryColor || '#00FF41';
+                document.getElementById('secondaryColorHex').value = d.secondaryColor || '#00FF41';
+                document.getElementById('buildProject').value = id;
+                document.getElementById('btnSaveDesign').disabled = false;
+                document.getElementById('btnBuild').disabled = false;
+            });
+        }
+
+        async function createOrUpdateProject() {
+            const name = document.getElementById('appName').value || 'My App';
+            const url = document.getElementById('sourceUrl').value || 'https://example.com';
+            const body = {
+                name, sourceUrl: url, description: document.getElementById('appDesc').value || null,
+                design: { primaryColor: document.getElementById('primaryColorHex').value, secondaryColor: document.getElementById('secondaryColorHex').value },
+                targetPlatforms: [
+                    document.getElementById('pfAndroid').checked && 'Android',
+                    document.getElementById('pfWindows').checked && 'Windows',
+                    document.getElementById('pfMac').checked && 'MacOS',
+                    document.getElementById('pfLinux').checked && 'Linux'
+                ].filter(Boolean)
+            };
+            const method = currentProjectId ? 'PUT' : 'POST';
+            const path = currentProjectId ? `/api/projects/${currentProjectId}` : '/api/projects';
+            const res = await fetch(API + path, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            const p = await res.json();
+            currentProjectId = p.id;
+            document.getElementById('btnSaveDesign').disabled = false;
+            document.getElementById('btnBuild').disabled = false;
+            loadProjects();
+            log('Project saved: ' + p.name);
+        }
+
+        async function saveDesign() {
+            if (!currentProjectId) return;
+            const p = await (await fetch(API + '/api/projects/' + currentProjectId)).json();
+            p.design = p.design || {};
+            p.design.primaryColor = document.getElementById('primaryColorHex').value;
+            p.design.secondaryColor = document.getElementById('secondaryColorHex').value;
+            await fetch(API + '/api/projects/' + currentProjectId, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) });
+            loadProjects();
+            log('Design saved.');
+        }
+
+        async function startBuild() {
+            const projectId = document.getElementById('buildProject').value;
+            const platform = document.getElementById('buildPlatform').value;
+            if (!projectId) return;
+            log('Starting build for ' + platform + '...');
+            const res = await fetch(API + '/api/builds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ appProjectId: projectId, platform })
+            });
+            const b = await res.json();
+            log('Build created: ' + b.id + ' — Status: ' + b.status + '. Polling...');
+            const tid = setInterval(async () => {
+                const r = await fetch(API + '/api/builds/' + b.id);
+                const x = await r.json();
+                log('Build ' + b.id + ' → ' + x.status + (x.errorMessage ? ' — ' + x.errorMessage : ''));
+                loadProjects();
+                if (x.status === 'Success' || x.status === 'Failed') { clearInterval(tid); log('Done. ' + (x.downloadUrl ? 'Download: ' + x.downloadUrl : '')); }
+            }, 1500);
+        }
+
+        function log(t) {
+            const el = document.getElementById('buildLog');
+            el.innerHTML = (el.innerHTML || '') + '<div>' + new Date().toLocaleTimeString() + ' — ' + t + '</div>';
+            el.scrollTop = el.scrollHeight;
+        }
+
+        loadProjects();
+    </script>
+</body>
+</html>

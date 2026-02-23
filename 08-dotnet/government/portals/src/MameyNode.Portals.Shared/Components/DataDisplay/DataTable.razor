@@ -1,0 +1,104 @@
+@using MudBlazor
+@namespace MameyNode.Portals.Shared.Components.DataDisplay
+@typeparam TItem
+
+<MudTable T="TItem" Items="@Items" Hover="true" Dense="false" Striped="true" Elevation="2" @bind-SelectedItem="SelectedItem">
+    <ToolBarContent>
+        @if (!string.IsNullOrEmpty(Title))
+        {
+            <MudText Typo="Typo.h6">@Title</MudText>
+        }
+        <MudSpacer />
+        @if (ShowSearch)
+        {
+            <MudTextField @bind-Value="SearchString" Placeholder="Search..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Immediate="true" />
+        }
+        @if (ShowRefresh)
+        {
+            <MudButton Icon="@Icons.Material.Filled.Refresh" OnClick="RefreshData" Variant="Variant.Text" Size="Size.Small">Refresh</MudButton>
+        }
+        @if (ActionButtons != null)
+        {
+            @ActionButtons
+        }
+    </ToolBarContent>
+    <HeaderContent>
+        @foreach (var column in Columns)
+        {
+            <MudTh>@column.Title</MudTh>
+        }
+        @if (ShowActions)
+        {
+            <MudTh>Actions</MudTh>
+        }
+    </HeaderContent>
+    <RowTemplate>
+        @foreach (var column in Columns)
+        {
+            <MudTd>
+                @if (column.Render != null)
+                {
+                    @column.Render(context)
+                }
+                else
+                {
+                    @GetPropertyValue(context, column.PropertyName)
+                }
+            </MudTd>
+        }
+        @if (ShowActions)
+        {
+            <MudTd>
+                @if (ActionTemplate != null)
+                {
+                    @ActionTemplate(context)
+                }
+            </MudTd>
+        }
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="@PageSizeOptions" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter] public List<TItem> Items { get; set; } = new();
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public List<DataTableColumn<TItem>> Columns { get; set; } = new();
+    [Parameter] public bool ShowSearch { get; set; } = true;
+    [Parameter] public bool ShowRefresh { get; set; } = true;
+    [Parameter] public bool ShowActions { get; set; } = true;
+    [Parameter] public RenderFragment<TItem>? ActionTemplate { get; set; }
+    [Parameter] public RenderFragment? ActionButtons { get; set; }
+    [Parameter] public TItem? SelectedItem { get; set; }
+    [Parameter] public EventCallback<TItem> SelectedItemChanged { get; set; }
+    [Parameter] public EventCallback OnRefresh { get; set; }
+    [Parameter] public int[] PageSizeOptions { get; set; } = new[] { 10, 25, 50, 100 };
+
+    private string _searchString = string.Empty;
+
+    public string SearchString
+    {
+        get => _searchString;
+        set
+        {
+            _searchString = value;
+            // Filter logic would go here if needed
+        }
+    }
+
+    private object? GetPropertyValue(TItem item, string propertyName)
+    {
+        if (item == null || string.IsNullOrEmpty(propertyName)) return null;
+        var prop = typeof(TItem).GetProperty(propertyName);
+        return prop?.GetValue(item);
+    }
+
+    private async Task RefreshData()
+    {
+        if (OnRefresh.HasDelegate)
+        {
+            await OnRefresh.InvokeAsync();
+        }
+    }
+}

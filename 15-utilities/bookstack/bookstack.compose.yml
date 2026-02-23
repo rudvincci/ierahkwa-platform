@@ -1,0 +1,174 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:5.7.21
+    container_name: bookstack_db
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      # Required MySQL vars:
+      MYSQL_ROOT_PASSWORD: "supersecret"    # e.g. "super_secure_root_password"
+      MYSQL_DATABASE: "bookstack"
+      MYSQL_USER: "bookstack"
+      MYSQL_PASSWORD: "secret"           # e.g. "super_secure_db_password"
+    volumes:
+      - bookstack_db_data:/var/lib/mysql
+    restart: unless-stopped
+    ports:
+      - "2034:3606"
+
+  bookstack:
+    # Make sure to use a valid, existing tag (example below). 
+    # Check the Docker Hub or GitHub page for the latest versions (e.g. 24.2.3-1, 24.12.1, etc.).
+    image: solidnerd/bookstack:latest 
+    container_name: bookstack_app
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      ##########################################################################
+      # REQUIRED ENVIRONMENT VARIABLES
+      ##########################################################################
+
+      # 32-character key. You must generate this yourself.
+      # Example: `openssl rand -base64 24`
+      APP_KEY: "3CrrkQyxuOPkGo1WsW0uzCHawSSG7mYD"
+
+      # The URL of your BookStack instance (no trailing slash).
+      # Change to your domain or IP.
+      APP_URL: "http://localhost:8080"
+
+      # Database connection info
+      DB_HOST: "db:3306"                # "container_name:port"
+      DB_DATABASE: "bookstack"
+      DB_USERNAME: "bookstack"
+      DB_PASSWORD: "secret"
+
+      ##########################################################################
+      # RECOMMENDED / COMMON ENVIRONMENT VARIABLES
+      ##########################################################################
+
+      # Application Environment
+      # Typically 'production' or 'local'
+      APP_ENV: "production"
+
+      # Application Debug Mode
+      # Set to 'true' for debugging or 'false' for production
+      APP_DEBUG: "false"
+
+      # Application Name
+      APP_NAME: "Mamey"
+
+      # Logging channel. Common options: 'stack', 'daily', 'single'
+      APP_LOG: "daily"
+
+      # Log level (debug, info, notice, warning, error, critical, alert, emergency)
+      APP_LOG_LEVEL: "error"
+
+      # Cache driver: 'file', 'redis', 'memcached'
+      CACHE_DRIVER: "file"
+
+      # Session driver: 'file', 'cookie', 'database', 'apc', 'memcached', 'redis'
+      SESSION_DRIVER: "file"
+
+      # How many minutes before sessions expire
+      SESSION_LIFETIME: "120"
+
+      # Queue driver: 'sync', 'database', 'redis', 'beanstalkd', 'sqs'
+      QUEUE_CONNECTION: "sync"
+
+      # Broadcasting driver: 'log', 'redis', 'pusher', 'ably', 'null'
+      BROADCAST_DRIVER: "log"
+
+      ##########################################################################
+      # EMAIL / MAIL CONFIG
+      ##########################################################################
+      # If you want BookStack to send emails, configure as needed.
+      # Check BookStack docs for advanced usage.
+      
+      # MAIL_FROM: "noreply@example.com"
+      # MAIL_FROM_NAME: "BookStack"
+      # MAIL_DRIVER: "smtp"
+      # MAIL_HOST: "smtp.example.com"
+      # MAIL_PORT: "587"
+      # MAIL_USERNAME: "{{ CHANGEME_mail_user }}"
+      # MAIL_PASSWORD: "{{ CHANGEME_mail_password }}"
+      # MAIL_ENCRYPTION: "tls"
+
+       ##########################################################################
+      # EMAIL / MAIL DEVELOPMENT
+      ##########################################################################
+      # If you want BookStack to send emails, configure as needed.
+      # Check BookStack docs for advanced usage.
+      
+      MAIL_FROM: "no-reply@test.com"
+      MAIL_FROM_NAME: "Mamey Support (no-reply)"
+      MAIL_DRIVER: "smtp"
+      MAIL_HOST: "localhost"
+      MAIL_PORT: "1025"
+      MAIL_USERNAME: "{{ CHANGEME_mail_user }}"
+      MAIL_PASSWORD: ""
+      MAIL_ENCRYPTION: ""
+
+      ##########################################################################
+      # LDAP CONFIG (OPTIONAL)
+      ##########################################################################
+      # If you use LDAP auth, uncomment and configure values accordingly.
+      # Also set AUTH_METHOD=ldap
+
+      # AUTH_METHOD: "standard"          # or "ldap"
+      # LDAP_SERVER: "ldap://ldap.example.com"
+      # LDAP_BASE_DN: "dc=example,dc=com"
+      # LDAP_DN: "cn=admin,dc=example,dc=com"
+      # LDAP_PASS: "{{ CHANGEME_ldap_password }}"
+      # LDAP_USER_FILTER: "(&(uid=${user}))"   # Remember to escape $ in Docker
+      # LDAP_VERSION: "3"
+
+      ##########################################################################
+      # REDIS CONFIG (OPTIONAL)
+      ##########################################################################
+      # If you plan to use Redis for caching or sessions, configure these:
+      
+      # REDIS_HOST: "redis"
+      # REDIS_PASSWORD: "{{ CHANGEME_redis_password }}"
+      # REDIS_PORT: "6379"
+
+      ##########################################################################
+      # OAUTH / SOCIAL LOGIN (OPTIONAL)
+      ##########################################################################
+      # For GitHub, GitLab, Google, etc.:
+      # GITHUB_APP_ID: ""
+      # GITHUB_APP_SECRET: ""
+      # GITHUB_REDIRECT: "http://localhost:8080/login/service/github/callback"
+
+      # GITLAB_APP_ID: ""
+      # GITLAB_APP_SECRET: ""
+      # GITLAB_REDIRECT: "http://localhost:8080/login/service/gitlab/callback"
+
+      # GOOGLE_APP_ID: ""
+      # GOOGLE_APP_SECRET: ""
+      # GOOGLE_REDIRECT: "http://localhost:8080/login/service/google/callback"
+
+      ##########################################################################
+      # TRUSTED PROXIES (OPTIONAL)
+      # If BookStack is behind a reverse proxy or load balancer.
+      ##########################################################################
+      # TRUSTED_PROXIES: "192.168.0.1,192.168.0.2"
+
+      ##########################################################################
+      # DISABLE AUTO DB MIGRATION (OPTIONAL)
+      # If you want to handle migrations manually, set to true
+      ##########################################################################
+      # DISABLE_AUTO_DB_MIGRATION: "true"
+
+    volumes:
+      - bookstack_uploads:/var/www/bookstack/public/uploads
+      - bookstack_storage:/var/www/bookstack/storage/uploads
+
+    restart: unless-stopped
+
+volumes:
+  bookstack_db_data:
+  bookstack_uploads:
+  bookstack_storage:

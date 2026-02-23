@@ -1,0 +1,466 @@
+version: '3.7'
+
+services:
+  mamey-bank-gateway:
+    build:
+      context: ../../../
+      dockerfile: Mamey/ApplicationModules/Bank/Mamey.Bank.ApiGateway/src/Mamey.Bank.ApiGateway/Dockerfile
+    container_name: mamey-bank-gateway
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5000:80
+    networks:
+      - futurebdet
+      - futureheadgroup
+      
+  mamey-identity:
+    build:
+      context: ../../
+      dockerfile: /Mamey/Core/Mamey.Identity/Dockerfile
+    container_name: mamey-identity
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5010:80
+    networks:
+      - futurebdet
+      - futureheadgroup
+
+  mamey-organizations:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Identity/Dockerfile
+    container_name: mamey-organizations
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5010:80
+    networks:
+      - futurebdet
+      - futureheadgroup
+
+  mamey-people:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Identity/Dockerfile
+    container_name: mamey-people
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5010:80
+    networks:
+      - futurebdet
+      - futureheadgroup
+
+  mamey-kycs:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Identity/Dockerfile
+    container_name: mamey-kycs
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5010:80
+    networks:
+      - futurebdet
+      - futureheadgroup
+
+  mamey-employees:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Identity/Dockerfile
+    container_name: mamey-employees
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5010:80
+    networks:
+      - futurebdet
+      - futureheadgroup
+      
+  mamey-accounts:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Identity/Dockerfile
+    container_name: mamey-employees
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5010:80
+    networks:
+      - futurebdet
+      - futureheadgroup
+
+  mamey-notifications:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Notifications/Dockerfile
+    container_name: mamey-notifications
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5020:80
+    networks:
+      - futurebdet
+      - futureheadgroup
+
+  futurebdet-bank-members:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Notifications/Dockerfile
+    container_name: futurebdet-bank-members
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5020:80
+    networks:
+      - futurebdet
+      - futureheadgroup
+
+  futurebdet-bank-trusts:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Bank.Customers/Dockerfile
+    container_name: futurebdet-bank-trusts
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5040:80
+    networks:
+      - futureheadgroup
+      - futurebdet
+
+  futurebdet-bank-accounts:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Accounts/Dockerfile
+    container_name: futurebdet-bank-accounts
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5180:80
+    networks:
+      - futureheadgroup
+      - futurebdet
+  
+  futurebdet-bank-branches:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Bank.Branches/Dockerfile
+    container_name: futurebdet-bank-branches
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5050:80
+    networks:
+      - futureheadgroup
+      - futurebdet
+
+  futurebdet-bank-cards:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Bank.Branches/Dockerfile
+    container_name: futurebdet-bank-cards
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5050:80
+    networks:
+      - futureheadgroup
+      - futurebdet
+
+  # bank-currencies:
+  #   build:
+  #     context: ../../
+  #     dockerfile: Mamey.Bank.Currencies/Dockerfile
+  #   container_name: futurebdet-bank-currencies
+  #   env_file: 
+  #     - ./.env
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=docker
+  #     - vault__token=${VAULT_ROOT_TOKEN}
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5200:80
+  #   networks:
+  #     - futurebdet
+  
+
+  futurebdet-bank-deposits:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Bank.Deposits/Dockerfile
+    container_name: futurebdet-bank-deposits
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5060:80
+    networks:
+      - futureheadgroup
+      - futurebdet
+      
+  futurebdet-bank-withdraws:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Bank.Withdraws/Dockerfile
+    container_name: futurebdet-bank-withdraws
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5070:80
+    networks:
+      - futureheadgroup
+      - futurebdet
+
+  futurebdet-bank-transfers:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Bank.Transfers/Dockerfile
+    container_name: futurebdet-bank-transfers
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5090:80
+    networks:
+      - futureheadgroup
+      - futurebdet
+  futurebdet-bank-transactions:
+    build:
+      context: ../../../
+      dockerfile: Mamey.Bank.Transactions/Dockerfile
+    container_name: futurebdet-bank-transactions
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+    ports:
+      - 5100:80
+    networks:
+      - futureheadgroup
+      - futurebdet
+  # futurebdet-bank-payment-gateways:
+  #   build:
+  #     context: ../../../
+  #     dockerfile: Mamey.Bank.PaymentGateways/Dockerfile
+  #   container_name: futurebdet-bank-payment-gateways
+  #   env_file: 
+  #     - ./.env
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=docker
+  #     - vault__token=${VAULT_ROOT_TOKEN}
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5080:80
+  #   networks:
+  #     - futurebdet
+
+  
+
+  
+
+  # bank-loans:
+  #   build:
+  #     context: ../../../
+  #     dockerfile: Mamey.Bank.Loans/Dockerfile
+  #   container_name: mamey-bank-loans
+  #   env_file: 
+  #     - ./.env
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=docker
+  #     - vault__token=${VAULT_ROOT_TOKEN}
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5110:80
+  #   networks:
+  #     - futurebdet
+
+  # bank-fdr:
+  #   build:
+  #     context: ../../../
+  #     dockerfile: Mamey.Bank.FixedDepositReceipts/Dockerfile
+  #   container_name: mamey-bank-fdr
+  #   env_file: 
+  #     - ./.env
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=docker
+  #     - vault__token=${VAULT_ROOT_TOKEN}
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5120:80
+  #   networks:
+  #     - futurebdet
+
+  # bank-gift-cards:
+  #   build:
+  #     context: ../../../
+  #     dockerfile: Mamey.Bank.GiftCards/Dockerfile
+  #   container_name: mamey-bank-gift-cards
+  #   env_file: 
+  #     - ./.env
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=docker
+  #     - vault__token=${VAULT_ROOT_TOKEN}
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5130:80
+  #   networks:
+  #     - futurebdet
+
+  # feeds-aggregator:
+  #   build:
+  #     context: ../../../
+  #     dockerfile: Mamey.Feeds.Aggregator/Dockerfile
+  #   container_name: mamey-feeds-aggregator
+  #   env_file: 
+  #     - ./.env
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=docker
+  #     - vault__token=${VAULT_ROOT_TOKEN}
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5140:80
+  #   networks:
+  #     - futurebdet
+    
+
+  # feeds-blockchains:
+  #   build:
+  #     context: ../../../
+  #     dockerfile: Mamey.Feeds.Blockchains/Dockerfile
+  #   container_name: mamey-feeds-blockchains
+  #   env_file: 
+  #     - ./.env
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=docker
+  #     - vault__token=${VAULT_ROOT_TOKEN}
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5150:80
+  #   networks:
+  #     - futurebdet
+
+  # bank-support:
+  #   build:
+  #     context: ../../../
+  #     dockerfile: Mamey.Bank.Support/Dockerfile
+  #   container_name: bank-support
+  #   env_file: 
+  #     - ./.env
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=docker
+  #     - vault__token=${VAULT_ROOT_TOKEN}
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5160:80
+  #   networks:
+  #     - futurebdet
+
+  # wallets:
+  #   build:
+  #     context: ../../../
+  #     dockerfile: Mamey.Wallets/Dockerfile
+  #   container_name: mamey-wallets
+  #   env_file: 
+  #     - ./.env
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=docker
+  #     - vault__token=${VAULT_ROOT_TOKEN}
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5170:80
+  #   networks:
+  #     - futurebdet
+
+  
+      
+  # bank-teller:
+  #   build:
+  #     context: ../../../
+  #     dockerfile: Mamey.Bank.Teller/Dockerfile
+  #   container_name: mamey-bank-teller
+  #   env_file: 
+  #     - ./.env
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=docker
+  #     - vault__token=${VAULT_ROOT_TOKEN}
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5190:80
+  #   networks:
+  #     - futurebdet
+  
+
+  networks:
+    futureheadgroup:
+      name: futureheadgroup
+      external: true
+    futurebdet:
+      name: futurebdet
+      external: true

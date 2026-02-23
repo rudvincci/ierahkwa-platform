@@ -1,0 +1,115 @@
+# Mamey.Info/monitoring/prometheus/pqc-alerting-rules.yml
+# Alerting rules for MameyNode Post-Quantum Cryptography operations
+
+groups:
+  - name: pqc-critical-alerts
+    interval: 30s
+    rules:
+      # Critical: High PQC validation failure rate
+      - alert: PQCValidationFailureRateHigh
+        expr: |
+          (
+            sum(rate(pqc_validation_failures_total[5m])) 
+            / 
+            sum(rate(pqc_validations_total[5m]))
+          ) > 0.01
+        for: 5m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "PQC validation failure rate exceeds 1%"
+          description: "PQC signature validation is failing at {{ $value | humanizePercentage }} over the last 5 minutes. This may indicate key corruption, algorithm mismatch, or attack."
+          runbook_url: "https://docs.mamey.io/runbooks/pqc-validation-failures"
+
+      # Critical: PQC library unavailable
+      - alert: PQCLibraryUnavailable
+        expr: pqc_library_available == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "liboqs library is unavailable"
+          description: "The liboqs library is not accessible on {{ $labels.instance }}. PQC operations will fail."
+          runbook_url: "https://docs.mamey.io/runbooks/pqc-library-unavailable"
+
+  - name: pqc-warning-alerts
+    interval: 1m
+    rules:
+      # Warning: Signature latency degradation
+      - alert: PQCSignatureLatencyHigh
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(pqc_signature_duration_seconds_bucket[10m])) by (le, algorithm)
+          ) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+          team: performance
+        annotations:
+          summary: "PQC signature latency exceeds 100ms (p95)"
+          description: "PQC signature operations for algorithm {{ $labels.algorithm }} are taking {{ $value | humanizeDuration }} at p95. Performance may be degraded."
+          runbook_url: "https://docs.mamey.io/runbooks/pqc-performance"
+
+      # Warning: Key generation rate spike
+      - alert: PQCKeyGenerationRateHigh
+        expr: sum(rate(pqc_key_generation_total[5m])) > 100
+        for: 5m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "Unusual PQC key generation rate"
+          description: "Key generation rate is {{ $value | humanize }} keys/second. This may indicate a migration event or potential abuse."
+          runbook_url: "https://docs.mamey.io/runbooks/pqc-key-generation"
+
+      # Warning: Classical signature usage after warning date
+      - alert: ClassicalSignatureUsageWarning
+        expr: |
+          sum(rate(mamey_classical_signatures_total[1h])) 
+          / 
+          sum(rate(mamey_signatures_total[1h])) > 0.5
+        for: 1h
+        labels:
+          severity: warning
+          team: migration
+        annotations:
+          summary: "High classical signature usage"
+          description: "{{ $value | humanizePercentage }} of signatures are still using classical algorithms. Migration to PQC should be encouraged."
+          runbook_url: "https://docs.mamey.io/runbooks/pqc-migration"
+
+  - name: pqc-info-alerts
+    interval: 5m
+    rules:
+      # Info: Migration progress tracking
+      - alert: PQCMigrationProgress
+        expr: |
+          (
+            sum(mamey_pqc_keys_total) 
+            / 
+            (sum(mamey_pqc_keys_total) + sum(mamey_classical_keys_total))
+          ) < 0.8
+        for: 24h
+        labels:
+          severity: info
+          team: migration
+        annotations:
+          summary: "PQC key migration below 80%"
+          description: "Only {{ $value | humanizePercentage }} of keys are PQC-enabled. Consider accelerating migration efforts."
+
+      # Info: Hybrid mode ratio
+      - alert: HybridModeRatioLow
+        expr: |
+          sum(rate(pqc_hybrid_signatures_total[1h])) 
+          / 
+          sum(rate(pqc_signatures_total[1h])) < 0.5
+        for: 6h
+        labels:
+          severity: info
+          team: security
+        annotations:
+          summary: "Hybrid signature ratio below target"
+          description: "Hybrid signatures are {{ $value | humanizePercentage }} of PQC signatures. Target is 50%+ for defense-in-depth."
+
+

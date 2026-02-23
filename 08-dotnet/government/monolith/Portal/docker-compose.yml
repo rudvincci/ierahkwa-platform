@@ -1,0 +1,25 @@
+services:
+  portal:
+    build:
+      context: .
+      dockerfile: src/Mamey.Portal.Web/Dockerfile
+      args:
+        NUGET_FEED: http://host.docker.internal:4000/v3/index.json
+    container_name: mamey-portal-web
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__PortalDb: Host=mamey-portal-postgres;Port=5432;Database=mamey_portal_dev;Username=postgres;Password=postgres
+      minio__Endpoint: mamey-portal-minio:9000
+      minio__AccessKey: minioadmin
+      minio__SecretKey: minioadmin
+      minio__UseSSL: "false"
+      Storage__LocalRootPath: /app/App_Data/storage
+    ports:
+      - "5180:8080"
+    networks:
+      - portal_net
+
+networks:
+  portal_net:
+    name: mamey-portal-net

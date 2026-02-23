@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Progress.Api.Protos";
+
+package Pupitre.Progress;
+
+// gRPC service for LearningProgress operations
+service LearningProgressService {
+    // Get a single LearningProgress by ID
+    rpc GetLearningProgress (GetLearningProgressRequest) returns (LearningProgressResponse) {};
+    
+    // List all LearningProgresss with pagination
+    rpc ListLearningProgresss (ListLearningProgresssRequest) returns (ListLearningProgresssResponse) {};
+    
+    // Stream LearningProgress updates
+    rpc StreamLearningProgressUpdates (StreamLearningProgressUpdatesRequest) returns (stream LearningProgressResponse) {};
+}
+
+message GetLearningProgressRequest {
+    string id = 1;
+}
+
+message ListLearningProgresssRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListLearningProgresssResponse {
+    repeated LearningProgressResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message LearningProgressResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamLearningProgressUpdatesRequest {
+    string filter = 1;
+}

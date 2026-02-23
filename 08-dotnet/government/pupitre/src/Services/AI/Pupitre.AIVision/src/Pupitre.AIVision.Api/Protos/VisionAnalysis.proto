@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.AIVision.Api.Protos";
+
+package Pupitre.AIVision;
+
+// gRPC service for VisionAnalysis operations
+service VisionAnalysisService {
+    // Get a single VisionAnalysis by ID
+    rpc GetVisionAnalysis (GetVisionAnalysisRequest) returns (VisionAnalysisResponse) {};
+    
+    // List all VisionAnalysiss with pagination
+    rpc ListVisionAnalysiss (ListVisionAnalysissRequest) returns (ListVisionAnalysissResponse) {};
+    
+    // Stream VisionAnalysis updates
+    rpc StreamVisionAnalysisUpdates (StreamVisionAnalysisUpdatesRequest) returns (stream VisionAnalysisResponse) {};
+}
+
+message GetVisionAnalysisRequest {
+    string id = 1;
+}
+
+message ListVisionAnalysissRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListVisionAnalysissResponse {
+    repeated VisionAnalysisResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message VisionAnalysisResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamVisionAnalysisUpdatesRequest {
+    string filter = 1;
+}

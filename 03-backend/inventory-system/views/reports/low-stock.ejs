@@ -1,0 +1,58 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger"><i class="bi bi-exclamation-triangle"></i> Low Stock Alert</h2>
+        <div>
+            <a href="/reports/export/excel/stock" class="btn btn-success"><i class="bi bi-file-earmark-excel"></i> Export</a>
+            <a href="/reports/export/pdf/low-stock" class="btn btn-danger"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+        </div>
+    </div>
+
+    <div class="alert alert-danger">
+        <strong><%= products.length %></strong> products are below minimum stock level and need to be reordered.
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-hover" id="lowStockTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Code</th>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Supplier</th>
+                        <th class="text-center">Current</th>
+                        <th class="text-center">Minimum</th>
+                        <th class="text-center text-danger">Deficit</th>
+                        <th class="text-end">Purchase $</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% products.forEach(p => { %>
+                    <tr>
+                        <td><strong><%= p.code %></strong></td>
+                        <td><a href="/products/<%= p.id %>"><%= p.name %></a></td>
+                        <td><%= p.category_name || '-' %></td>
+                        <td><%= p.supplier_name || '-' %></td>
+                        <td class="text-center text-danger fw-bold"><%= p.current_stock %></td>
+                        <td class="text-center"><%= p.min_stock %></td>
+                        <td class="text-center"><span class="badge bg-danger"><%= p.deficit %></span></td>
+                        <td class="text-end">$<%= p.purchase_price.toFixed(2) %></td>
+                        <td class="text-center">
+                            <a href="/movements/stock-in?product=<%= p.id %>" class="btn btn-sm btn-success">
+                                <i class="bi bi-plus"></i> Restock
+                            </a>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>$(document).ready(function() { $('#lowStockTable').DataTable({ order: [[6, 'desc']] }); });</script>
+
+<%- include('../partials/footer') %>

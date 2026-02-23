@@ -1,0 +1,327 @@
+//! {{project_name}} — Fungible Token Contract
+//!
+//! ERC-20-like fungible token for MameyFutureNode with mint, burn, transfer,
+//! and allowance support. Built on mamey-contracts-base and mamey-contracts-shared.
+
+use wasm_bindgen::prelude::*;
+use mamey_contracts_shared::{host_functions, storage, math, validation};
+
+// ─── Storage Keys ───────────────────────────────────────────────────────────
+
+const KEY_NAME: &str = "token:name";
+const KEY_SYMBOL: &str = "token:symbol";
+const KEY_DECIMALS: &str = "token:decimals";
+const KEY_TOTAL_SUPPLY: &str = "token:total_supply";
+const KEY_OWNER: &str = "token:owner";
+const KEY_MINTER: &str = "token:minter";
+const KEY_PAUSED: &str = "token:paused";
+const KEY_INITIALIZED: &str = "token:initialized";
+
+fn balance_key(account: &str) -> String {
+    format!("bal:{}", account)
+}
+
+fn allowance_key(owner: &str, spender: &str) -> String {
+    format!("allow:{}:{}", owner, spender)
+}
+
+// ─── Initialization ─────────────────────────────────────────────────────────
+
+/// Initialize the token contract.
+#[wasm_bindgen]
+pub fn init(name: String, symbol: String, decimals: u8, initial_supply: u64) -> Result<String, String> {
+    if storage::get_bool(KEY_INITIALIZED) {
+        return Err("Token already initialized".to_string());
+    }
+
+    validation::validate_string_length(&name, 1, 100)
+        .map_err(|e| e.to_string())?;
+    validation::validate_string_length(&symbol, 1, 20)
+        .map_err(|e| e.to_string())?;
+    validation::validate_decimals(decimals)
+        .map_err(|e| e.to_string())?;
+
+    let caller = host_functions::get_caller();
+
+    storage::set_string(KEY_NAME, &name).map_err(|e| e.to_string())?;
+    storage::set_string(KEY_SYMBOL, &symbol).map_err(|e| e.to_string())?;
+    storage::set_u8(KEY_DECIMALS, decimals).map_err(|e| e.to_string())?;
+    storage::set_u64(KEY_TOTAL_SUPPLY, initial_supply).map_err(|e| e.to_string())?;
+    storage::set_string(KEY_OWNER, &caller).map_err(|e| e.to_string())?;
+    storage::set_string(KEY_MINTER, &caller).map_err(|e| e.to_string())?;
+    storage::set_bool(KEY_PAUSED, false).map_err(|e| e.to_string())?;
+    storage::set_bool(KEY_INITIALIZED, true).map_err(|e| e.to_string())?;
+
+    // Credit initial supply to the deployer
+    if initial_supply > 0 {
+        storage::set_u64(&balance_key(&caller), initial_supply)
+            .map_err(|e| e.to_string())?;
+    }
+
+    host_functions::emit_event("TokenInitialized", &serde_json::json!({
+        "name": name,
+        "symbol": symbol,
+        "decimals": decimals,
+        "initial_supply": initial_supply,
+        "owner": caller,
+    }));
+
+    Ok("Token initialized successfully".to_string())
+}
+
+// ─── Query Functions ────────────────────────────────────────────────────────
+
+#[wasm_bindgen]
+pub fn name() -> String {
+    storage::get_string(KEY_NAME).unwrap_or_default()
+}
+
+#[wasm_bindgen]
+pub fn symbol() -> String {
+    storage::get_string(KEY_SYMBOL).unwrap_or_default()
+}
+
+#[wasm_bindgen]
+pub fn decimals() -> u8 {
+    storage::get_u8(KEY_DECIMALS).unwrap_or(18)
+}
+
+#[wasm_bindgen]
+pub fn total_supply() -> u64 {
+    storage::get_u64(KEY_TOTAL_SUPPLY).unwrap_or(0)
+}
+
+#[wasm_bindgen]
+pub fn balance_of(account: String) -> u64 {
+    storage::get_u64(&balance_key(&account)).unwrap_or(0)
+}
+
+#[wasm_bindgen]
+pub fn allowance(owner: String, spender: String) -> u64 {
+    storage::get_u64(&allowance_key(&owner, &spender)).unwrap_or(0)
+}
+
+// ─── Transfer ───────────────────────────────────────────────────────────────
+
+/// Transfer tokens from the caller to `to`.
+#[wasm_bindgen]
+pub fn transfer(to: String, amount: u64) -> Result<String, String> {
+    require_not_paused()?;
+    validation::validate_address(&to).map_err(|e| e.to_string())?;
+    validation::validate_amount(amount).map_err(|e| e.to_string())?;
+
+    let from = host_functions::get_caller();
+    transfer_internal(&from, &to, amount)?;
+
+    host_functions::emit_event("Transfer", &serde_json::json!({
+        "from": from,
+        "to": to,
+        "amount": amount,
+    }));
+
+    Ok("Transfer successful".to_string())
+}
+
+/// Transfer tokens on behalf of `from` (requires allowance).
+#[wasm_bindgen]
+pub fn transfer_from(from: String, to: String, amount: u64) -> Result<String, String> {
+    require_not_paused()?;
+    validation::validate_address(&from).map_err(|e| e.to_string())?;
+    validation::validate_address(&to).map_err(|e| e.to_string())?;
+    validation::validate_amount(amount).map_err(|e| e.to_string())?;
+
+    let spender = host_functions::get_caller();
+    let current_allowance = storage::get_u64(&allowance_key(&from, &spender)).unwrap_or(0);
+    if current_allowance < amount {
+        return Err("Insufficient allowance".to_string());
+    }
+
+    transfer_internal(&from, &to, amount)?;
+
+    let new_allowance = math::safe_sub(current_allowance, amount)
+        .map_err(|e| e.to_string())?;
+    storage::set_u64(&allowance_key(&from, &spender), new_allowance)
+        .map_err(|e| e.to_string())?;
+
+    host_functions::emit_event("Transfer", &serde_json::json!({
+        "from": from,
+        "to": to,
+        "amount": amount,
+        "spender": spender,
+    }));
+
+    Ok("Transfer from successful".to_string())
+}
+
+/// Approve `spender` to spend up to `amount` tokens on behalf of caller.
+#[wasm_bindgen]
+pub fn approve(spender: String, amount: u64) -> Result<String, String> {
+    require_not_paused()?;
+    validation::validate_address(&spender).map_err(|e| e.to_string())?;
+
+    let owner = host_functions::get_caller();
+    validation::validate_different_addresses(&owner, &spender)
+        .map_err(|e| e.to_string())?;
+
+    storage::set_u64(&allowance_key(&owner, &spender), amount)
+        .map_err(|e| e.to_string())?;
+
+    host_functions::emit_event("Approval", &serde_json::json!({
+        "owner": owner,
+        "spender": spender,
+        "amount": amount,
+    }));
+
+    Ok("Approval successful".to_string())
+}
+
+// ─── Mint / Burn ────────────────────────────────────────────────────────────
+
+/// Mint new tokens (minter only).
+#[wasm_bindgen]
+pub fn mint(to: String, amount: u64) -> Result<String, String> {
+    require_not_paused()?;
+    require_minter()?;
+    validation::validate_address(&to).map_err(|e| e.to_string())?;
+    validation::validate_amount(amount).map_err(|e| e.to_string())?;
+
+    let balance = storage::get_u64(&balance_key(&to)).unwrap_or(0);
+    let new_balance = math::safe_add(balance, amount).map_err(|e| e.to_string())?;
+    storage::set_u64(&balance_key(&to), new_balance).map_err(|e| e.to_string())?;
+
+    let supply = total_supply();
+    let new_supply = math::safe_add(supply, amount).map_err(|e| e.to_string())?;
+    storage::set_u64(KEY_TOTAL_SUPPLY, new_supply).map_err(|e| e.to_string())?;
+
+    host_functions::emit_event("Mint", &serde_json::json!({
+        "to": to,
+        "amount": amount,
+    }));
+
+    Ok("Mint successful".to_string())
+}
+
+/// Burn tokens from caller's balance.
+#[wasm_bindgen]
+pub fn burn(amount: u64) -> Result<String, String> {
+    require_not_paused()?;
+    validation::validate_amount(amount).map_err(|e| e.to_string())?;
+
+    let from = host_functions::get_caller();
+    let balance = storage::get_u64(&balance_key(&from)).unwrap_or(0);
+    if balance < amount {
+        return Err("Insufficient balance to burn".to_string());
+    }
+
+    let new_balance = math::safe_sub(balance, amount).map_err(|e| e.to_string())?;
+    storage::set_u64(&balance_key(&from), new_balance).map_err(|e| e.to_string())?;
+
+    let supply = total_supply();
+    let new_supply = math::safe_sub(supply, amount).map_err(|e| e.to_string())?;
+    storage::set_u64(KEY_TOTAL_SUPPLY, new_supply).map_err(|e| e.to_string())?;
+
+    host_functions::emit_event("Burn", &serde_json::json!({
+        "from": from,
+        "amount": amount,
+    }));
+
+    Ok("Burn successful".to_string())
+}
+
+// ─── Governance ─────────────────────────────────────────────────────────────
+
+/// Pause token transfers (owner only).
+#[wasm_bindgen]
+pub fn pause() -> Result<String, String> {
+    require_owner()?;
+    storage::set_bool(KEY_PAUSED, true).map_err(|e| e.to_string())?;
+    host_functions::emit_event("Paused", &serde_json::json!({}));
+    Ok("Token paused".to_string())
+}
+
+/// Unpause token transfers (owner only).
+#[wasm_bindgen]
+pub fn unpause() -> Result<String, String> {
+    require_owner()?;
+    storage::set_bool(KEY_PAUSED, false).map_err(|e| e.to_string())?;
+    host_functions::emit_event("Unpaused", &serde_json::json!({}));
+    Ok("Token unpaused".to_string())
+}
+
+/// Set the minter address (owner only).
+#[wasm_bindgen]
+pub fn set_minter(minter: String) -> Result<String, String> {
+    require_owner()?;
+    validation::validate_address(&minter).map_err(|e| e.to_string())?;
+    storage::set_string(KEY_MINTER, &minter).map_err(|e| e.to_string())?;
+    host_functions::emit_event("MinterChanged", &serde_json::json!({ "minter": minter }));
+    Ok("Minter updated".to_string())
+}
+
+// ─── Internal Helpers ───────────────────────────────────────────────────────
+
+fn transfer_internal(from: &str, to: &str, amount: u64) -> Result<(), String> {
+    let from_balance = storage::get_u64(&balance_key(from)).unwrap_or(0);
+    if from_balance < amount {
+        return Err("Insufficient balance".to_string());
+    }
+
+    let to_balance = storage::get_u64(&balance_key(to)).unwrap_or(0);
+    let new_from = math::safe_sub(from_balance, amount).map_err(|e| e.to_string())?;
+    let new_to = math::safe_add(to_balance, amount).map_err(|e| e.to_string())?;
+
+    storage::set_u64(&balance_key(from), new_from).map_err(|e| e.to_string())?;
+    storage::set_u64(&balance_key(to), new_to).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+fn require_not_paused() -> Result<(), String> {
+    if storage::get_bool(KEY_PAUSED) {
+        return Err("Contract is paused".to_string());
+    }
+    Ok(())
+}
+
+fn require_owner() -> Result<(), String> {
+    let caller = host_functions::get_caller();
+    let owner = storage::get_string(KEY_OWNER)
+        .ok_or_else(|| "No owner set".to_string())?;
+    if caller != owner {
+        return Err("Unauthorized: caller is not the owner".to_string());
+    }
+    Ok(())
+}
+
+fn require_minter() -> Result<(), String> {
+    let caller = host_functions::get_caller();
+    let minter = storage::get_string(KEY_MINTER)
+        .ok_or_else(|| "No minter set".to_string())?;
+    if caller != minter {
+        return Err("Unauthorized: caller is not the minter".to_string());
+    }
+    Ok(())
+}
+
+// ─── Tests ──────────────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_init_token() {
+        let result = init("Test Token".into(), "TST".into(), 18, 1_000_000);
+        assert!(result.is_ok());
+        assert_eq!(name(), "Test Token");
+        assert_eq!(symbol(), "TST");
+        assert_eq!(decimals(), 18);
+        assert_eq!(total_supply(), 1_000_000);
+    }
+
+    #[test]
+    fn test_double_init_rejected() {
+        let _ = init("Token".into(), "TKN".into(), 18, 0);
+        let result = init("Token2".into(), "TK2".into(), 18, 0);
+        assert!(result.is_err());
+    }
+}

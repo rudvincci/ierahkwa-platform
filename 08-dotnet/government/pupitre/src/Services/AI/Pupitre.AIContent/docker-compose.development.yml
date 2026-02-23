@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  aicontent-service:
+    build:
+      context: ../
+      dockerfile: Pupitre.AIContent/Dockerfile
+      args:
+        FEED_URL: ${FEED_URL}
+        FEED_PAT: ${FEED_PAT}
+        FEED_NAME: ${FEED_NAME}
+        FEED_USERNAME: ${FEED_USERNAME}
+    image: aicontent-service
+    container_name: aicontent-service
+    env_file: 
+      - ./.env-development
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_HTTPS_PORT=60103
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=${Certificates__Default__Path}
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${Certificates__Default__Password}
+    restart: unless-stopped
+    ports:
+      - 60103:443
+      - 5001:80
+    networks:
+      - mamey
+    volumes:
+      - ~/.aspnet/https:/https:ro
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+
+networks:
+  mamey:
+    name: mamey
+    external: true

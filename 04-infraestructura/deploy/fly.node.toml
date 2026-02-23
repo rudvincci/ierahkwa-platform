@@ -1,0 +1,26 @@
+# Fly.io - Node Mamey (server.js)
+# Uso: desde la raíz del repo:  fly launch -c deploy/fly.node.toml
+#      fly deploy -c deploy/fly.node.toml
+
+app = "ierahkwa-node"
+
+[build]
+  context = "RuddieSolution/node"
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "8545"
+
+[http_service]
+  internal_port = 8545
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

@@ -1,0 +1,73 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_theme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0" Dense="true">
+        <MudLink Href="/" Typo="Typo.h6" Color="Color.Inherit" Underline="Underline.None">
+            <MudIcon Icon="@Icons.Material.Filled.Public" Class="mr-2" />
+            Mamey Government
+        </MudLink>
+        <MudSpacer />
+        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+            <MudButton Href="/about-us" Color="Color.Inherit">About</MudButton>
+            <MudButton Href="/library" Color="Color.Inherit">Library</MudButton>
+            <MudButton Href="/news" Color="Color.Inherit">News</MudButton>
+            <MudButton Href="/become-a-citizen" Color="Color.Primary" Variant="Variant.Filled">Become a Citizen</MudButton>
+            <MudButton Href="/auth/login" Color="Color.Inherit" StartIcon="@Icons.Material.Filled.Login">Login</MudButton>
+        </MudStack>
+    </MudAppBar>
+
+    <MudMainContent style="margin-top:64px;">
+        @Body
+    </MudMainContent>
+
+    <MudAppBar Elevation="0" Fixed="false" Dense="true" Class="mt-auto" Style="background: #263238;">
+        <MudContainer MaxWidth="MaxWidth.Large">
+            <MudGrid>
+                <MudItem xs="12" md="4">
+                    <MudText Typo="Typo.subtitle2" Color="Color.Inherit">Mamey Government Portal</MudText>
+                    <MudText Typo="Typo.caption" Style="color: #90A4AE;">
+                        Official portal for citizenship services and government information.
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudText Typo="Typo.subtitle2" Color="Color.Inherit">Quick Links</MudText>
+                    <MudStack Row="false" Spacing="0">
+                        <MudLink Href="/about-us" Typo="Typo.caption" Style="color: #90A4AE;">About Us</MudLink>
+                        <MudLink Href="/our-history" Typo="Typo.caption" Style="color: #90A4AE;">Our History</MudLink>
+                        <MudLink Href="/become-a-citizen" Typo="Typo.caption" Style="color: #90A4AE;">Become a Citizen</MudLink>
+                        <MudLink Href="/public/validate-citizen" Typo="Typo.caption" Style="color: #90A4AE;">Validate Citizen</MudLink>
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudText Typo="Typo.subtitle2" Color="Color.Inherit">Portals</MudText>
+                    <MudStack Row="false" Spacing="0">
+                        <MudLink Href="/citizen/dashboard" Typo="Typo.caption" Style="color: #90A4AE;">Citizen Portal</MudLink>
+                        <MudLink Href="/gov/dashboard" Typo="Typo.caption" Style="color: #90A4AE;">Government Portal</MudLink>
+                    </MudStack>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </MudAppBar>
+</MudLayout>
+
+@code {
+    private MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight
+        {
+            Primary = "#1565C0",
+            Secondary = "#00897B",
+            AppbarBackground = "#FFFFFF",
+            AppbarText = "#424242",
+            Background = "#FFFFFF",
+            Surface = "#FFFFFF",
+            TextPrimary = "#212121",
+            TextSecondary = "#757575"
+        }
+    };
+}

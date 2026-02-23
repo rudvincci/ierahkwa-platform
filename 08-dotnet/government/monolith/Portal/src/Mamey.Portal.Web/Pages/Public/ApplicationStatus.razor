@@ -1,0 +1,421 @@
+@page "/application-status"
+@page "/my-application"
+@page "/my-application/{ApplicationNumber}"
+@using Mamey.Portal.Web.ViewModels.Citizenship
+@using Mamey.Portal.Citizenship.Application.Models
+@using Microsoft.AspNetCore.Components.Authorization
+@inject ApplicationStatusViewModel Vm
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+@* @attribute [Authorize] *@
+
+<PageTitle>Application Status</PageTitle>
+
+<h1>Citizenship Application Status</h1>
+
+<MudPaper Class="pa-4" MaxWidth="800px">
+    <MudText Typo="Typo.body1" Class="mb-3">
+        Track the status of your citizenship application. Enter your application number below or view your most recent application.
+    </MudText>
+
+    @if (!string.IsNullOrWhiteSpace(RedirectedMessage))
+    {
+        <MudAlert Severity="Severity.Info" Class="mb-4">
+            <MudText Typo="Typo.body2">@RedirectedMessage</MudText>
+        </MudAlert>
+    }
+
+    @if (string.IsNullOrWhiteSpace(ApplicationNumber))
+    {
+        <MudStack Spacing="2">
+            <MudTextField @bind-Value="Vm.ApplicationNumber"
+                          Label="Application Number"
+                          Placeholder="e.g. APP-2024-001234"
+                          Variant="Variant.Outlined"
+                          Disabled="@Vm.IsLoading" />
+
+            <MudStack Row="true" Spacing="2">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Disabled="@(!Vm.CanLookup || Vm.IsLoading)"
+                           OnClick="RunLookup">
+                    @if (Vm.IsLoading)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Loading...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Lookup Application</MudText>
+                    }
+                </MudButton>
+
+                <MudButton Variant="Variant.Text" 
+                           Color="Color.Secondary"
+                           OnClick="LoadByEmail"
+                           Disabled="@Vm.IsLoading">
+                    Load My Application
+                </MudButton>
+            </MudStack>
+
+            @if (!string.IsNullOrWhiteSpace(Vm.Message))
+            {
+                <MudAlert Severity="@(Vm.Status is not null ? Severity.Success : Severity.Warning)">
+                    @Vm.Message
+                </MudAlert>
+            }
+        </MudStack>
+    }
+
+    @if (Vm.Status is not null)
+    {
+        <MudPaper Class="pa-3 mt-4" Outlined="true">
+            <MudStack Spacing="3">
+                <div>
+                    <MudText Typo="Typo.h6">Application Details</MudText>
+                    <MudDivider Class="my-2" />
+                </div>
+
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudText Typo="Typo.body2"><strong>Application Number:</strong></MudText>
+                        <MudText Typo="Typo.body1">@Vm.Status.ApplicationNumber</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudText Typo="Typo.body2"><strong>Status:</strong></MudText>
+                        <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(Vm.Status.Status)">
+                            @Vm.Status.Status
+                        </MudChip>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudText Typo="Typo.body2"><strong>Name:</strong></MudText>
+                        <MudText Typo="Typo.body1">@Vm.Status.FirstName @Vm.Status.LastName</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudText Typo="Typo.body2"><strong>Date of Birth:</strong></MudText>
+                        <MudText Typo="Typo.body1">@Vm.Status.DateOfBirth.ToString("yyyy-MM-dd")</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudText Typo="Typo.body2"><strong>Submitted:</strong></MudText>
+                        <MudText Typo="Typo.body1">@Vm.Status.CreatedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm")</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudText Typo="Typo.body2"><strong>Last Updated:</strong></MudText>
+                        <MudText Typo="Typo.body1">@Vm.Status.UpdatedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm")</MudText>
+                    </MudItem>
+                </MudGrid>
+
+                @if (Vm.Status.Uploads.Count > 0)
+                {
+                    <div>
+                        <MudText Typo="Typo.h6" Class="mt-4">Uploaded Documents</MudText>
+                        <MudDivider Class="my-2" />
+                        <MudSimpleTable>
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>File Name</th>
+                                    <th>Size</th>
+                                    <th>Uploaded</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var upload in Vm.Status.Uploads)
+                                {
+                                    <tr>
+                                        <td>@upload.Kind</td>
+                                        <td>@upload.FileName</td>
+                                        <td>@FormatFileSize(upload.Size)</td>
+                                        <td>@upload.UploadedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </MudSimpleTable>
+                    </div>
+                }
+
+                @if (Vm.Status.IssuedDocuments.Count > 0)
+                {
+                    <div>
+                        <MudText Typo="Typo.h6" Class="mt-4">Issued Documents</MudText>
+                        <MudDivider Class="my-2" />
+                        <MudSimpleTable>
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Document Number</th>
+                                    <th>Issued</th>
+                                    <th>Expires</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var doc in Vm.Status.IssuedDocuments)
+                                {
+                                    <tr>
+                                        <td>@doc.Kind</td>
+                                        <td>@(doc.DocumentNumber ?? "-")</td>
+                                        <td>@doc.CreatedAt.LocalDateTime.ToString("yyyy-MM-dd")</td>
+                                        <td>@(doc.ExpiresAt?.LocalDateTime.ToString("yyyy-MM-dd") ?? "N/A")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </MudSimpleTable>
+                    </div>
+                }
+
+                @if (Vm.Status.IntakeReview is not null)
+                {
+                    <div>
+                        <MudText Typo="Typo.h6" Class="mt-4">Intake Review (CIT-001-F)</MudText>
+                        <MudDivider Class="my-2" />
+                        <MudPaper Class="pa-3" Outlined="true">
+                            <MudStack Spacing="2">
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6">
+                                        <MudText Typo="Typo.body2"><strong>Reviewed By:</strong></MudText>
+                                        <MudText Typo="Typo.body1">@Vm.Status.IntakeReview.ReviewerName</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudText Typo="Typo.body2"><strong>Review Date:</strong></MudText>
+                                        <MudText Typo="Typo.body1">@Vm.Status.IntakeReview.ReviewDate.ToString("yyyy-MM-dd")</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudText Typo="Typo.body2"><strong>Recommendation:</strong></MudText>
+                                        <MudChip T="string" Size="Size.Small" Color="@GetRecommendationColor(Vm.Status.IntakeReview.Recommendation)">
+                                            @Vm.Status.IntakeReview.Recommendation
+                                        </MudChip>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudText Typo="Typo.body2"><strong>Application Complete:</strong></MudText>
+                                        <MudText Typo="Typo.body1">@(Vm.Status.IntakeReview.ApplicationComplete ? "Yes" : "No")</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudText Typo="Typo.body2"><strong>All Documents Received:</strong></MudText>
+                                        <MudText Typo="Typo.body1">@(Vm.Status.IntakeReview.AllDocumentsReceived ? "Yes" : "No")</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6">
+                                        <MudText Typo="Typo.body2"><strong>Identity Verified:</strong></MudText>
+                                        <MudText Typo="Typo.body1">@(Vm.Status.IntakeReview.IdentityVerified ? "Yes" : "No")</MudText>
+                                    </MudItem>
+                                </MudGrid>
+                                @if (!string.IsNullOrWhiteSpace(Vm.Status.IntakeReview.RecommendationReason))
+                                {
+                                    <MudDivider Class="my-2" />
+                                    <MudText Typo="Typo.body2"><strong>Recommendation Reason:</strong></MudText>
+                                    <MudText Typo="Typo.body1">@Vm.Status.IntakeReview.RecommendationReason</MudText>
+                                }
+                            </MudStack>
+                        </MudPaper>
+                    </div>
+                }
+
+                @if (Vm.Status.Timeline.Count > 0)
+                {
+                    <div>
+                        <MudText Typo="Typo.h6" Class="mt-4">Application Timeline</MudText>
+                        <MudDivider Class="my-2" />
+                        <MudTimeline>
+                            @foreach (var entry in Vm.Status.Timeline.OrderBy(t => t.Timestamp))
+                            {
+                                <MudTimelineItem Size="Size.Small">
+                                    <MudText Typo="Typo.body2"><strong>@entry.Event</strong></MudText>
+                                    <MudText Typo="Typo.body2">@entry.Description</MudText>
+                                    <MudText Typo="Typo.caption" Class="mt-1">@entry.Timestamp.LocalDateTime.ToString("yyyy-MM-dd HH:mm")</MudText>
+                                </MudTimelineItem>
+                            }
+                        </MudTimeline>
+                    </div>
+                }
+
+                @if (Vm.Status.Status == "Rejected")
+                {
+                    <MudAlert Severity="Severity.Error" Class="mt-4">
+                        <MudStack Spacing="2">
+                            <MudText Typo="Typo.h6">Application Rejected</MudText>
+                            @if (!string.IsNullOrWhiteSpace(Vm.Status.RejectionReason))
+                            {
+                                <MudText Typo="Typo.body2">
+                                    <strong>Reason:</strong> @Vm.Status.RejectionReason
+                                </MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body2">
+                                    Your application has been rejected. Please contact support for more information.
+                                </MudText>
+                            }
+                            <MudText Typo="Typo.body2" Class="mt-2">
+                                You may submit a new application after addressing the issues mentioned above.
+                            </MudText>
+                            <MudButton Variant="Variant.Outlined" 
+                                       Color="Color.Primary" 
+                                       Href="/become-a-citizen" 
+                                       Class="mt-2">
+                                Submit New Application
+                            </MudButton>
+                        </MudStack>
+                    </MudAlert>
+                }
+                else if (!IsApprovedStatus(Vm.Status.Status))
+                {
+                    <MudAlert Severity="Severity.Info" Class="mt-4">
+                        <MudText Typo="Typo.body2">
+                            <strong>Your application is currently being processed.</strong> Once your application is approved, you will be able to access the citizen portal to view your documents and manage your profile.
+                        </MudText>
+                        <MudText Typo="Typo.body2" Class="mt-2">
+                            Current status: <strong>@Vm.Status.Status</strong>
+                        </MudText>
+                    </MudAlert>
+                }
+                else
+                {
+                    <MudAlert Severity="Severity.Success" Class="mt-4">
+                        <MudText Typo="Typo.body2">
+                            <strong>Your application has been approved!</strong> You can now access the citizen portal.
+                        </MudText>
+                        <MudButton Variant="Variant.Filled" 
+                                   Color="Color.Primary" 
+                                   Href="/citizen/dashboard" 
+                                   Class="mt-2">
+                            Go to Citizen Portal
+                        </MudButton>
+                    </MudAlert>
+                }
+            </MudStack>
+        </MudPaper>
+    }
+</MudPaper>
+
+@code
+{
+    [Parameter]
+    public string? ApplicationNumber { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? Redirected { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? Email { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? Error { get; set; }
+
+    private string? RedirectedMessage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Handle redirect from citizen portal
+        if (Redirected == "true")
+        {
+            RedirectedMessage = "You need an approved citizenship application to access the citizen portal. Please check your application status below.";
+            if (!string.IsNullOrWhiteSpace(Email))
+            {
+                await Vm.LoadByEmailAsync(Email);
+            }
+        }
+        else if (!string.IsNullOrWhiteSpace(Error))
+        {
+            RedirectedMessage = Error switch
+            {
+                "no_email" => "Unable to determine your email address. Please enter your application number below.",
+                _ => "An error occurred. Please check your application status below."
+            };
+        }
+
+        // If application number is provided in route, load it automatically
+        if (!string.IsNullOrWhiteSpace(ApplicationNumber))
+        {
+            await Vm.LoadByApplicationNumberAsync(ApplicationNumber);
+        }
+        else
+        {
+            // Try to load by email if user is authenticated
+            var userEmail = await GetUserEmailAsync();
+            if (!string.IsNullOrWhiteSpace(userEmail))
+            {
+                await Vm.LoadByEmailAsync(userEmail);
+            }
+        }
+    }
+
+    private async Task<string?> GetUserEmailAsync()
+    {
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var email = authState.User.FindFirst("email")?.Value
+                     ?? authState.User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+                     ?? authState.User.FindFirst("preferred_username")?.Value;
+            return string.IsNullOrWhiteSpace(email) ? null : email.Trim().ToLowerInvariant();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private void RunLookup()
+    {
+        Vm.Lookup.Execute().Subscribe(_ => InvokeAsync(StateHasChanged));
+    }
+
+    private async Task LoadByEmail()
+    {
+        var email = await GetUserEmailAsync();
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            // Show error - user email not available
+            return;
+        }
+
+        await Vm.LoadByEmailAsync(email);
+        StateHasChanged();
+    }
+
+    private Color GetRecommendationColor(string recommendation)
+    {
+        return recommendation switch
+        {
+            "Approve" => Color.Success,
+            "Reject" => Color.Error,
+            "RequestAdditionalInfo" => Color.Warning,
+            "Pending" => Color.Info,
+            _ => Color.Default
+        };
+    }
+
+    private Color GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "Draft" => Color.Default,
+            "Submitted" => Color.Info,
+            "Validating" => Color.Info,
+            "KycPending" => Color.Warning,
+            "ReviewPending" => Color.Warning,
+            "Approved" => Color.Success,
+            "Rejected" => Color.Error,
+            "PassportIssued" => Color.Success,
+            "Completed" => Color.Success,
+            _ => Color.Default
+        };
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    private static bool IsApprovedStatus(string status)
+    {
+        return status is "Approved" or "PassportIssued" or "Completed";
+    }
+}

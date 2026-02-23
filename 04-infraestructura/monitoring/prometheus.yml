@@ -1,0 +1,214 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+#  IERAHKWA SOVEREIGN PLATFORM - PROMETHEUS CONFIGURATION
+#  Metrics Collection for 24/7 Monitoring
+# ═══════════════════════════════════════════════════════════════════════════════
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'ierahkwa-production'
+    environment: 'production'
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  ALERTING
+# ─────────────────────────────────────────────────────────────────────────────
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  RULE FILES
+# ─────────────────────────────────────────────────────────────────────────────
+rule_files:
+  - /etc/prometheus/alerts/*.yml
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  SCRAPE CONFIGS
+# ─────────────────────────────────────────────────────────────────────────────
+scrape_configs:
+  # ───────────────────────────────────────────────────────────────────────────
+  #  PROMETHEUS SELF-MONITORING
+  # ───────────────────────────────────────────────────────────────────────────
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+          environment: 'production'
+
+  # ───────────────────────────────────────────────────────────────────────────
+  #  NODE.JS APPLICATIONS
+  # ───────────────────────────────────────────────────────────────────────────
+  - job_name: 'ierahkwa-node'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['node-app:8545']
+        labels:
+          service: 'ierahkwa-node'
+          type: 'blockchain'
+          environment: 'production'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  - job_name: 'banking-bridge'
+    metrics_path: '/api/metrics'
+    static_configs:
+      - targets: ['banking-bridge:3001']
+        labels:
+          service: 'banking-bridge'
+          type: 'banking'
+          environment: 'production'
+
+  - job_name: 'platform'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['localhost:8545']
+        labels:
+          service: 'platform'
+          type: 'web'
+          environment: 'production'
+
+  # ───────────────────────────────────────────────────────────────────────────
+  #  .NET SERVICES
+  # ───────────────────────────────────────────────────────────────────────────
+  - job_name: 'dotnet-services'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'tradex:5054'
+          - 'net10:5071'
+          - 'farm-factory:5061'
+          - 'ido-factory:5097'
+          - 'rnb-cal:5055'
+          - 'spike-office:5056'
+          - 'app-builder:5060'
+          - 'project-hub:7070'
+          - 'meeting-hub:7071'
+          - 'document-flow:5080'
+          - 'esignature:5081'
+          - 'citizen-crm:5090'
+          - 'tax-authority:5091'
+          - 'voting-system:5092'
+          - 'service-desk:5093'
+        labels:
+          type: 'dotnet'
+          environment: 'production'
+
+  # ───────────────────────────────────────────────────────────────────────────
+  #  MULTI-LANGUAGE SERVICES
+  # ───────────────────────────────────────────────────────────────────────────
+  - job_name: 'rust-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['rust-service:8590']
+        labels:
+          service: 'rust-swift'
+          type: 'financial'
+          environment: 'production'
+
+  - job_name: 'go-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['go-service:8591']
+        labels:
+          service: 'go-queue'
+          type: 'infrastructure'
+          environment: 'production'
+
+  - job_name: 'python-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['python-service:8592']
+        labels:
+          service: 'python-ml'
+          type: 'ai'
+          environment: 'production'
+
+  # ───────────────────────────────────────────────────────────────────────────
+  #  DATABASES
+  # ───────────────────────────────────────────────────────────────────────────
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgresql'
+          type: 'database'
+          environment: 'production'
+
+  - job_name: 'mongodb'
+    static_configs:
+      - targets: ['mongodb-exporter:9216']
+        labels:
+          service: 'mongodb'
+          type: 'database'
+          environment: 'production'
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
+          type: 'cache'
+          environment: 'production'
+
+  # ───────────────────────────────────────────────────────────────────────────
+  #  INFRASTRUCTURE
+  # ───────────────────────────────────────────────────────────────────────────
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+        labels:
+          service: 'nginx'
+          type: 'proxy'
+          environment: 'production'
+
+  - job_name: 'rabbitmq'
+    static_configs:
+      - targets: ['rabbitmq:15692']
+        labels:
+          service: 'rabbitmq'
+          type: 'queue'
+          environment: 'production'
+
+  - job_name: 'elasticsearch'
+    static_configs:
+      - targets: ['elasticsearch:9200']
+        labels:
+          service: 'elasticsearch'
+          type: 'search'
+          environment: 'production'
+    metrics_path: '/_prometheus/metrics'
+
+  # ───────────────────────────────────────────────────────────────────────────
+  #  NODE EXPORTER (System Metrics)
+  # ───────────────────────────────────────────────────────────────────────────
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node-exporter'
+          type: 'system'
+          environment: 'production'
+
+  # ───────────────────────────────────────────────────────────────────────────
+  #  BLACKBOX EXPORTER (HTTP/TCP Probes)
+  # ───────────────────────────────────────────────────────────────────────────
+  - job_name: 'blackbox-http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - https://ierahkwa.gov/health
+          - https://api.ierahkwa.gov/health
+          - https://bdet.ierahkwa.gov/health
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115

@@ -1,0 +1,307 @@
+syntax = "proto3";
+
+package mamey.rbac;
+
+// RBAC service for MameyNode blockchain
+service RbacService {
+    // Role management
+    rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse);
+    rpc GetRole(GetRoleRequest) returns (GetRoleResponse);
+    rpc ListRoles(ListRolesRequest) returns (ListRolesResponse);
+    rpc UpdateRole(UpdateRoleRequest) returns (UpdateRoleResponse);
+    rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse);
+    
+    // User-role assignment
+    rpc AssignRole(AssignRoleRequest) returns (AssignRoleResponse);
+    rpc RevokeRole(RevokeRoleRequest) returns (RevokeRoleResponse);
+    rpc GetUserRoles(GetUserRolesRequest) returns (GetUserRolesResponse);
+    rpc GetRoleUsers(GetRoleUsersRequest) returns (GetRoleUsersResponse);
+    
+    // Permission management
+    rpc CreatePermission(CreatePermissionRequest) returns (CreatePermissionResponse);
+    rpc GetPermission(GetPermissionRequest) returns (GetPermissionResponse);
+    rpc ListPermissions(ListPermissionsRequest) returns (ListPermissionsResponse);
+    rpc AssignPermissionToRole(AssignPermissionToRoleRequest) returns (AssignPermissionToRoleResponse);
+    rpc RevokePermissionFromRole(RevokePermissionFromRoleRequest) returns (RevokePermissionFromRoleResponse);
+    rpc GetRolePermissions(GetRolePermissionsRequest) returns (GetRolePermissionsResponse);
+    
+    // Access control
+    rpc CheckPermission(CheckPermissionRequest) returns (CheckPermissionResponse);
+    rpc CheckAnyPermission(CheckAnyPermissionRequest) returns (CheckPermissionResponse);
+    rpc CheckAllPermissions(CheckAllPermissionsRequest) returns (CheckPermissionResponse);
+    rpc RequirePermission(RequirePermissionRequest) returns (RequirePermissionResponse);
+    
+    // Hierarchy management
+    rpc AddInheritance(AddInheritanceRequest) returns (AddInheritanceResponse);
+    rpc RemoveInheritance(RemoveInheritanceRequest) returns (RemoveInheritanceResponse);
+    rpc GetInheritedRoles(GetInheritedRolesRequest) returns (GetInheritedRolesResponse);
+    rpc GetRoleHierarchy(GetRoleHierarchyRequest) returns (GetRoleHierarchyResponse);
+}
+
+// Role management messages
+message CreateRoleRequest {
+    string role_name = 1;
+    string description = 2;
+    bool is_system_role = 3;
+}
+
+message CreateRoleResponse {
+    Role role = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetRoleRequest {
+    string role_id = 1;
+}
+
+message GetRoleResponse {
+    Role role = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ListRolesRequest {
+    uint32 limit = 1;
+    uint32 offset = 2;
+    bool include_system_roles = 3;
+}
+
+message ListRolesResponse {
+    repeated Role roles = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message UpdateRoleRequest {
+    string role_id = 1;
+    string description = 2;
+}
+
+message UpdateRoleResponse {
+    Role role = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message DeleteRoleRequest {
+    string role_id = 1;
+}
+
+message DeleteRoleResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// User-role assignment messages
+message AssignRoleRequest {
+    string user_id = 1;
+    string role_id = 2;
+}
+
+message AssignRoleResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message RevokeRoleRequest {
+    string user_id = 1;
+    string role_id = 2;
+}
+
+message RevokeRoleResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetUserRolesRequest {
+    string user_id = 1;
+}
+
+message GetUserRolesResponse {
+    repeated Role roles = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetRoleUsersRequest {
+    string role_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+message GetRoleUsersResponse {
+    repeated string user_ids = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Permission management messages
+message CreatePermissionRequest {
+    string permission_string = 1;
+    string description = 2;
+    bool is_system_permission = 3;
+}
+
+message CreatePermissionResponse {
+    Permission permission = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetPermissionRequest {
+    string permission_id = 1;
+}
+
+message GetPermissionResponse {
+    Permission permission = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ListPermissionsRequest {
+    uint32 limit = 1;
+    uint32 offset = 2;
+    bool include_system_permissions = 3;
+}
+
+message ListPermissionsResponse {
+    repeated Permission permissions = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message AssignPermissionToRoleRequest {
+    string role_id = 1;
+    string permission_id = 2;
+}
+
+message AssignPermissionToRoleResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message RevokePermissionFromRoleRequest {
+    string role_id = 1;
+    string permission_id = 2;
+}
+
+message RevokePermissionFromRoleResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetRolePermissionsRequest {
+    string role_id = 1;
+}
+
+message GetRolePermissionsResponse {
+    repeated Permission permissions = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Access control messages
+message CheckPermissionRequest {
+    string user_id = 1;
+    string permission = 2;
+}
+
+message CheckPermissionResponse {
+    bool has_permission = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message CheckAnyPermissionRequest {
+    string user_id = 1;
+    repeated string permissions = 2;
+}
+
+message CheckAllPermissionsRequest {
+    string user_id = 1;
+    repeated string permissions = 2;
+}
+
+message RequirePermissionRequest {
+    string user_id = 1;
+    string permission = 2;
+}
+
+message RequirePermissionResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Hierarchy management messages
+message AddInheritanceRequest {
+    string child_role_id = 1;
+    string parent_role_id = 2;
+}
+
+message AddInheritanceResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message RemoveInheritanceRequest {
+    string child_role_id = 1;
+    string parent_role_id = 2;
+}
+
+message RemoveInheritanceResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetInheritedRolesRequest {
+    string role_id = 1;
+}
+
+message GetInheritedRolesResponse {
+    repeated Role roles = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetRoleHierarchyRequest {
+    string role_id = 1;
+}
+
+message GetRoleHierarchyResponse {
+    RoleHierarchy hierarchy = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Data types
+message Role {
+    string role_id = 1;
+    string role_name = 2;
+    string description = 3;
+    bool is_system_role = 4;
+    repeated string inherited_role_ids = 5;
+    uint64 created_at = 6;
+}
+
+message Permission {
+    string permission_id = 1;
+    string permission_string = 2;
+    string description = 3;
+    bool is_system_permission = 4;
+    string domain = 5;
+    string resource = 6;
+    string action = 7;
+    uint64 created_at = 8;
+}
+
+message RoleHierarchy {
+    Role role = 1;
+    repeated Role parent_roles = 2;
+    repeated Role child_roles = 3;
+    repeated Role all_inherited_roles = 4;
+}
+

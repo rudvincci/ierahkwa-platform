@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ComercioSoberano — Tu Tienda Digital | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#08080d;--bg2:#10101a;--bg3:#18182a;--bg4:#20203a;--gold:#d4a853;--gold-d:rgba(212,168,83,0.08);--tq:#2dd4a8;--tq-d:rgba(45,212,168,0.08);--wp:#9b6dff;--red:#ff4d6a;--blue:#4d8eff;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#252538;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+.nav{position:sticky;top:0;z-index:100;background:rgba(8,8,13,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:12px 32px;display:flex;align-items:center;gap:20px}
+.nav h1{font-family:'Space Grotesk',sans-serif;font-size:18px;background:linear-gradient(135deg,var(--blue),var(--tq));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:4px}
+.nl{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;color:var(--txt2);cursor:pointer;transition:all 0.15s;background:none;border:none;font-family:'DM Sans',sans-serif}
+.nl:hover{background:var(--bg3);color:var(--txt)}.nl.a{color:var(--tq)}
+.nav-r{margin-left:auto;display:flex;gap:8px}
+.cta-btn{padding:8px 18px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--tq));border:none;color:#fff;font-weight:700;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:filter 0.15s}
+.cta-btn:hover{filter:brightness(1.15)}
+
+.content{max-width:1200px;margin:0 auto;padding:40px 32px}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:48px}
+.hero-badge{display:inline-block;padding:4px 12px;border-radius:16px;background:var(--tq-d);color:var(--tq);font-size:11px;font-weight:700;margin-bottom:16px;border:1px solid rgba(45,212,168,0.2)}
+.hero h2{font-family:'Space Grotesk',sans-serif;font-size:44px;line-height:1.15;margin-bottom:12px;background:linear-gradient(135deg,var(--txt),var(--txt2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero h2 em{background:linear-gradient(135deg,var(--gold),var(--tq));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.hero p{font-size:16px;color:var(--txt2);max-width:600px;margin:0 auto 24px;line-height:1.6}
+.hero-btns{display:flex;gap:10px;justify-content:center}
+.hb{padding:12px 28px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;border:none}
+.hb-primary{background:linear-gradient(135deg,var(--blue),var(--tq));color:#fff}
+.hb-primary:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.hb-sec{background:var(--bg3);color:var(--txt);border:1px solid var(--brd)}
+.hb-sec:hover{background:var(--bg4)}
+
+/* STATS ROW */
+.stats-row{display:flex;justify-content:center;gap:40px;margin-bottom:48px}
+.stat{text-align:center}
+.stat .n{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:700;color:var(--gold)}
+.stat .l{font-size:12px;color:var(--txt3);margin-top:2px}
+
+/* FEATURES */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px}
+.feat{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:24px;transition:all 0.2s}
+.feat:hover{border-color:rgba(77,142,255,0.3);transform:translateY(-2px)}
+.feat .f-icon{font-size:28px;margin-bottom:12px}
+.feat h4{font-size:15px;font-weight:700;margin-bottom:6px}
+.feat p{font-size:13px;color:var(--txt2);line-height:1.5}
+.feat .f-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;margin-top:8px;font-weight:700}
+.ft-free{background:rgba(45,212,168,0.1);color:var(--tq)}
+.ft-bdet{background:rgba(155,109,255,0.1);color:var(--wp)}
+.ft-ai{background:var(--gold-d);color:var(--gold)}
+
+/* DEMO STORE */
+.demo-section{margin-bottom:48px}
+.demo-h{text-align:center;margin-bottom:24px}
+.demo-h h3{font-family:'Space Grotesk',sans-serif;font-size:24px;margin-bottom:4px}
+.demo-h p{font-size:13px;color:var(--txt3)}
+
+.demo-store{background:var(--bg2);border:1px solid var(--brd);border-radius:14px;overflow:hidden}
+.ds-topbar{background:var(--bg3);padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--brd)}
+.ds-dots{display:flex;gap:5px}
+.ds-dot{width:10px;height:10px;border-radius:50%}
+.ds-url{flex:1;background:var(--bg);border-radius:6px;padding:5px 12px;font-size:11px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+.ds-body{padding:24px}
+.ds-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.ds-brand{font-family:'Space Grotesk',sans-serif;font-size:16px;color:var(--gold)}
+.ds-links{display:flex;gap:12px;font-size:12px;color:var(--txt2)}
+.ds-links span{cursor:pointer;transition:color 0.15s}.ds-links span:hover{color:var(--txt)}
+.ds-hero-img{width:100%;height:180px;background:linear-gradient(135deg,rgba(212,168,83,0.08),rgba(45,212,168,0.06));border-radius:var(--r);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.ds-hero-text{text-align:center;padding:0 20px}
+.ds-hero-text h4{font-size:20px;margin-bottom:4px}
+.ds-hero-text p{font-size:12px;color:var(--txt2)}
+.ds-products{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.ds-prod{background:var(--bg3);border-radius:8px;overflow:hidden}
+.ds-prod-img{height:100px;display:flex;align-items:center;justify-content:center;font-size:32px}
+.ds-prod-info{padding:10px}
+.ds-prod-info .name{font-size:12px;font-weight:600;margin-bottom:2px}
+.ds-prod-info .price{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--gold);font-weight:700}
+
+/* PRICING */
+.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px}
+.plan{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:24px;text-align:center;transition:all 0.2s}
+.plan:hover{transform:translateY(-2px)}
+.plan.popular{border-color:var(--gold);background:linear-gradient(180deg,rgba(212,168,83,0.06),var(--bg2))}
+.plan .p-badge{display:inline-block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:3px 10px;border-radius:10px;margin-bottom:8px}
+.plan h4{font-size:18px;margin-bottom:4px}
+.plan .p-price{font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:700;color:var(--gold);margin-bottom:4px}
+.plan .p-price span{font-size:14px;color:var(--txt3)}
+.plan .p-desc{font-size:12px;color:var(--txt3);margin-bottom:14px}
+.plan ul{list-style:none;text-align:left;margin-bottom:16px}
+.plan li{font-size:12px;color:var(--txt2);padding:4px 0;display:flex;align-items:center;gap:6px}
+.plan li::before{content:'✓';color:var(--tq);font-weight:700}
+.plan .p-btn{width:100%;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;border:none}
+.p-btn-outline{background:none;border:1px solid var(--brd);color:var(--txt2)}.p-btn-outline:hover{background:var(--bg3);color:var(--txt)}
+.p-btn-gold{background:var(--gold);color:#08080d}.p-btn-gold:hover{filter:brightness(1.15)}
+
+@media(max-width:768px){.features,.pricing{grid-template-columns:1fr}.hero h2{font-size:28px}.stats-row{flex-wrap:wrap;gap:20px}.ds-products{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span style="font-size:20px">🛍</span>
+  <h1>ComercioSoberano</h1>
+  <div class="nav-links">
+    <button class="nl a">Producto</button>
+    <button class="nl">Precios</button>
+    <button class="nl">Ejemplos</button>
+    <button class="nl">Docs API</button>
+  </div>
+  <div class="nav-r">
+    <button class="nl">Iniciar Sesión</button>
+    <button class="cta-btn">Crear Tienda Gratis</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="hero">
+    <div class="hero-badge">🚀 Plataforma E-Commerce Soberana</div>
+    <h2>Tu Tienda Digital.<br><em>Tu Soberanía Económica.</em></h2>
+    <p>Crea tu tienda online en minutos. Sin código. Con pagos BDET Bank integrados. 88% de cada venta directo a tu cuenta. La alternativa soberana a Shopify.</p>
+    <div class="hero-btns">
+      <button class="hb hb-primary">🚀 Crear Tienda Gratis</button>
+      <button class="hb hb-sec">📺 Ver Demo</button>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="n">2,847</div><div class="l">Tiendas Activas</div></div>
+    <div class="stat"><div class="n">Ⓦ 1.2M</div><div class="l">Ventas Mensuales</div></div>
+    <div class="stat"><div class="n">88%</div><div class="l">Para el Vendedor</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">Cuota Mensual Base</div></div>
+  </div>
+
+  <div class="features">
+    <div class="feat"><div class="f-icon">🎨</div><h4>Constructor Visual</h4><p>Arrastra y suelta para crear tu tienda. 50+ plantillas indígenas diseñadas por artistas de 19 países.</p><span class="f-tag ft-free">Gratis</span></div>
+    <div class="feat"><div class="f-icon">💎</div><h4>Pagos BDET Integrados</h4><p>Acepta Wampum, tarjetas, y 12 criptomonedas. Liquidación instantánea en tu cuenta BDET Bank.</p><span class="f-tag ft-bdet">BDET</span></div>
+    <div class="feat"><div class="f-icon">🤖</div><h4>IA de Ventas</h4><p>MameyAI optimiza precios, genera descripciones en 14 idiomas, y predice demanda con 42 motores.</p><span class="f-tag ft-ai">AI</span></div>
+    <div class="feat"><div class="f-icon">📦</div><h4>SoberanoFreight</h4><p>Envío integrado a 19 países. Tracking en blockchain. Seguro incluido. Tarifas preferenciales para artesanos.</p><span class="f-tag ft-free">Incluido</span></div>
+    <div class="feat"><div class="f-icon">🔒</div><h4>Autenticidad Blockchain</h4><p>Cada producto tiene certificado NFT en MameyNode. Comprador verifica origen y artesano real.</p><span class="f-tag ft-bdet">MameyNode</span></div>
+    <div class="feat"><div class="f-icon">🌐</div><h4>Multi-Idioma Atabey</h4><p>Tu tienda automáticamente en 14 idiomas indígenas + 6 globales via Atabey Translator.</p><span class="f-tag ft-ai">Atabey</span></div>
+  </div>
+
+  <!-- DEMO STORE -->
+  <div class="demo-section">
+    <div class="demo-h"><h3>Vista Previa de Tienda</h3><p>Así se ve una tienda ComercioSoberano</p></div>
+    <div class="demo-store">
+      <div class="ds-topbar">
+        <div class="ds-dots"><div class="ds-dot" style="background:#ff5f57"></div><div class="ds-dot" style="background:#ffbd2e"></div><div class="ds-dot" style="background:#28ca41"></div></div>
+        <div class="ds-url">🔒 analenca.soberano.bo</div>
+      </div>
+      <div class="ds-body">
+        <div class="ds-nav"><div class="ds-brand">🏺 Ana Lenca Cerámica</div><div class="ds-links"><span>Inicio</span><span>Catálogo</span><span>Historia</span><span>🛒 Carrito</span></div></div>
+        <div class="ds-hero-img"><div class="ds-hero-text"><h4>🏺 Cerámica Lenca Ancestral</h4><p>Cada pieza cuenta 3,000 años de historia · Honduras · Hecho a mano</p></div></div>
+        <div class="ds-products">
+          <div class="ds-prod"><div class="ds-prod-img" style="background:linear-gradient(135deg,#201510,#1a1008)">🏺</div><div class="ds-prod-info"><div class="name">Vasija Ceremonial</div><div class="price">Ⓦ 120</div></div></div>
+          <div class="ds-prod"><div class="ds-prod-img" style="background:linear-gradient(135deg,#1a1510,#150a08)">🫖</div><div class="ds-prod-info"><div class="name">Jarra Pintada</div><div class="price">Ⓦ 85</div></div></div>
+          <div class="ds-prod"><div class="ds-prod-img" style="background:linear-gradient(135deg,#150a0a,#201515)">🍶</div><div class="ds-prod-info"><div class="name">Set de Tazas (4)</div><div class="price">Ⓦ 65</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICING -->
+  <div class="demo-h"><h3>Planes Soberanos</h3><p>Empieza gratis. Crece soberanamente.</p></div>
+  <div class="pricing">
+    <div class="plan">
+      <div class="p-badge" style="background:var(--tq-d);color:var(--tq)">Inicio</div>
+      <h4>Semilla</h4>
+      <div class="p-price">Ⓦ 0<span>/mes</span></div>
+      <div class="p-desc">Perfecto para empezar</div>
+      <ul>
+        <li>Hasta 50 productos</li>
+        <li>Dominio .soberano.bo gratis</li>
+        <li>Pagos BDET Bank</li>
+        <li>Plantillas básicas</li>
+        <li>SSL + Blockchain cert</li>
+        <li>Soporte comunidad</li>
+      </ul>
+      <button class="p-btn p-btn-outline">Empezar Gratis</button>
+    </div>
+    <div class="plan popular">
+      <div class="p-badge" style="background:var(--gold-d);color:var(--gold)">⭐ Popular</div>
+      <h4>Crecimiento</h4>
+      <div class="p-price">Ⓦ 25<span>/mes</span></div>
+      <div class="p-desc">Para negocios en expansión</div>
+      <ul>
+        <li>Productos ilimitados</li>
+        <li>Dominio personalizado</li>
+        <li>IA de ventas MameyAI</li>
+        <li>Multi-idioma Atabey</li>
+        <li>Envío SoberanoFreight</li>
+        <li>Analytics avanzado</li>
+        <li>Soporte prioritario</li>
+      </ul>
+      <button class="p-btn p-btn-gold">Comenzar Ahora</button>
+    </div>
+    <div class="plan">
+      <div class="p-badge" style="background:rgba(155,109,255,0.1);color:var(--wp)">Empresa</div>
+      <h4>Nación</h4>
+      <div class="p-price">Ⓦ 99<span>/mes</span></div>
+      <div class="p-desc">Para comunidades y cooperativas</div>
+      <ul>
+        <li>Todo de Crecimiento</li>
+        <li>Multi-tienda (hasta 10)</li>
+        <li>API ComercioSoberano</li>
+        <li>Marketplace propio</li>
+        <li>Smart contracts custom</li>
+        <li>Soporte dedicado 24/7</li>
+        <li>White-label completo</li>
+      </ul>
+      <button class="p-btn p-btn-outline">Contactar Ventas</button>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,203 @@
+name: Mamey.Security Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'Mamey/src/Mamey.Security/**'
+      - 'Mamey/src/Mamey.Security.EntityFramework/**'
+      - 'Mamey/src/Mamey.Security.MongoDB/**'
+      - 'Mamey/src/Mamey.Security.Redis/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'Mamey/src/Mamey.Security/**'
+      - 'Mamey/src/Mamey.Security.EntityFramework/**'
+      - 'Mamey/src/Mamey.Security.MongoDB/**'
+      - 'Mamey/src/Mamey.Security.Redis/**'
+  schedule:
+    - cron: '0 2 * * *' # Run nightly at 2 AM
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: Mamey/src/Mamey.Security/tests
+      
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+        working-directory: Mamey/src/Mamey.Security/tests
+      
+      - name: Run unit tests
+        run: dotnet test --configuration Release --no-build --filter "Category=Unit" --collect:"XPlat Code Coverage" --verbosity normal
+        working-directory: Mamey/src/Mamey.Security/tests
+      
+      - name: Generate coverage report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.25
+        with:
+          reports: '**/coverage.cobertura.xml'
+          targetdir: 'coverage-report'
+          reporttypes: 'Html;JsonSummary'
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: '**/coverage.cobertura.xml'
+          flags: unit-tests
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      mongodb:
+        image: mongo:7
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand(\"ping\")'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 27017:27017
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: Mamey/src/Mamey.Security/tests
+      
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+        working-directory: Mamey/src/Mamey.Security/tests
+      
+      - name: Run integration tests
+        run: dotnet test --configuration Release --no-build --filter "Category=Integration" --collect:"XPlat Code Coverage" --verbosity normal
+        working-directory: Mamey/src/Mamey.Security/tests
+        env:
+          POSTGRES_CONNECTION_STRING: "Host=localhost;Database=testdb;Username=test;Password=test"
+          MONGODB_CONNECTION_STRING: "mongodb://localhost:27017/testdb"
+          REDIS_CONNECTION_STRING: "localhost:6379"
+      
+      - name: Generate coverage report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.25
+        with:
+          reports: '**/coverage.cobertura.xml'
+          targetdir: 'coverage-report'
+          reporttypes: 'Html;JsonSummary'
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: '**/coverage.cobertura.xml'
+          flags: integration-tests
+
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: Mamey/src/Mamey.Security/tests
+      
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+        working-directory: Mamey/src/Mamey.Security/tests
+      
+      - name: Run performance tests
+        run: dotnet test --configuration Release --no-build --filter "Category=Performance" --verbosity normal
+        working-directory: Mamey/src/Mamey.Security/tests
+      
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: '**/BenchmarkDotNet.Artifacts/**'
+
+  security-tests:
+    name: Security Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: Mamey/src/Mamey.Security/tests
+      
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+        working-directory: Mamey/src/Mamey.Security/tests
+      
+      - name: Run security tests
+        run: dotnet test --configuration Release --no-build --filter "Category=Security" --verbosity normal
+        working-directory: Mamey/src/Mamey.Security/tests
+
+  all-tests:
+    name: All Tests
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, security-tests]
+    if: always()
+    steps:
+      - name: Check test results
+        run: |
+          if [ "${{ needs.unit-tests.result }}" != "success" ] || \
+             [ "${{ needs.integration-tests.result }}" != "success" ] || \
+             [ "${{ needs.security-tests.result }}" != "success" ]; then
+            echo "Some tests failed"
+            exit 1
+          fi
+          echo "All tests passed"
+
+
+

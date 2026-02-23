@@ -1,0 +1,515 @@
+@page "/gov/passports/{PassportNumber}"
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+
+<PageTitle>Passport @PassportNumber - Government Portal</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+}
+else if (_passport is null)
+{
+    <MudPaper Elevation="0" Class="pa-6">
+        <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="py-16">
+            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" Color="Color.Warning" />
+            <MudText Typo="Typo.h5" Class="mt-4">Passport Not Found</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                The Passport @PassportNumber could not be found.
+            </MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/gov/passports" Class="mt-4">
+                Back to Passports
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+}
+else
+{
+    <MudPaper Elevation="0" Class="pa-6">
+        <MudStack Spacing="4">
+            @* Header *@
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                <MudStack>
+                    <MudBreadcrumbs Items="_breadcrumbs" />
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.Book" Size="Size.Large" Color="Color.Primary" />
+                        <MudStack Spacing="0">
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                <MudText Typo="Typo.h4" Style="font-family: monospace;">@_passport.PassportNumber</MudText>
+                                <MudChip T="string" Color="@GetStatusColor(_passport.Status)" Size="Size.Medium">
+                                    @_passport.Status
+                                </MudChip>
+                                <MudChip T="string" Color="@GetTypeColor(_passport.PassportType)" Size="Size.Medium" Variant="Variant.Outlined">
+                                    @_passport.PassportType
+                                </MudChip>
+                            </MudStack>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                Issued @_passport.IssueDate.ToString("MMMM dd, yyyy") • Expires @_passport.ExpiryDate.ToString("MMMM dd, yyyy")
+                            </MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudStack>
+                <MudStack Row="true" Spacing="2">
+                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Print">
+                        Print Passport
+                    </MudButton>
+                    @if (_passport.Status == "Active")
+                    {
+                        <MudMenu Label="Actions" Variant="Variant.Filled" Color="Color.Primary"
+                                 EndIcon="@Icons.Material.Filled.ArrowDropDown">
+                            <MudMenuItem Icon="@Icons.Material.Filled.Refresh">Renew</MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.ReportProblem">Report Lost/Stolen</MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.Block" IconColor="Color.Error"
+                                         OnClick="@(() => _revokeDialogVisible = true)">Revoke</MudMenuItem>
+                        </MudMenu>
+                    }
+                </MudStack>
+            </MudStack>
+
+            <MudDivider />
+
+            <MudGrid Spacing="4">
+                @* Left Column *@
+                <MudItem xs="12" md="8">
+                    @* Passport Preview *@
+                    <MudCard Elevation="3" Class="mb-4" Style="background: linear-gradient(135deg, #0D47A1 0%, #1A237E 100%); color: white;">
+                        <MudCardContent Class="pa-6">
+                            <MudStack Spacing="3">
+                                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                    <MudText Typo="Typo.overline" Style="color: rgba(255,255,255,0.7);">PASSPORT</MudText>
+                                    <MudText Typo="Typo.overline" Style="color: rgba(255,255,255,0.7);">@_passport.PassportType.ToUpper()</MudText>
+                                </MudStack>
+                                <MudStack Row="true" Spacing="4">
+                                    <MudAvatar Size="Size.Large" Style="width: 120px; height: 150px; border-radius: 4px; background: white;">
+                                        <MudText Typo="Typo.h2" Color="Color.Primary">@_passport.CitizenName[0]</MudText>
+                                    </MudAvatar>
+                                    <MudStack Spacing="2" Style="flex: 1;">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">SURNAME</MudText>
+                                            <MudText Typo="Typo.h6">@_passport.Surname</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">GIVEN NAMES</MudText>
+                                            <MudText Typo="Typo.h6">@_passport.GivenNames</MudText>
+                                        </div>
+                                        <MudStack Row="true" Spacing="4">
+                                            <div>
+                                                <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">NATIONALITY</MudText>
+                                                <MudText Typo="Typo.body1">@_passport.Nationality</MudText>
+                                            </div>
+                                            <div>
+                                                <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">SEX</MudText>
+                                                <MudText Typo="Typo.body1">@_passport.Gender</MudText>
+                                            </div>
+                                        </MudStack>
+                                    </MudStack>
+                                </MudStack>
+                                <MudDivider Style="border-color: rgba(255,255,255,0.3);" />
+                                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">PASSPORT NO.</MudText>
+                                        <MudText Typo="Typo.body1" Style="font-family: monospace;">@_passport.PassportNumber</MudText>
+                                    </MudStack>
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">DATE OF BIRTH</MudText>
+                                        <MudText Typo="Typo.body1">@_passport.DateOfBirth.ToString("dd MMM yyyy")</MudText>
+                                    </MudStack>
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">DATE OF ISSUE</MudText>
+                                        <MudText Typo="Typo.body1">@_passport.IssueDate.ToString("dd MMM yyyy")</MudText>
+                                    </MudStack>
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">DATE OF EXPIRY</MudText>
+                                        <MudText Typo="Typo.body1">@_passport.ExpiryDate.ToString("dd MMM yyyy")</MudText>
+                                    </MudStack>
+                                </MudStack>
+                                <MudText Typo="Typo.caption" Style="font-family: monospace; color: rgba(255,255,255,0.9); letter-spacing: 2px;">
+                                    @_passport.MRZ
+                                </MudText>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Holder Information *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6">Passport Holder Information</MudText>
+                                </MudStack>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudButton Size="Size.Small" Href="@($"/gov/citizens/{_passport.CitizenId}")">
+                                    View Citizen Record
+                                </MudButton>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="12" md="6">
+                                    <MudStack Spacing="3">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Full Name</MudText>
+                                            <MudText Typo="Typo.body1"><strong>@_passport.CitizenName</strong></MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Citizen ID</MudText>
+                                            <MudText Typo="Typo.body1">@_passport.CitizenId</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Date of Birth</MudText>
+                                            <MudText Typo="Typo.body1">@_passport.DateOfBirth.ToString("MMMM dd, yyyy")</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Place of Birth</MudText>
+                                            <MudText Typo="Typo.body1">@_passport.PlaceOfBirth</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudStack Spacing="3">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Gender</MudText>
+                                            <MudText Typo="Typo.body1">@_passport.Gender</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Nationality</MudText>
+                                            <MudText Typo="Typo.body1">@_passport.Nationality</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Issuing Authority</MudText>
+                                            <MudText Typo="Typo.body1">@_passport.IssuingAuthority</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Place of Issue</MudText>
+                                            <MudText Typo="Typo.body1">@_passport.PlaceOfIssue</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Activity Timeline *@
+                    <MudCard Elevation="2">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Timeline" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6">Activity History</MudText>
+                                </MudStack>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudTimeline TimelinePosition="TimelinePosition.Start">
+                                @foreach (var activity in _activities)
+                                {
+                                    <MudTimelineItem Color="@GetActivityColor(activity.Type)" Size="Size.Small">
+                                        <ItemContent>
+                                            <MudStack>
+                                                <MudText Typo="Typo.body2"><strong>@activity.Title</strong></MudText>
+                                                <MudText Typo="Typo.body2">@activity.Description</MudText>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                                    @activity.Timestamp.ToString("MMM dd, yyyy 'at' h:mm tt") • @activity.User
+                                                </MudText>
+                                            </MudStack>
+                                        </ItemContent>
+                                    </MudTimelineItem>
+                                }
+                            </MudTimeline>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                @* Right Column *@
+                <MudItem xs="12" md="4">
+                    @* Document Details *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Document Details</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Spacing="3">
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Passport Number</MudText>
+                                    <MudText Typo="Typo.body1" Style="font-family: monospace;">@_passport.PassportNumber</MudText>
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Passport Type</MudText>
+                                    <MudChip T="string" Color="@GetTypeColor(_passport.PassportType)" Size="Size.Small">
+                                        @_passport.PassportType
+                                    </MudChip>
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Issue Date</MudText>
+                                    <MudText Typo="Typo.body1">@_passport.IssueDate.ToString("MMMM dd, yyyy")</MudText>
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Expiry Date</MudText>
+                                    <MudText Typo="Typo.body1">@_passport.ExpiryDate.ToString("MMMM dd, yyyy")</MudText>
+                                </div>
+                                <MudDivider />
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Days Until Expiry</MudText>
+                                    @{
+                                        var daysUntilExpiry = (_passport.ExpiryDate - DateTime.Today).Days;
+                                    }
+                                    <MudText Typo="Typo.body1" Color="@(daysUntilExpiry < 180 ? Color.Warning : Color.Success)">
+                                        @(daysUntilExpiry > 0 ? $"{daysUntilExpiry} days" : "Expired")
+                                    </MudText>
+                                </div>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Quick Actions *@
+                    <MudCard Elevation="2">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Quick Actions</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Spacing="2">
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Print">
+                                    Print Passport
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Download">
+                                    Download PDF
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Email">
+                                    Send to Citizen
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.QrCode">
+                                    Generate QR Code
+                                </MudButton>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudStack>
+    </MudPaper>
+}
+
+@* Revoke Dialog *@
+<MudDialog @bind-Visible="_revokeDialogVisible">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Error" Class="mr-2" />
+            Revoke Passport
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-4">
+            Are you sure you want to revoke Passport <strong>@PassportNumber</strong>?
+            This action cannot be undone.
+        </MudText>
+        <MudTextField @bind-Value="_revokeReason" Label="Reason for Revocation" Variant="Variant.Outlined"
+                      Lines="3" Required="true" RequiredError="Please provide a reason" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _revokeDialogVisible = false)">Cancel</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="RevokePassport">Revoke</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject Mamey.Government.UI.Services.IPassportsService PassportsService
+
+@code {
+    [Parameter]
+    public string PassportNumber { get; set; } = "";
+
+    // Default tenant ID - in production, get from user claims
+    private static readonly Guid TenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    private bool _loading = true;
+    private bool _revokeDialogVisible = false;
+    private string _revokeReason = "";
+
+    private PassportDetailsData? _passport;
+    private List<Activity> _activities = new();
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    private record PassportDetailsData(
+        Guid Id,
+        string PassportNumber,
+        string PassportType,
+        string CitizenId,
+        string CitizenName,
+        string Surname,
+        string GivenNames,
+        DateTime DateOfBirth,
+        string Gender,
+        string Nationality,
+        string PlaceOfBirth,
+        DateTime IssueDate,
+        DateTime ExpiryDate,
+        string PlaceOfIssue,
+        string IssuingAuthority,
+        string MRZ,
+        string Status);
+
+    private record Activity(
+        DateTime Timestamp,
+        string Type,
+        string Title,
+        string Description,
+        string User);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _breadcrumbs = new List<BreadcrumbItem>
+        {
+            new("Home", href: "/"),
+            new("Passports", href: "/gov/passports"),
+            new(PassportNumber, href: null, disabled: true)
+        };
+
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        StateHasChanged();
+
+        try
+        {
+            var passportData = await PassportsService.GetByNumberAsync(TenantId, PassportNumber);
+            
+            if (passportData is not null)
+            {
+                // Generate MRZ code based on passport data
+                var surname = passportData.HolderName?.Split(' ').LastOrDefault() ?? "";
+                var givenNames = passportData.HolderName?.Replace(surname, "").Trim() ?? "";
+                var mrz = $"P<USA {surname.ToUpper()}<<{givenNames.ToUpper().Replace(" ", "<")}<<<<<<<<<<<<<<<{PassportNumber}USA";
+
+                _passport = new PassportDetailsData(
+                    passportData.Id,
+                    passportData.PassportNumber ?? PassportNumber,
+                    passportData.PassportType ?? "Regular",
+                    passportData.CitizenId != Guid.Empty ? passportData.CitizenId.ToString() : "Unknown",
+                    passportData.HolderName ?? "Unknown",
+                    surname.ToUpper(),
+                    givenNames.ToUpper(),
+                    passportData.DateOfBirth,
+                    passportData.Gender ?? "U",
+                    passportData.Nationality ?? "UNITED STATES",
+                    passportData.PlaceOfBirth ?? "",
+                    passportData.IssueDate,
+                    passportData.ExpiryDate,
+                    passportData.PlaceOfIssue ?? "Government Portal HQ",
+                    passportData.IssuingAuthority ?? "Department of State",
+                    mrz,
+                    passportData.Status ?? "Active");
+
+                _activities = new List<Activity>
+                {
+                    new(passportData.IssueDate, "Issue", "Passport Issued", $"Passport {passportData.PassportNumber} issued to {passportData.HolderName}.", "System")
+                };
+            }
+            else
+            {
+                LoadMockData();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading passport data: {ex.Message}");
+            LoadMockData();
+        }
+
+        _loading = false;
+    }
+
+    private void LoadMockData()
+    {
+        _passport = new PassportDetailsData(
+            Guid.NewGuid(),
+            PassportNumber,
+            "Regular",
+            "CIT-00001",
+            "John Smith",
+            "SMITH",
+            "JOHN WILLIAM",
+            new DateTime(1985, 6, 15),
+            "M",
+            "UNITED STATES",
+            "SPRINGFIELD, ILLINOIS",
+            DateTime.Now.AddYears(-2),
+            DateTime.Now.AddYears(8),
+            "Government Portal HQ",
+            "Department of State",
+            $"P<USA SMITH<<JOHN<WILLIAM<<<<<<<<<<<<<<<<<<<<{PassportNumber}USA8506155M3001156<<<<<<<<<<<<<<<8",
+            "Active");
+
+        _activities = new List<Activity>
+        {
+            new(DateTime.Now.AddYears(-2), "Issue", "Passport Issued", $"Passport {PassportNumber} issued to John Smith.", "Agent Amelia Grant"),
+            new(DateTime.Now.AddYears(-2).AddDays(-3), "Approval", "Application Approved", "Passport application approved after verification.", "Agent Rafael Ortega"),
+            new(DateTime.Now.AddYears(-2).AddDays(-10), "Application", "Application Submitted", "Passport application submitted.", "John Smith")
+        };
+    }
+
+    private async Task RevokePassport()
+    {
+        if (_passport is null) return;
+
+        if (string.IsNullOrWhiteSpace(_revokeReason))
+        {
+            Snackbar.Add("Please provide a reason for revocation", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            var success = await PassportsService.RevokeAsync(TenantId, _passport.Id, _revokeReason);
+            if (success)
+            {
+                Snackbar.Add($"Passport {PassportNumber} revoked", Severity.Info);
+                _revokeDialogVisible = false;
+                Navigation.NavigateTo("/gov/passports");
+            }
+            else
+            {
+                Snackbar.Add("Failed to revoke passport. Please try again.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error revoking passport: {ex.Message}");
+            Snackbar.Add("An error occurred while revoking the passport.", Severity.Error);
+        }
+    }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Active" => Color.Success,
+        "Expiring" => Color.Warning,
+        "Expired" => Color.Error,
+        "Revoked" => Color.Dark,
+        _ => Color.Default
+    };
+
+    private Color GetTypeColor(string type) => type switch
+    {
+        "Diplomatic" => Color.Tertiary,
+        "Official" => Color.Secondary,
+        "Regular" => Color.Primary,
+        _ => Color.Default
+    };
+
+    private Color GetActivityColor(string type) => type switch
+    {
+        "Issue" => Color.Success,
+        "Approval" => Color.Primary,
+        "Application" => Color.Info,
+        "Revoke" => Color.Error,
+        _ => Color.Default
+    };
+}

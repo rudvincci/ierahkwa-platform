@@ -1,0 +1,14 @@
+
+
+services:
+  barcode-app:
+    build: .
+    ports:
+      - "18648:5000"
+    environment:
+      FLASK_ENV: production
+    networks:
+      - portal_net
+networks:
+  portal_net:
+    name: mamey-portal-net

@@ -1,0 +1,39 @@
+@page "/recognitions"
+
+<PageTitle>Recognitions</PageTitle>
+
+@code {
+    private sealed record Recognition(string Title, string Issuer, DateOnly Date, string Summary);
+
+    private readonly Recognition[] _items =
+    [
+        new("Recognition Example 1", "Example Nation", new DateOnly(2026, 1, 1), "UI-first placeholder; will be driven by CMS."),
+        new("Recognition Example 2", "Example Organization", new DateOnly(2025, 12, 15), "UI-first placeholder; will be driven by CMS."),
+    ];
+}
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h4">Recognitions</MudText>
+    <MudText Typo="Typo.body1">
+        Recognition entries and documents will be published via CMS and can link into the Library.
+    </MudText>
+
+    <MudTable Items="_items" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Title</MudTh>
+            <MudTh>Issuer</MudTh>
+            <MudTh>Date</MudTh>
+            <MudTh>Summary</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Title">@context.Title</MudTd>
+            <MudTd DataLabel="Issuer">@context.Issuer</MudTd>
+            <MudTd DataLabel="Date">@context.Date</MudTd>
+            <MudTd DataLabel="Summary">@context.Summary</MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudStack>
+
+
+
+

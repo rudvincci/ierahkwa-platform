@@ -1,0 +1,214 @@
+# Red Soberana — Docker Compose v1.0
+# Deploy completo del ecosistema soberano
+
+version: '3.9'
+
+services:
+  # ==================== CORE ====================
+  
+  portal:
+    image: nginx:alpine
+    container_name: portal-soberano
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../portal-soberano.html:/usr/share/nginx/html/index.html:ro
+      - ../plataformas:/usr/share/nginx/html/plataformas:ro
+      - ../pitch:/usr/share/nginx/html/pitch:ro
+      - ../dashboards:/usr/share/nginx/html/dashboards:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    networks:
+      - soberana
+    restart: unless-stopped
+    labels:
+      - "com.soberano.service=portal"
+      - "com.soberano.tier=frontend"
+
+  api:
+    build:
+      context: ../backend
+      dockerfile: ../infra/docker/Dockerfile.api
+    container_name: api-soberana
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
+      - MAMEYNODE_RPC=http://mameynode:8545
+      - BDET_CONTRACT=${BDET_CONTRACT_ADDRESS}
+      - JWT_SECRET=${JWT_SECRET}
+      - ATABEY_API_KEY=${ATABEY_KEY}
+      - AI_FORTRESS_URL=http://ai-fortress:8080
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+      - mameynode
+    networks:
+      - soberana
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+
+  # ==================== DATABASE ====================
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres-soberana
+    environment:
+      - POSTGRES_DB=soberana
+      - POSTGRES_USER=soberano
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../backend/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - soberana
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-soberana
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - soberana
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+
+  # ==================== BLOCKCHAIN ====================
+
+  mameynode:
+    image: mameynode/node:4.2.0
+    container_name: mameynode
+    ports:
+      - "8545:8545"   # RPC
+      - "8546:8546"   # WebSocket
+      - "30303:30303"  # P2P
+    volumes:
+      - mameynode_data:/data
+      - ../backend/smart-contracts:/contracts:ro
+    environment:
+      - NETWORK_ID=574
+      - CONSENSUS=proof-of-sovereignty
+      - GAS_LIMIT=30000000
+      - BLOCK_TIME=3
+    networks:
+      - soberana
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+
+  # ==================== AI ====================
+
+  ai-fortress:
+    image: soberano/ai-fortress:1.0
+    container_name: ai-fortress
+    ports:
+      - "8080:8080"
+    environment:
+      - ENGINES=42
+      - MODEL_PATH=/models
+      - GPU_ENABLED=${GPU_ENABLED:-false}
+    volumes:
+      - ai_models:/models
+    networks:
+      - soberana
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 16G
+
+  atabey:
+    image: soberano/atabey-translator:1.0
+    container_name: atabey
+    ports:
+      - "8081:8081"
+    environment:
+      - LANGUAGES=quechua,nahuatl,guarani,aymara,mapudungun,maya,zapotec,garifuna,taino,navajo,cherokee,lakota,ojibwe,cree
+      - GLOBAL_LANGS=es,en,pt,fr,nl,ht
+    volumes:
+      - atabey_models:/models
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  # ==================== MONITORING ====================
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  # ==================== STORAGE ====================
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio-soberana
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=soberano
+      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - soberana
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  mameynode_data:
+  ai_models:
+  atabey_models:
+  grafana_data:
+  minio_data:
+
+networks:
+  soberana:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

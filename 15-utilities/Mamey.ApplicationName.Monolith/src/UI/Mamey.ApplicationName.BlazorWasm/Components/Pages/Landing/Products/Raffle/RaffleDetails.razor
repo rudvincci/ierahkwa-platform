@@ -1,0 +1,163 @@
+@page "/raffle-details/{id:int}"
+@inject MockRaffleService RaffleService
+@inject ISnackbar SnackBar
+@using Mamey.ApplicationName.BlazorWasm.Models.Raffles
+@using Mamey.ApplicationName.BlazorWasm.Mock
+@using Mamey.ApplicationName.BlazorWasm.Models
+
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+    
+    @if (RaffleItem != null)
+    {
+        <MudGrid>
+            <!-- Image Section -->
+            <MudItem xs="12" md="6">
+                <MudCard Class="raffle-detail-image">
+                    <MudCardMedia Image="@RaffleItem.ImageUrl"/>
+                </MudCard>
+            </MudItem>
+
+            <!-- Details Section -->
+            <MudItem xs="12" md="6">
+                <MudText Typo="Typo.h4" Style="font-weight: bold">@RaffleItem.Title</MudText>
+                <MudText Typo="Typo.body1" Class="mt-2">@RaffleItem.Description</MudText>
+                <MudDivider Class="my-4"/>
+                <MudText Typo="Typo.body2" Style="font-weight: bold">Ticket Price:</MudText>
+                <MudText Typo="Typo.h6">@RaffleItem.TicketPrice:C</MudText>
+                <MudText Typo="Typo.body2" Style="font-weight: bold" Class="mt-2">
+                    Time Left:
+                    <MudIcon Icon="@Icons.Material.Filled.Timer" Class="mr-1"/>
+                    @((RaffleItem.RaffleDate - DateTime.Now).ToString(@"hh\:mm\:ss"))
+                </MudText>
+                <MudProgressLinear Value="@((double)TicketsSold / TicketsAvailable * 100)" Class="mt-3" Color="Color.Primary"/>
+
+                <MudText Typo="Typo.body2" Class="mt-2">
+                    Tickets Sold: @TicketsSold / @TicketsAvailable
+                </MudText>
+                <MudText Typo="Typo.caption" Class="mt-1">
+                    Your Winning Odds Improve with More Tickets!
+                </MudText>
+
+                <MudDivider Class="my-4"/>
+
+                <!-- Ticket Purchase Section -->
+                <MudNumericField T="int" Immediate="false" Label="Number of Tickets" Variant="Variant.Outlined" Min="1" Max="TicketsAvailable"
+                                 @bind-Value="@TicketCount" HelperText="@($"Tickets Remaining: {TicketsAvailable - TicketCount}")"/>
+                @* <MudNumericField T="int" Immediate="false" Label="Number of Tickets" Format="N2" Culture="CultureInfo.CurrentCulture"   *@
+                @*                  @bind-Value="@TicketCount" HelperText="@((TicketsAvailable - TicketCount).ToString())"/> *@
+                <MudButton OnClick="BuyTickets" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2">
+                    Buy Tickets
+                </MudButton>
+                <MudSnackbarProvider/>
+            </MudItem>
+        </MudGrid>
+        <MudContainer MaxWidth="MaxWidth.Medium">
+            <MudText Typo="Typo.h5" Align="Align.Center" Class="mt-4">
+                Tickets
+            </MudText>
+            <MudGrid Spacing="3" Justify="Justify.FlexStart" >
+                @foreach (var ticket in PagedTickets)
+                {
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full px-8 py-8" Height="50px" Width="50px">
+                            @ticket
+                        </MudPaper>
+                    </MudItem>
+                }
+            </MudGrid>
+            <div class="d-flex flex-column align-center">
+                <MudPagination  ShowPreviousButton="true" ShowNextButton="true" Count="@TotalPages" 
+                                bind-Selected="@(CurrentPage + 1)" SelectedChanged="OnSelectedChanged"
+                                ShowFirstButton="true" ShowLastButton="true" Class="mt-4"/>
+            </div>
+            <!-- Pagination Controls -->
+            <MudGrid Justify="Justify.Center" Class="mt-4">
+                <MudItem>
+                    <MudButton Variant="Variant.Text" Disabled="@(CurrentPage == 0)" OnClick="PreviousPage">
+                        Previous
+                    </MudButton>
+                </MudItem>
+                <MudItem>
+                    <MudText Typo="Typo.body2" Align="Align.Center">
+                        Page @(CurrentPage + 1) of @TotalPages
+                    </MudText>
+                </MudItem>
+                <MudItem>
+                    <MudButton Variant="Variant.Text" Disabled="@(CurrentPage + 1 >= TotalPages)" OnClick="NextPage">
+                        Next
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+
+    }
+    else
+    {
+        <MudText Typo="Typo.h6" Align="Align.Center">Raffle item not found!</MudText>
+    }
+    
+</MudContainer>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private RaffleItem? RaffleItem;
+    private int TicketCount = 1;
+    private int TicketsSold = 50; // Mock value
+    private int TicketsAvailable = 100; // Mock value
+    
+    private int CurrentPage = 0; // Current page index
+    private int PageSize = 100;  // Number of tickets per page
+    private int TotalTickets => RaffleItem!.TotalTickets;
+    private int TotalPages => (int)Math.Ceiling((double)TotalTickets / PageSize);
+    private List<int> PagedTickets = new();
+    
+
+    protected override void OnInitialized()
+    {
+        RaffleItem = RaffleService.GetRaffleItemById(Id);
+        UpdatePagedTickets(CurrentPage);
+    }
+
+    private void BuyTickets()
+    {
+        if (RaffleItem == null || TicketCount <= 0) return;
+
+        RaffleService.BuyTicket(RaffleItem.Id, "mock-user-id", TicketCount);
+        TicketsSold += TicketCount; // Update mock ticket count
+        TicketCount = 1;
+
+        // Display a Snackbar confirmation
+        SnackBar.Add("Tickets purchased successfully!", Severity.Success);
+    }
+
+    private void OnSelectedChanged(int selectedPage)
+    {
+        UpdatePagedTickets(selectedPage - 1);
+    }
+    private void UpdatePagedTickets(int selectedPage)
+    {
+        var skip = selectedPage * PageSize;
+        PagedTickets = Enumerable.Range(1, TotalTickets).Skip(skip).Take(PageSize).ToList();
+    }
+
+   
+    private void NextPage()
+    {
+        if (CurrentPage + 1 < TotalPages)
+        {
+            CurrentPage++;
+            UpdatePagedTickets(CurrentPage);
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (CurrentPage > 0)
+        {
+            CurrentPage--;
+            UpdatePagedTickets(CurrentPage);
+        }
+    }
+    
+}

@@ -1,0 +1,123 @@
+@model SchoolAdminDashboardViewModel
+@{
+    ViewData["Title"] = "School Admin Dashboard";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">School Admin Dashboard</h1>
+</div>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Grades</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalGrades</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-layers fa-2x text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Class Rooms</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalClassRooms</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-door-open fa-2x text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Teachers</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalTeachers</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-person-badge fa-2x text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Students</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalStudents</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-people fa-2x text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Grades" asp-action="Create" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-lg me-2"></i>New Grade
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="ClassRooms" asp-action="Create" class="btn btn-success w-100">
+                            <i class="bi bi-plus-lg me-2"></i>New Class Room
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Teachers" asp-action="Create" class="btn btn-info w-100 text-white">
+                            <i class="bi bi-plus-lg me-2"></i>New Teacher
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Students" asp-action="Create" class="btn btn-warning w-100">
+                            <i class="bi bi-plus-lg me-2"></i>New Student
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">School Information</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <p class="mb-2"><strong>Materials:</strong> @Model.TotalMaterials</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

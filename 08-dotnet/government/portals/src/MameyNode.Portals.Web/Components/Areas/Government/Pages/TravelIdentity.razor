@@ -1,0 +1,91 @@
+@page "/admin/travel-identity"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<TravelIdentity> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Travel Identity" Icon="fas fa-plane" Subtitle="Travel identity management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Identities" Value="@_travelIdentities.Count.ToString()" Icon="fas fa-plane" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Expired" Value="@_expiredCount.ToString()" Icon="fas fa-exclamation-triangle" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Travel Identities" Class="mt-4">
+        <MudTable T="TravelIdentityInfo" Items="@_travelIdentities" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Travel ID</MudTh>
+                <MudTh>Citizen ID</MudTh>
+                <MudTh>Identity Type</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Issued</MudTh>
+                <MudTh>Expiry</MudTh>
+                <MudTh>Authorized Countries</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.TravelId</MudTd>
+                <MudTd>@context.CitizenId</MudTd>
+                <MudTd>@context.IdentityType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.IssuedAt.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@(context.ExpiryDate?.ToString("yyyy-MM-dd") ?? "-")</MudTd>
+                <MudTd>@string.Join(", ", context.AuthorizedCountries.Take(3))@(context.AuthorizedCountries.Count > 3 ? "..." : "")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<TravelIdentityInfo> _travelIdentities = new();
+    private int _activeCount;
+    private int _expiredCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _travelIdentities = await GovernmentClient.GetTravelIdentitiesAsync();
+            _activeCount = _travelIdentities.Count(t => t.Status == "Active");
+            _expiredCount = _travelIdentities.Count(t => t.ExpiryDate < DateTime.Now);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading travel identities");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

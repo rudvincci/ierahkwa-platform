@@ -1,0 +1,348 @@
+@using Mamey.FWID.Identities.BlazorWasm.Services
+@inject IBiometricCaptureService BiometricService
+
+<MudCard Elevation="2" Class="pa-4">
+    <MudText Typo="Typo.h6" Class="mb-3">
+        <MudIcon Icon="@Icons.Material.Filled.Fingerprint" Class="mr-2" />
+        Fingerprint Authentication
+    </MudText>
+
+    @if (_isCheckingAvailability)
+    {
+        <div class="text-center py-4">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            <MudText Typo="Typo.body2" Class="mt-2">Checking device capabilities...</MudText>
+        </div>
+    }
+    else if (!_isAvailable)
+    {
+        <MudAlert Severity="Severity.Warning" Class="mb-4">
+            <MudText Typo="Typo.body2">
+                <strong>Fingerprint authentication is not available</strong> on this device. 
+                This feature requires a device with biometric hardware (like Touch ID, Windows Hello, or a fingerprint scanner).
+            </MudText>
+        </MudAlert>
+        
+        <MudButton Color="Color.Primary" 
+                   Variant="Variant.Outlined" 
+                   OnClick="@CheckAvailabilityAsync">
+            Check Again
+        </MudButton>
+    }
+    else
+    {
+        <!-- Privacy Notice -->
+        <MudAlert Severity="Severity.Info" Class="mb-4" Dense="true">
+            <MudText Typo="Typo.body2">
+                Your fingerprint data stays on your device. Only a secure cryptographic key is stored.
+            </MudText>
+        </MudAlert>
+
+        @if (Mode == FingerprintMode.Register)
+        {
+            <!-- Registration Mode -->
+            <div class="text-center py-4">
+                <MudIcon Icon="@Icons.Material.Filled.Fingerprint" 
+                         Style="font-size: 6rem;" 
+                         Color="@GetStatusColor()" />
+                
+                <MudText Typo="Typo.h6" Class="mt-3">
+                    @GetStatusText()
+                </MudText>
+                
+                <MudText Typo="Typo.body2" Class="mt-2 mud-text-secondary">
+                    @GetInstructionText()
+                </MudText>
+            </div>
+
+            @if (_isProcessing)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
+            }
+
+            @if (_hasError)
+            {
+                <MudAlert Severity="Severity.Error" Class="my-4" Dense="true">
+                    @_errorMessage
+                </MudAlert>
+            }
+
+            @if (_isRegistered)
+            {
+                <MudAlert Severity="Severity.Success" Class="my-4">
+                    <MudText Typo="Typo.body1">
+                        <strong>Fingerprint registered successfully!</strong>
+                    </MudText>
+                </MudAlert>
+            }
+
+            <div class="d-flex justify-center gap-3 mt-4">
+                <MudButton Color="Color.Default" 
+                           Variant="Variant.Outlined"
+                           OnClick="@OnCancelCallback"
+                           Disabled="@_isProcessing">
+                    Cancel
+                </MudButton>
+                
+                @if (!_isRegistered)
+                {
+                    <MudButton Color="Color.Primary" 
+                               Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.Fingerprint"
+                               OnClick="@RegisterAsync"
+                               Disabled="@_isProcessing">
+                        @if (_isProcessing)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        }
+                        Register Fingerprint
+                    </MudButton>
+                }
+                else
+                {
+                    <MudButton Color="Color.Success" 
+                               Variant="Variant.Filled"
+                               OnClick="@ConfirmRegistrationAsync">
+                        Continue
+                    </MudButton>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- Verification Mode -->
+            <div class="text-center py-4">
+                <MudIcon Icon="@Icons.Material.Filled.Fingerprint" 
+                         Style="font-size: 6rem;" 
+                         Color="@GetStatusColor()" 
+                         Class="@(_isProcessing ? "fingerprint-pulse" : "")" />
+                
+                <MudText Typo="Typo.h6" Class="mt-3">
+                    @GetStatusText()
+                </MudText>
+            </div>
+
+            @if (_hasError)
+            {
+                <MudAlert Severity="Severity.Error" Class="my-4" Dense="true">
+                    @_errorMessage
+                </MudAlert>
+            }
+
+            @if (_isVerified)
+            {
+                <MudAlert Severity="Severity.Success" Class="my-4">
+                    <MudText Typo="Typo.body1">
+                        <strong>Fingerprint verified!</strong>
+                    </MudText>
+                </MudAlert>
+            }
+
+            <div class="d-flex justify-center gap-3 mt-4">
+                <MudButton Color="Color.Default" 
+                           Variant="Variant.Outlined"
+                           OnClick="@OnCancelCallback"
+                           Disabled="@_isProcessing">
+                    Cancel
+                </MudButton>
+                
+                @if (!_isVerified)
+                {
+                    <MudButton Color="Color.Primary" 
+                               Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.Fingerprint"
+                               OnClick="@VerifyAsync"
+                               Disabled="@_isProcessing">
+                        @if (_isProcessing)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        }
+                        Verify Fingerprint
+                    </MudButton>
+                }
+            </div>
+        }
+    }
+</MudCard>
+
+<style>
+    .fingerprint-pulse {
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    @@keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.05); }
+    }
+</style>
+
+@code {
+    [Parameter]
+    public FingerprintMode Mode { get; set; } = FingerprintMode.Register;
+
+    [Parameter]
+    public WebAuthnRegistrationOptions? RegistrationOptions { get; set; }
+
+    [Parameter]
+    public WebAuthnVerificationOptions? VerificationOptions { get; set; }
+
+    [Parameter]
+    public EventCallback<FingerprintCaptureResult> OnCapture { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private bool _isCheckingAvailability = true;
+    private bool _isAvailable = false;
+    private bool _isProcessing = false;
+    private bool _isRegistered = false;
+    private bool _isVerified = false;
+    private bool _hasError = false;
+    private string? _errorMessage;
+    private WebAuthnCredential? _credential;
+    private WebAuthnAssertion? _assertion;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckAvailabilityAsync();
+    }
+
+    private async Task CheckAvailabilityAsync()
+    {
+        _isCheckingAvailability = true;
+        _hasError = false;
+        StateHasChanged();
+
+        try
+        {
+            _isAvailable = await BiometricService.IsWebAuthnAvailableAsync();
+        }
+        catch (Exception ex)
+        {
+            _isAvailable = false;
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _isCheckingAvailability = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RegisterAsync()
+    {
+        if (RegistrationOptions == null)
+        {
+            _hasError = true;
+            _errorMessage = "Registration options not provided";
+            return;
+        }
+
+        _isProcessing = true;
+        _hasError = false;
+        StateHasChanged();
+
+        try
+        {
+            _credential = await BiometricService.RegisterFingerprintAsync(RegistrationOptions);
+            _isRegistered = true;
+        }
+        catch (Exception ex)
+        {
+            _hasError = true;
+            _errorMessage = ex.Message.Contains("denied") || ex.Message.Contains("cancelled")
+                ? "Operation cancelled by user"
+                : $"Registration failed: {ex.Message}";
+        }
+        finally
+        {
+            _isProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ConfirmRegistrationAsync()
+    {
+        if (_credential == null) return;
+
+        var result = new FingerprintCaptureResult
+        {
+            Success = true,
+            Mode = FingerprintMode.Register,
+            Credential = _credential,
+            CapturedAt = DateTime.UtcNow
+        };
+
+        await OnCapture.InvokeAsync(result);
+    }
+
+    private async Task VerifyAsync()
+    {
+        if (VerificationOptions == null)
+        {
+            _hasError = true;
+            _errorMessage = "Verification options not provided";
+            return;
+        }
+
+        _isProcessing = true;
+        _hasError = false;
+        StateHasChanged();
+
+        try
+        {
+            _assertion = await BiometricService.VerifyFingerprintAsync(VerificationOptions);
+            _isVerified = true;
+
+            var result = new FingerprintCaptureResult
+            {
+                Success = true,
+                Mode = FingerprintMode.Verify,
+                Assertion = _assertion,
+                CapturedAt = DateTime.UtcNow
+            };
+
+            await OnCapture.InvokeAsync(result);
+        }
+        catch (Exception ex)
+        {
+            _hasError = true;
+            _errorMessage = ex.Message.Contains("denied") || ex.Message.Contains("cancelled")
+                ? "Operation cancelled by user"
+                : $"Verification failed: {ex.Message}";
+        }
+        finally
+        {
+            _isProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnCancelCallback()
+    {
+        await OnCancel.InvokeAsync();
+    }
+
+    private Color GetStatusColor()
+    {
+        if (_hasError) return Color.Error;
+        if (_isRegistered || _isVerified) return Color.Success;
+        if (_isProcessing) return Color.Primary;
+        return Color.Default;
+    }
+
+    private string GetStatusText()
+    {
+        if (_hasError) return "Error";
+        if (_isRegistered) return "Registered!";
+        if (_isVerified) return "Verified!";
+        if (_isProcessing) return "Touch sensor now...";
+        return Mode == FingerprintMode.Register ? "Ready to Register" : "Ready to Verify";
+    }
+
+    private string GetInstructionText()
+    {
+        if (_isProcessing) return "Place your finger on the sensor when prompted";
+        return "Click the button below to start fingerprint enrollment";
+    }
+}

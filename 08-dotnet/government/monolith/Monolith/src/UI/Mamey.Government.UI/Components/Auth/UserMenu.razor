@@ -1,0 +1,53 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Nav
+@inject IDialogService Dialogs
+
+<AuthorizeView>
+    <Authorized>
+        <MudMenu Dense="true" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+            <ActivatorContent>
+                <MudButton Variant="Variant.Text" Color="Color.Inherit" StartIcon="@Icons.Material.Filled.AccountCircle">
+                    @context.User.Identity?.Name
+                </MudButton>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem Disabled="true">
+                    <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Domain" Size="Size.Small" />
+                        <MudText Typo="Typo.caption">Tenant: @(context.User.FindFirst("tenant")?.Value ?? "default")</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem Disabled="true">
+                    <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Badge" Size="Size.Small" />
+                        <MudText Typo="Typo.caption">Role: @(context.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "Citizen")</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudDivider />
+                <MudMenuItem Href="/citizen/profile" Icon="@Icons.Material.Filled.Person">
+                    My Profile
+                </MudMenuItem>
+                <MudMenuItem Href="/citizen/notifications" Icon="@Icons.Material.Filled.Notifications">
+                    Notifications
+                </MudMenuItem>
+                <MudDivider />
+                <MudMenuItem OnClick="SignOut" Icon="@Icons.Material.Filled.Logout">
+                    Logout
+                </MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+    </Authorized>
+    <NotAuthorized>
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" StartIcon="@Icons.Material.Filled.Login" Href="/auth/login">
+            Login
+        </MudButton>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private void SignOut()
+    {
+        // Force-load to hit server endpoint (cookie signout).
+        Nav.NavigateTo("/auth/logout", forceLoad: true);
+    }
+}

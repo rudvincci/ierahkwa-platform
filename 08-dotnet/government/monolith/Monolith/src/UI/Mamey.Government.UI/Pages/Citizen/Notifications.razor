@@ -1,0 +1,73 @@
+@page "/citizen/notifications"
+@layout CitizenLayout
+@attribute [Authorize]
+
+<PageTitle>Notifications - Citizen Portal</PageTitle>
+
+<PageHeader Title="Notifications" Subtitle="Stay updated with important alerts and messages" />
+
+<MudCard Elevation="2">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">All Notifications</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Size="Size.Small">
+                Mark All as Read
+            </MudButton>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudList T="string" Dense="true">
+            @foreach (var notification in _notifications)
+            {
+                <MudListItem Class="@(notification.IsRead ? "" : "mud-primary-lighten")">
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                        <MudStack Row="true" Spacing="3">
+                            <MudIcon Icon="@GetIcon(notification.Type)" Color="@GetColor(notification.Type)" />
+                            <MudStack Spacing="0">
+                                <MudText Typo="Typo.subtitle2">@notification.Title</MudText>
+                                <MudText Typo="Typo.body2">@notification.Message</MudText>
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">@notification.Timestamp.ToString("g")</MudText>
+                            </MudStack>
+                        </MudStack>
+                        @if (!notification.IsRead)
+                        {
+                            <MudBadge Color="Color.Primary" Dot="true" />
+                        }
+                    </MudStack>
+                </MudListItem>
+                <MudDivider />
+            }
+        </MudList>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private record Notification(string Title, string Message, string Type, DateTime Timestamp, bool IsRead);
+
+    private readonly List<Notification> _notifications = new()
+    {
+        new("Document Expiry Reminder", "Your passport will expire in 6 months.", "warning", DateTime.Now.AddDays(-1), false),
+        new("New Service Available", "Apply for variant ID cards online.", "info", DateTime.Now.AddDays(-3), false),
+        new("System Maintenance", "Scheduled maintenance on Sunday.", "info", DateTime.Now.AddDays(-5), false),
+        new("Application Approved", "Your citizenship application has been approved.", "success", DateTime.Now.AddDays(-10), true),
+        new("Profile Updated", "Your profile information has been updated.", "info", DateTime.Now.AddDays(-15), true)
+    };
+
+    private string GetIcon(string type) => type switch
+    {
+        "warning" => Icons.Material.Filled.Warning,
+        "success" => Icons.Material.Filled.CheckCircle,
+        "error" => Icons.Material.Filled.Error,
+        _ => Icons.Material.Filled.Info
+    };
+
+    private Color GetColor(string type) => type switch
+    {
+        "warning" => Color.Warning,
+        "success" => Color.Success,
+        "error" => Color.Error,
+        _ => Color.Info
+    };
+}

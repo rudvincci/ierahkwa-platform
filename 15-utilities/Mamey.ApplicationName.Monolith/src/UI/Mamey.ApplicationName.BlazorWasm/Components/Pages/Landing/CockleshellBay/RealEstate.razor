@@ -1,0 +1,102 @@
+@page "/cockleshell-bay/real-estate"
+
+@using Mamey.BlazorWasm.Models
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="real-estate-page-container">
+    <!-- Header Section -->
+    <MudPaper Class="header-section" Elevation="0">
+        <h1 class="page-title animate-slide-in">Real Estate Offerings</h1>
+        <p class="page-subtitle animate-fade-in">
+            Luxury, Sustainability, and Cultural Heritage in Every Offering
+        </p>
+    </MudPaper>
+
+    <!-- Introduction Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Overview</h2>
+            <p class="section-content animate-fade-in">
+                Our smart city showcases a diverse selection of real estate options that blend modern amenities, environmentally friendly
+                principles, and Indigenous cultural heritage. Each property is designed to foster community, sustainability, and a high
+                quality of life.
+            </p>
+            <MudImage Width="800" Src="images/cockleshell-bay.png"></MudImage>
+        </MudPaper>
+    </section>
+
+    <!-- Real Estate Options -->
+    <section class="section">
+        <CardHighlight Items="GetRealEstateOfferings()" />
+    </section>
+
+    <!-- Investment Benefits Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Investment Benefits</h2>
+            <ul class="benefits-list animate-fade-in">
+                <li>Properties align with sustainable and eco-friendly principles.</li>
+                <li>Investment contributes to community development projects.</li>
+                <li>Opportunities for real estate appreciation in a thriving smart city.</li>
+            </ul>
+        </MudPaper>
+    </section>
+</MudContainer>
+
+
+@code {
+    private List<FeaturedProduct> GetRealEstateOfferings()
+    {
+        return new List<FeaturedProduct>()
+        {
+            new FeaturedProduct()
+            {
+                Title = "104 Townhomes",
+                Description = "Designed for families and individuals seeking a community-oriented lifestyle with modern amenities and sustainable design.",
+                ImageUrl = "images/cockleshell-bay-villas.png",
+                Id = 1,
+            },
+            new FeaturedProduct()
+            {
+                Title = "86 Mountain Estates",
+                Description = "Picturesque locations with breathtaking views and a tranquil environment, perfect for connecting with nature.",
+                ImageUrl = "images/mountain-estate-villas.png",
+                Id = 2,
+            },
+            new FeaturedProduct()
+            {
+                Title = "150-Room 5-Star Luxury Hotel",
+                Description = "World-class accommodations with Indigenous cultural elements, attracting tourists and promoting local heritage.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 3,
+            },
+            new FeaturedProduct()
+            {
+                Title = "09 Waterfront Villas",
+                Description = "Exclusive villas offering luxurious living spaces with direct waterfront access, serving as peaceful retreats.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 4,
+            },
+            new FeaturedProduct()
+            {
+                Title = "152 Acres of Land",
+                Description = "Dedicated to community development projects, including agricultural initiatives and recreational spaces.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 5,
+            },
+            new FeaturedProduct()
+            {
+                Title = "234 Condominiums",
+                Description = "Modern living spaces designed for convenience and accessibility, ideal for families and individuals.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 6,
+            },
+            new FeaturedProduct()
+            {
+                Title = "152-Slip Marina",
+                Description = "A hub for recreational boating and water activities, enhancing the community's waterfront appeal.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 7,
+            },
+        };
+    }
+}

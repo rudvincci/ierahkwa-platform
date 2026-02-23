@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mamey.Portal.Shared\Mamey.Portal.Shared.csproj" />
+    <ProjectReference Include="..\Mamey.Portal.Citizenship.Application\Mamey.Portal.Citizenship.Application.csproj" />
+    <ProjectReference Include="..\Mamey.Portal.Cms.Application\Mamey.Portal.Cms.Application.csproj" />
+    <ProjectReference Include="..\Mamey.Portal.Cms.Infrastructure\Mamey.Portal.Cms.Infrastructure.csproj" />
+    <ProjectReference Include="..\Mamey.Portal.Tenant.Application\Mamey.Portal.Tenant.Application.csproj" />
+    <ProjectReference Include="..\Mamey.Portal.Tenant.Infrastructure\Mamey.Portal.Tenant.Infrastructure.csproj" />
+    <ProjectReference Include="..\Mamey.Portal.Library.Application\Mamey.Portal.Library.Application.csproj" />
+    <ProjectReference Include="..\Mamey.Portal.Library.Infrastructure\Mamey.Portal.Library.Infrastructure.csproj" />
+    <ProjectReference Include="..\Mamey.Portal.Auth.Application\Mamey.Portal.Auth.Application.csproj" />
+    <ProjectReference Include="..\Mamey.Portal.Auth.Infrastructure\Mamey.Portal.Auth.Infrastructure.csproj" />
+    <ProjectReference Include="..\Mamey.Portal.Citizenship.Infrastructure\Mamey.Portal.Citizenship.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMameyProjects)'=='true'">
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.BlazorWasm\src\Mamey.BlazorWasm\Mamey.BlazorWasm.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMameyProjects)'!='true'">
+    <PackageReference Include="Mamey.BlazorWasm" Version="2.0.*" />
+    <PackageReference Include="Mamey.Barcode" Version="2.0.*" />
+    <PackageReference Include="Mamey.Http" Version="2.0.*" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMameyProjects)'=='true'">
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Barcode\src\Mamey.Barcode\Mamey.Barcode.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Http\src\Mamey.Http\Mamey.Http.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MudBlazor" Version="8.11.0" />
+    <PackageReference Include="ReactiveUI" Version="20.4.1" />
+    <PackageReference Include="ReactiveUI.Blazor" Version="20.4.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>

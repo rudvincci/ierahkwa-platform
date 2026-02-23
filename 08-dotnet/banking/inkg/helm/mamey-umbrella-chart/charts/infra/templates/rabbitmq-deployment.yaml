@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "infra.fullname" . }}-rabbitmq
+  labels:
+    app: rabbitmq
+spec:
+  replicas: {{ .Values.rabbitmq.replicaCount }}
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: "{{ .Values.rabbitmq.image }}"
+        imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+        ports:
+        - containerPort: {{ .Values.rabbitmq.ports.rabbit }}
+        - containerPort: {{ .Values.rabbitmq.ports.management }}
+        - containerPort: {{ .Values.rabbitmq.ports.additional }}
+        volumeMounts:
+        - name: rabbitmq-data
+          mountPath: /var/lib/rabbitmq
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.rabbitmq.ports.rabbit }}
+          initialDelaySeconds: 20
+          periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.rabbitmq.ports.rabbit }}
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+      volumes:
+      - name: rabbitmq-data
+        persistentVolumeClaim:
+          claimName: rabbitmq-pvc

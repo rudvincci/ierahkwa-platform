@@ -1,0 +1,30 @@
+@using Mamey.BlazorWasm.Components.Foundation
+
+<div class="@SectionClass" style="@Style">
+    @if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <MudText Typo="@TitleTypo" Class="mb-2">@Title</MudText>
+    }
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <MudText Typo="Typo.body2" Class="mb-3 opacity-60">@Description</MudText>
+    }
+    @if (ShowDivider)
+    {
+        <MudDivider Class="mb-3" />
+    }
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public Typo TitleTypo { get; set; } = Typo.h6;
+    [Parameter] public bool ShowDivider { get; set; } = true;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    private string SectionClass => $"mamey-section-pro mb-4 {Class}";
+}
+

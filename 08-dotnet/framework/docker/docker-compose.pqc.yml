@@ -1,0 +1,169 @@
+# Mamey/docker/docker-compose.pqc.yml
+# Docker Compose configuration for MameyNode with Post-Quantum Cryptography stack
+#
+# Usage:
+#   docker-compose -f docker/docker-compose.pqc.yml up -d
+#   docker-compose -f docker/docker-compose.pqc.yml logs -f mameynode
+#   docker-compose -f docker/docker-compose.pqc.yml down
+
+version: '3.8'
+
+services:
+  # ==========================================================================
+  # MameyNode with PQC support
+  # ==========================================================================
+  mameynode:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.mameynode
+    image: mameynode:pqc
+    container_name: mameynode-pqc
+    ports:
+      - "8080:8080"   # HTTP API
+      - "8443:8443"   # HTTPS API
+      - "17076:17076" # gRPC
+    environment:
+      # PQC Configuration
+      - MAMEY_PQC_ENABLED=true
+      - MAMEY_PQC_ALGORITHM=ML-DSA-65
+      - MAMEY_PQC_HYBRID_MODE=true
+      - MAMEY_PQC_MANDATORY_HEIGHT=0
+      # Database connections
+      - ConnectionStrings__PostgreSQL=Host=postgres;Database=mameynode;Username=mamey;Password=mamey_secret
+      - ConnectionStrings__MongoDB=mongodb://mongodb:27017/mameynode
+      - ConnectionStrings__Redis=redis:6379
+      # Logging
+      - Logging__LogLevel__Default=Information
+      - Logging__LogLevel__Mamey=Debug
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - mamey-pqc
+    volumes:
+      - mameynode-data:/app/data
+      - mameynode-logs:/app/logs
+    restart: unless-stopped
+
+  # ==========================================================================
+  # PostgreSQL Database (Write model)
+  # ==========================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: mameynode-postgres
+    environment:
+      - POSTGRES_USER=mamey
+      - POSTGRES_PASSWORD=mamey_secret
+      - POSTGRES_DB=mameynode
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-scripts/postgres:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mamey -d mameynode"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mamey-pqc
+    restart: unless-stopped
+
+  # ==========================================================================
+  # MongoDB Database (Read model)
+  # ==========================================================================
+  mongodb:
+    image: mongo:7.0
+    container_name: mameynode-mongodb
+    environment:
+      - MONGO_INITDB_DATABASE=mameynode
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+      - ./init-scripts/mongodb:/docker-entrypoint-initdb.d
+    networks:
+      - mamey-pqc
+    restart: unless-stopped
+
+  # ==========================================================================
+  # Redis Cache
+  # ==========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: mameynode-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - mamey-pqc
+    restart: unless-stopped
+
+  # ==========================================================================
+  # RabbitMQ Message Broker
+  # ==========================================================================
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: mameynode-rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=mamey
+      - RABBITMQ_DEFAULT_PASS=mamey_secret
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - mamey-pqc
+    restart: unless-stopped
+
+  # ==========================================================================
+  # Jaeger Tracing (optional - for observability)
+  # ==========================================================================
+  jaeger:
+    image: jaegertracing/all-in-one:1.53
+    container_name: mameynode-jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    networks:
+      - mamey-pqc
+    restart: unless-stopped
+
+# ==========================================================================
+# Networks
+# ==========================================================================
+networks:
+  mamey-pqc:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# ==========================================================================
+# Volumes
+# ==========================================================================
+volumes:
+  mameynode-data:
+  mameynode-logs:
+  postgres-data:
+  mongodb-data:
+  redis-data:
+  rabbitmq-data:
+
+

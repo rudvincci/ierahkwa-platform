@@ -1,0 +1,39 @@
+﻿using Mamey.Persistence.OpenStack.OCS.Http;
+
+namespace Mamey.Persistence.OpenStack.OCS.Auth;
+
+internal class AuthManager : IAuthManager
+{
+    private readonly OcsOptions _ocsOptions;
+    private readonly HttpClient _httpClient;
+
+    public AuthManager(OcsOptions ocsOptions, IHttpClientFactory httpClientFactory)
+    {
+        _ocsOptions = ocsOptions;
+        _httpClient = httpClientFactory.CreateClient(ocsOptions.InternalHttpClientName);
+    }
+
+    public async Task<AuthData> Authenticate()
+    {
+        var authRequest = new AuthRequestBuilder()
+            .WithMethod(_ocsOptions.AuthMethod)
+            .WithProject(_ocsOptions.ProjectId)
+            .WithUser(_ocsOptions.UserId, _ocsOptions.Password)
+            .Build();
+
+        var httpRequest = new HttpRequestBuilder()
+            .WithRelativeUrl(_ocsOptions.AuthRelativeUrl)
+            .WithMethod(HttpMethod.Post)
+            .WithJsonContent(authRequest)
+            .Build();
+
+        var response = await _httpClient.SendAsync(httpRequest);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("Something failed");
+        }
+
+        var authToken = response.Headers.FirstOrDefault(p => p.Key.Equals("X-Subject-Token")).Value.FirstOrDefault()?.ToString();
+        return new AuthData(authToken);
+    }
+}

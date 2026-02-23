@@ -1,0 +1,67 @@
+@typeparam TItem
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="pupitre-data-grid">
+    @if (IsLoading)
+    {
+        <div class="loading-overlay">
+            <div class="spinner"></div>
+            <span>Loading...</span>
+        </div>
+    }
+    else if (Items == null || !Items.Any())
+    {
+        <div class="empty-state">
+            <span>@EmptyMessage</span>
+        </div>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    @HeaderTemplate
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Items)
+                {
+                    <tr @onclick="() => OnRowClick.InvokeAsync(item)" class="@(SelectedItem?.Equals(item) == true ? "selected" : "")">
+                        @RowTemplate(item)
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (ShowPagination && TotalPages > 1)
+        {
+            <div class="pagination">
+                <button @onclick="() => OnPageChange.InvokeAsync(CurrentPage - 1)" disabled="@(!HasPrevious)">
+                    Previous
+                </button>
+                <span>Page @CurrentPage of @TotalPages</span>
+                <button @onclick="() => OnPageChange.InvokeAsync(CurrentPage + 1)" disabled="@(!HasNext)">
+                    Next
+                </button>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public IEnumerable<TItem>? Items { get; set; }
+    [Parameter] public RenderFragment? HeaderTemplate { get; set; }
+    [Parameter] public RenderFragment<TItem> RowTemplate { get; set; } = default!;
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public string EmptyMessage { get; set; } = "No items found";
+    [Parameter] public TItem? SelectedItem { get; set; }
+    [Parameter] public EventCallback<TItem> OnRowClick { get; set; }
+    
+    // Pagination
+    [Parameter] public bool ShowPagination { get; set; } = true;
+    [Parameter] public int CurrentPage { get; set; } = 1;
+    [Parameter] public int TotalPages { get; set; } = 1;
+    [Parameter] public bool HasPrevious { get; set; }
+    [Parameter] public bool HasNext { get; set; }
+    [Parameter] public EventCallback<int> OnPageChange { get; set; }
+}

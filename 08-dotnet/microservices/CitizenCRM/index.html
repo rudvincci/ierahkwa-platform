@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👥 CITIZEN CRM | Ierahkwa Relationship Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --green: #00FF41; --cyan: #00FFFF; --red: #FF1744; --purple: #9D4EDD; --orange: #FF6B35; --bg: #0a0e17; --card: #0d1a2d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17, #1a0a2e, #0a0e17); color: #fff; min-height: 100vh; }
+        
+        .header { background: var(--card); padding: 15px 30px; border-bottom: 3px solid var(--purple); display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--purple), var(--cyan)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+        .logo h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--purple); }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .citizen-count { background: rgba(157,78,221,0.2); border: 1px solid var(--purple); padding: 8px 15px; border-radius: 20px; color: var(--purple); font-family: 'Orbitron', sans-serif; }
+        .nav-link { padding: 10px 20px; background: rgba(157,78,221,0.2); border: 1px solid var(--purple); border-radius: 10px; color: var(--purple); text-decoration: none; }
+        
+        .main { display: grid; grid-template-columns: 280px 1fr 350px; height: calc(100vh - 80px); }
+        
+        /* Sidebar */
+        .sidebar { background: var(--card); border-right: 1px solid rgba(157,78,221,0.2); padding: 20px; overflow-y: auto; }
+        .sidebar-title { font-size: 0.7em; color: #666; text-transform: uppercase; margin: 20px 0 10px; }
+        .filter-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 10px; cursor: pointer; margin-bottom: 5px; }
+        .filter-item:hover, .filter-item.active { background: rgba(157,78,221,0.15); }
+        .filter-item.active { border-left: 3px solid var(--purple); }
+        .filter-icon { font-size: 1.2em; width: 30px; text-align: center; }
+        .filter-count { margin-left: auto; background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 10px; font-size: 0.8em; }
+        
+        .quick-stats { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; margin-top: 20px; }
+        .quick-stat-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .quick-stat-item:last-child { border-bottom: none; }
+        .quick-stat-label { color: #888; font-size: 0.85em; }
+        .quick-stat-value { font-family: 'Orbitron', sans-serif; color: var(--cyan); }
+        
+        /* Content */
+        .content { padding: 25px; overflow-y: auto; }
+        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .content-title { font-family: 'Orbitron', sans-serif; color: var(--purple); }
+        .search-box { display: flex; gap: 10px; }
+        .search-box input { padding: 10px 20px; border: 1px solid rgba(157,78,221,0.3); border-radius: 25px; background: rgba(0,0,0,0.3); color: #fff; width: 300px; }
+        .add-btn { padding: 10px 20px; background: var(--purple); border: none; border-radius: 10px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        /* Citizen Cards Grid */
+        .citizens-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .citizen-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(157,78,221,0.2); cursor: pointer; transition: all 0.3s; }
+        .citizen-card:hover { border-color: var(--purple); transform: translateY(-3px); }
+        .citizen-card.selected { border-color: var(--cyan); box-shadow: 0 0 20px rgba(0,255,255,0.2); }
+        
+        .citizen-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .citizen-avatar { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 1.5em; position: relative; }
+        .citizen-status { position: absolute; bottom: 0; right: 0; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--card); }
+        .citizen-status.active { background: var(--green); }
+        .citizen-status.pending { background: var(--orange); }
+        .citizen-status.inactive { background: #666; }
+        .citizen-name { font-weight: 600; font-size: 1.1em; }
+        .citizen-id { font-size: 0.8em; color: var(--cyan); font-family: monospace; }
+        
+        .citizen-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .meta-tag { padding: 4px 12px; border-radius: 15px; font-size: 0.75em; background: rgba(255,255,255,0.05); }
+        .meta-tag.family { background: rgba(255,215,0,0.2); color: var(--gold); }
+        .meta-tag.vip { background: rgba(157,78,221,0.2); color: var(--purple); }
+        .meta-tag.verified { background: rgba(0,255,65,0.2); color: var(--green); }
+        
+        .citizen-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85em; }
+        .info-item { display: flex; flex-direction: column; }
+        .info-label { color: #666; font-size: 0.8em; }
+        .info-value { color: #fff; }
+        
+        /* Details Panel */
+        .details-panel { background: var(--card); border-left: 1px solid rgba(157,78,221,0.2); padding: 20px; overflow-y: auto; }
+        .panel-header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid rgba(157,78,221,0.2); margin-bottom: 20px; }
+        .panel-avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 3em; margin: 0 auto 15px; position: relative; }
+        .panel-name { font-family: 'Orbitron', sans-serif; font-size: 1.2em; }
+        .panel-id { color: var(--cyan); font-size: 0.85em; font-family: monospace; }
+        
+        .detail-section { margin-bottom: 20px; }
+        .detail-section-title { font-size: 0.75em; color: #666; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .detail-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9em; }
+        .detail-label { color: #888; }
+        .detail-value { color: #fff; }
+        
+        .family-section { background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 15px; padding: 15px; margin-bottom: 20px; }
+        .family-title { color: var(--gold); font-family: 'Orbitron', sans-serif; margin-bottom: 15px; font-size: 0.9em; display: flex; align-items: center; gap: 8px; }
+        .family-member { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+        .family-member-avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--card); display: flex; align-items: center; justify-content: center; }
+        .family-member-info { flex: 1; }
+        .family-member-name { font-size: 0.9em; }
+        .family-member-relation { font-size: 0.75em; color: #888; }
+        
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .action-btn { padding: 12px; border-radius: 10px; cursor: pointer; font-size: 0.85em; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .action-btn.primary { background: var(--purple); border: none; color: #fff; }
+        .action-btn.secondary { background: transparent; border: 1px solid var(--cyan); color: var(--cyan); }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); border: 2px solid var(--purple); border-radius: 20px; padding: 30px; width: 600px; max-width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .modal-title { font-family: 'Orbitron', sans-serif; color: var(--purple); }
+        .close-btn { background: none; border: none; color: #fff; font-size: 1.5em; cursor: pointer; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: var(--cyan); margin-bottom: 8px; font-size: 0.9em; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 15px; border: 1px solid rgba(157,78,221,0.3); border-radius: 10px; background: rgba(0,0,0,0.3); color: #fff; font-size: 1em; }
+        .form-group.full { grid-column: span 2; }
+        .submit-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--purple), var(--cyan)); border: none; border-radius: 12px; color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">👥</div>
+            <div>
+                <h1>CITIZEN CRM</h1>
+                <p style="color: #888; font-size: 0.75em;">Relationship Management</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="citizen-count">1,234 Citizens</div>
+            <a href="/platform" class="nav-link"><i class="bi bi-arrow-left"></i> Platform</a>
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Status</div>
+            <div class="filter-item active">
+                <span class="filter-icon">📋</span>
+                <span>All Citizens</span>
+                <span class="filter-count">1,234</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">✅</span>
+                <span>Active</span>
+                <span class="filter-count">1,156</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">⏳</span>
+                <span>Pending</span>
+                <span class="filter-count">45</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">👑</span>
+                <span>VIP</span>
+                <span class="filter-count">23</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">👨‍👩‍👧‍👦</span>
+                <span>Families</span>
+                <span class="filter-count">456</span>
+            </div>
+            
+            <div class="sidebar-title">Categories</div>
+            <div class="filter-item">
+                <span class="filter-icon">🏢</span>
+                <span>Business Owners</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🎓</span>
+                <span>Students</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">👴</span>
+                <span>Elders</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🆕</span>
+                <span>New Members</span>
+            </div>
+            
+            <div class="quick-stats">
+                <div class="quick-stat-item">
+                    <span class="quick-stat-label">Registered Today</span>
+                    <span class="quick-stat-value">12</span>
+                </div>
+                <div class="quick-stat-item">
+                    <span class="quick-stat-label">Active Today</span>
+                    <span class="quick-stat-value">456</span>
+                </div>
+                <div class="quick-stat-item">
+                    <span class="quick-stat-label">Total Families</span>
+                    <span class="quick-stat-value">456</span>
+                </div>
+                <div class="quick-stat-item">
+                    <span class="quick-stat-label">AI Protected</span>
+                    <span class="quick-stat-value" style="color: var(--green);">100%</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Content -->
+        <section class="content">
+            <div class="content-header">
+                <div class="content-title">👥 All Citizens</div>
+                <div class="search-box">
+                    <input type="text" placeholder="Search by name, ID, or email...">
+                    <button class="add-btn" onclick="openModal()"><i class="bi bi-plus"></i> Add Citizen</button>
+                </div>
+            </div>
+            
+            <div class="citizens-grid">
+                <div class="citizen-card selected" onclick="selectCitizen(this)">
+                    <div class="citizen-header">
+                        <div class="citizen-avatar">👑<span class="citizen-status active"></span></div>
+                        <div>
+                            <div class="citizen-name">Ruddie S. Lopez</div>
+                            <div class="citizen-id">CIT-2026-0001</div>
+                        </div>
+                    </div>
+                    <div class="citizen-meta">
+                        <span class="meta-tag vip">👑 VIP</span>
+                        <span class="meta-tag verified">✓ Verified</span>
+                        <span class="meta-tag family">👨‍👩‍👧 Family</span>
+                    </div>
+                    <div class="citizen-info">
+                        <div class="info-item"><span class="info-label">Role</span><span class="info-value">Leader</span></div>
+                        <div class="info-item"><span class="info-label">Since</span><span class="info-value">2024</span></div>
+                        <div class="info-item"><span class="info-label">Tokens</span><span class="info-value">IGT-PM</span></div>
+                        <div class="info-item"><span class="info-label">Family</span><span class="info-value">Lopez</span></div>
+                    </div>
+                </div>
+                
+                <div class="citizen-card" onclick="selectCitizen(this)">
+                    <div class="citizen-header">
+                        <div class="citizen-avatar">🧂<span class="citizen-status active"></span></div>
+                        <div>
+                            <div class="citizen-name">Salt</div>
+                            <div class="citizen-id">CIT-2026-0002</div>
+                        </div>
+                    </div>
+                    <div class="citizen-meta">
+                        <span class="meta-tag verified">✓ Verified</span>
+                    </div>
+                    <div class="citizen-info">
+                        <div class="info-item"><span class="info-label">Role</span><span class="info-value">Admin</span></div>
+                        <div class="info-item"><span class="info-label">Since</span><span class="info-value">2025</span></div>
+                        <div class="info-item"><span class="info-label">Tokens</span><span class="info-value">Multiple</span></div>
+                        <div class="info-item"><span class="info-label">Dept</span><span class="info-value">Tech</span></div>
+                    </div>
+                </div>
+                
+                <div class="citizen-card" onclick="selectCitizen(this)">
+                    <div class="citizen-header">
+                        <div class="citizen-avatar">👩<span class="citizen-status active"></span></div>
+                        <div>
+                            <div class="citizen-name">María García</div>
+                            <div class="citizen-id">CIT-2026-0045</div>
+                        </div>
+                    </div>
+                    <div class="citizen-meta">
+                        <span class="meta-tag verified">✓ Verified</span>
+                        <span class="meta-tag family">👨‍👩‍👧 Family</span>
+                    </div>
+                    <div class="citizen-info">
+                        <div class="info-item"><span class="info-label">Role</span><span class="info-value">Finance</span></div>
+                        <div class="info-item"><span class="info-label">Since</span><span class="info-value">2025</span></div>
+                        <div class="info-item"><span class="info-label">Tokens</span><span class="info-value">IGT-MFT</span></div>
+                        <div class="info-item"><span class="info-label">Family</span><span class="info-value">García</span></div>
+                    </div>
+                </div>
+                
+                <div class="citizen-card" onclick="selectCitizen(this)">
+                    <div class="citizen-header">
+                        <div class="citizen-avatar">👨<span class="citizen-status pending"></span></div>
+                        <div>
+                            <div class="citizen-name">Carlos Rodríguez</div>
+                            <div class="citizen-id">CIT-2026-0089</div>
+                        </div>
+                    </div>
+                    <div class="citizen-meta">
+                        <span class="meta-tag">⏳ Pending Verification</span>
+                    </div>
+                    <div class="citizen-info">
+                        <div class="info-item"><span class="info-label">Role</span><span class="info-value">Citizen</span></div>
+                        <div class="info-item"><span class="info-label">Since</span><span class="info-value">2026</span></div>
+                        <div class="info-item"><span class="info-label">Applied</span><span class="info-value">Jan 15</span></div>
+                        <div class="info-item"><span class="info-label">Status</span><span class="info-value">Review</span></div>
+                    </div>
+                </div>
+                
+                <div class="citizen-card" onclick="selectCitizen(this)">
+                    <div class="citizen-header">
+                        <div class="citizen-avatar">👧<span class="citizen-status active"></span></div>
+                        <div>
+                            <div class="citizen-name">Ana López</div>
+                            <div class="citizen-id">CIT-2026-0102</div>
+                        </div>
+                    </div>
+                    <div class="citizen-meta">
+                        <span class="meta-tag verified">✓ Verified</span>
+                        <span class="meta-tag family">👨‍👩‍👧 Family</span>
+                    </div>
+                    <div class="citizen-info">
+                        <div class="info-item"><span class="info-label">Role</span><span class="info-value">Dependent</span></div>
+                        <div class="info-item"><span class="info-label">Age</span><span class="info-value">15</span></div>
+                        <div class="info-item"><span class="info-label">Family</span><span class="info-value">López</span></div>
+                        <div class="info-item"><span class="info-label">School</span><span class="info-value">Active</span></div>
+                    </div>
+                </div>
+                
+                <div class="citizen-card" onclick="selectCitizen(this)">
+                    <div class="citizen-header">
+                        <div class="citizen-avatar">👴<span class="citizen-status active"></span></div>
+                        <div>
+                            <div class="citizen-name">Elder John Deer</div>
+                            <div class="citizen-id">CIT-2026-0003</div>
+                        </div>
+                    </div>
+                    <div class="citizen-meta">
+                        <span class="meta-tag vip">👑 Elder</span>
+                        <span class="meta-tag verified">✓ Verified</span>
+                    </div>
+                    <div class="citizen-info">
+                        <div class="info-item"><span class="info-label">Role</span><span class="info-value">Council</span></div>
+                        <div class="info-item"><span class="info-label">Since</span><span class="info-value">Founding</span></div>
+                        <div class="info-item"><span class="info-label">Clan</span><span class="info-value">Wolf</span></div>
+                        <div class="info-item"><span class="info-label">Status</span><span class="info-value">Active</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Details Panel -->
+        <aside class="details-panel">
+            <div class="panel-header">
+                <div class="panel-avatar">👑</div>
+                <div class="panel-name">Ruddie S. Lopez</div>
+                <div class="panel-id">CIT-2026-0001</div>
+            </div>
+            
+            <div class="detail-section">
+                <div class="detail-section-title"><i class="bi bi-person"></i> Personal Information</div>
+                <div class="detail-item"><span class="detail-label">Full Name</span><span class="detail-value">Ruddie S. Lopez</span></div>
+                <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value">ruddie@ierahkwa.gov</span></div>
+                <div class="detail-item"><span class="detail-label">Phone</span><span class="detail-value">+1 (XXX) XXX-XXXX</span></div>
+                <div class="detail-item"><span class="detail-label">Status</span><span class="detail-value" style="color: var(--green);">Active</span></div>
+                <div class="detail-item"><span class="detail-label">Member Since</span><span class="detail-value">2024</span></div>
+            </div>
+            
+            <div class="family-section">
+                <div class="family-title"><i class="bi bi-people"></i> Family Members (3)</div>
+                <div class="family-member">
+                    <div class="family-member-avatar">👩</div>
+                    <div class="family-member-info">
+                        <div class="family-member-name">Carmen Lopez</div>
+                        <div class="family-member-relation">Spouse</div>
+                    </div>
+                </div>
+                <div class="family-member">
+                    <div class="family-member-avatar">👧</div>
+                    <div class="family-member-info">
+                        <div class="family-member-name">Ana Lopez</div>
+                        <div class="family-member-relation">Daughter</div>
+                    </div>
+                </div>
+                <div class="family-member">
+                    <div class="family-member-avatar">👦</div>
+                    <div class="family-member-info">
+                        <div class="family-member-name">Marco Lopez</div>
+                        <div class="family-member-relation">Son</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <div class="detail-section-title"><i class="bi bi-wallet2"></i> Tokens & Assets</div>
+                <div class="detail-item"><span class="detail-label">Primary Token</span><span class="detail-value" style="color: var(--gold);">IGT-PM</span></div>
+                <div class="detail-item"><span class="detail-label">Balance</span><span class="detail-value">10,000 IGT</span></div>
+                <div class="detail-item"><span class="detail-label">Wallet</span><span class="detail-value">0x7f4a...8e7d</span></div>
+            </div>
+            
+            <div class="detail-section">
+                <div class="detail-section-title"><i class="bi bi-shield-check"></i> AI Protection</div>
+                <div class="detail-item"><span class="detail-label">AI Protector</span><span class="detail-value" style="color: var(--green);">Active</span></div>
+                <div class="detail-item"><span class="detail-label">AI Name</span><span class="detail-value">Iera-Family-001</span></div>
+                <div class="detail-item"><span class="detail-label">Last Check</span><span class="detail-value">Just now</span></div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-btn primary"><i class="bi bi-pencil"></i> Edit</button>
+                <button class="action-btn secondary"><i class="bi bi-chat"></i> Message</button>
+                <button class="action-btn secondary"><i class="bi bi-clock-history"></i> History</button>
+                <button class="action-btn secondary"><i class="bi bi-file-text"></i> Documents</button>
+            </div>
+        </aside>
+    </main>
+    
+    <!-- Add Citizen Modal -->
+    <div class="modal" id="citizenModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">➕ Register New Citizen</div>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form onsubmit="submitCitizen(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" placeholder="John" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" placeholder="Doe" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" placeholder="john@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" placeholder="+1 234 567 8900">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <input type="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Clan/Tribe (optional)</label>
+                        <select>
+                            <option value="">Select...</option>
+                            <option>Wolf</option>
+                            <option>Bear</option>
+                            <option>Turtle</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group full">
+                    <label>Address</label>
+                    <input type="text" placeholder="Full address">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Citizen Type</label>
+                        <select required>
+                            <option value="">Select...</option>
+                            <option>Individual</option>
+                            <option>Family Head</option>
+                            <option>Dependent</option>
+                            <option>Business Owner</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Family ID (if applicable)</label>
+                        <input type="text" placeholder="FAM-XXXX">
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Register Citizen</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function selectCitizen(card) {
+            document.querySelectorAll('.citizen-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        }
+        function openModal() { document.getElementById('citizenModal').classList.add('active'); }
+        function closeModal() { document.getElementById('citizenModal').classList.remove('active'); }
+        function submitCitizen(e) {
+            e.preventDefault();
+            alert('✅ Citizen registered successfully!\n\nCitizen ID: CIT-2026-XXXX\nAI Protector: Assigned\nStatus: Pending Verification');
+            closeModal();
+        }
+        
+        console.log('👥 CITIZEN CRM - Relationship Management Initialized');
+    </script>
+</body>
+</html>

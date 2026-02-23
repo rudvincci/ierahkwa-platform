@@ -1,0 +1,20 @@
+<Project>
+  <!--
+    Dual-mode dependency strategy:
+    - Debug/Development: use local ProjectReferences to Mamey/src (fast iteration).
+    - Release: use NuGet packages (2.0.*) so release + Docker builds are fast and don't require full repo sources.
+  -->
+  <PropertyGroup Condition="'$(UseLocalMameyProjects)'=='' and '$(Configuration)'!='Release'">
+    <UseLocalMameyProjects>true</UseLocalMameyProjects>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(UseLocalMameyProjects)'=='' and '$(Configuration)'=='Release'">
+    <UseLocalMameyProjects>false</UseLocalMameyProjects>
+  </PropertyGroup>
+
+  <!-- Local feed may emit advisory/audit warnings (NU1900). Keep builds unblocked. -->
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);NU1900</NoWarn>
+  </PropertyGroup>
+</Project>
+
+

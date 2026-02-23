@@ -1,0 +1,52 @@
+@page "/citizen/documents"
+@layout CitizenLayout
+@attribute [Authorize]
+
+<PageTitle>All Documents - Citizen Portal</PageTitle>
+
+<PageHeader Title="All Documents" Subtitle="View and download all your official documents" />
+
+<MudCard Elevation="2">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">My Documents</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTable Items="@_documents" Hover="true" Striped="true" Dense="true">
+            <HeaderContent>
+                <MudTh>Document</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Issue Date</MudTh>
+                <MudTh>Expiry</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Name</MudTd>
+                <MudTd><MudChip T="string" Size="Size.Small">@context.Type</MudChip></MudTd>
+                <MudTd>@context.IssueDate.ToString("MMM dd, yyyy")</MudTd>
+                <MudTd>@context.ExpiryDate?.ToString("MMM dd, yyyy")</MudTd>
+                <MudTd><StatusChip Status="@context.Status" /></MudTd>
+                <MudTd>
+                    <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
+                        <MudButton Color="Color.Primary">View</MudButton>
+                        <MudButton Color="Color.Secondary">Download</MudButton>
+                    </MudButtonGroup>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private record Document(string Name, string Type, DateTime IssueDate, DateTime? ExpiryDate, string Status);
+
+    private readonly List<Document> _documents = new()
+    {
+        new("Passport", "Travel Document", DateTime.Now.AddMonths(-6), DateTime.Now.AddYears(10), "Active"),
+        new("Travel ID", "Identity Card", DateTime.Now.AddMonths(-6), DateTime.Now.AddYears(5), "Active"),
+        new("Citizenship Certificate", "Certificate", DateTime.Now.AddMonths(-3), null, "Active"),
+        new("Good Standing Certificate", "Certificate", DateTime.Now.AddMonths(-1), null, "Active")
+    };
+}

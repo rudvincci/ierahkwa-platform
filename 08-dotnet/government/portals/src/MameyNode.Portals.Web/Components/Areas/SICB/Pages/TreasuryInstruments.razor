@@ -1,0 +1,99 @@
+@page "/sicb/treasury-instruments"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject ISICBClient SICBClient
+@inject ILogger<TreasuryInstruments> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Treasury Instruments" Icon="fas fa-briefcase" Subtitle="Treasury market instruments">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Instruments" Value="@_instruments.Count.ToString()" Icon="fas fa-briefcase" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Face Value" Value="@_totalFaceValue.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Avg Interest Rate" Value="@_avgInterestRateText" Icon="fas fa-percentage" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Treasury Instruments" Class="mt-4">
+        <MudTable T="TreasuryInstrumentInfo" Items="@_instruments" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Instrument ID</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Face Value</MudTh>
+                <MudTh>Interest Rate</MudTh>
+                <MudTh>Issue Date</MudTh>
+                <MudTh>Maturity</MudTh>
+                <MudTh>Status</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.InstrumentId</MudTd>
+                <MudTd>@context.InstrumentType</MudTd>
+                <MudTd>@decimal.Parse(context.FaceValue).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.InterestRate).ToString("F2")%</MudTd>
+                <MudTd>@context.IssueDate.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@context.MaturityDate.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<TreasuryInstrumentInfo> _instruments = new();
+    private decimal _totalFaceValue;
+    private int _activeCount;
+    private decimal _avgInterestRate;
+    private string _avgInterestRateText = "0.00%";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _instruments = await SICBClient.GetTreasuryInstrumentsAsync();
+            _totalFaceValue = _instruments.Sum(i => decimal.Parse(i.FaceValue));
+            _activeCount = _instruments.Count(i => i.Status == "Active");
+            _avgInterestRate = _instruments.Any() ? _instruments.Average(i => decimal.Parse(i.InterestRate)) : 0;
+            _avgInterestRateText = $"{_avgInterestRate:F2}%";
+            _avgInterestRateText = $"{_avgInterestRate:F2}%";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading treasury instruments");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

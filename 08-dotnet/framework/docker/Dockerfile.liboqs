@@ -1,0 +1,33 @@
+# Mamey/docker/Dockerfile.liboqs
+# Build image that installs liboqs system-wide and then builds the Mamey solution
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+
+# Install toolchain dependencies for liboqs
+RUN apt-get update && apt-get install -y \
+    cmake \
+    ninja-build \
+    git \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clone and build liboqs (Open Quantum Safe)
+RUN git clone --depth 1 --branch main https://github.com/open-quantum-safe/liboqs.git \
+    && cd liboqs \
+    && mkdir build \
+    && cd build \
+    && cmake -GNinja -DCMAKE_INSTALL_PREFIX=/usr/local .. \
+    && ninja \
+    && ninja install
+
+# Copy Mamey sources and build
+WORKDIR /src
+COPY . .
+
+RUN dotnet restore \
+    && dotnet build --no-restore
+
+# This Dockerfile is intended for CI/build environments that need liboqs
+# available when running tests or building PQC-enabled components.
+
+

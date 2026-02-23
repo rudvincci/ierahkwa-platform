@@ -1,0 +1,116 @@
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<MudPaper Elevation="1" Class="@PaperClass">
+    <MudStack Spacing="2">
+        <MudText Typo="Typo.subtitle2">@Label</MudText>
+
+        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+            Draw your signature below. Use mouse, touch, or trackpad.
+        </MudText>
+
+        <div style="width: 100%;">
+            <canvas @ref="_canvas"
+                    style="width: 100%; height: @HeightPx; border: 1px solid rgba(0,0,0,0.2); border-radius: 6px; background: white; touch-action: none;"></canvas>
+        </div>
+
+        <MudStack Row="true" Spacing="2">
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="ClearAsync" Disabled="@_busy">
+                Clear
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveAsync" Disabled="@_busy">
+                Save signature
+            </MudButton>
+
+            @if (!string.IsNullOrWhiteSpace(DataUrl))
+            {
+                <MudChip T="string" Color="Color.Success" Variant="Variant.Outlined">Captured</MudChip>
+            }
+        </MudStack>
+
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <MudAlert Severity="Severity.Error" Variant="Variant.Text">@_error</MudAlert>
+        }
+    </MudStack>
+</MudPaper>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Signature";
+    [Parameter] public int Height { get; set; } = 180;
+    [Parameter] public string? DataUrl { get; set; }
+    [Parameter] public EventCallback<string?> DataUrlChanged { get; set; }
+    [Parameter] public string Class { get; set; } = "";
+
+    private ElementReference _canvas;
+    private bool _initialized;
+    private bool _busy;
+    private string? _error;
+
+    private string HeightPx => $"{Math.Max(120, Height)}px";
+    private string PaperClass => $"pa-4 {Class}";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_initialized)
+        {
+            _initialized = true;
+            await JS.InvokeVoidAsync("mameySignaturePad.init", _canvas);
+        }
+    }
+
+    private async Task ClearAsync()
+    {
+        _error = null;
+        _busy = true;
+        try
+        {
+            await JS.InvokeVoidAsync("mameySignaturePad.clear", _canvas);
+            await DataUrlChanged.InvokeAsync(null);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        _error = null;
+        _busy = true;
+        try
+        {
+            var dataUrl = await JS.InvokeAsync<string?>("mameySignaturePad.toDataUrl", _canvas);
+            if (string.IsNullOrWhiteSpace(dataUrl))
+            {
+                _error = "Please draw your signature first.";
+                return;
+            }
+
+            await DataUrlChanged.InvokeAsync(dataUrl);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        // JS cleanup is optional here; ResizeObserver gets GC'd with page.
+        return ValueTask.CompletedTask;
+    }
+}
+
+
+
+

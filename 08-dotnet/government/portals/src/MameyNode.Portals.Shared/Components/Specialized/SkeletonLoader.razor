@@ -1,0 +1,52 @@
+@namespace MameyNode.Portals.Shared.Components.Specialized
+
+@if (Type == SkeletonType.Text)
+{
+    <MudSkeleton Height="@($"{Height}px")" Width="@(Width.HasValue ? $"{Width}px" : null)" Variant="@Variant" Animation="@Animation" />
+}
+else if (Type == SkeletonType.Circle)
+{
+    <MudSkeleton Height="@($"{Height}px")" Width="@(Width.HasValue ? $"{Width}px" : null)" Variant="Variant.Circular" Animation="@Animation" />
+}
+else if (Type == SkeletonType.Rectangle)
+{
+    <MudSkeleton Height="@($"{Height}px")" Width="@(Width.HasValue ? $"{Width}px" : null)" Variant="Variant.Rectangular" Animation="@Animation" />
+}
+else if (Type == SkeletonType.Card)
+{
+    <MudCard Elevation="2">
+        <MudCardContent>
+            <MudStack Spacing="2">
+                <MudSkeleton Height="20" Width="60%" Variant="Variant.Text" />
+                <MudSkeleton Height="16" Width="100%" Variant="Variant.Text" />
+                <MudSkeleton Height="16" Width="80%" Variant="Variant.Text" />
+            </MudStack>
+        </MudCardContent>
+    </MudCard>
+}
+else if (Type == SkeletonType.Table)
+{
+    <MudTable Items="@(new List<string>())">
+        <HeaderContent>
+            @for (int i = 0; i < Rows; i++)
+            {
+                <MudTh><MudSkeleton Height="20" Width="100%" Variant="Variant.Text" /></MudTh>
+            }
+        </HeaderContent>
+        <RowTemplate>
+            @for (int i = 0; i < Rows; i++)
+            {
+                <MudTd><MudSkeleton Height="16" Width="100%" Variant="Variant.Text" /></MudTd>
+            }
+        </RowTemplate>
+    </MudTable>
+}
+
+@code {
+    [Parameter] public SkeletonType Type { get; set; } = SkeletonType.Text;
+    [Parameter] public int Height { get; set; } = 20;
+    [Parameter] public int? Width { get; set; }
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public Animation Animation { get; set; } = Animation.Wave;
+    [Parameter] public int Rows { get; set; } = 3;
+}

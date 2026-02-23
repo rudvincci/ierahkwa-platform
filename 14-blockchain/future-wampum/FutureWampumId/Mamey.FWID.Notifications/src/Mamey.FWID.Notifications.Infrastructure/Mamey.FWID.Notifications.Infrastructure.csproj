@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mamey.FWID.Notifications.Application\Mamey.FWID.Notifications.Application.csproj" />
+  </ItemGroup>
+  
+  <!-- Conditional references: Project reference in Debug, Package reference in Release -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Auth.Jwt\src\Mamey.Auth.Jwt\Mamey.Auth.Jwt.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Auth.DecentralizedIdentifiers\src\Mamey.Auth.DecentralizedIdentifiers\Mamey.Auth.DecentralizedIdentifiers.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Security\src\Mamey.Security\Mamey.Security.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Persistence.Minio\src\Mamey.Persistence.Minio\Mamey.Persistence.Minio.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.WebApi.Security\src\Mamey.WebApi.Security\Mamey.WebApi.Security.csproj" />
+    <!-- gRPC Client project references -->
+    <ProjectReference Include="..\..\..\Mamey.FWID.DIDs\src\Mamey.FWID.DIDs.GrpcClient\Mamey.FWID.DIDs.GrpcClient.csproj" />
+    <ProjectReference Include="..\..\..\Mamey.FWID.Credentials\src\Mamey.FWID.Credentials.GrpcClient\Mamey.FWID.Credentials.GrpcClient.csproj" />
+    <ProjectReference Include="..\..\..\Mamey.FWID.ZKPs\src\Mamey.FWID.ZKPs.GrpcClient\Mamey.FWID.ZKPs.GrpcClient.csproj" />
+    <ProjectReference Include="..\..\..\Mamey.FWID.AccessControls\src\Mamey.FWID.AccessControls.GrpcClient\Mamey.FWID.AccessControls.GrpcClient.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Mamey.Auth.Jwt" Version="2.0.*" />
+    <PackageReference Include="Mamey.Auth.DecentralizedIdentifiers" Version="2.0.*" />
+    <PackageReference Include="Mamey.Security" Version="2.0.*" />
+    <PackageReference Include="Mamey.Persistence.Minio" Version="2.0.*" />
+    <PackageReference Include="Mamey.WebApi.Security" Version="2.0.*" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Mamey.Microservice.Infrastructure" Version="2.0.*" />
+    <PackageReference Include="Mamey.Persistence.PostgreSQL" Version="2.0.*" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.59.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.31.1" />
+  </ItemGroup>
+</Project>
+
+
+
+
+
+
+

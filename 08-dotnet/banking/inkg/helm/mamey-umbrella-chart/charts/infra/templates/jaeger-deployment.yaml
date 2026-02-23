@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "infra.fullname" . }}-jaeger
+  labels:
+    app: jaeger
+spec:
+  replicas: {{ .Values.jaeger.replicaCount }}
+  selector:
+    matchLabels:
+      app: jaeger
+  template:
+    metadata:
+      labels:
+        app: jaeger
+    spec:
+      containers:
+      - name: jaeger
+        image: "{{ .Values.jaeger.image }}"
+        imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+        ports:
+        - containerPort: {{ .Values.jaeger.ports.httpQuery }}
+        - containerPort: {{ .Values.jaeger.ports.collector }}
+        - containerPort: {{ .Values.jaeger.ports.agentUdp }}
+        - containerPort: {{ .Values.jaeger.ports.agentUdp2 }}
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.jaeger.ports.httpQuery }}
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.jaeger.ports.httpQuery }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"

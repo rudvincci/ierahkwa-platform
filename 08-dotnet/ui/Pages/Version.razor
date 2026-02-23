@@ -1,0 +1,137 @@
+@page "/version"
+@inject IMameyNodeClient NodeClient
+@inject IMetadataService MetadataService
+@inject ILogger<Version> Logger
+
+<PageTitle>RPC Version - MameyNode UI</PageTitle>
+
+<h1>RPC Version Information</h1>
+
+<ErrorDisplay HasError="@hasError" ErrorMessage="@errorMessage" ErrorDetails="@errorDetails" OnDismiss="ClearError" />
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Version Details</h5>
+                <button class="btn btn-primary" @onclick="LoadVersion" disabled="@isLoading">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Loading...</text>
+                    }
+                    else
+                    {
+                        <text>Refresh</text>
+                    }
+                </button>
+            </div>
+            <div class="card-body">
+                @if (versionInfo == null && !isLoading)
+                {
+                    <p class="text-muted">Click "Refresh" to load version information.</p>
+                }
+                else if (isLoading)
+                {
+                    <p class="text-muted">Loading version information...</p>
+                }
+                else if (versionInfo != null)
+                {
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3">Success:</dt>
+                        <dd class="col-sm-9">
+                            @if (versionInfo.Success)
+                            {
+                                <span class="badge bg-success">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">No</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-3">RPC Version:</dt>
+                        <dd class="col-sm-9"><code>@versionInfo.RpcVersion</code></dd>
+
+                        <dt class="col-sm-3">Store Version:</dt>
+                        <dd class="col-sm-9"><code>@versionInfo.StoreVersion</code></dd>
+
+                        <dt class="col-sm-3">Protocol Version:</dt>
+                        <dd class="col-sm-9"><code>@versionInfo.ProtocolVersion</code></dd>
+
+                        <dt class="col-sm-3">Node Vendor:</dt>
+                        <dd class="col-sm-9">@versionInfo.NodeVendor</dd>
+
+                        <dt class="col-sm-3">Network:</dt>
+                        <dd class="col-sm-9">@versionInfo.Network</dd>
+                    </dl>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<MetadataDisplay />
+
+@code {
+    private Mamey.Rpc.VersionResponse? versionInfo;
+    private bool isLoading = false;
+    private bool hasError = false;
+    private string? errorMessage;
+    private string? errorDetails;
+    private string? correlationId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadVersion();
+    }
+
+    private async Task LoadVersion()
+    {
+        isLoading = true;
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+        StateHasChanged();
+
+        try
+        {
+            correlationId = MetadataService.GetCorrelationId();
+            Logger.LogInformation("Loading RPC version with correlation ID: {CorrelationId}", correlationId);
+
+            var credentialProvider = new Mamey.Blockchain.Node.CredentialProvider
+            {
+                InstitutionId = MetadataService.GetInstitutionId(),
+                CredentialChain = MetadataService.GetCredentialChain(),
+                CorrelationIdGenerator = () => correlationId
+            };
+
+            versionInfo = await NodeClient.GetVersionAsync(
+                request: null,
+                credentialProvider: credentialProvider,
+                correlationId: correlationId);
+
+            Logger.LogInformation("RPC version loaded successfully: RpcVersion={RpcVersion}, Success={Success}", 
+                versionInfo.RpcVersion, versionInfo.Success);
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to load RPC version information.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to load RPC version with correlation ID: {CorrelationId}", correlationId);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearError()
+    {
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+    }
+}

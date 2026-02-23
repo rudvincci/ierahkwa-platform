@@ -1,0 +1,121 @@
+@using System.ComponentModel.DataAnnotations
+@using Mamey.Government.Modules.Identity.Blazor.Services
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Logging
+
+<div class="login-panel">
+    <h3>Sign In</h3>
+    
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+        <DataAnnotationsValidator />
+
+        <div class="form-group">
+            <label for="username">Username</label>
+            <InputText id="username" @bind-Value="Input.Username" class="form-control" 
+                       autocomplete="username" aria-required="true" />
+            <ValidationMessage For="@(() => Input.Username)" />
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <InputText id="password" @bind-Value="Input.Password" type="password" 
+                       class="form-control" autocomplete="current-password" aria-required="true" />
+            <ValidationMessage For="@(() => Input.Password)" />
+        </div>
+
+        <div class="form-group">
+            <InputCheckbox @bind-Value="Input.RememberMe" id="rememberMe" />
+            <label for="rememberMe">Remember me</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" disabled="@isLoading">
+            @if (isLoading)
+            {
+                <span>Signing in...</span>
+            }
+            else
+            {
+                <span>Sign in</span>
+            }
+        </button>
+    </EditForm>
+
+    <div class="external-login">
+        <h4>Or sign in with</h4>
+        <a href="/api/identity/auth/authentik" class="btn btn-secondary">Authentik</a>
+    </div>
+</div>
+
+@code {
+    private string? errorMessage;
+    private bool isLoading = false;
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    [Inject] 
+    private ILogger<LoginPanel> Logger { get; set; } = default!;
+
+    [Inject] 
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpContext != null && HttpMethods.IsGet(HttpContext.Request.Method))
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync("Identity.Application");
+        }
+    }
+
+    private async Task LoginUser()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            // TODO: Implement actual login logic with Authentik OIDC
+            // For now, redirect to Authentik login
+            var returnUrl = string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl;
+            NavigationManager.NavigateTo($"/api/identity/auth/authentik?returnUrl={Uri.EscapeDataString(returnUrl)}");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Login failed");
+            errorMessage = "Invalid login attempt.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        public string Username { get; set; } = "";
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = "";
+
+        [Display(Name = "Remember me?")]
+        public bool RememberMe { get; set; }
+    }
+}

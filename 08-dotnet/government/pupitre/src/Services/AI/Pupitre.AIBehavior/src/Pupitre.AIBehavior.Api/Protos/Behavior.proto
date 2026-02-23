@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.AIBehavior.Api.Protos";
+
+package Pupitre.AIBehavior;
+
+// gRPC service for Behavior operations
+service BehaviorService {
+    // Get a single Behavior by ID
+    rpc GetBehavior (GetBehaviorRequest) returns (BehaviorResponse) {};
+    
+    // List all Behaviors with pagination
+    rpc ListBehaviors (ListBehaviorsRequest) returns (ListBehaviorsResponse) {};
+    
+    // Stream Behavior updates
+    rpc StreamBehaviorUpdates (StreamBehaviorUpdatesRequest) returns (stream BehaviorResponse) {};
+}
+
+message GetBehaviorRequest {
+    string id = 1;
+}
+
+message ListBehaviorsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListBehaviorsResponse {
+    repeated BehaviorResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message BehaviorResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamBehaviorUpdatesRequest {
+    string filter = 1;
+}

@@ -1,0 +1,30 @@
+@using Mamey.BlazorWasm.Components.Foundation
+
+<MudPaper Elevation="0" Class="@GroupClass" Style="@Style">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <MudText Typo="Typo.subtitle2" Class="mb-2">@Label</MudText>
+    }
+    <MudGrid Spacing="@Spacing">
+        @ChildContent
+    </MudGrid>
+    @if (!string.IsNullOrWhiteSpace(HelperText))
+    {
+        <FieldMessages HelperText="@HelperText" />
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? HelperText { get; set; }
+    [Parameter] public int Spacing { get; set; } = 2;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    private string GroupClass => $"pa-3 mamey-field-group-pro {Class}";
+}
+
+
+
+

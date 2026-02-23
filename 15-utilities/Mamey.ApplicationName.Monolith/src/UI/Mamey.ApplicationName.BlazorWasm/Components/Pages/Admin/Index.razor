@@ -1,0 +1,48 @@
+@page "/admin"
+
+@using Mamey.ApplicationName.BlazorWasm.Models
+@attribute [Authorize]
+<h3>Dashboard</h3>
+
+<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+    <MudGrid>
+        @foreach (var card in dashboardCards)
+        {
+            var style = $"height: 200px; background-color: {card.BackgroundColor};";
+            <MudItem xs="12" sm="6" md="4">
+                <MudPaper Elevation="2" Class="pa-4" Style="@style">
+                    <h4>@card.Title</h4>
+                    <p>@card.Description</p>
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+</MudContainer>
+@code {
+    private List<DashboardCard> dashboardCards ;
+
+    protected override Task OnInitializedAsync()
+    {
+        //return Task.CompletedTask;
+
+        // Add mock data here
+        dashboardCards = new List<DashboardCard>
+        {
+            new DashboardCard { Title = "Sales", Description = "Monthly sales data", BackgroundColor = "#5c636a" },
+            new DashboardCard { Title = "Orders", Description = "New orders this week", BackgroundColor = "#5c736a" },
+            new DashboardCard { Title = "Revenue", Description = "Revenue for the quarter", BackgroundColor = "#5a636a" },
+            new DashboardCard { Title = "Customers", Description = "Total active customers", BackgroundColor = "#5d636a" },
+            new DashboardCard { Title = "Products", Description = "Total products in stock", BackgroundColor = "#5c636a" },
+            new DashboardCard { Title = "Expenses", Description = "Monthly expenses", BackgroundColor = "#5c636b" },
+            new DashboardCard { Title = "Growth", Description = "Annual growth rate", BackgroundColor = "#5c63ca" },
+            new DashboardCard { Title = "Profits", Description = "Net profits", BackgroundColor = "#5c6a6a" },
+            new DashboardCard { Title = "Feedback", Description = "Customer feedback", BackgroundColor = "#5c63ba" }
+        };
+        return Task.FromResult(()=> dashboardCards);
+    }
+    // protected override void OnInitialized()
+    // {
+
+    // }
+
+}

@@ -1,0 +1,97 @@
+@page "/rca/{token}"
+@using Mamey.Government.UI.Services
+@using Mamey.Government.UI.Models
+@using Mamey.Government.Modules.CitizenshipApplications.Contracts.DTO
+@using Mamey.Government.Modules.CitizenshipApplications.Contracts.RequestResponses
+@using MudBlazor
+@using Microsoft.AspNetCore.WebUtilities
+@inject IApplicationsService ApplicationsService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@layout MainLayout
+<PageTitle>Resuming Application</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="py-4">
+    <MudCard>
+        <MudCardContent>
+            @if (_isLoading)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
+                <MudText Typo="Typo.h6" Class="text-center">Validating your application link...</MudText>
+            }
+            else if (!_isLoading && !string.IsNullOrEmpty(_errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Class="my-4">
+                    @_errorMessage
+                </MudAlert>
+            }
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    [Parameter] public string Token { get; set; } = string.Empty;
+    
+    private bool _isLoading = true;
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Token))
+        {
+            _errorMessage = "Invalid application link.";
+            _isLoading = false;
+            return;
+        }
+
+        // Extract email from query string
+        var uri = new Uri(NavigationManager.Uri);
+        var queryParams = QueryHelpers.ParseQuery(uri.Query);
+        var email = queryParams.ContainsKey("email") ? queryParams["email"].ToString() : null;
+
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            _errorMessage = "Email parameter is required.";
+            _isLoading = false;
+            return;
+        }
+
+        try
+        {
+            // Call resume endpoint
+            try
+            {
+                var response = await ApplicationsService.ResumeApplicationAsync(Token, email);
+
+                if (response == null || string.IsNullOrWhiteSpace(response.ApplicationNumber) || string.IsNullOrWhiteSpace(response.JwtToken))
+                {
+                    NavigateToInvalid();
+                    _isLoading = false;
+                }
+                // Store JWT token in localStorage
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "applicant_jwt_token", response.JwtToken);
+
+                // Navigate to application page
+                NavigationManager.NavigateTo($"/apply-citizenship/{Uri.EscapeDataString(response.ApplicationNumber)}");
+            }
+            catch (Exception e)
+            {
+                _errorMessage = "Failed to resume application. Please try again or contact support.";
+                _isLoading = false;
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = "An error occurred while resuming your application. Please try again or contact support.";
+            _isLoading = false;
+            // Log error if needed
+            Console.Error.WriteLine($"Error resuming application: {ex.Message}");
+        }
+    }
+
+    private void NavigateToInvalid()
+    {
+        NavigationManager.NavigateTo("/apply-citizenship/invalid");
+    }
+}

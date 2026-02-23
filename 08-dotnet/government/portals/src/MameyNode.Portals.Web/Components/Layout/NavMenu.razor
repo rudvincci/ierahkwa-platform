@@ -1,0 +1,54 @@
+@using Mamey.BlazorWasm.Components
+@using Mamey.BlazorWasm.Routing
+@using MudBlazor
+@inject NavigationManager Navigation
+
+<MudNavMenu Margin="Margin.Dense" Rounded="false" Color="Color.Primary">
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">
+        Home
+    </MudNavLink>
+    
+    @foreach (var route in _routes)
+    {
+        @if (!string.IsNullOrEmpty(route.Icon))
+        {
+            <MudNavLink Href="@route.Page" Icon="@route.Icon">
+                @route.Title
+            </MudNavLink>
+        }
+        else
+        {
+            <MudNavLink Href="@route.Page">
+                @route.Title
+            </MudNavLink>
+        }
+    }
+</MudNavMenu>
+
+<BaseNav Routes="_routes" DrawerOpen="true" />
+
+@code {
+    private List<Route> _routes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Show all application routes in the main nav menu
+        var allRoutes = await RouteLoader.GetRoutesAsync(menu: true);
+        _routes = allRoutes.Where(r => 
+            // Application routes - only top-level routes
+            r.Page == "/biis" ||
+            r.Page == "/sicb" ||
+            r.Page == "/portable" ||
+            r.Page == "/banking" ||
+            r.Page == "/admin" ||
+            r.Page == "/futurewampum/gov" ||
+            r.Page == "/futurewampum/identity" ||
+            r.Page == "/payments" ||
+            r.Page == "/merchant" ||
+            r.Page == "/ledger" ||
+            r.Page == "/dex" ||
+            r.Page == "/mameynode" ||
+            r.Page == "/explorer"
+        ).ToList();
+    }
+}

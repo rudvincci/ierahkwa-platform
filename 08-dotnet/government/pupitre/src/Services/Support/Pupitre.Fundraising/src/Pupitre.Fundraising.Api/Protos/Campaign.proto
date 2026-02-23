@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Fundraising.Api.Protos";
+
+package Pupitre.Fundraising;
+
+// gRPC service for Campaign operations
+service CampaignService {
+    // Get a single Campaign by ID
+    rpc GetCampaign (GetCampaignRequest) returns (CampaignResponse) {};
+    
+    // List all Campaigns with pagination
+    rpc ListCampaigns (ListCampaignsRequest) returns (ListCampaignsResponse) {};
+    
+    // Stream Campaign updates
+    rpc StreamCampaignUpdates (StreamCampaignUpdatesRequest) returns (stream CampaignResponse) {};
+}
+
+message GetCampaignRequest {
+    string id = 1;
+}
+
+message ListCampaignsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListCampaignsResponse {
+    repeated CampaignResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message CampaignResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamCampaignUpdatesRequest {
+    string filter = 1;
+}

@@ -1,0 +1,134 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-box-seam"></i> Products</h2>
+        <a href="/products/new" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Product
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Search by code, barcode, or name..." value="<%= search %>">
+                </div>
+                <div class="col-md-3">
+                    <select name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        <% categories.forEach(cat => { %>
+                        <option value="<%= cat.id %>" <%= selectedCategory == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="" <%= !selectedStatus ? 'selected' : '' %>>Active Only</option>
+                        <option value="low" <%= selectedStatus === 'low' ? 'selected' : '' %>>Low Stock</option>
+                        <option value="all" <%= selectedStatus === 'all' ? 'selected' : '' %>>All Products</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-secondary me-2">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                    <a href="/products" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="productsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Code</th>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th class="text-end">Stock</th>
+                            <th class="text-end">Purchase $</th>
+                            <th class="text-end">Sale $</th>
+                            <th class="text-end">Value</th>
+                            <th>Status</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% products.forEach(p => { %>
+                        <tr class="<%= !p.is_active ? 'table-secondary' : (p.current_stock <= p.min_stock ? 'table-danger' : '') %>">
+                            <td>
+                                <strong><%= p.code %></strong>
+                                <% if (p.barcode) { %>
+                                <small class="text-muted d-block"><%= p.barcode %></small>
+                                <% } %>
+                            </td>
+                            <td>
+                                <a href="/products/<%= p.id %>" class="text-decoration-none"><%= p.name %></a>
+                            </td>
+                            <td><%= p.category_name || '-' %></td>
+                            <td class="text-end">
+                                <span class="<%= p.current_stock <= p.min_stock ? 'text-danger fw-bold' : '' %>">
+                                    <%= p.current_stock %>
+                                </span>
+                                <small class="text-muted">/ <%= p.min_stock %></small>
+                            </td>
+                            <td class="text-end">$<%= p.purchase_price.toFixed(2) %></td>
+                            <td class="text-end">$<%= p.sale_price.toFixed(2) %></td>
+                            <td class="text-end">$<%= (p.current_stock * p.purchase_price).toFixed(2) %></td>
+                            <td>
+                                <% if (!p.is_active) { %>
+                                <span class="badge bg-secondary">Inactive</span>
+                                <% } else if (p.current_stock <= p.min_stock) { %>
+                                <span class="badge bg-danger">Low Stock</span>
+                                <% } else { %>
+                                <span class="badge bg-success">Normal</span>
+                                <% } %>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="/products/<%= p.id %>" class="btn btn-outline-info" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="/products/<%= p.id %>/edit" class="btn btn-outline-primary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form method="POST" action="/products/<%= p.id %>/delete" class="d-inline" onsubmit="return confirm('Delete this product?')">
+                                        <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            Total: <%= products.length %> products | 
+            Stock Value: $<%= products.reduce((sum, p) => sum + (p.current_stock * p.purchase_price), 0).toLocaleString('en-US', {minimumFractionDigits: 2}) %>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#productsTable').DataTable({
+        pageLength: 25,
+        order: [[1, 'asc']],
+        language: {
+            search: "Quick filter:"
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

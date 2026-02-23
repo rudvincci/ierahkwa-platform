@@ -1,0 +1,86 @@
+@page "/metrics"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IInfrastructureClient InfrastructureClient
+@inject ILogger<Metrics> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Metrics" Icon="fas fa-chart-bar" Subtitle="System metrics and monitoring">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Metrics" Value="@_metrics.Count.ToString()" Icon="fas fa-chart-bar" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Metric Types" Value="@_metricTypes.ToString()" Icon="fas fa-list" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Last Update" Value="@_lastUpdate.ToString("HH:mm")" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Data Points" Value="@_dataPoints.ToString()" Icon="fas fa-database" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Metrics" Class="mt-4">
+        <MudTable T="MetricDataInfo" Items="@_metrics" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Metric Name</MudTh>
+                <MudTh>Value</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Timestamp</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.MetricName</MudTd>
+                <MudTd>@context.Value.ToString("F2")</MudTd>
+                <MudTd>@context.MetricType</MudTd>
+                <MudTd>@context.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<MetricDataInfo> _metrics = new();
+    private int _metricTypes;
+    private DateTime _lastUpdate = DateTime.Now;
+    private int _dataPoints;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _metrics = await InfrastructureClient.GetMetricsAsync();
+            _metricTypes = _metrics.Select(m => m.MetricName).Distinct().Count();
+            _lastUpdate = _metrics.Any() ? _metrics.Max(m => m.Timestamp) : DateTime.Now;
+            _dataPoints = _metrics.Count;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading metrics");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+env:
+  DOTNET_VERSION: 7.0.410
+  INK_AZURE_ARTIFACTS_FEED_URL: https://pkgs.dev.azure.com/SACBank/FBDETBank/_packaging/FBDETB/nuget/v3/index.json
+  
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    env:
+      DOTNET_VERSION: 7.0.410
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Add Azure Artifacts feed to NuGet config
+      run: |
+        mkdir -p ~/.nuget/NuGet
+        echo '<?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <packageSources>
+            <add key="Feed1" value="${{ secrets.FEED1_URL }}" />
+            <add key="Feed2" value="${{ secrets.FEED2_URL }}" />
+            <!-- Add more feeds as needed -->
+          </packageSources>
+          <packageSourceCredentials>
+            <Feed1>
+              <add key="Username" value="any" />
+              <add key="ClearTextPassword" value="${{ secrets.FEED1_PAT }}" />
+            </Feed1>
+            <Feed2>
+              <add key="Username" value="any" />
+              <add key="ClearTextPassword" value="${{ secrets.FEED2_PAT }}" />
+            </Feed2>
+            <!-- Add credentials for more feeds as needed -->
+          </packageSourceCredentials>
+        </configuration>' > ~/.nuget/NuGet/NuGet.Config
+
+    - name: Grant execute permission for scripts
+      run: |
+        chmod -R a+x scripts
+        chmod -R a+x src
+
+    - name: Build with dotnet
+      run: dotnet build -c release
+
+    - name: Execute pack.sh
+      run: ./scripts/pack.sh
+      env:
+        GITHUB_REF_NAME: ${{ github.ref_name }}
+        GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        FEED1_URL: ${{ secrets.FEED1_URL }}
+        FEED1_PAT: ${{ secrets.FEED1_PAT }}
+        FEED2_URL: ${{ secrets.FEED2_URL }}
+        FEED2_PAT: ${{ secrets.FEED2_PAT }}
+        # Add more feeds as needed
+
+# notifications:
+#   email:
+#     on_success: never
+#     on_failure: always

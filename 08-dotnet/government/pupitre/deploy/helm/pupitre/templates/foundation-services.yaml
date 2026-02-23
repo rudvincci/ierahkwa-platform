@@ -1,0 +1,76 @@
+{{- $root := . -}}
+{{- range $serviceName, $service := .Values.foundationServices }}
+{{- if $service.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pupitre-{{ $serviceName }}
+  namespace: {{ $root.Values.namespaces.foundation }}
+  labels:
+    {{- include "pupitre.labels" $root | nindent 4 }}
+    app.kubernetes.io/component: {{ $serviceName }}
+spec:
+  replicas: {{ $service.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: {{ $serviceName }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: {{ $serviceName }}
+    spec:
+      serviceAccountName: {{ include "pupitre.serviceAccountName" $root }}
+      securityContext:
+        {{- toYaml $root.Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ $serviceName }}
+          securityContext:
+            {{- toYaml $root.Values.securityContext | nindent 12 }}
+          image: "{{ $root.Values.global.imageRegistry }}/{{ $service.image.repository }}:{{ $service.image.tag }}"
+          imagePullPolicy: {{ $service.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: http
+              containerPort: {{ $service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          {{- if $service.resources }}
+          resources:
+            {{- toYaml $service.resources | nindent 12 }}
+          {{- end }}
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: ASPNETCORE_URLS
+              value: "http://+:{{ $service.port }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pupitre-{{ $serviceName }}
+  namespace: {{ $root.Values.namespaces.foundation }}
+  labels:
+    {{- include "pupitre.labels" $root | nindent 4 }}
+    app.kubernetes.io/component: {{ $serviceName }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ $service.port }}
+      targetPort: {{ $service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/component: {{ $serviceName }}
+{{- end }}
+{{- end }}

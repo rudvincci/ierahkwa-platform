@@ -1,0 +1,120 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+#  IERAHKWA - DOCKER COMPOSE CLOUD/VPS
+#  Stack: Postgres, Redis, Banking .NET, Node, Banking Bridge, Platform estático
+#  Uso: desde raíz:  docker compose -f deploy/docker-compose.cloud.yml --project-directory . up -d
+#  (--project-directory . para que context/.. sea la raíz del repo)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ierahkwa-postgres
+    environment:
+      POSTGRES_USER: ierahkwa
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Ierahkwa2026!}
+      POSTGRES_DB: ierahkwa_banking
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ierahkwa -d ierahkwa_banking"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [ierahkwa-network]
+
+  redis:
+    image: redis:7-alpine
+    container_name: ierahkwa-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD:-IerahkwaRedis2026!}
+    volumes: [redis_data:/data]
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [ierahkwa-network]
+
+  banking-api:
+    build:
+      context: ../IerahkwaBanking.NET10
+      dockerfile: Dockerfile
+    container_name: ierahkwa-banking-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:5000
+      ConnectionStrings__PostgreSQL: Host=postgres;Database=ierahkwa_banking;Username=ierahkwa;Password=${POSTGRES_PASSWORD:-Ierahkwa2026!}
+      ConnectionStrings__Redis: redis:6379,password=${REDIS_PASSWORD:-IerahkwaRedis2026!}
+      JWT__Secret: ${JWT_SECRET:-IERAHKWA_SOVEREIGN_JWT_SECRET_KEY_2026_MINIMUM_32_CHARS!}
+      JWT__Issuer: IERAHKWA-Sovereign-Bank
+      JWT__Audience: IERAHKWA-Platform
+    ports: ["5000:5000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks: [ierahkwa-network]
+
+  node-mamey:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.node
+    container_name: ierahkwa-node-mamey
+    environment:
+      NODE_ENV: production
+      PORT: 8545
+      APP_ROOT: /workspace
+      BANKING_API_URL: http://banking-api:5000
+      REDIS_URL: redis://:${REDIS_PASSWORD:-IerahkwaRedis2026!}@redis:6379
+      JWT_SECRET: ${JWT_SECRET:-IERAHKWA_SOVEREIGN_JWT_SECRET_KEY_2026_MINIMUM_32_CHARS!}
+    ports: ["8545:8545"]
+    depends_on: [banking-api, redis]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8545/health 2>/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks: [ierahkwa-network]
+
+  banking-bridge:
+    build:
+      context: ..
+      dockerfile: Dockerfile.banking-bridge
+    container_name: ierahkwa-banking-bridge
+    command: ["node", "banking-bridge.js"]
+    environment:
+      NODE_ENV: production
+      BRIDGE_PORT: 3001
+      BANKING_API_URL: http://banking-api:5000
+    ports: ["3001:3001"]
+    depends_on:
+      banking-api: { condition: service_started }
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3001/api/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks: [ierahkwa-network]
+
+  platform:
+    build:
+      context: ..
+      dockerfile: Dockerfile.platform-static
+    container_name: ierahkwa-platform
+    ports: ["8080:8080"]
+    networks: [ierahkwa-network]
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  ierahkwa-network:
+    driver: bridge

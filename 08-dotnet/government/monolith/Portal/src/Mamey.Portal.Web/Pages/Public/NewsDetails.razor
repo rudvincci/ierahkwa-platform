@@ -1,0 +1,57 @@
+@page "/news/{Id:guid}"
+@using Microsoft.AspNetCore.Components
+@using Mamey.Portal.Cms.Application.Services
+@inject ICmsContentService Cms
+
+<PageTitle>News</PageTitle>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private Mamey.Portal.Cms.Application.Models.NewsItem? _item;
+    private string? _error;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _error = null;
+        try
+        {
+            _item = await Cms.GetPublishedNewsItemAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private static MarkupString AsMarkup(string html) => new(html ?? string.Empty);
+}
+
+<MudStack Spacing="3">
+    <MudButton Variant="Variant.Text" Href="/news">Back to News</MudButton>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+    else if (_item is null)
+    {
+        <MudAlert Severity="Severity.Warning">News item not found (or not published).</MudAlert>
+    }
+    else
+    {
+        <MudText Typo="Typo.h4">@_item.Title</MudText>
+        <MudText Typo="Typo.caption" Class="mud-text-secondary" GutterBottom="true">
+            Published: @((_item.PublishedAt ?? _item.UpdatedAt).LocalDateTime)
+        </MudText>
+        <MudText Typo="Typo.body1" GutterBottom="true">@_item.Summary</MudText>
+
+        <MudPaper Class="pa-4">
+            <div class="cms-news-body">
+                @AsMarkup(_item.BodyHtml)
+            </div>
+        </MudPaper>
+    }
+</MudStack>
+
+

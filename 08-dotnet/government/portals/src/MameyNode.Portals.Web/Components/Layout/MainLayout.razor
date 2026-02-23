@@ -1,0 +1,47 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_theme" IsDarkMode="true" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudBreakpointProvider>
+<MudLayout>
+    <MudAppBar Elevation="0" Class="mud-appbar-glass">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h6" Class="ml-3">MameyNode Portals</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/Mamey-io/Mamey" Target="_blank" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Always" Class="mud-drawer-glass">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+</MudBreakpointProvider>
+
+@code {
+    bool _drawerOpen = true;
+    private MudTheme _theme = new MudTheme()
+    {
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#8B5CF6", // Violet
+            Secondary = "#10B981", // Emerald
+            AppbarBackground = "rgba(30, 30, 46, 0.7)", // Glass
+            Background = "#0F172A", // Slate 900
+            Surface = "rgba(30, 41, 59, 0.7)", // Slate 800 Glass
+            DrawerBackground = "rgba(15, 23, 42, 0.7)", // Slate 900 Glass
+            TextPrimary = "#F8FAFC",
+            TextSecondary = "#94A3B8",
+        }
+    };
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

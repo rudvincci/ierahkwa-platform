@@ -1,0 +1,54 @@
+@using Mamey.BlazorWasm.Routing
+
+@{
+    var visibleRoutes = FilterRoutes(Routes);
+}
+
+@foreach (var route in visibleRoutes)
+{
+    var visibleChildren = GetVisibleChildren(route);
+
+    @if (visibleChildren.Any())
+    {
+        <MudNavGroup Ripple="true"
+                     Expanded="IsNavGroupExpanded(route.Page)"
+                     ExpandedChanged="@((bool expanded) => OnExpandedChanged(route.Page, expanded))"
+                     Icon="@route.Icon"
+                     Title="@(DrawerOpen ? route.Title : "")">
+            <ChildContent>
+                @foreach (var child in visibleChildren)
+                {
+                    var visibleGrandchildren = GetVisibleChildren(child);
+
+                    @if (visibleGrandchildren.Any())
+                    {
+                        <MudNavGroup Ripple="true"
+                                     Expanded="@(IsNavGroupExpanded(child.Page))"
+                                     ExpandedChanged="@((bool expanded) => OnExpandedChanged(child.Page, expanded))"
+                                     Icon="@child.Icon"
+                                     Title="@(DrawerOpen ? child.Title : "")">
+                            <ChildContent>
+                                @foreach (var grandchild in visibleGrandchildren)
+                                {
+                                    <MudNavLink Ripple="true" Href="@grandchild.Page" Match="@grandchild.Match"
+                                                Icon="@grandchild.Icon">@(DrawerOpen ? grandchild.Title : "")</MudNavLink>
+                                }
+                            </ChildContent>
+                        </MudNavGroup>
+                    }
+                    else
+                    {
+                        <MudNavLink Ripple="true" Href="@child.Page" Match="@child.Match"
+                                    Icon="@child.Icon">@(DrawerOpen ? child.Title : "")</MudNavLink>
+                    }
+                }
+            </ChildContent>
+        </MudNavGroup>
+    }
+    else if (!route.ChildRoutes.Any())
+    {
+        @* Leaf node — no children defined at all *@
+        <MudNavLink Href="@route.Page" Match="@route.Match"
+                    Icon="@route.Icon">@(DrawerOpen ? route.Title : "")</MudNavLink>
+    }
+}

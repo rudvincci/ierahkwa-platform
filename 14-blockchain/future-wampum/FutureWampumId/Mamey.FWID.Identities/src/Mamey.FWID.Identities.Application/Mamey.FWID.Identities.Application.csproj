@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Mamey.FWID.Identities.Tests.Unit</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Services\" />
+    <None Remove="Events\Rejected\" />
+    <None Remove="Events\Handlers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="Events\Rejected\" />
+    <Folder Include="Events\Handlers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mamey.FWID.Identities.Domain\Mamey.FWID.Identities.Domain.csproj" />
+    <ProjectReference Include="..\Mamey.FWID.Identities.Contracts\Mamey.FWID.Identities.Contracts.csproj" />
+  </ItemGroup>
+  
+   <!-- Use absolute paths to ensure correct resolution -->
+   <ItemGroup>
+     <ProjectReference Include="/Volumes/Barracuda/mamey-io/code-final/Mamey/src/Mamey.Auth/src/Mamey.Auth/Mamey.Auth.csproj" />
+     <ProjectReference Include="/Volumes/Barracuda/mamey-io/code-final/Mamey/src/Mamey.Auth.Jwt/src/Mamey.Auth.Jwt/Mamey.Auth.Jwt.csproj" />
+     <ProjectReference Include="/Volumes/Barracuda/mamey-io/code-final/Mamey/src/Mamey.Auth.DecentralizedIdentifiers/src/Mamey.Auth.DecentralizedIdentifiers/Mamey.Auth.DecentralizedIdentifiers.csproj" />
+     <ProjectReference Include="/Volumes/Barracuda/mamey-io/code-final/Mamey/src/Mamey.Emails/src/Mamey.Emails/Mamey.Emails.csproj" />
+     <ProjectReference Include="/Volumes/Barracuda/mamey-io/code-final/Mamey/src/Mamey.Security/src/Mamey.Security/Mamey.Security.csproj" />
+     <ProjectReference Include="/Volumes/Barracuda/mamey-io/code-final/Mamey/src/Mamey.Persistence.Minio/src/Mamey.Persistence.Minio/Mamey.Persistence.Minio.csproj" />
+     <ProjectReference Include="/Volumes/Barracuda/mamey-io/code-final/Mamey/src/Mamey.Persistence.SQL/src/Mamey.Persistence.SQL/Mamey.Persistence.SQL.csproj" />
+     <ProjectReference Include="/Volumes/Barracuda/mamey-io/code-final/Mamey/src/Mamey.Microservice.Infrastructure/src/Mamey.Microservice.Infrastructure/Mamey.Microservice.Infrastructure.csproj" />
+     <ProjectReference Include="/Volumes/Barracuda/mamey-io/code-final/Mamey/src/Mamey.Barcode/src/Mamey.Barcode/Mamey.Barcode.csproj" />
+     <!-- Blockchain integration libraries -->
+     <ProjectReference Include="/Volumes/Barracuda/mamey-io/code-final/Mamey/src/Mamey.Blockchain.Crypto/src/Mamey.Blockchain.Crypto/Mamey.Blockchain.Crypto.csproj" />
+     <ProjectReference Include="/Volumes/Barracuda/mamey-io/code-final/Mamey/src/Mamey.Blockchain.Compliance/src/Mamey.Blockchain.Compliance/Mamey.Blockchain.Compliance.csproj" />
+     <ProjectReference Include="/Volumes/Barracuda/mamey-io/code-final/Mamey/src/Mamey.Blockchain.UniversalProtocolGateway/src/Mamey.Blockchain.UniversalProtocolGateway/Mamey.Blockchain.UniversalProtocolGateway.csproj" />
+   </ItemGroup>
+</Project>

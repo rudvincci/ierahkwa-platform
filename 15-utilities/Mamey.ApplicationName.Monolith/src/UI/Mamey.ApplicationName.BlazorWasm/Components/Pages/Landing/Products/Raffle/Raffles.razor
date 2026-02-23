@@ -1,0 +1,54 @@
+@page "/raffles"
+@inject MockRaffleService RaffleService
+@using Mamey.ApplicationName.BlazorWasm.Mock
+@using MudBlazor
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <MudText Typo="Typo.h3" Align="Align.Center" Class="mb-4">
+        Exciting Raffles Await You!
+    </MudText>
+    <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="mb-6">
+        Buy tickets for a chance to win amazing prizes. Time is running out, so act fast!
+    </MudText>
+
+    <MudGrid>
+        @foreach (var item in RaffleService.GetRaffleItems())
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Style="transition: transform 0.2s; cursor: pointer;" @onmouseover="() => HighlightCard(item.Id)" @onmouseout="() => ResetHighlight(item.Id)" Class="@($"raffle-card-{item.Id}")">
+                    <MudCardMedia Image="@item.ImageUrl" Class="mud-elevation-1" />
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6" Align="Align.Center" Style="font-weight: bold">@item.Title</MudText>
+                        <MudText Typo="Typo.body2" Align="Align.Center">@item.Description</MudText>
+                        <MudChip T="decimal" Color="Color.Secondary" Variant="Variant.Filled" Class="mt-2">
+                            Tickets: @item.TicketPrice:C
+                        </MudChip>
+                        <MudText Typo="Typo.caption" Align="Align.Center" Class="mt-2">
+                            <MudIcon Icon="@Icons.Material.Filled.Timer" Class="mr-1" />
+                            Time Left: @((item.RaffleDate - DateTime.Now).ToString(@"hh\:mm\:ss"))
+                        </MudText>
+                    </MudCardContent>
+                    <MudCardActions Class="justify-center">
+                        <MudButton Href="@($"/raffle-details/{item.Id}")" Variant="Variant.Filled" Color="Color.Primary">
+                            Participate Now
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private void HighlightCard(int id)
+    {
+        // Add hover effect for the card
+        StateHasChanged();
+    }
+
+    private void ResetHighlight(int id)
+    {
+        // Reset hover effect
+        StateHasChanged();
+    }
+}

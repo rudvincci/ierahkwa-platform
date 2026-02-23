@@ -1,0 +1,62 @@
+@* CIT-001-D: Supporting Document Checklist *@
+@using Mamey.Government.UI.ViewModels.Citizenship
+@using Mamey.Government.UI.Components.Inputs
+@using Mamey.BlazorWasm.Components.MameyPro.ImageUploadPro
+@using Mamey.BlazorWasm.Components.MameyPro.DocumentUploadPro
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h6">CIT-001-D: Supporting Document Checklist</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary">
+        Checklist and upload of supporting documents. This section will be populated with all fields from CIT-001-D Supporting Document Checklist.pdf
+    </MudText>
+
+    <MudPaper Class="pa-4">
+        <MudStack Spacing="2">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Document Checklist</MudText>
+            <MudText Typo="Typo.body2" Class="mb-4">
+                Please check all documents that you are submitting with your application. 
+                You will upload these documents in the sections below.
+            </MudText>
+
+            <MudCheckBox T="bool" @bind-Selected="ViewModel.HasBirthCertificate" 
+                        Label="Birth certificate"
+                        HelperText="Official birth certificate or certified copy" />
+            <MudCheckBox T="bool" @bind-Selected="ViewModel.HasPhotoId" 
+                        Label="Government-issued photo ID"
+                        HelperText="Driver's license, passport, or other government-issued photo identification" />
+            <MudCheckBox T="bool" @bind-Selected="ViewModel.HasProofOfResidence" 
+                        Label="Proof of residence (utility bill, lease, etc.)"
+                        HelperText="Recent utility bill, lease agreement, or other document showing your current address" />
+            <MudCheckBox T="bool" @bind-Selected="ViewModel.HasBackgroundCheck" 
+                        Label="Background check or criminal record check"
+                        HelperText="Criminal record check or background verification document" />
+        </MudStack>
+    </MudPaper>
+
+    <MudStack Spacing="3" Class="mt-4">
+        <MudText Typo="Typo.subtitle1">Personal documents</MudText>
+        <DocumentUploadPro Label="Personal documents"
+                          HelperText="Upload identity/supporting documents (PDF/images)."
+                          Multiple="true"
+                          DocumentAccept=".pdf,.jpg,.jpeg,.png"
+                          MaxAllowedSize="@(10 * 1024 * 1024)"
+                          Files="ViewModel.PersonalDocuments"
+                          FilesChanged="@(files => ViewModel.PersonalDocuments = files)" />
+
+        <MudText Typo="Typo.subtitle1">2x2 passport photo</MudText>
+        <ImageUploadPro Label="Passport photo (2x2)"
+                       HelperText="Upload a clear, front-facing photo."
+                       Multiple="false"
+                       ImageAccept="image/png,image/jpeg"
+                       MaxAllowedSize="@(5 * 1024 * 1024)"
+                       Files="ViewModel.PassportPhoto"
+                       FilesChanged="@(files => ViewModel.PassportPhoto = files)" />
+    </MudStack>
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public BecomeCitizenViewModel ViewModel { get; set; } = null!;
+}
+
+

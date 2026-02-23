@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.AIAdaptive.Api.Protos";
+
+package Pupitre.AIAdaptive;
+
+// gRPC service for AdaptiveLearning operations
+service AdaptiveLearningService {
+    // Get a single AdaptiveLearning by ID
+    rpc GetAdaptiveLearning (GetAdaptiveLearningRequest) returns (AdaptiveLearningResponse) {};
+    
+    // List all AdaptiveLearnings with pagination
+    rpc ListAdaptiveLearnings (ListAdaptiveLearningsRequest) returns (ListAdaptiveLearningsResponse) {};
+    
+    // Stream AdaptiveLearning updates
+    rpc StreamAdaptiveLearningUpdates (StreamAdaptiveLearningUpdatesRequest) returns (stream AdaptiveLearningResponse) {};
+}
+
+message GetAdaptiveLearningRequest {
+    string id = 1;
+}
+
+message ListAdaptiveLearningsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListAdaptiveLearningsResponse {
+    repeated AdaptiveLearningResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message AdaptiveLearningResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamAdaptiveLearningUpdatesRequest {
+    string filter = 1;
+}

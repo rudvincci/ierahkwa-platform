@@ -1,0 +1,1 @@
+# Mamey.Bank Products Module

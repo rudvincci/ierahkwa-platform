@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  
+  <!-- Conditional references: Project reference in Debug, Package reference in Release -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Security\src\Mamey.Security\Mamey.Security.csproj" />
+    <ProjectReference Include="..\..\..\Mamey.FWID.Identities\src\Mamey.FWID.Identities.Domain\Mamey.FWID.Identities.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Mamey.Security" Version="2.0.*" />
+    <PackageReference Include="Mamey.FWID.Identities.Domain" Version="2.0.*" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Mamey.Microservice.Abstractions" Version="2.0.*" />
+  </ItemGroup>
+</Project>
+
+
+
+
+
+
+

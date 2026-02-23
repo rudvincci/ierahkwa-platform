@@ -1,0 +1,55 @@
+@using Mamey.ApplicationName.BlazorWasm.Models.Roles
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public EventCallback<Role> OnRoleCreated { get; set; }
+    private string RoleName { get; set; }
+    private List<string> Permissions { get; set; } = new();
+    private string NewPermission { get; set; }
+    private void AddPermission()
+    {
+        if (!string.IsNullOrWhiteSpace(NewPermission))
+        {
+            Permissions.Add(NewPermission);
+            NewPermission = string.Empty;
+        }
+    }
+
+    private async Task CreateRoleAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(RoleName))
+        {
+            var newRole = new Role
+            {
+                Id = Guid.NewGuid(),
+                RoleName = RoleName,
+                Permissions = new List<string>(Permissions)
+            };
+            await OnRoleCreated.InvokeAsync(newRole);
+            RoleName = string.Empty;
+            Permissions.Clear();
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Close(DialogResult.Cancel);
+    }
+}
+
+<MudDialog>
+    <TitleContent>Create New Role</TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="RoleName" Label="Role Name" />
+        <MudTextField @bind-Value="NewPermission" Label="New Permission" Adornment="Adornment.End" AdornmentIcon="Icons.Material.Add" OnAdornmentClick="AddPermission" />
+        <MudChipSet T="string">
+            @foreach (var permission in Permissions)
+            {
+                <MudChip T="string">@permission</MudChip>
+            }
+        </MudChipSet>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CreateRoleAsync">Create</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>

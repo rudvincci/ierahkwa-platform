@@ -1,0 +1,100 @@
+@page "/sicb/lending"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject ISICBClient SICBClient
+@inject ILogger<Lending> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Credit & Lending" Icon="fas fa-hand-holding-usd" Subtitle="Credit and lending governance">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Loans" Value="@_loans.Count.ToString()" Icon="fas fa-file-invoice-dollar" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Outstanding" Value="@_totalOutstanding.ToString("C")" Icon="fas fa-dollar-sign" Color="#EF4444" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active Loans" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Avg Interest Rate" Value="@_avgInterestRateText" Icon="fas fa-percentage" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Lending Operations" Class="mt-4">
+        <MudTable T="LendingInfo" Items="@_loans" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Loan ID</MudTh>
+                <MudTh>Borrower</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Interest Rate</MudTh>
+                <MudTh>Remaining</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+                <MudTh>Maturity</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.LoanId</MudTd>
+                <MudTd>@context.BorrowerId</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.InterestRate).ToString("F2")%</MudTd>
+                <MudTd>@decimal.Parse(context.RemainingBalance).ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : context.Status == "Completed" ? Color.Info : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@(context.MaturityDate?.ToString("yyyy-MM-dd") ?? "-")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<LendingInfo> _loans = new();
+    private decimal _totalOutstanding;
+    private int _activeCount;
+    private decimal _avgInterestRate;
+    private string _avgInterestRateText = "0.00%";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _loans = await SICBClient.GetLendingOperationsAsync();
+            _totalOutstanding = _loans.Where(l => l.Status == "Active").Sum(l => decimal.Parse(l.RemainingBalance));
+            _activeCount = _loans.Count(l => l.Status == "Active");
+            _avgInterestRate = _loans.Any() ? _loans.Average(l => decimal.Parse(l.InterestRate)) : 0;
+            _avgInterestRateText = $"{_avgInterestRate:F2}%";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading lending operations");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

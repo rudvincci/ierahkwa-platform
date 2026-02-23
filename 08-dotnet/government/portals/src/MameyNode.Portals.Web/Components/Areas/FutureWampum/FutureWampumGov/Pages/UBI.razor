@@ -1,0 +1,96 @@
+@page "/futurewampum/gov/ubi"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumGovClient FutureWampumGovClient
+@inject ILogger<UBI> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Universal Basic Income" Icon="fas fa-hand-holding-usd" Subtitle="UBI program management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Programs" Value="@_programs.Count.ToString()" Icon="fas fa-folder" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Recipients" Value="@_totalRecipients.ToString("N0")" Icon="fas fa-users" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Budget" Value="@_totalBudget.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Disbursed" Value="@_totalDisbursed.ToString("C")" Icon="fas fa-paper-plane" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="UBI Programs" Class="mt-4">
+        <MudTable T="UBIProgramInfo" Items="@_programs" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Program ID</MudTh>
+                <MudTh>Program Name</MudTh>
+                <MudTh>Monthly Amount</MudTh>
+                <MudTh>Total Recipients</MudTh>
+                <MudTh>Active Recipients</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Start Date</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.ProgramId</MudTd>
+                <MudTd>@context.ProgramName</MudTd>
+                <MudTd>@decimal.Parse(context.MonthlyAmount).ToString("C")</MudTd>
+                <MudTd>@context.TotalRecipients</MudTd>
+                <MudTd>@context.ActiveRecipients</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.StartDate.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<UBIProgramInfo> _programs = new();
+    private int _totalRecipients;
+    private decimal _totalBudget;
+    private decimal _totalDisbursed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _programs = await FutureWampumGovClient.GetUBIProgramsAsync();
+            _totalRecipients = _programs.Sum(p => p.TotalRecipients);
+            _totalBudget = _programs.Sum(p => decimal.Parse(p.Budget));
+            _totalDisbursed = _programs.Sum(p => decimal.Parse(p.Disbursed));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading UBI programs");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

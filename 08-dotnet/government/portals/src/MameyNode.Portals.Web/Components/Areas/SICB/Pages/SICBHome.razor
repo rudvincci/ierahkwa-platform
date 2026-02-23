@@ -1,0 +1,125 @@
+@page "/sicb"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject ISICBClient SICBClient
+@inject ILogger<SICBHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="SICB" Icon="fas fa-landmark" Subtitle="Sovereign Ierahkwa Central Bank">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <!-- Dashboard Metrics -->
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Total Reserves" Value="@_totalReserves" Icon="fas fa-coins" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Monetary Instruments" Value="@_instrumentsCount.ToString()" Icon="fas fa-file-invoice-dollar" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Active Loans" Value="@_activeLoans.ToString()" Icon="fas fa-hand-holding-usd" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Treasury Programs" Value="@_treasuryPrograms.ToString()" Icon="fas fa-building" Color="#8B5CF6" />
+        </MudItem>
+    </MudGrid>
+
+    <!-- Navigation Cards -->
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Monetary Instruments" Elevation="2">
+                <MudText Typo="Typo.body2">Manage monetary instruments and reserves</MudText>
+                <MudButton Href="/sicb/monetary-instruments" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Instruments
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Ledger & Reserves" Elevation="2">
+                <MudText Typo="Typo.body2">Central bank ledger and reserve management</MudText>
+                <MudButton Href="/sicb/ledger-reserves" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Ledger
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Credit & Lending" Elevation="2">
+                <MudText Typo="Typo.body2">Central bank lending programs</MudText>
+                <MudButton Href="/sicb/lending" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Lending
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Monetary Policy" Elevation="2">
+                <MudText Typo="Typo.body2">Monetary policy tools and settings</MudText>
+                <MudButton Href="/sicb/monetary-policy" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Policy
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Portable Banking Node" Elevation="2">
+                <MudText Typo="Typo.body2">Universal Protocol Gateway and portable banking</MudText>
+                <MudButton Href="/portable" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Portable Node
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="On-Demand Liquidity" Elevation="2">
+                <MudText Typo="Typo.body2">ODL liquidity management</MudText>
+                <MudButton Href="/odl" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to ODL
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private string _totalReserves = "$0";
+    private int _instrumentsCount;
+    private int _activeLoans;
+    private int _treasuryPrograms;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            var reserves = await SICBClient.GetLedgerReservesAsync();
+            _totalReserves = reserves.Sum(r => decimal.Parse(r.TotalReserves ?? "0")).ToString("C");
+
+            var instruments = await SICBClient.GetMonetaryInstrumentsAsync();
+            _instrumentsCount = instruments.Count;
+
+            var loans = await SICBClient.GetLendingOperationsAsync();
+            _activeLoans = loans.Count(l => l.Status == "Active" || l.Status == "Open");
+
+            var programs = await SICBClient.GetTreasuryProgramsAsync();
+            _treasuryPrograms = programs.Count;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading SICB dashboard data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}

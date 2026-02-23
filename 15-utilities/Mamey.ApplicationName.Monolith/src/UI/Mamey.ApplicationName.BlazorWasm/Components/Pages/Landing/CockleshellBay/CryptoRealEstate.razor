@@ -1,0 +1,81 @@
+@page "/cockleshell-bay/crypto-real-estate"
+
+@using Mamey.BlazorWasm.Models
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="crypto-real-estate-page-container">
+    <!-- Header Section -->
+    <MudPaper Class="header-section" Elevation="0">
+        <h1 class="page-title animate-slide-in">Crypto Real Estate Investment</h1>
+        <p class="page-subtitle animate-fade-in">
+            Revolutionizing Property Development with Cryptocurrency
+        </p>
+    </MudPaper>
+
+    <!-- Introduction Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Overview</h2>
+            <p class="section-content animate-fade-in">
+                Our innovative real estate initiative integrates cryptocurrency into property development, offering unique opportunities for global investors.
+                By aligning digital assets with real-world projects, we create a seamless investment experience that drives economic growth and sustainability.
+            </p>
+        </MudPaper>
+    </section>
+
+    <!-- Investment Opportunities Section -->
+    <section class="section">
+        <CardHighlight Items="InvestmentOpportunities()" />
+    </section>
+
+    <!-- Community Development Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Community Development Projects</h2>
+            <p class="section-content animate-fade-in">
+                Proceeds from real estate investments are reinvested into community-focused projects, addressing local needs and fostering economic growth. These initiatives include:
+            </p>
+            <ul class="projects-list animate-fade-in">
+                <li>Infrastructure development, including roads, utilities, and public services.</li>
+                <li>Support for schools, healthcare facilities, and recreational spaces.</li>
+                <li>Programs that promote sustainable living and economic independence.</li>
+            </ul>
+        </MudPaper>
+    </section>
+
+    <!-- Why Choose Crypto Real Estate Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Why Invest in Crypto Real Estate?</h2>
+            <ul class="benefits-list animate-fade-in">
+                <li>Secure transactions enabled by blockchain technology.</li>
+                <li>High potential for property value appreciation.</li>
+                <li>Directly contribute to impactful community development projects.</li>
+                <li>Be part of a revolutionary approach to real estate investment.</li>
+            </ul>
+        </MudPaper>
+    </section>
+</MudContainer>
+
+
+@code {
+    private List<FeaturedProduct> InvestmentOpportunities()
+    {
+        return new List<FeaturedProduct>()
+        {
+            new FeaturedProduct()
+            {
+                Title = "Crypto-Friendly Properties",
+                Description = "Purchase and invest in properties using FHCT tokens or other cryptocurrencies, making real estate more accessible to a global audience.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 1,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Inclusive Investment",
+                Description = "Lower barriers to entry for investors worldwide, enabling participation in the growing digital economy through real estate.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 2,
+            },
+        };
+    }
+}

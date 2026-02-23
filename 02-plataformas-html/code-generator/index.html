@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IERAHKWA AI CODE GENERATOR | Software Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;600&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bg-dark: #0a0e17;
+            --bg-card: #0d1a2d;
+            --bg-input: #0f1f35;
+            --gold: #FFD700;
+            --cyan: #00FFFF;
+            --green: #00FF41;
+            --purple: #9D4EDD;
+            --blue: #3b82f6;
+            --red: #ef4444;
+            --border: rgba(0, 255, 255, 0.2);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--bg-dark);
+            color: #fff;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at top, rgba(0, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(157, 78, 221, 0.03) 0%, transparent 50%);
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, rgba(13, 26, 45, 0.95), transparent);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--purple), var(--cyan));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .logo h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo span {
+            display: block;
+            font-size: 0.7em;
+            color: #888;
+            letter-spacing: 3px;
+        }
+        
+        .status-badge {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--green);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Main Layout */
+        .main {
+            display: grid;
+            grid-template-columns: 320px 1fr 350px;
+            gap: 20px;
+            padding: 20px 40px;
+            min-height: calc(100vh - 100px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            color: var(--cyan);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Module Selector */
+        .module-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .module-item {
+            background: var(--bg-input);
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .module-item:hover {
+            border-color: var(--cyan);
+            transform: translateX(5px);
+        }
+        
+        .module-item.selected {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: var(--cyan);
+        }
+        
+        .module-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .module-info h4 {
+            font-size: 0.9em;
+            color: #fff;
+        }
+        
+        .module-info span {
+            font-size: 0.75em;
+            color: #666;
+        }
+        
+        /* Main Editor */
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* Prompt Input */
+        .prompt-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .prompt-header h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--gold);
+            font-size: 1em;
+        }
+        
+        .model-selector {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .model-btn {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: #888;
+            padding: 6px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.2s;
+        }
+        
+        .model-btn.active {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            border-color: var(--purple);
+            color: #fff;
+        }
+        
+        .prompt-textarea {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95em;
+            resize: none;
+            min-height: 100px;
+        }
+        
+        .prompt-textarea:focus {
+            outline: none;
+            border-color: var(--cyan);
+        }
+        
+        .prompt-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .prompt-templates {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .template-chip {
+            background: rgba(157, 78, 221, 0.1);
+            border: 1px solid var(--purple);
+            color: var(--purple);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .template-chip:hover {
+            background: var(--purple);
+            color: #fff;
+        }
+        
+        .generate-btn {
+            background: linear-gradient(135deg, var(--green), var(--cyan));
+            border: none;
+            color: #000;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        
+        .generate-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+        }
+        
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Code Output */
+        .code-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .code-tabs {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .code-tab {
+            background: var(--bg-input);
+            border: none;
+            color: #888;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .code-tab.active {
+            background: rgba(0, 255, 255, 0.1);
+            color: var(--cyan);
+        }
+        
+        .code-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: #888;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+        
+        .code-editor {
+            flex: 1;
+            padding: 20px;
+            overflow: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            background: #0a0f18;
+        }
+        
+        .code-editor pre {
+            margin: 0;
+            color: #e0e0e0;
+        }
+        
+        .code-editor .keyword { color: var(--purple); }
+        .code-editor .string { color: var(--green); }
+        .code-editor .comment { color: #666; }
+        .code-editor .function { color: var(--cyan); }
+        .code-editor .number { color: var(--gold); }
+        
+        /* Right Panel */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .stat-item {
+            background: var(--bg-input);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            color: var(--cyan);
+        }
+        
+        .stat-label {
+            font-size: 0.75em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* History */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            background: var(--bg-input);
+            border-radius: 10px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .history-item:hover {
+            background: rgba(0, 255, 255, 0.05);
+        }
+        
+        .history-item h5 {
+            font-size: 0.85em;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .history-item span {
+            font-size: 0.75em;
+            color: #666;
+        }
+        
+        /* Languages */
+        .lang-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .lang-btn {
+            background: var(--bg-input);
+            border: 1px solid transparent;
+            color: #888;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.2s;
+        }
+        
+        .lang-btn:hover, .lang-btn.active {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+        
+        /* Loading */
+        .generating {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 20px;
+        }
+        
+        .generating-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--border);
+            border-top-color: var(--cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .generating-text {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--cyan);
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .main { grid-template-columns: 280px 1fr; }
+            .right-panel { display: none; }
+        }
+        
+        @media (max-width: 900px) {
+            .main { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .header { padding: 15px 20px; }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🧠</div>
+            <div>
+                <h1>AI CODE GENERATOR</h1>
+                <span>IERAHKWA SOFTWARE BUILDER</span>
+            </div>
+        </div>
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            AI ENGINE ACTIVE • v2.0
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Left Sidebar - Modules -->
+        <aside class="sidebar">
+            <div class="card">
+                <div class="card-title"><i class="bi bi-grid-3x3-gap"></i> MODULES</div>
+                <div class="module-list">
+                    <div class="module-item selected" data-category="banking">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #10b981, #059669);">🏦</div>
+                        <div class="module-info">
+                            <h4>Banking</h4>
+                            <span>6 sub-modules</span>
+                        </div>
+                    </div>
+                    <div class="module-item" data-category="trading">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">📈</div>
+                        <div class="module-info">
+                            <h4>Trading</h4>
+                            <span>6 sub-modules</span>
+                        </div>
+                    </div>
+                    <div class="module-item" data-category="defi">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">⚡</div>
+                        <div class="module-info">
+                            <h4>DeFi</h4>
+                            <span>6 sub-modules</span>
+                        </div>
+                    </div>
+                    <div class="module-item" data-category="crypto">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">₿</div>
+                        <div class="module-info">
+                            <h4>Crypto</h4>
+                            <span>6 sub-modules</span>
+                        </div>
+                    </div>
+                    <div class="module-item" data-category="government">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">🏛️</div>
+                        <div class="module-info">
+                            <h4>Government</h4>
+                            <span>6 sub-modules</span>
+                        </div>
+                    </div>
+                    <div class="module-item" data-category="business">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">💼</div>
+                        <div class="module-info">
+                            <h4>Business</h4>
+                            <span>6 sub-modules</span>
+                        </div>
+                    </div>
+                    <div class="module-item" data-category="social">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">👥</div>
+                        <div class="module-info">
+                            <h4>Social</h4>
+                            <span>6 sub-modules</span>
+                        </div>
+                    </div>
+                    <div class="module-item" data-category="gaming">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">🎮</div>
+                        <div class="module-info">
+                            <h4>Gaming</h4>
+                            <span>6 sub-modules</span>
+                        </div>
+                    </div>
+                    <div class="module-item" data-category="healthcare">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a);">🏥</div>
+                        <div class="module-info">
+                            <h4>Healthcare</h4>
+                            <span>5 sub-modules</span>
+                        </div>
+                    </div>
+                    <div class="module-item" data-category="education">
+                        <div class="module-icon" style="background: linear-gradient(135deg, #a855f7, #9333ea);">📚</div>
+                        <div class="module-info">
+                            <h4>Education</h4>
+                            <span>5 sub-modules</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title"><i class="bi bi-code-slash"></i> LANGUAGE</div>
+                <div class="lang-grid">
+                    <button class="lang-btn active">JavaScript</button>
+                    <button class="lang-btn">TypeScript</button>
+                    <button class="lang-btn">Python</button>
+                    <button class="lang-btn">Rust</button>
+                    <button class="lang-btn">Go</button>
+                    <button class="lang-btn">C#</button>
+                    <button class="lang-btn">Solidity</button>
+                    <button class="lang-btn">SQL</button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Editor -->
+        <section class="editor-container">
+            <!-- Prompt Section -->
+            <div class="prompt-section">
+                <div class="prompt-header">
+                    <h3>🚀 DESCRIBE YOUR SOFTWARE</h3>
+                    <div class="model-selector">
+                        <button class="model-btn active">IERAHKWA-70B</button>
+                        <button class="model-btn">Fast Mode</button>
+                        <button class="model-btn">Expert Mode</button>
+                    </div>
+                </div>
+                <textarea class="prompt-textarea" id="promptInput" placeholder="Describe qué quieres crear...
+
+Ejemplos:
+• Crea un sistema de pagos con SWIFT MT103 y validación de fraude
+• Genera un módulo de staking con APY variable y auto-compound
+• Construye una API REST para gestión de ciudadanos con CRUD completo
+• Crea un smart contract ERC-20 con vesting y governance"></textarea>
+                <div class="prompt-actions">
+                    <div class="prompt-templates">
+                        <span class="template-chip" onclick="useTemplate('api')">REST API</span>
+                        <span class="template-chip" onclick="useTemplate('defi')">DeFi Module</span>
+                        <span class="template-chip" onclick="useTemplate('smart')">Smart Contract</span>
+                        <span class="template-chip" onclick="useTemplate('full')">Full Platform</span>
+                    </div>
+                    <button class="generate-btn" id="generateBtn" onclick="generateCode()">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                        GENERATE CODE
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Code Output -->
+            <div class="code-section">
+                <div class="code-header">
+                    <div class="code-tabs">
+                        <button class="code-tab active"><i class="bi bi-file-earmark-code"></i> main.js</button>
+                        <button class="code-tab"><i class="bi bi-file-earmark-code"></i> routes.js</button>
+                        <button class="code-tab"><i class="bi bi-file-earmark-code"></i> models.js</button>
+                    </div>
+                    <div class="code-actions">
+                        <button class="action-btn" onclick="copyCode()"><i class="bi bi-clipboard"></i> Copy</button>
+                        <button class="action-btn" onclick="downloadCode()"><i class="bi bi-download"></i> Download</button>
+                        <button class="action-btn" onclick="analyzeCode()"><i class="bi bi-shield-check"></i> Analyze</button>
+                        <button class="action-btn" onclick="refactorCode()"><i class="bi bi-arrow-repeat"></i> Refactor</button>
+                        <button class="action-btn" onclick="explainCode()"><i class="bi bi-question-circle"></i> Explain</button>
+                        <button class="action-btn" onclick="deployCode()"><i class="bi bi-cloud-upload"></i> Deploy</button>
+                    </div>
+                </div>
+                <div class="code-editor" id="codeOutput">
+                    <pre><span class="comment">/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ *  🧠 IERAHKWA AI CODE GENERATOR
+ *  Ready to generate code • Describe your software above
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */</span>
+
+<span class="comment">// Your generated code will appear here...</span>
+<span class="comment">// Supported: APIs, Smart Contracts, Full Platforms, Microservices</span>
+
+<span class="keyword">const</span> <span class="function">ierahkwaAI</span> = {
+    <span class="string">status</span>: <span class="string">'ready'</span>,
+    <span class="string">version</span>: <span class="string">'2.0.0'</span>,
+    <span class="string">capabilities</span>: [
+        <span class="string">'REST API Generation'</span>,
+        <span class="string">'Smart Contract Builder'</span>,
+        <span class="string">'DeFi Protocol Creation'</span>,
+        <span class="string">'Full Platform Scaffolding'</span>,
+        <span class="string">'Database Schema Design'</span>,
+        <span class="string">'WebSocket Services'</span>,
+        <span class="string">'Microservices Architecture'</span>
+    ]
+};
+
+<span class="keyword">module</span>.<span class="function">exports</span> = ierahkwaAI;</pre>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Right Panel -->
+        <aside class="right-panel">
+            <div class="card">
+                <div class="card-title"><i class="bi bi-bar-chart"></i> GENERATION STATS</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="statModules">156</div>
+                        <div class="stat-label">Modules Generated</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statLines">48.2K</div>
+                        <div class="stat-label">Lines of Code</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statAPIs">89</div>
+                        <div class="stat-label">APIs Created</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statContracts">23</div>
+                        <div class="stat-label">Smart Contracts</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <i class="bi bi-clock-history"></i> RECENT GENERATIONS
+                    <button onclick="clearHistory()" style="background: none; border: none; color: #666; cursor: pointer; font-size: 0.8em; margin-left: auto;">Clear</button>
+                </div>
+                <div class="history-list" id="historyList">
+                    <!-- History will be loaded from localStorage -->
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title"><i class="bi bi-cpu"></i> AI MODEL INFO</div>
+                <div style="font-size: 0.85em; color: #888; line-height: 1.8;">
+                    <div><strong style="color: var(--cyan);">Model:</strong> IERAHKWA-LLM 70B</div>
+                    <div><strong style="color: var(--cyan);">Context:</strong> 128K tokens</div>
+                    <div><strong style="color: var(--cyan);">Languages:</strong> 15+ supported</div>
+                    <div><strong style="color: var(--cyan);">Frameworks:</strong> Express, FastAPI, Actix, Gin</div>
+                    <div><strong style="color: var(--cyan);">Training:</strong> Sovereign Code Base</div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        // Templates
+        const templates = {
+            api: `Create a complete REST API with:
+- CRUD operations for the selected module
+- Input validation with Joi/Zod
+- Error handling middleware
+- JWT authentication
+- Rate limiting
+- OpenAPI documentation`,
+            
+            defi: `Create a DeFi protocol with:
+- Staking mechanism with variable APY
+- Liquidity pool management
+- Reward distribution system
+- Emergency withdrawal function
+- Admin controls for parameters`,
+            
+            smart: `Create a Solidity smart contract with:
+- ERC-20 token standard
+- Vesting schedule for team tokens
+- Governance voting mechanism
+- Pausable functionality
+- Upgradeable proxy pattern`,
+            
+            full: `Create a complete platform with:
+- Backend API (Express/Node)
+- Database schemas (MongoDB/PostgreSQL)
+- WebSocket real-time updates
+- Frontend components (React)
+- Admin dashboard
+- Mobile API endpoints`
+        };
+
+        function useTemplate(type) {
+            document.getElementById('promptInput').value = templates[type];
+        }
+
+        // API Configuration
+        const API_BASE = window.location.origin.includes('localhost') 
+            ? 'http://localhost:3000' 
+            : 'https://api.ierahkwa.gov';
+        
+        // Generate Code - CONNECTED TO REAL AI BACKEND
+        async function generateCode() {
+            const prompt = document.getElementById('promptInput').value;
+            if (!prompt.trim()) {
+                alert('Por favor describe qué quieres crear');
+                return;
+            }
+            
+            const btn = document.getElementById('generateBtn');
+            const output = document.getElementById('codeOutput');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> GENERATING...';
+            
+            output.innerHTML = `
+                <div class="generating">
+                    <div class="generating-spinner"></div>
+                    <div class="generating-text">🧠 AI is generating your code...</div>
+                </div>
+            `;
+            
+            try {
+                // Get selected module and language
+                const selectedModule = document.querySelector('.module-item.selected')?.dataset.category || 'banking';
+                const selectedLang = document.querySelector('.lang-btn.active')?.textContent || 'JavaScript';
+                const selectedModel = document.querySelector('.model-btn.active')?.textContent || 'IERAHKWA-70B';
+                
+                // Build enhanced prompt with context
+                const enhancedPrompt = buildEnhancedPrompt(prompt, selectedModule, selectedLang);
+                
+                // Call real AI API
+                const response = await fetch(`${API_BASE}/api/ai/code`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                    },
+                    body: JSON.stringify({
+                        query: enhancedPrompt,
+                        language: selectedLang.toLowerCase(),
+                        module: selectedModule,
+                        model: selectedModel
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    const generatedCode = data.data.content || data.data;
+                    output.innerHTML = `<pre>${highlightCode(generatedCode)}</pre>`;
+                    
+                    // Save to history
+                    saveGeneratedCode(prompt, generatedCode, selectedLang, selectedModule);
+                } else {
+                    throw new Error(data.error || 'Failed to generate code');
+                }
+                
+            } catch (error) {
+                console.error('Generation error:', error);
+                
+                // Fallback to local generation if API fails
+                const selectedModule = document.querySelector('.module-item.selected')?.dataset.category || 'banking';
+                const selectedLang = document.querySelector('.lang-btn.active')?.textContent || 'JavaScript';
+                const generatedCode = generateModuleCode(selectedModule, selectedLang, prompt);
+                
+                output.innerHTML = `
+                    <div style="color: #ff6b6b; margin-bottom: 15px;">
+                        ⚠️ API no disponible, usando generación local. Error: ${error.message}
+                    </div>
+                    <pre>${highlightCode(generatedCode)}</pre>
+                `;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-lightning-charge-fill"></i> GENERATE CODE';
+                
+                // Update stats
+                updateStats();
+                addToHistory(prompt, document.querySelector('.lang-btn.active')?.textContent || 'JavaScript');
+            }
+        }
+        
+        // Build enhanced prompt with context
+        function buildEnhancedPrompt(prompt, module, language) {
+            const moduleContext = {
+                banking: 'Create banking/financial code with security, validation, and compliance',
+                trading: 'Create trading/exchange code with real-time data, WebSocket, and order management',
+                defi: 'Create DeFi protocol code with smart contracts, staking, and liquidity pools',
+                crypto: 'Create cryptocurrency code with blockchain integration and wallet management',
+                government: 'Create government services code with citizen management and document processing',
+                business: 'Create business application code with CRM, inventory, and analytics',
+                social: 'Create social platform code with user management, feeds, and messaging',
+                gaming: 'Create gaming code with real-time multiplayer, leaderboards, and rewards',
+                healthcare: 'Create healthcare code with patient records, appointments, and HIPAA compliance',
+                education: 'Create education code with courses, students, and learning management'
+            };
+            
+            return `${moduleContext[module] || 'Create production-ready code'} in ${language}.
+
+Requirements:
+${prompt}
+
+Please generate:
+1. Complete, production-ready code
+2. Proper error handling
+3. Input validation
+4. Security best practices
+5. Comments and documentation
+6. Following IERAHKWA coding standards
+
+Code:`;
+        }
+        
+        // Save generated code to localStorage
+        function saveGeneratedCode(prompt, code, language, module) {
+            const history = JSON.parse(localStorage.getItem('codeHistory') || '[]');
+            history.unshift({
+                id: Date.now(),
+                prompt: prompt.substring(0, 100),
+                code: code.substring(0, 1000), // Store preview
+                language,
+                module,
+                timestamp: new Date().toISOString(),
+                lines: code.split('\n').length
+            });
+            
+            // Keep only last 50
+            if (history.length > 50) history.pop();
+            
+            localStorage.setItem('codeHistory', JSON.stringify(history));
+        }
+
+        function generateModuleCode(module, lang, prompt) {
+            const moduleName = module.charAt(0).toUpperCase() + module.slice(1);
+            
+            if (lang === 'JavaScript' || lang === 'TypeScript') {
+                return `/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ *  ${moduleName.toUpperCase()} MODULE - Auto-generated by IERAHKWA AI
+ *  Sovereign Government of Ierahkwa Ne Kanienke
+ *  Generated: ${new Date().toISOString()}
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 
+ * Prompt: ${prompt.substring(0, 100)}...
+ */
+
+const express = require('express');
+const router = express.Router();
+const { v4: uuidv4 } = require('uuid');
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  STATE & CONFIGURATION
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const state = {
+    items: [],
+    stats: { 
+        total: 0, 
+        active: 0, 
+        processed: 0,
+        volume: 0 
+    },
+    config: {
+        maxItems: 10000,
+        defaultLimit: 50,
+        enableCache: true
+    },
+    createdAt: Date.now()
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  MIDDLEWARE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const validateInput = (req, res, next) => {
+    // Add input validation logic
+    next();
+};
+
+const authenticate = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+    // Verify token logic
+    next();
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  ROUTES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// GET all items with pagination
+router.get('/', authenticate, (req, res) => {
+    const { page = 1, limit = 50, status, sort = 'createdAt' } = req.query;
+    
+    let filtered = [...state.items];
+    if (status) filtered = filtered.filter(i => i.status === status);
+    
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const paginated = filtered.slice(startIndex, endIndex);
+    
+    res.json({
+        success: true,
+        data: paginated,
+        pagination: {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            total: filtered.length,
+            pages: Math.ceil(filtered.length / limit)
+        },
+        stats: state.stats
+    });
+});
+
+// GET single item by ID
+router.get('/:id', authenticate, (req, res) => {
+    const item = state.items.find(i => i.id === req.params.id);
+    if (!item) {
+        return res.status(404).json({ 
+            success: false, 
+            error: 'NOT_FOUND',
+            message: 'Item not found' 
+        });
+    }
+    res.json({ success: true, data: item });
+});
+
+// POST create new item
+router.post('/', authenticate, validateInput, (req, res) => {
+    const item = {
+        id: uuidv4(),
+        ...req.body,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        status: 'active',
+        createdBy: req.user?.id || 'system'
+    };
+    
+    state.items.push(item);
+    state.stats.total++;
+    state.stats.active++;
+    
+    res.status(201).json({ 
+        success: true, 
+        data: item,
+        message: 'Item created successfully'
+    });
+});
+
+// PUT update item
+router.put('/:id', authenticate, validateInput, (req, res) => {
+    const index = state.items.findIndex(i => i.id === req.params.id);
+    if (index === -1) {
+        return res.status(404).json({ success: false, error: 'Not found' });
+    }
+    
+    state.items[index] = { 
+        ...state.items[index], 
+        ...req.body, 
+        updatedAt: Date.now(),
+        updatedBy: req.user?.id || 'system'
+    };
+    
+    res.json({ 
+        success: true, 
+        data: state.items[index],
+        message: 'Item updated successfully'
+    });
+});
+
+// DELETE item
+router.delete('/:id', authenticate, (req, res) => {
+    const index = state.items.findIndex(i => i.id === req.params.id);
+    if (index === -1) {
+        return res.status(404).json({ success: false, error: 'Not found' });
+    }
+    
+    const deleted = state.items.splice(index, 1)[0];
+    state.stats.active--;
+    
+    res.json({ 
+        success: true, 
+        data: deleted,
+        message: 'Item deleted successfully'
+    });
+});
+
+// GET statistics
+router.get('/stats/summary', authenticate, (req, res) => {
+    res.json({
+        success: true,
+        stats: state.stats,
+        uptime: Date.now() - state.createdAt,
+        config: state.config
+    });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  EXPORTS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+module.exports = router;
+
+console.log('✓ ${moduleName} module loaded');`;
+            }
+            
+            if (lang === 'Python') {
+                return `"""
+═══════════════════════════════════════════════════════════════════════════════
+ ${moduleName.toUpperCase()} MODULE - Auto-generated by IERAHKWA AI
+ Sovereign Government of Ierahkwa Ne Kanienke
+ Generated: ${new Date().toISOString()}
+═══════════════════════════════════════════════════════════════════════════════
+"""
+
+from fastapi import FastAPI, HTTPException, Depends, Query
+from pydantic import BaseModel, Field
+from typing import Optional, List
+from datetime import datetime
+from uuid import uuid4
+
+app = FastAPI(title="${moduleName} API", version="1.0.0")
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  MODELS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class ${moduleName}Item(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    name: str
+    description: Optional[str] = None
+    status: str = "active"
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: Optional[datetime] = None
+
+class ${moduleName}Create(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class ${moduleName}Update(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  STATE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+items: List[${moduleName}Item] = []
+stats = {"total": 0, "active": 0, "processed": 0}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  ROUTES
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@app.get("/", response_model=dict)
+async def get_all(
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=100),
+    status: Optional[str] = None
+):
+    filtered = items if not status else [i for i in items if i.status == status]
+    start = (page - 1) * limit
+    end = start + limit
+    return {
+        "success": True,
+        "data": filtered[start:end],
+        "total": len(filtered),
+        "page": page
+    }
+
+@app.get("/{item_id}", response_model=dict)
+async def get_one(item_id: str):
+    item = next((i for i in items if i.id == item_id), None)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return {"success": True, "data": item}
+
+@app.post("/", response_model=dict, status_code=201)
+async def create(data: ${moduleName}Create):
+    item = ${moduleName}Item(**data.dict())
+    items.append(item)
+    stats["total"] += 1
+    stats["active"] += 1
+    return {"success": True, "data": item}
+
+@app.put("/{item_id}", response_model=dict)
+async def update(item_id: str, data: ${moduleName}Update):
+    item = next((i for i in items if i.id == item_id), None)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    for key, value in data.dict(exclude_unset=True).items():
+        setattr(item, key, value)
+    item.updated_at = datetime.now()
+    return {"success": True, "data": item}
+
+@app.delete("/{item_id}", response_model=dict)
+async def delete(item_id: str):
+    global items
+    item = next((i for i in items if i.id == item_id), None)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    items = [i for i in items if i.id != item_id]
+    stats["active"] -= 1
+    return {"success": True, "data": item}
+
+@app.get("/stats/summary", response_model=dict)
+async def get_stats():
+    return {"success": True, "stats": stats}
+
+print(f"✓ ${moduleName} module loaded")`;
+            }
+            
+            if (lang === 'Solidity') {
+                return `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ *  ${moduleName.toUpperCase()} CONTRACT - Auto-generated by IERAHKWA AI
+ *  Sovereign Government of Ierahkwa Ne Kanienke
+ *  Generated: ${new Date().toISOString()}
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+
+contract ${moduleName}Token is ERC20, ReentrancyGuard, Ownable, Pausable {
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    //  STATE VARIABLES
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    uint256 public constant MAX_SUPPLY = 1_000_000_000 * 10**18; // 1B tokens
+    uint256 public stakingAPY = 1200; // 12% APY (basis points)
+    uint256 public minStakeAmount = 100 * 10**18;
+    
+    mapping(address => uint256) public stakedBalance;
+    mapping(address => uint256) public stakeTimestamp;
+    mapping(address => uint256) public rewards;
+    
+    uint256 public totalStaked;
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    //  EVENTS
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    event Staked(address indexed user, uint256 amount);
+    event Unstaked(address indexed user, uint256 amount);
+    event RewardsClaimed(address indexed user, uint256 amount);
+    event APYUpdated(uint256 oldAPY, uint256 newAPY);
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    //  CONSTRUCTOR
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    constructor() ERC20("${moduleName} Token", "IGT-${module.substring(0,3).toUpperCase()}") Ownable(msg.sender) {
+        _mint(msg.sender, MAX_SUPPLY);
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    //  STAKING FUNCTIONS
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function stake(uint256 amount) external nonReentrant whenNotPaused {
+        require(amount >= minStakeAmount, "Below minimum stake");
+        require(balanceOf(msg.sender) >= amount, "Insufficient balance");
+        
+        // Claim pending rewards first
+        if (stakedBalance[msg.sender] > 0) {
+            _claimRewards(msg.sender);
+        }
+        
+        _transfer(msg.sender, address(this), amount);
+        stakedBalance[msg.sender] += amount;
+        stakeTimestamp[msg.sender] = block.timestamp;
+        totalStaked += amount;
+        
+        emit Staked(msg.sender, amount);
+    }
+    
+    function unstake(uint256 amount) external nonReentrant {
+        require(stakedBalance[msg.sender] >= amount, "Insufficient staked");
+        
+        _claimRewards(msg.sender);
+        
+        stakedBalance[msg.sender] -= amount;
+        totalStaked -= amount;
+        _transfer(address(this), msg.sender, amount);
+        
+        emit Unstaked(msg.sender, amount);
+    }
+    
+    function claimRewards() external nonReentrant {
+        _claimRewards(msg.sender);
+    }
+    
+    function _claimRewards(address user) internal {
+        uint256 pending = calculateRewards(user);
+        if (pending > 0) {
+            rewards[user] = 0;
+            stakeTimestamp[user] = block.timestamp;
+            _mint(user, pending);
+            emit RewardsClaimed(user, pending);
+        }
+    }
+    
+    function calculateRewards(address user) public view returns (uint256) {
+        if (stakedBalance[user] == 0) return 0;
+        
+        uint256 timeStaked = block.timestamp - stakeTimestamp[user];
+        uint256 annualReward = (stakedBalance[user] * stakingAPY) / 10000;
+        return (annualReward * timeStaked) / 365 days;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    //  ADMIN FUNCTIONS
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function setAPY(uint256 newAPY) external onlyOwner {
+        require(newAPY <= 5000, "APY too high"); // Max 50%
+        emit APYUpdated(stakingAPY, newAPY);
+        stakingAPY = newAPY;
+    }
+    
+    function setMinStake(uint256 amount) external onlyOwner {
+        minStakeAmount = amount;
+    }
+    
+    function pause() external onlyOwner {
+        _pause();
+    }
+    
+    function unpause() external onlyOwner {
+        _unpause();
+    }
+    
+    function emergencyWithdraw() external onlyOwner {
+        uint256 balance = balanceOf(address(this)) - totalStaked;
+        if (balance > 0) {
+            _transfer(address(this), owner(), balance);
+        }
+    }
+}`;
+            }
+            
+            // Default
+            return `// Generated code for ${moduleName} in ${lang}\n// Prompt: ${prompt}`;
+        }
+
+        function highlightCode(code) {
+            return code
+                .replace(/\/\/.*$/gm, '<span class="comment">$&</span>')
+                .replace(/\/\*[\s\S]*?\*\//gm, '<span class="comment">$&</span>')
+                .replace(/#.*$/gm, '<span class="comment">$&</span>')
+                .replace(/"""[\s\S]*?"""/gm, '<span class="comment">$&</span>')
+                .replace(/\b(const|let|var|function|async|await|return|if|else|for|while|class|import|export|from|require|module|extends|implements|interface|type|enum|public|private|protected|static|readonly|abstract|virtual|override|new|this|super|try|catch|throw|finally|pragma|solidity|contract|mapping|event|emit|external|internal|view|pure|payable|memory|storage|calldata)\b/g, '<span class="keyword">$1</span>')
+                .replace(/\b(def|class|import|from|return|if|elif|else|for|while|try|except|raise|with|as|async|await|lambda|yield|global|nonlocal|assert|pass|break|continue|True|False|None)\b/g, '<span class="keyword">$1</span>')
+                .replace(/'[^']*'|"[^"]*"|`[^`]*`/g, '<span class="string">$&</span>')
+                .replace(/\b(\d+\.?\d*)\b/g, '<span class="number">$1</span>');
+        }
+
+        function copyCode() {
+            const code = document.getElementById('codeOutput').innerText;
+            navigator.clipboard.writeText(code);
+            alert('Código copiado al portapapeles');
+        }
+
+        function downloadCode() {
+            const code = document.getElementById('codeOutput').innerText;
+            if (!code || code.includes('Your generated code will appear here')) {
+                alert('No hay código para descargar');
+                return;
+            }
+            
+            const selectedLang = document.querySelector('.lang-btn.active')?.textContent || 'JavaScript';
+            const selectedModule = document.querySelector('.module-item.selected')?.dataset.category || 'module';
+            
+            // Determine file extension
+            const extensions = {
+                'JavaScript': 'js',
+                'TypeScript': 'ts',
+                'Python': 'py',
+                'Rust': 'rs',
+                'Go': 'go',
+                'C#': 'cs',
+                'Solidity': 'sol',
+                'SQL': 'sql'
+            };
+            
+            const ext = extensions[selectedLang] || 'txt';
+            const filename = `${selectedModule}-${Date.now()}.${ext}`;
+            
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            // Show success message
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check-circle"></i> Downloaded!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        }
+
+        // Analyze code for security, performance, and best practices
+        async function analyzeCode() {
+            const code = document.getElementById('codeOutput').innerText;
+            if (!code || code.includes('Your generated code will appear here')) {
+                alert('No hay código para analizar');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/ai/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                    },
+                    body: JSON.stringify({
+                        content: code,
+                        type: 'code_analysis'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const analysis = data.data.content || data.data;
+                    alert(`Análisis de Código:\n\n${analysis.substring(0, 500)}...`);
+                } else {
+                    // Fallback analysis
+                    analyzeCodeLocal(code);
+                }
+            } catch (error) {
+                analyzeCodeLocal(code);
+            }
+        }
+        
+        function analyzeCodeLocal(code) {
+            const issues = [];
+            const warnings = [];
+            
+            // Security checks
+            if (code.includes('eval(')) issues.push('⚠️ SECURITY: eval() detected - potential security risk');
+            if (code.includes('innerHTML') && !code.includes('sanitize')) warnings.push('⚠️ XSS Risk: innerHTML without sanitization');
+            if (code.includes('password') && !code.includes('hash')) warnings.push('⚠️ SECURITY: Password storage without hashing');
+            
+            // Performance checks
+            if (code.match(/for\s*\([^)]*\)\s*{[\s\S]*for\s*\([^)]*\)\s*{/)) warnings.push('⚠️ PERFORMANCE: Nested loops detected');
+            if (code.includes('document.querySelector') && code.match(/document\.querySelector/g).length > 5) warnings.push('⚠️ PERFORMANCE: Multiple DOM queries - consider caching');
+            
+            // Best practices
+            if (!code.includes('try') && code.includes('async')) warnings.push('💡 SUGGESTION: Add error handling for async operations');
+            if (!code.includes('//') && code.split('\n').length > 20) warnings.push('💡 SUGGESTION: Add comments for complex logic');
+            
+            const analysis = [
+                '═══════════════════════════════════════════════════════',
+                '📊 ANÁLISIS DE CÓDIGO',
+                '═══════════════════════════════════════════════════════\n',
+                `Líneas de código: ${code.split('\n').length}`,
+                `Caracteres: ${code.length}\n`,
+                issues.length > 0 ? `🚨 PROBLEMAS CRÍTICOS (${issues.length}):\n${issues.join('\n')}\n` : '✅ No se encontraron problemas críticos\n',
+                warnings.length > 0 ? `⚠️ ADVERTENCIAS (${warnings.length}):\n${warnings.join('\n')}` : '✅ No se encontraron advertencias'
+            ].join('\n');
+            
+            alert(analysis);
+        }
+        
+        // Refactor code to improve quality
+        async function refactorCode() {
+            const code = document.getElementById('codeOutput').innerText;
+            if (!code || code.includes('Your generated code will appear here')) {
+                alert('No hay código para refactorizar');
+                return;
+            }
+            
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Refactoring...';
+            
+            try {
+                const selectedLang = document.querySelector('.lang-btn.active')?.textContent || 'JavaScript';
+                
+                const response = await fetch(`${API_BASE}/api/ai/code`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                    },
+                    body: JSON.stringify({
+                        query: `Refactor the following ${selectedLang} code to improve:
+- Code quality and readability
+- Performance optimization
+- Security best practices
+- Error handling
+- Code organization
+
+Original code:
+\`\`\`${selectedLang.toLowerCase()}
+${code}
+\`\`\`
+
+Provide the refactored code with explanations of changes.`,
+                        language: selectedLang.toLowerCase()
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    const refactored = data.data.content || data.data;
+                    document.getElementById('codeOutput').innerHTML = `<pre>${highlightCode(refactored)}</pre>`;
+                } else {
+                    alert('Error al refactorizar código');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+        
+        // Explain code functionality
+        async function explainCode() {
+            const code = document.getElementById('codeOutput').innerText;
+            if (!code || code.includes('Your generated code will appear here')) {
+                alert('No hay código para explicar');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/ai/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                    },
+                    body: JSON.stringify({
+                        message: `Explain what this code does in Spanish, step by step:\n\n\`\`\`\n${code.substring(0, 2000)}\n\`\`\``,
+                        systemPrompt: 'You are a code explanation assistant. Explain code clearly and in detail.'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    const explanation = data.data.content || data.data;
+                    
+                    // Show explanation in a modal or alert
+                    const explanationWindow = window.open('', '_blank', 'width=800,height=600');
+                    explanationWindow.document.write(`
+                        <html>
+                            <head>
+                                <title>Explicación del Código</title>
+                                <style>
+                                    body { 
+                                        font-family: 'JetBrains Mono', monospace; 
+                                        background: #0a0e17; 
+                                        color: #fff; 
+                                        padding: 20px; 
+                                        line-height: 1.8;
+                                    }
+                                    pre { background: #0d1a2d; padding: 15px; border-radius: 8px; }
+                                </style>
+                            </head>
+                            <body>
+                                <h1>📚 Explicación del Código</h1>
+                                <pre>${explanation.replace(/\n/g, '<br>')}</pre>
+                            </body>
+                        </html>
+                    `);
+                } else {
+                    alert('Error al generar explicación');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        function deployCode() {
+            const code = document.getElementById('codeOutput').innerText;
+            if (!code || code.includes('Your generated code will appear here')) {
+                alert('No hay código para desplegar');
+                return;
+            }
+            
+            if (confirm('¿Desplegar código a IERAHKWA Platform?')) {
+                // TODO: Implement actual deployment
+                alert('🚀 Desplegando a IERAHKWA Platform...\n\nEsta funcionalidad se conectará al sistema de deployment automático.');
+            }
+        }
+
+        function updateStats() {
+            const modules = parseInt(document.getElementById('statModules').textContent) + 1;
+            document.getElementById('statModules').textContent = modules;
+            
+            const lines = parseFloat(document.getElementById('statLines').textContent.replace('K', '')) + 0.3;
+            document.getElementById('statLines').textContent = lines.toFixed(1) + 'K';
+        }
+
+        function addToHistory(prompt, lang) {
+            const title = prompt.substring(0, 30) + (prompt.length > 30 ? '...' : '');
+            const code = document.getElementById('codeOutput').innerText;
+            const lines = code.split('\n').length;
+            
+            // Save to localStorage
+            const history = JSON.parse(localStorage.getItem('codeHistory') || '[]');
+            const newItem = {
+                id: Date.now(),
+                title,
+                prompt,
+                lang,
+                lines,
+                timestamp: Date.now()
+            };
+            history.unshift(newItem);
+            if (history.length > 20) history.pop();
+            localStorage.setItem('codeHistory', JSON.stringify(history));
+            
+            // Update UI
+            loadHistory();
+        }
+        
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('codeHistory') || '[]');
+            const historyList = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<div style="color: #666; padding: 20px; text-align: center;">No hay historial aún</div>';
+                return;
+            }
+            
+            historyList.innerHTML = history.map(item => {
+                const timeAgo = getTimeAgo(item.timestamp);
+                return `
+                    <div class="history-item" onclick="loadFromHistory(${item.id})">
+                        <h5>${item.title}</h5>
+                        <span>${item.lang} • ${item.lines} lines • ${timeAgo}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function getTimeAgo(timestamp) {
+            const seconds = Math.floor((Date.now() - timestamp) / 1000);
+            if (seconds < 60) return 'Just now';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes} min ago`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            const days = Math.floor(hours / 24);
+            return `${days} day${days > 1 ? 's' : ''} ago`;
+        }
+        
+        function loadFromHistory(id) {
+            const history = JSON.parse(localStorage.getItem('codeHistory') || '[]');
+            const item = history.find(h => h.id === id);
+            if (item) {
+                document.getElementById('promptInput').value = item.prompt;
+                // Could load the full code if stored
+            }
+        }
+        
+        function clearHistory() {
+            if (confirm('¿Eliminar todo el historial?')) {
+                localStorage.removeItem('codeHistory');
+                loadHistory();
+            }
+        }
+        
+        // Load history on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHistory();
+        });
+
+        // Module selection
+        document.querySelectorAll('.module-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.module-item').forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+            });
+        });
+
+        // Language selection
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Model selection
+        document.querySelectorAll('.model-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+@using Microsoft.AspNetCore.Components.Authorization
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layouts.MainLayout)">
+                <NotAuthorized>
+                    @if (context.User.Identity?.IsAuthenticated != true)
+                    {
+                        <RedirectToLogin />
+                    }
+                    else
+                    {
+                        <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="pa-8">
+                            <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Large" Color="Color.Error" />
+                            <MudText Typo="Typo.h5">Access Denied</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                You don't have permission to access this page.
+                            </MudText>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/" Class="mt-4">
+                                Go to Home
+                            </MudButton>
+                        </MudStack>
+                    }
+                </NotAuthorized>
+                <Authorizing>
+                    <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="pa-8">
+                        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+                        <MudText Typo="Typo.body2">Authorizing...</MudText>
+                    </MudStack>
+                </Authorizing>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not Found</PageTitle>
+            <LayoutView Layout="@typeof(Layouts.MainLayout)">
+                <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="pa-8" Style="min-height: 60vh;">
+                    <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Warning" Style="font-size: 6rem;" />
+                    <MudText Typo="Typo.h3">404</MudText>
+                    <MudText Typo="Typo.h5" Class="mud-text-secondary">Page Not Found</MudText>
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                        The page you're looking for doesn't exist or has been moved.
+                    </MudText>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/" Class="mt-4">
+                        Go to Home
+                    </MudButton>
+                </MudStack>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

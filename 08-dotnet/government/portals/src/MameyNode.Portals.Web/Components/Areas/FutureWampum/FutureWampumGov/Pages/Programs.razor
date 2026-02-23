@@ -1,0 +1,98 @@
+@page "/futurewampum/gov/programs"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumGovClient FutureWampumGovClient
+@inject ILogger<Programs> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Program Disbursement" Icon="fas fa-tasks" Subtitle="Program disbursement management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Programs" Value="@_programs.Count.ToString()" Icon="fas fa-folder" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Budget" Value="@_totalBudget.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Disbursed" Value="@_totalDisbursed.ToString("C")" Icon="fas fa-paper-plane" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Programs" Class="mt-4">
+        <MudTable T="ProgramInfo" Items="@_programs" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Program ID</MudTh>
+                <MudTh>Program Name</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Budget</MudTh>
+                <MudTh>Allocated</MudTh>
+                <MudTh>Disbursed</MudTh>
+                <MudTh>Recipients</MudTh>
+                <MudTh>Status</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.ProgramId</MudTd>
+                <MudTd>@context.ProgramName</MudTd>
+                <MudTd>@context.ProgramType</MudTd>
+                <MudTd>@decimal.Parse(context.Budget).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.Allocated).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.Disbursed).ToString("C")</MudTd>
+                <MudTd>@context.TotalRecipients</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<ProgramInfo> _programs = new();
+    private decimal _totalBudget;
+    private decimal _totalDisbursed;
+    private int _activeCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _programs = await FutureWampumGovClient.GetProgramsAsync();
+            _totalBudget = _programs.Sum(p => decimal.Parse(p.Budget));
+            _totalDisbursed = _programs.Sum(p => decimal.Parse(p.Disbursed));
+            _activeCount = _programs.Count(p => p.Status == "Active");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading programs");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

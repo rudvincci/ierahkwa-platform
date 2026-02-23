@@ -1,0 +1,92 @@
+@model TeacherDashboardViewModel
+@{
+    ViewData["Title"] = "Teacher Dashboard";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Teacher Dashboard</h1>
+</div>
+
+<div class="row">
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">My Classes</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalClasses</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-door-open text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Homeworks</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalHomeworks</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-clipboard-check text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Grading</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.PendingGrading</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-hourglass-split text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Homeworks" asp-action="Create" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-lg me-2"></i>New Homework
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="LiveClasses" asp-action="Create" class="btn btn-success w-100">
+                            <i class="bi bi-camera-video me-2"></i>New Live Class
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Homeworks" asp-action="PendingGrading" class="btn btn-warning w-100">
+                            <i class="bi bi-pencil-square me-2"></i>Grade Homeworks
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Schedules" asp-action="MySchedule" class="btn btn-info w-100 text-white">
+                            <i class="bi bi-calendar-week me-2"></i>My Schedule
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

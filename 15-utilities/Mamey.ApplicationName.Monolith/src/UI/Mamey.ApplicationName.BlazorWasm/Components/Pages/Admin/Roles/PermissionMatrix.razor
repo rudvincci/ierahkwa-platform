@@ -1,0 +1,21 @@
+@using Mamey.ApplicationName.BlazorWasm.Models.Roles
+
+@code {
+    [Parameter] public IEnumerable<Role> Roles { get; set; }
+}
+
+<MudTable Items="Roles" Hover="true" Striped="true">
+    <HeaderContent>
+        <MudTh>Role</MudTh>
+        <MudTh>Permissions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.RoleName</MudTd>
+        <MudTd>
+            @foreach (var permission in context.Permissions)
+            {
+                <MudChip T="string">@permission</MudChip>
+            }
+        </MudTd>
+    </RowTemplate>
+</MudTable>

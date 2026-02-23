@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Banking & Clearinghouse | Ierahkwa Sovereign Blockchain</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --central: #ef4444; --regional: #f97316; --national: #eab308; --commercial: #22c55e;
+      --investment: #06b6d4; --fintech: #ec4899; --digital: #14b8a6;
+      --bg-dark: #0f172a; --bg-card: #1e293b; --bg-input: #334155;
+      --border: #475569; --text: #f1f5f9; --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-dark); color: var(--text); min-height: 100vh; }
+    .navbar { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 1px solid var(--border); }
+    .navbar-brand { font-weight: 700; color: #10b981 !important; }
+    .nav-link { color: var(--text-muted) !important; font-size: 0.9rem; }
+    .nav-link:hover, .nav-link.active { color: #10b981 !important; }
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; }
+    .card-header { background: transparent; border-bottom: 1px solid var(--border); }
+    .form-control, .form-select { background: var(--bg-input); border-color: var(--border); color: var(--text); }
+    .form-control:focus, .form-select:focus { background: var(--bg-input); border-color: #10b981; color: var(--text); }
+    .table { color: var(--text); font-size: 0.85rem; }
+    .table th { color: var(--text-muted); border-color: var(--border); font-weight: 500; font-size: 0.7rem; text-transform: uppercase; }
+    .table td { border-color: rgba(255,255,255,0.05); vertical-align: middle; }
+    .table-hover tbody tr:hover { background: rgba(16,185,129,0.1); }
+    .stat-card { background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16,185,129,0.1) 100%); border-radius: 12px; padding: 1.25rem; border: 1px solid var(--border); }
+    .stat-card .stat-value { font-size: 1.5rem; font-weight: 700; }
+    .stat-card .stat-label { color: var(--text-muted); font-size: 0.8rem; }
+    .bank-type-card { border-radius: 12px; padding: 1rem; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
+    .bank-type-card:hover { transform: translateY(-2px); }
+    .bank-type-card.active { border-color: white; }
+    .bank-type-card.central { background: linear-gradient(135deg, rgba(239,68,68,0.2) 0%, rgba(239,68,68,0.05) 100%); }
+    .bank-type-card.regional { background: linear-gradient(135deg, rgba(249,115,22,0.2) 0%, rgba(249,115,22,0.05) 100%); }
+    .bank-type-card.national { background: linear-gradient(135deg, rgba(234,179,8,0.2) 0%, rgba(234,179,8,0.05) 100%); }
+    .bank-type-card.commercial { background: linear-gradient(135deg, rgba(34,197,94,0.2) 0%, rgba(34,197,94,0.05) 100%); }
+    .bank-type-card.investment { background: linear-gradient(135deg, rgba(6,182,212,0.2) 0%, rgba(6,182,212,0.05) 100%); }
+    .bank-type-card.fintech { background: linear-gradient(135deg, rgba(236,72,153,0.2) 0%, rgba(236,72,153,0.05) 100%); }
+    .badge-central { background: var(--central); }
+    .badge-regional { background: var(--regional); }
+    .badge-national { background: var(--national); color: #000; }
+    .badge-commercial { background: var(--commercial); }
+    .badge-investment { background: var(--investment); }
+    .badge-fintech { background: var(--fintech); }
+    .badge-futurehead { background: #8b5cf6; }
+    .settlement-card { background: rgba(16,185,129,0.1); border: 1px solid #10b981; border-radius: 12px; padding: 1.25rem; }
+    .clearinghouse-header { background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; }
+    .modal-content { background: var(--bg-card); border: 1px solid var(--border); }
+    .modal-header, .modal-footer { border-color: var(--border); }
+    .btn-close { filter: invert(1); }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="/global-banking">
+        <i class="bi bi-globe2 me-2"></i>Global Banking System
+      </a>
+      <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link active" href="#" onclick="showSection('dashboard')"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('banks')"><i class="bi bi-bank me-1"></i>All Banks</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('clearinghouse')"><i class="bi bi-arrow-left-right me-1"></i>Clearinghouse</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('settlement')"><i class="bi bi-check2-circle me-1"></i>Settlement</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('iss')"><i class="bi bi-feather me-1"></i>ISS</a></li>
+        </ul>
+        <div class="d-flex gap-2">
+          <a href="/trading" class="btn btn-outline-primary btn-sm"><i class="bi bi-graph-up"></i></a>
+          <a href="/monetary" class="btn btn-outline-success btn-sm"><i class="bi bi-stack"></i></a>
+          <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-shop"></i></a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid px-4 py-4">
+    <!-- Dashboard Section -->
+    <section id="section-dashboard" class="section">
+      <div class="clearinghouse-header text-white">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h2 class="mb-2"><i class="bi bi-globe2 me-2"></i>Ierahkwa Global Clearinghouse (IGC)</h2>
+            <p class="mb-0 opacity-75">Operated by Ierahkwa Futurehead BDET Bank • Indigenous Settlement System (ISS)</p>
+          </div>
+          <div class="col-md-4 text-end">
+            <div class="h3 mb-0" id="totalSettled">$0</div>
+            <small class="opacity-75">Total Settled</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-2">
+          <div class="stat-card">
+            <div class="stat-value" id="totalBanks">0</div>
+            <div class="stat-label">Total Banks</div>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="stat-card">
+            <div class="stat-value text-danger" id="centralCount">0</div>
+            <div class="stat-label">Central Banks</div>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="stat-card">
+            <div class="stat-value text-warning" id="nationalCount">0</div>
+            <div class="stat-label">National Banks</div>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="stat-card">
+            <div class="stat-value text-success" id="commercialCount">0</div>
+            <div class="stat-label">Commercial Banks</div>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="stat-card">
+            <div class="stat-value text-pink" style="color:#ec4899" id="fintechCount">0</div>
+            <div class="stat-label">Fintech Banks</div>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="stat-card">
+            <div class="stat-value text-info" id="pendingCount">0</div>
+            <div class="stat-label">Pending Settlements</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Settlements</h5>
+              <span class="badge bg-success" id="dailyVolume">$0 Today</span>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead><tr><th>Time</th><th>From</th><th>To</th><th>Amount</th><th>Type</th><th>Status</th></tr></thead>
+                  <tbody id="recentSettlements"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card mb-3">
+            <div class="card-header"><h6 class="mb-0">Settlement Types</h6></div>
+            <div class="card-body" id="settlementTypes"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h6 class="mb-0">Bank Types</h6></div>
+            <div class="card-body" id="bankTypesInfo"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Banks Section -->
+    <section id="section-banks" class="section d-none">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4><i class="bi bi-bank me-2"></i>All Banks</h4>
+        <div class="d-flex gap-2">
+          <select class="form-select w-auto" id="bankTypeFilter" onchange="filterBanks()">
+            <option value="all">All Types</option>
+            <option value="central">Central Banks</option>
+            <option value="regional">Regional Banks</option>
+            <option value="national">National Banks</option>
+            <option value="commercial">Commercial Banks</option>
+            <option value="fintech">Fintech Banks</option>
+            <option value="investment">Investment Banks</option>
+          </select>
+          <input type="text" class="form-control w-auto" id="bankSearch" placeholder="Search..." onkeyup="filterBanks()">
+        </div>
+      </div>
+      
+      <div class="row g-3 mb-4">
+        <div class="col"><div class="bank-type-card central" onclick="selectBankType('central')"><h5 style="color:var(--central)">Central</h5><small class="text-muted" id="centralBankCount">0</small></div></div>
+        <div class="col"><div class="bank-type-card regional" onclick="selectBankType('regional')"><h5 style="color:var(--regional)">Regional</h5><small class="text-muted" id="regionalBankCount">0</small></div></div>
+        <div class="col"><div class="bank-type-card national" onclick="selectBankType('national')"><h5 style="color:var(--national)">National</h5><small class="text-muted" id="nationalBankCount">0</small></div></div>
+        <div class="col"><div class="bank-type-card commercial" onclick="selectBankType('commercial')"><h5 style="color:var(--commercial)">Commercial</h5><small class="text-muted" id="commercialBankCount">0</small></div></div>
+        <div class="col"><div class="bank-type-card fintech" onclick="selectBankType('fintech')"><h5 style="color:var(--fintech)">Fintech</h5><small class="text-muted" id="fintechBankCount">0</small></div></div>
+        <div class="col"><div class="bank-type-card investment" onclick="selectBankType('investment')"><h5 style="color:var(--investment)">Investment</h5><small class="text-muted" id="investmentBankCount">0</small></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead><tr><th>Bank</th><th>Code</th><th>Type</th><th>Country/Region</th><th>IGT Balance</th><th>USD Balance</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="banksTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clearinghouse Section -->
+    <section id="section-clearinghouse" class="section d-none">
+      <div class="clearinghouse-header text-white mb-4">
+        <h3><i class="bi bi-building me-2"></i>Ierahkwa Global Clearinghouse (IGC)</h3>
+        <p class="mb-0">Real-time gross settlement and clearing for all participating banks</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header"><h5 class="mb-0">Clearinghouse Configuration</h5></div>
+            <div class="card-body" id="clearinghouseConfig"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header"><h5 class="mb-0">Fee Structure</h5></div>
+            <div class="card-body" id="feeStructure"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settlement Section -->
+    <section id="section-settlement" class="section d-none">
+      <h4 class="mb-4"><i class="bi bi-check2-circle me-2"></i>Initiate Settlement</h4>
+      
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header"><h5 class="mb-0">New Settlement</h5></div>
+            <div class="card-body">
+              <form id="settlementForm" onsubmit="initiateSettlement(event)">
+                <div class="row mb-3">
+                  <div class="col-6">
+                    <label class="form-label">Sender Bank Type</label>
+                    <select class="form-select" id="senderType" onchange="loadSenderBanks()">
+                      <option value="CENTRAL">Central Bank</option>
+                      <option value="REGIONAL">Regional Bank</option>
+                      <option value="NATIONAL">National Bank</option>
+                      <option value="COMMERCIAL">Commercial Bank</option>
+                      <option value="FINTECH">Fintech Bank</option>
+                      <option value="INVESTMENT">Investment Bank</option>
+                      <option value="FUTUREHEAD">Futurehead</option>
+                      <option value="GOVERNMENT">Government</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Sender Bank</label>
+                    <select class="form-select" id="senderBank"></select>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-6">
+                    <label class="form-label">Receiver Bank Type</label>
+                    <select class="form-select" id="receiverType" onchange="loadReceiverBanks()">
+                      <option value="CENTRAL">Central Bank</option>
+                      <option value="REGIONAL">Regional Bank</option>
+                      <option value="NATIONAL">National Bank</option>
+                      <option value="COMMERCIAL">Commercial Bank</option>
+                      <option value="FINTECH">Fintech Bank</option>
+                      <option value="INVESTMENT">Investment Bank</option>
+                      <option value="FUTUREHEAD">Futurehead</option>
+                      <option value="GOVERNMENT">Government</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Receiver Bank</label>
+                    <select class="form-select" id="receiverBank"></select>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-6">
+                    <label class="form-label">Amount</label>
+                    <input type="number" class="form-control" id="settlementAmount" required>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Currency</label>
+                    <select class="form-select" id="settlementCurrency">
+                      <option value="IGT">IGT Token</option>
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="BTC">BTC</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Settlement Type</label>
+                  <select class="form-select" id="settlementType">
+                    <option value="RTGS">RTGS - Real-Time Gross Settlement (Instant)</option>
+                    <option value="ACH">ACH - Automated Clearing House (T+1)</option>
+                    <option value="WIRE">WIRE - Wire Transfer (Instant)</option>
+                    <option value="ISS">ISS - Indigenous Settlement System (Instant)</option>
+                    <option value="CRYPTO">CRYPTO - Blockchain Settlement (Instant)</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Reference (Optional)</label>
+                  <input type="text" class="form-control" id="settlementRef">
+                </div>
+                <button type="submit" class="btn btn-success w-100">Initiate Settlement</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="card-header"><h6 class="mb-0">Pending Settlements</h6></div>
+            <div class="card-body p-0">
+              <div class="table-responsive" style="max-height:250px;overflow-y:auto">
+                <table class="table table-sm mb-0">
+                  <thead><tr><th>ID</th><th>From → To</th><th>Amount</th><th>Action</th></tr></thead>
+                  <tbody id="pendingTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h6 class="mb-0">Settlement History</h6></div>
+            <div class="card-body p-0">
+              <div class="table-responsive" style="max-height:250px;overflow-y:auto">
+                <table class="table table-sm mb-0">
+                  <thead><tr><th>Time</th><th>From → To</th><th>Amount</th><th>Status</th></tr></thead>
+                  <tbody id="historyTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ISS Section (Indigenous Settlement System) -->
+    <section id="section-iss" class="section d-none">
+      <div class="settlement-card mb-4">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h3><i class="bi bi-feather me-2"></i>Indigenous Settlement System (ISS)</h3>
+            <p class="mb-0 text-muted">Zero-fee instant settlement between Indigenous Nations on the Ierahkwa Sovereign Blockchain</p>
+          </div>
+          <div class="col-md-4 text-end">
+            <span class="badge bg-success fs-6">Zero Fees</span>
+            <span class="badge bg-info fs-6">Instant T0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header"><h5 class="mb-0">ISS Transfer</h5></div>
+            <div class="card-body">
+              <form id="issForm" onsubmit="initiateISS(event)">
+                <div class="mb-3">
+                  <label class="form-label">From Nation</label>
+                  <select class="form-select" id="issFrom">
+                    <option value="Ierahkwa Ne Kanienke">Sovereign Government of Ierahkwa Ne Kanienke</option>
+                    <option value="Haudenosaunee Confederacy">Haudenosaunee Confederacy</option>
+                    <option value="Mohawk Nation">Mohawk Nation Council</option>
+                    <option value="Oneida Nation">Oneida Nation</option>
+                    <option value="Onondaga Nation">Onondaga Nation</option>
+                    <option value="Cayuga Nation">Cayuga Nation</option>
+                    <option value="Seneca Nation">Seneca Nation</option>
+                    <option value="Tuscarora Nation">Tuscarora Nation</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">To Nation</label>
+                  <select class="form-select" id="issTo">
+                    <option value="Haudenosaunee Confederacy">Haudenosaunee Confederacy</option>
+                    <option value="Ierahkwa Ne Kanienke">Sovereign Government of Ierahkwa Ne Kanienke</option>
+                    <option value="Mohawk Nation">Mohawk Nation Council</option>
+                    <option value="Oneida Nation">Oneida Nation</option>
+                    <option value="Onondaga Nation">Onondaga Nation</option>
+                    <option value="Cayuga Nation">Cayuga Nation</option>
+                    <option value="Seneca Nation">Seneca Nation</option>
+                    <option value="Tuscarora Nation">Tuscarora Nation</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Amount (IGT)</label>
+                  <input type="number" class="form-control" id="issAmount" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Purpose</label>
+                  <input type="text" class="form-control" id="issPurpose" placeholder="e.g., Treaty payment, Aid, Trade">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Treaty Reference (Optional)</label>
+                  <input type="text" class="form-control" id="issTreaty">
+                </div>
+                <button type="submit" class="btn btn-success w-100">Execute ISS Transfer</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header"><h6 class="mb-0">ISS Features</h6></div>
+            <div class="card-body">
+              <ul class="list-unstyled">
+                <li class="mb-3"><i class="bi bi-check-circle text-success me-2"></i><strong>Zero Transaction Fees</strong> - No fees for Indigenous Nations</li>
+                <li class="mb-3"><i class="bi bi-lightning text-warning me-2"></i><strong>Instant Settlement (T0)</strong> - Real-time final settlement</li>
+                <li class="mb-3"><i class="bi bi-shield-check text-info me-2"></i><strong>Sovereign Security</strong> - Protected by Ierahkwa Sovereign Blockchain</li>
+                <li class="mb-3"><i class="bi bi-file-earmark-text text-primary me-2"></i><strong>Treaty Compliance</strong> - Link transfers to treaty agreements</li>
+                <li class="mb-3"><i class="bi bi-globe text-success me-2"></i><strong>Cross-Nation</strong> - Transfer between all member nations</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let allBanks = [];
+    let dashboard = {};
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDashboard();
+      loadBanks();
+      loadSenderBanks();
+      loadReceiverBanks();
+    });
+
+    function showSection(name) {
+      document.querySelectorAll('.section').forEach(s => s.classList.add('d-none'));
+      document.getElementById('section-' + name).classList.remove('d-none');
+      document.querySelectorAll('.navbar-nav .nav-link').forEach(l => l.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    async function api(url, method = 'GET', data = null) {
+      const opts = { method, headers: { 'Content-Type': 'application/json' } };
+      if (data) opts.body = JSON.stringify(data);
+      const res = await fetch(url, opts);
+      return res.json();
+    }
+
+    function formatNumber(n) {
+      if (n >= 1e12) return '$' + (n / 1e12).toFixed(2) + 'T';
+      if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
+      if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
+      if (n >= 1e3) return '$' + (n / 1e3).toFixed(2) + 'K';
+      return '$' + (n || 0).toFixed(2);
+    }
+
+    async function loadDashboard() {
+      dashboard = await api('/api/global/dashboard');
+      
+      document.getElementById('totalBanks').textContent = dashboard.stats?.total_banks || 0;
+      document.getElementById('centralCount').textContent = dashboard.stats?.bank_counts?.central || 0;
+      document.getElementById('nationalCount').textContent = (dashboard.stats?.bank_counts?.national || 0) + (dashboard.stats?.bank_counts?.regional || 0);
+      document.getElementById('commercialCount').textContent = dashboard.stats?.bank_counts?.commercial || 0;
+      document.getElementById('fintechCount').textContent = dashboard.stats?.bank_counts?.fintech || 0;
+      document.getElementById('pendingCount').textContent = dashboard.stats?.pending_count || 0;
+      document.getElementById('totalSettled').textContent = formatNumber(dashboard.stats?.total_settled || 0);
+      document.getElementById('dailyVolume').textContent = formatNumber(dashboard.stats?.daily_volume || 0) + ' Today';
+
+      // Recent settlements
+      const settlements = dashboard.recent_settlements || [];
+      document.getElementById('recentSettlements').innerHTML = settlements.map(s => `
+        <tr>
+          <td class="small">${new Date(s.completed_at || s.initiated_at).toLocaleTimeString()}</td>
+          <td>${s.sender?.bank_code || s.from_nation || '-'}</td>
+          <td>${s.receiver?.bank_code || s.to_nation || '-'}</td>
+          <td>${formatNumber(s.amount)}</td>
+          <td><span class="badge bg-info">${s.settlement_type || s.type}</span></td>
+          <td><span class="badge ${s.status === 'completed' ? 'bg-success' : 'bg-warning'}">${s.status}</span></td>
+        </tr>
+      `).join('') || '<tr><td colspan="6" class="text-center text-muted">No settlements yet</td></tr>';
+
+      // Settlement types
+      const types = dashboard.settlement_types || {};
+      document.getElementById('settlementTypes').innerHTML = Object.values(types).map(t => `
+        <div class="d-flex justify-content-between mb-2">
+          <span><strong>${t.code}</strong> - ${t.name}</span>
+          <span class="badge bg-secondary">${t.speed}</span>
+        </div>
+      `).join('');
+
+      // Bank types
+      const bankTypes = dashboard.bank_types || [];
+      document.getElementById('bankTypesInfo').innerHTML = bankTypes.slice(0, 6).map(t => `
+        <div class="d-flex justify-content-between mb-2">
+          <span style="color:${t.color}">${t.name}</span>
+          <span class="badge" style="background:${t.color}">Tier ${t.tier}</span>
+        </div>
+      `).join('');
+
+      // Clearinghouse config
+      const config = dashboard.clearinghouse_config || {};
+      document.getElementById('clearinghouseConfig').innerHTML = `
+        <p><strong>Name:</strong> ${config.name || '-'}</p>
+        <p><strong>Code:</strong> ${config.code || '-'}</p>
+        <p><strong>Operator:</strong> ${config.operator || '-'}</p>
+        <p><strong>Settlement Currency:</strong> ${config.settlement_currency || '-'}</p>
+        <p><strong>Backup Currencies:</strong> ${(config.backup_currencies || []).join(', ')}</p>
+      `;
+
+      // Fees
+      const fees = config.fees || {};
+      document.getElementById('feeStructure').innerHTML = Object.entries(fees).map(([k, v]) => `
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-capitalize">${k.replace('_', ' ')}</span>
+          <span>${(v * 100).toFixed(2)}%</span>
+        </div>
+      `).join('');
+
+      // Pending
+      loadPendingSettlements();
+      loadSettlementHistory();
+    }
+
+    async function loadBanks() {
+      allBanks = await api('/api/global/banks');
+      filterBanks();
+      
+      // Update counts
+      const counts = {};
+      allBanks.forEach(b => {
+        const type = (b.bank_type || b.type || '').toLowerCase();
+        counts[type] = (counts[type] || 0) + 1;
+      });
+      
+      ['central', 'regional', 'national', 'commercial', 'fintech', 'investment'].forEach(type => {
+        const el = document.getElementById(type + 'BankCount');
+        if (el) el.textContent = (counts[type] || 0) + ' banks';
+      });
+    }
+
+    function selectBankType(type) {
+      document.querySelectorAll('.bank-type-card').forEach(c => c.classList.remove('active'));
+      document.querySelector(`.bank-type-card.${type}`).classList.add('active');
+      document.getElementById('bankTypeFilter').value = type;
+      filterBanks();
+    }
+
+    function filterBanks() {
+      const type = document.getElementById('bankTypeFilter').value;
+      const search = (document.getElementById('bankSearch').value || '').toLowerCase();
+      
+      let filtered = allBanks;
+      if (type !== 'all') {
+        filtered = filtered.filter(b => (b.bank_type || b.type || '').toLowerCase() === type);
+      }
+      if (search) {
+        filtered = filtered.filter(b => 
+          (b.name || '').toLowerCase().includes(search) || 
+          (b.code || '').toLowerCase().includes(search)
+        );
+      }
+
+      document.getElementById('banksTable').innerHTML = filtered.map(b => {
+        const bankType = (b.bank_type || b.type || '').toLowerCase();
+        const balance = b.bank_account || b;
+        return `
+          <tr>
+            <td><strong>${b.name || b.department_name}</strong></td>
+            <td><code>${b.code || b.token_symbol || '-'}</code></td>
+            <td><span class="badge badge-${bankType}">${bankType}</span></td>
+            <td>${b.country || b.region || b.headquarters || '-'}</td>
+            <td>${formatNumber(balance.igt_balance || 0)}</td>
+            <td>${formatNumber(balance.usd_balance || 0)}</td>
+            <td><span class="badge bg-success">Active</span></td>
+            <td><button class="btn btn-sm btn-outline-primary" onclick="viewBank('${b.id}', '${bankType}')"><i class="bi bi-eye"></i></button></td>
+          </tr>
+        `;
+      }).join('') || '<tr><td colspan="8" class="text-center text-muted">No banks found</td></tr>';
+    }
+
+    async function loadSenderBanks() {
+      const type = document.getElementById('senderType').value.toLowerCase();
+      const banks = await api(`/api/global/banks?type=${type}`);
+      document.getElementById('senderBank').innerHTML = banks.map(b => 
+        `<option value="${b.id}">${b.name || b.department_name} (${b.code || b.token_symbol || ''})</option>`
+      ).join('');
+    }
+
+    async function loadReceiverBanks() {
+      const type = document.getElementById('receiverType').value.toLowerCase();
+      const banks = await api(`/api/global/banks?type=${type}`);
+      document.getElementById('receiverBank').innerHTML = banks.map(b => 
+        `<option value="${b.id}">${b.name || b.department_name} (${b.code || b.token_symbol || ''})</option>`
+      ).join('');
+    }
+
+    async function initiateSettlement(e) {
+      e.preventDefault();
+      const data = {
+        sender_bank_type: document.getElementById('senderType').value,
+        sender_bank_id: document.getElementById('senderBank').value,
+        receiver_bank_type: document.getElementById('receiverType').value,
+        receiver_bank_id: document.getElementById('receiverBank').value,
+        amount: parseFloat(document.getElementById('settlementAmount').value),
+        currency: document.getElementById('settlementCurrency').value,
+        settlement_type: document.getElementById('settlementType').value,
+        reference: document.getElementById('settlementRef').value
+      };
+      
+      const res = await api('/api/global/settlement/initiate', 'POST', data);
+      if (res.ok) {
+        alert(`Settlement initiated!\nID: ${res.settlement.id}\nStatus: ${res.settlement.status}`);
+        loadDashboard();
+        document.getElementById('settlementForm').reset();
+      } else {
+        alert(res.error || 'Settlement failed');
+      }
+    }
+
+    async function loadPendingSettlements() {
+      const pending = await api('/api/global/settlement/queue');
+      document.getElementById('pendingTable').innerHTML = pending.map(s => `
+        <tr>
+          <td>#${s.id}</td>
+          <td>${s.sender?.bank_code} → ${s.receiver?.bank_code}</td>
+          <td>${formatNumber(s.amount)}</td>
+          <td><button class="btn btn-sm btn-success" onclick="processSettlement(${s.id})">Process</button></td>
+        </tr>
+      `).join('') || '<tr><td colspan="4" class="text-center text-muted">No pending</td></tr>';
+    }
+
+    async function loadSettlementHistory() {
+      const history = await api('/api/global/settlement/history');
+      document.getElementById('historyTable').innerHTML = history.slice(0, 10).map(s => `
+        <tr>
+          <td class="small">${new Date(s.completed_at || s.initiated_at).toLocaleTimeString()}</td>
+          <td>${s.sender?.bank_code || s.from_nation} → ${s.receiver?.bank_code || s.to_nation}</td>
+          <td>${formatNumber(s.amount)}</td>
+          <td><span class="badge ${s.status === 'completed' ? 'bg-success' : 'bg-danger'}">${s.status}</span></td>
+        </tr>
+      `).join('') || '<tr><td colspan="4" class="text-center text-muted">No history</td></tr>';
+    }
+
+    async function processSettlement(id) {
+      const res = await api(`/api/global/settlement/process/${id}`, 'POST');
+      if (res.ok) {
+        alert('Settlement processed successfully!');
+        loadDashboard();
+      } else {
+        alert(res.error || 'Processing failed');
+      }
+    }
+
+    async function initiateISS(e) {
+      e.preventDefault();
+      const data = {
+        from_nation: document.getElementById('issFrom').value,
+        to_nation: document.getElementById('issTo').value,
+        amount: parseFloat(document.getElementById('issAmount').value),
+        purpose: document.getElementById('issPurpose').value,
+        treaty_reference: document.getElementById('issTreaty').value
+      };
+      
+      const res = await api('/api/global/iss/transfer', 'POST', data);
+      if (res.ok) {
+        alert(`ISS Transfer completed!\nFrom: ${data.from_nation}\nTo: ${data.to_nation}\nAmount: ${formatNumber(data.amount)} IGT\nFee: $0 (Zero fees for Indigenous Nations)`);
+        loadDashboard();
+        document.getElementById('issForm').reset();
+      } else {
+        alert(res.error || 'Transfer failed');
+      }
+    }
+  </script>
+</body>
+</html>

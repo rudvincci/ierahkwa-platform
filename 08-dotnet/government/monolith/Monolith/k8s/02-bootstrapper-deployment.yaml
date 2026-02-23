@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bootstrapper-deployment
+  labels:
+    app: bootstrapper
+spec:
+  replicas: 3  # High availability
+  selector:
+    matchLabels:
+      app: bootstrapper
+  template:
+    metadata:
+      labels:
+        app: bootstrapper
+    spec:
+      containers:
+      - name: bootstrapper
+        image: your-registry/Mamey.ApplicationName.Bootstrapper:latest
+        ports:
+          - containerPort: 80
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: "Production"
+        readinessProbe:
+          httpGet:
+            path: "/health"
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: "/health"
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "1"
+            memory: "512Mi"

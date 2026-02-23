@@ -1,0 +1,85 @@
+@page "/compliance/audit"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<Audit> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Enhanced Audit" Icon="fas fa-clipboard-check" Subtitle="Enhanced audit trail">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Entries" Value="@_auditEntries.Count.ToString()" Icon="fas fa-clipboard-check" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Last 7 Days" Value="@_last7DaysCount.ToString()" Icon="fas fa-calendar" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Actions" Value="@_actionCount.ToString()" Icon="fas fa-tasks" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Audit Entries" Class="mt-4">
+        <MudTable T="AuditEntryInfo" Items="@_auditEntries" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Entry ID</MudTh>
+                <MudTh>Entity Type</MudTh>
+                <MudTh>Entity ID</MudTh>
+                <MudTh>Action</MudTh>
+                <MudTh>Actor</MudTh>
+                <MudTh>Timestamp</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.AuditEntryId</MudTd>
+                <MudTd>@context.EntityType</MudTd>
+                <MudTd>@context.EntityId</MudTd>
+                <MudTd>@context.Action</MudTd>
+                <MudTd>@context.Actor</MudTd>
+                <MudTd>@context.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<AuditEntryInfo> _auditEntries = new();
+    private int _last7DaysCount;
+    private int _actionCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _auditEntries = await GovernmentClient.GetAuditEntriesAsync();
+            _last7DaysCount = _auditEntries.Count(e => e.Timestamp >= DateTime.Now.AddDays(-7));
+            _actionCount = _auditEntries.Select(e => e.Action).Distinct().Count();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading audit entries");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

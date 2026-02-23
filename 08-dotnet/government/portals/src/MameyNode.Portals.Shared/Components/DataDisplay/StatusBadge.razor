@@ -1,0 +1,23 @@
+@namespace MameyNode.Portals.Shared.Components.DataDisplay
+
+<MudChip T="string" Color="@GetStatusColor()" Size="Size.Small" Variant="Variant.Filled">
+    @Status
+</MudChip>
+
+@code {
+    [Parameter] public string Status { get; set; } = "Unknown";
+
+    private Color GetStatusColor()
+    {
+        return Status.ToLower() switch
+        {
+            "active" or "success" or "completed" or "approved" => Color.Success,
+            "pending" or "processing" or "in-progress" => Color.Warning,
+            "error" or "failed" or "rejected" or "cancelled" => Color.Error,
+            "inactive" or "disabled" => Color.Default,
+            _ => Color.Info
+        };
+    }
+}
+
+

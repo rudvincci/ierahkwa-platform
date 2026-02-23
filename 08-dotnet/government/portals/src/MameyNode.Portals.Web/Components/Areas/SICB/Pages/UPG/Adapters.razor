@@ -1,0 +1,87 @@
+@page "/upg/adapters"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IUPGClient UPGClient
+@inject ILogger<Adapters> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Protocol Adapters" Icon="fas fa-plug" Subtitle="Manage protocol adapters">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Adapters" Value="@_adapters.Count.ToString()" Icon="fas fa-plug" Color="#14B8A6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Protocols" Value="@_protocolCount.ToString()" Icon="fas fa-network-wired" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Protocol Adapters" Class="mt-4">
+        <MudTable T="ProtocolAdapterInfo" Items="@_adapters" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Adapter ID</MudTh>
+                <MudTh>Protocol</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Registered</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.AdapterId</MudTd>
+                <MudTd>@context.ProtocolName</MudTd>
+                <MudTd>@context.AdapterType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == AdapterStatus.Active ? Color.Success : context.Status == AdapterStatus.Error ? Color.Error : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.RegisteredAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<ProtocolAdapterInfo> _adapters = new();
+    private int _activeCount;
+    private int _protocolCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _adapters = await UPGClient.GetProtocolAdaptersAsync();
+            _activeCount = _adapters.Count(a => a.Status == AdapterStatus.Active);
+            _protocolCount = _adapters.Select(a => a.ProtocolName).Distinct().Count();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading adapters");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

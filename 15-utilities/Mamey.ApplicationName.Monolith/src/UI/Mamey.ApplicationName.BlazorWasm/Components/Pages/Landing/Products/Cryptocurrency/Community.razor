@@ -1,0 +1,77 @@
+@using Mamey.BlazorWasm.Models
+@page "/products/crypto/community"
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="community-page-container">
+    <!-- Header Section -->
+    <MudPaper Class="header-section" Elevation="0">
+        <h1 class="page-title animate-slide-in">Community Engagement and Governance</h1>
+        <p class="page-subtitle animate-fade-in">
+            Empowering Users to Shape the Future of FHCT
+        </p>
+    </MudPaper>
+
+    <!-- Introduction Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Overview</h2>
+            <p class="section-content animate-fade-in">
+                FHCT is built on the principle of inclusivity, encouraging active participation from its community. Through governance, token holders have a voice in shaping the future of the ecosystem, fostering transparency and collaboration.
+            </p>
+        </MudPaper>
+    </section>
+
+    <!-- Governance Features Section -->
+    <section class="section">
+        <CardHighlight Items="GetGovernanceFeatures()" />
+    </section>
+
+    <!-- How to Participate Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">How to Get Involved</h2>
+            <ul class="steps-list animate-fade-in">
+                <li>Acquire FHCT tokens to gain governance rights.</li>
+                <li>Submit and vote on proposals through the platform’s governance portal.</li>
+                <li>Collaborate with other community members to drive impactful projects.</li>
+                <li>Stay updated on governance activities and initiatives through community channels.</li>
+            </ul>
+        </MudPaper>
+    </section>
+</MudContainer>
+@code{
+
+    private List<FeaturedProduct> GetGovernanceFeatures()
+    {
+        return new List<FeaturedProduct>()
+        {
+            new FeaturedProduct()
+            {
+                Title = "Proposal Submission",
+                Description = "Token holders can submit proposals for new projects, improvements, or changes to existing policies, ensuring the ecosystem evolves with community input.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 1,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Voting Rights",
+                Description = "Participate in decision-making processes by voting on proposals, budget allocations, and project priorities.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 2,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Transparency",
+                Description = "All governance activities are logged on the blockchain, ensuring transparency and accountability for all decisions.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 3,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Community Projects",
+                Description = "Join initiatives that prioritize cultural preservation, economic empowerment, and sustainability, directly benefiting Indigenous communities.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 4,
+            },
+        };
+    }
+
+}

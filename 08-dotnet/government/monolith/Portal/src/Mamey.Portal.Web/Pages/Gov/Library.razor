@@ -1,0 +1,276 @@
+@page "/gov/library"
+@attribute [Authorize(Roles = "LibraryEditor,GovernmentAgent,Admin")]
+@using Microsoft.AspNetCore.Components.Forms
+@using Mamey.Portal.Library.Application.Models
+@using Mamey.Portal.Library.Application.Requests
+@using Mamey.Portal.Library.Application.Services
+@inject ILibraryService LibrarySvc
+@inject MudBlazor.IDialogService Dialogs
+
+<PageTitle>Library (Gov)</PageTitle>
+
+@code {
+    private IReadOnlyList<LibraryItem> _items = Array.Empty<LibraryItem>();
+    private bool _busy;
+    private string? _error;
+    private string? _searchTerm;
+
+    private Guid? _editingId;
+    private string _category = string.Empty;
+    private string _title = string.Empty;
+    private string? _summary;
+    private LibraryVisibility _visibility = LibraryVisibility.Public;
+    private IBrowserFile? _file;
+
+    private bool IsAdmin => CurrentUser.IsInRole("Admin");
+
+    [Inject] private Mamey.Portal.Shared.Auth.ICurrentUserContext CurrentUser { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync()
+    {
+        _error = null;
+        try
+        {
+            _items = await LibrarySvc.GetAllAsync(_searchTerm);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private void StartEdit(LibraryItem item)
+    {
+        if (item.Status != LibraryContentStatus.Draft && item.Status != LibraryContentStatus.Unpublished)
+        {
+            return;
+        }
+
+        _editingId = item.Id;
+        _category = item.Category;
+        _title = item.Title;
+        _summary = item.Summary;
+        _visibility = item.Visibility;
+        _file = null;
+    }
+
+    private void CancelEdit()
+    {
+        _editingId = null;
+        _category = string.Empty;
+        _title = string.Empty;
+        _summary = null;
+        _visibility = LibraryVisibility.Public;
+        _file = null;
+    }
+
+    private Task OnFileChanged(InputFileChangeEventArgs e)
+    {
+        _file = e.FileCount > 0 ? e.File : null;
+        return Task.CompletedTask;
+    }
+
+    private async Task SaveAsync()
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            if (_editingId is Guid id)
+            {
+                LibraryUploadFile? replace = null;
+                if (_file is not null)
+                {
+                    replace = new LibraryUploadFile(
+                        _file.Name,
+                        _file.ContentType,
+                        _file.Size,
+                        _file.OpenReadStream(maxAllowedSize: 25 * 1024 * 1024));
+                }
+
+                await LibrarySvc.UpdateDraftAsync(id, _category, _title, _summary, _visibility, replace);
+            }
+            else
+            {
+                if (_file is null)
+                {
+                    _error = "File is required.";
+                    return;
+                }
+
+                var upload = new LibraryUploadFile(
+                    _file.Name,
+                    _file.ContentType,
+                    _file.Size,
+                    _file.OpenReadStream(maxAllowedSize: 25 * 1024 * 1024));
+
+                await LibrarySvc.CreateDraftAsync(_category, _title, _summary, _visibility, upload);
+            }
+
+            CancelEdit();
+            await ReloadAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task PublishAsync(Guid id)
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            await LibrarySvc.PublishAsync(id);
+            await ReloadAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task UnpublishAsync(Guid id)
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            await LibrarySvc.UnpublishAsync(id);
+            await ReloadAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private static string StatusLabel(LibraryContentStatus status) => status.ToString();
+    private static string VisibilityLabel(LibraryVisibility v) => v.ToString();
+}
+
+<MudStack Spacing="3" Style="max-width: 1100px;">
+    <MudText Typo="Typo.h4">Library (Government)</MudText>
+    <MudAlert Severity="Severity.Info">
+        Tenant-scoped library items with visibility: Public / Citizen / Government. Drafts can be edited; Admin publishes/unpublishes.
+    </MudAlert>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+
+    <MudPaper Class="pa-4">
+        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+            <MudTextField @bind-Value="_searchTerm" Label="Search" Variant="Variant.Outlined" Immediate="true" />
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@_busy" OnClick="ReloadAsync">Search</MudButton>
+            <MudButton Variant="Variant.Text" Disabled="@_busy" OnClick="@(() => { _searchTerm = null; return ReloadAsync(); })">Clear</MudButton>
+        </MudStack>
+    </MudPaper>
+
+    <MudPaper Class="pa-4">
+        <MudText Typo="Typo.h6">@(_editingId is null ? "Add library item (Draft)" : "Edit library item (Draft)")</MudText>
+        <MudGrid Spacing="2">
+            <MudItem xs="12" md="4">
+                <MudTextField @bind-Value="_category" Label="Category" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="8">
+                <MudTextField @bind-Value="_title" Label="Title" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="_summary" Label="Summary" Variant="Variant.Outlined" Lines="2" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudSelect T="LibraryVisibility" Label="Visibility" Variant="Variant.Outlined" @bind-Value="_visibility">
+                    <MudSelectItem Value="LibraryVisibility.Public">Public</MudSelectItem>
+                    <MudSelectItem Value="LibraryVisibility.Citizen">Citizen</MudSelectItem>
+                    <MudSelectItem Value="LibraryVisibility.Government">Government</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" md="8">
+                <MudText Typo="Typo.subtitle2" GutterBottom="true">File @if (_editingId is not null) { <span class="mud-text-secondary">(optional replace)</span> }</MudText>
+                <InputFile OnChange="OnFileChanged" />
+                @if (_file is not null)
+                {
+                    <MudText Typo="Typo.caption" Class="mud-text-secondary mt-1">
+                        Selected: @_file.Name (@(_file.Size / 1024) KB)
+                    </MudText>
+                }
+            </MudItem>
+            <MudItem xs="12">
+                <MudStack Row="true" Spacing="1">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@_busy" OnClick="SaveAsync">
+                        @(_editingId is null ? "Add" : "Save")
+                    </MudButton>
+                    @if (_editingId is not null)
+                    {
+                        <MudButton Variant="Variant.Text" Disabled="@_busy" OnClick="CancelEdit">Cancel</MudButton>
+                    }
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudTable Items="_items" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Category</MudTh>
+            <MudTh>Title</MudTh>
+            <MudTh>Visibility</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Category">@context.Category</MudTd>
+            <MudTd DataLabel="Title">
+                <MudText Typo="Typo.body2">@context.Title</MudText>
+                @if (!string.IsNullOrWhiteSpace(context.Summary))
+                {
+                    <MudText Typo="Typo.caption" Class="mud-text-secondary">@context.Summary</MudText>
+                }
+            </MudTd>
+            <MudTd DataLabel="Visibility">@VisibilityLabel(context.Visibility)</MudTd>
+            <MudTd DataLabel="Status">@StatusLabel(context.Status)</MudTd>
+            <MudTd>
+                @if (context.Status == LibraryContentStatus.Draft || context.Status == LibraryContentStatus.Unpublished)
+                {
+                    <MudStack Row="true" Spacing="1">
+                        <MudButton Size="Size.Small" Variant="Variant.Outlined" Disabled="@_busy" OnClick="@(() => StartEdit(context))">
+                            Edit
+                        </MudButton>
+                        @if (IsAdmin)
+                        {
+                            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Disabled="@_busy" OnClick="@(() => PublishAsync(context.Id))">
+                                Publish
+                            </MudButton>
+                        }
+                    </MudStack>
+                }
+                else if (context.Status == LibraryContentStatus.Published && IsAdmin)
+                {
+                    <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Warning" Disabled="@_busy" OnClick="@(() => UnpublishAsync(context.Id))">
+                        Unpublish
+                    </MudButton>
+                }
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudStack>
+

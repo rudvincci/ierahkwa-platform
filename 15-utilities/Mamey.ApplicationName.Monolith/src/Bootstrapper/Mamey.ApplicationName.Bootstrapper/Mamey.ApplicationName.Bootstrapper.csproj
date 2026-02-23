@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <!--<UserSecretsId>b011a655-9895-4192-9bdc-bc467b74c4e6</UserSecretsId>-->
+    <Nullable>enable</Nullable>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- core MSBuild APIs (evaluate/edit projects) -->
+    <PackageReference
+            Include="Microsoft.Build"
+            Version="17.14.8" />
+    <!-- fundamental MSBuild extensibility interfaces -->
+    <PackageReference
+            Include="Microsoft.Build.Framework"
+            Version="17.14.8" />
+    <!-- helper base classes for custom MSBuild tasks, loggers, etc. -->
+    <PackageReference
+            Include="Microsoft.Build.Utilities.Core"
+            Version="17.14.8" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Mamey.ApplicationName.Bootstrapper' " />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey\src\Mamey\Mamey.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Secrets.Vault\src\Mamey.Secrets.Vault\Mamey.Secrets.Vault.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Mamey" Version="2.0.*" />
+    <PackageReference Include="Mamey.Secrets.Vault" Version="2.0.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Modules\Identity\Mamey.ApplicationName.Modules.Identity.Api\Mamey.ApplicationName.Modules.Identity.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Notifications\Mamey.ApplicationName.Modules.Notifications.Api\Mamey.ApplicationName.Modules.Notifications.Api.csproj" />
+<!--    <ProjectReference Include="..\..\Modules\Products\Mamey.ApplicationName.Modules.Products.Api\Mamey.ApplicationName.Modules.Products.Api.csproj" />-->
+  </ItemGroup>
+</Project>

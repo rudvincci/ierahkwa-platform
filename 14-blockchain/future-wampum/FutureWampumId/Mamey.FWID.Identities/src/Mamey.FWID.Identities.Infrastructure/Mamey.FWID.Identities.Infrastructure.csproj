@@ -1,0 +1,100 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Mamey.FWID.Identities.Tests.Unit</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Mamey.FWID.Identities.Tests.Integration</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Mongo\Repositories\" />
+    <None Remove="Mongo\Queries\" />
+    <None Remove="Exceptions\" />
+    <None Remove="Services\" />
+    <None Remove="DAL\" />
+    <None Remove="DAL\Configuration\" />
+    <None Remove="DAL\Repositories\" />
+    <None Remove="Entities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Mongo\Repositories\" />
+    <Folder Include="Mongo\Queries\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mamey.FWID.Identities.Application\Mamey.FWID.Identities.Application.csproj" />
+  </ItemGroup>
+  
+  <!-- <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Microservice.Infrastructure\src\Mamey.Microservice.Infrastructure\Mamey.Microservice.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Persistence.PostgreSQL\src\Mamey.Persistence.PostgreSQL\Mamey.Persistence.PostgreSQL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Mamey.Microservice.Infrastructure" Version="2.0.*" />
+    <PackageReference Include="Mamey.Persistence.PostgreSQL" Version="2.0.*" />
+
+  </ItemGroup> -->
+  
+  <!-- Conditional references: Project reference in Debug, Package reference in Release -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Auth.Jwt\src\Mamey.Auth.Jwt\Mamey.Auth.Jwt.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Auth.DecentralizedIdentifiers\src\Mamey.Auth.DecentralizedIdentifiers\Mamey.Auth.DecentralizedIdentifiers.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Security\src\Mamey.Security\Mamey.Security.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Persistence.Minio\src\Mamey.Persistence.Minio\Mamey.Persistence.Minio.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Persistence.PostgreSQL\src\Mamey.Persistence.PostgreSQL\Mamey.Persistence.PostgreSQL.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Microservice.Infrastructure\src\Mamey.Microservice.Infrastructure\Mamey.Microservice.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.WebApi.Security\src\Mamey.WebApi.Security\Mamey.WebApi.Security.csproj" />
+    <!-- gRPC Client project references -->
+    <ProjectReference Include="..\..\..\Mamey.FWID.DIDs\src\Mamey.FWID.DIDs.GrpcClient\Mamey.FWID.DIDs.GrpcClient.csproj" />
+    <ProjectReference Include="..\..\..\Mamey.FWID.Credentials\src\Mamey.FWID.Credentials.GrpcClient\Mamey.FWID.Credentials.GrpcClient.csproj" />
+    <ProjectReference Include="..\..\..\Mamey.FWID.ZKPs\src\Mamey.FWID.ZKPs.GrpcClient\Mamey.FWID.ZKPs.GrpcClient.csproj" />
+    <ProjectReference Include="..\..\..\Mamey.FWID.AccessControls\src\Mamey.FWID.AccessControls.GrpcClient\Mamey.FWID.AccessControls.GrpcClient.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Mamey.Auth.Jwt" Version="2.0.*" />
+    <PackageReference Include="Mamey.Auth.DecentralizedIdentifiers" Version="2.0.*" />
+    <PackageReference Include="Mamey.Security" Version="2.0.*" />
+    <PackageReference Include="Mamey.Persistence.Minio" Version="2.0.*" />
+    <PackageReference Include="Mamey.Persistence.PostgreSQL" Version="2.0.*" />
+    <PackageReference Include="Mamey.Microservice.Infrastructure" Version="2.0.*" />
+    <PackageReference Include="Mamey.WebApi.Security" Version="2.0.*" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" Version="2.65.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.31.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.66.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <!-- Use official Microsoft package instead of HiNetCloud fork for .NET 9 compatibility -->
+    <!-- This explicit reference will override the transitive HiNetCloud dependency -->
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.12.1" />
+    <!-- Prometheus metrics -->
+    <PackageReference Include="prometheus-net" Version="8.2.1" />
+  </ItemGroup>
+  
+  <!-- Government proto for MameyNode integration -->
+  <ItemGroup>
+    <Protobuf Include="..\..\..\..\..\MameyNode\proto\government.proto" GrpcServices="Client">
+      <Access>public</Access>
+      <ProtoCompile>true</ProtoCompile>
+      <CompileOutputs>true</CompileOutputs>
+    </Protobuf>
+  </ItemGroup>
+</Project>

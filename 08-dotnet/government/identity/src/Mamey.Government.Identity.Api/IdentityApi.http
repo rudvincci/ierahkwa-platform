@@ -1,0 +1,500 @@
+### Mamey Government Identity API Routes
+### Base URL: http://localhost:50001
+
+@baseUrl = http://localhost:50001
+@contentType = application/json
+
+### Health Check
+GET {{baseUrl}}/health
+
+### Root Endpoint
+GET {{baseUrl}}/
+
+### ============================================
+### SUBJECT MANAGEMENT ROUTES
+### ============================================
+
+### Browse all subjects (paginated)
+GET {{baseUrl}}/identity?Page=1&ResultsPerPage=10&Name=John
+
+### Get subject by ID
+GET {{baseUrl}}/identity/123e4567-e89b-12d3-a456-426614174000
+
+### Get subject by email
+GET {{baseUrl}}/identity/by-email/john.doe@example.com
+
+### Get subjects by status
+GET {{baseUrl}}/identity/by-status/Active
+
+### Get subjects by role
+GET {{baseUrl}}/identity/by-role/123e4567-e89b-12d3-a456-426614174000
+
+### Get recently authenticated subjects
+GET {{baseUrl}}/identity/recently-authenticated
+
+### Create new subject
+POST {{baseUrl}}/identity
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "tags": ["citizen", "verified"]
+}
+
+### Update subject
+PUT {{baseUrl}}/identity/123e4567-e89b-12d3-a456-426614174000
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "name": "John Doe Updated",
+  "email": "john.doe.updated@example.com",
+  "tags": ["citizen", "verified", "premium"]
+}
+
+### Delete subject
+DELETE {{baseUrl}}/identity/123e4567-e89b-12d3-a456-426614174000
+
+### ============================================
+### USER MANAGEMENT ROUTES
+### ============================================
+
+### Browse users (paginated)
+GET {{baseUrl}}/users?Page=1&ResultsPerPage=10&Username=johndoe&Email=example.com&Status=Active
+
+### Get user by ID
+GET {{baseUrl}}/users/123e4567-e89b-12d3-a456-426614174000
+
+### Get user by email
+GET {{baseUrl}}/users/by-email/john.doe@example.com
+
+### Get users by status
+GET {{baseUrl}}/users/by-status/Active
+
+### Get users by role
+GET {{baseUrl}}/users/by-role/123e4567-e89b-12d3-a456-426614174000
+
+### Get user sessions
+GET {{baseUrl}}/users/123e4567-e89b-12d3-a456-426614174000/sessions
+
+### Get recently active users
+GET {{baseUrl}}/users/recently-active
+
+### Get user statistics
+GET {{baseUrl}}/users/statistics
+
+### Create new user
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "subjectId": "456e7890-e89b-12d3-a456-426614174000",
+  "username": "johndoe",
+  "email": "john.doe@example.com",
+  "passwordHash": "$2a$10$N9qo8uLOickgx2ZMRZoMye"
+}
+
+### Update user
+PUT {{baseUrl}}/users/123e4567-e89b-12d3-a456-426614174000
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "username": "johndoe_updated",
+  "email": "john.doe.updated@example.com"
+}
+
+### Change user password
+POST {{baseUrl}}/users/123e4567-e89b-12d3-a456-426614174000/change-password
+Content-Type: {{contentType}}
+
+{
+  "userId": "123e4567-e89b-12d3-a456-426614174000",
+  "newPasswordHash": "$2a$10$NewPasswordHashHere"
+}
+
+### Activate user
+POST {{baseUrl}}/users/123e4567-e89b-12d3-a456-426614174000/activate
+Content-Type: {{contentType}}
+
+{
+  "userId": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+### Deactivate user
+POST {{baseUrl}}/users/123e4567-e89b-12d3-a456-426614174000/deactivate
+Content-Type: {{contentType}}
+
+{
+  "userId": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+### Lock user
+POST {{baseUrl}}/users/123e4567-e89b-12d3-a456-426614174000/lock
+Content-Type: {{contentType}}
+
+{
+  "userId": "123e4567-e89b-12d3-a456-426614174000",
+  "lockedUntil": "2024-12-31T23:59:59Z"
+}
+
+### Unlock user
+POST {{baseUrl}}/users/123e4567-e89b-12d3-a456-426614174000/unlock
+Content-Type: {{contentType}}
+
+{
+  "userId": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+### ============================================
+### ROLE MANAGEMENT ROUTES
+### ============================================
+
+### Browse roles (paginated)
+GET {{baseUrl}}/roles?Page=1&ResultsPerPage=10&Name=Admin&Status=Active
+
+### Get role by ID
+GET {{baseUrl}}/roles/123e4567-e89b-12d3-a456-426614174000
+
+### Search roles
+GET {{baseUrl}}/roles/search?searchTerm=admin
+
+### Get roles by status
+GET {{baseUrl}}/roles/by-status/Active
+
+### Get roles by permission
+GET {{baseUrl}}/roles/by-permission/123e4567-e89b-12d3-a456-426614174000
+
+### Get role statistics
+GET {{baseUrl}}/roles/statistics
+
+### Create new role
+POST {{baseUrl}}/roles
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "name": "Administrator",
+  "description": "Full system administrator role",
+  "permissionIds": [
+    "456e7890-e89b-12d3-a456-426614174000",
+    "789e0123-e89b-12d3-a456-426614174000"
+  ]
+}
+
+### Update role
+PUT {{baseUrl}}/roles/123e4567-e89b-12d3-a456-426614174000
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "name": "Senior Administrator",
+  "description": "Senior system administrator role with additional permissions",
+  "permissionIds": [
+    "456e7890-e89b-12d3-a456-426614174000",
+    "789e0123-e89b-12d3-a456-426614174000",
+    "012e3456-e89b-12d3-a456-426614174000"
+  ]
+}
+
+### Assign role to subject
+POST {{baseUrl}}/subjects/456e7890-e89b-12d3-a456-426614174000/roles/123e4567-e89b-12d3-a456-426614174000
+Content-Type: {{contentType}}
+
+{
+  "subjectId": "456e7890-e89b-12d3-a456-426614174000",
+  "roleId": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+### Remove role from subject
+DELETE {{baseUrl}}/subjects/456e7890-e89b-12d3-a456-426614174000/roles/123e4567-e89b-12d3-a456-426614174000
+
+### ============================================
+### PERMISSION MANAGEMENT ROUTES
+### ============================================
+
+### Browse permissions (paginated)
+GET {{baseUrl}}/permissions?Page=1&ResultsPerPage=10&Resource=users&Action=read&Status=Active
+
+### Get permission by ID
+GET {{baseUrl}}/permissions/123e4567-e89b-12d3-a456-426614174000
+
+### Search permissions
+GET {{baseUrl}}/permissions/search?searchTerm=read
+
+### Get permissions by status
+GET {{baseUrl}}/permissions/by-status/Active
+
+### Get permissions by role
+GET {{baseUrl}}/permissions/by-role/123e4567-e89b-12d3-a456-426614174000
+
+### Get permissions by resource
+GET {{baseUrl}}/permissions/by-resource/users
+
+### Get permissions by action
+GET {{baseUrl}}/permissions/by-action/read
+
+### Get permission statistics
+GET {{baseUrl}}/permissions/statistics
+
+### Create new permission
+POST {{baseUrl}}/permissions
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "name": "Read Users",
+  "description": "Permission to read user information",
+  "resource": "users",
+  "action": "read"
+}
+
+### Update permission
+PUT {{baseUrl}}/permissions/123e4567-e89b-12d3-a456-426614174000
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "name": "Read and Write Users",
+  "description": "Permission to read and write user information",
+  "resource": "users",
+  "action": "read,write"
+}
+
+### ============================================
+### SESSION MANAGEMENT ROUTES
+### ============================================
+
+### Get session by ID
+GET {{baseUrl}}/sessions/123e4567-e89b-12d3-a456-426614174000
+
+### Get session by refresh token
+GET {{baseUrl}}/sessions/by-refresh-token/refresh_token_here
+
+### Get session by access token
+GET {{baseUrl}}/sessions/by-access-token/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+
+### Get session statistics
+GET {{baseUrl}}/sessions/statistics
+
+### Create new session
+POST {{baseUrl}}/sessions
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "userId": "456e7890-e89b-12d3-a456-426614174000",
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "refresh_token_here",
+  "expiresAt": "2024-12-31T23:59:59Z",
+  "ipAddress": "192.168.1.100",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+}
+
+### Refresh session
+POST {{baseUrl}}/sessions/123e4567-e89b-12d3-a456-426614174000/refresh
+Content-Type: {{contentType}}
+
+{
+  "sessionId": "123e4567-e89b-12d3-a456-426614174000",
+  "newAccessToken": "new_access_token_here",
+  "newRefreshToken": "new_refresh_token_here",
+  "newExpiresAt": "2024-12-31T23:59:59Z"
+}
+
+### Revoke session
+POST {{baseUrl}}/sessions/123e4567-e89b-12d3-a456-426614174000/revoke
+Content-Type: {{contentType}}
+
+{
+  "sessionId": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+### ============================================
+### EMAIL CONFIRMATION ROUTES
+### ============================================
+
+### Get email confirmation by code
+GET {{baseUrl}}/email-confirmations/by-code/ABC123XYZ
+
+### Get email confirmation by user ID
+GET {{baseUrl}}/email-confirmations/by-user/123e4567-e89b-12d3-a456-426614174000
+
+### Get pending email confirmations
+GET {{baseUrl}}/email-confirmations/pending
+
+### Get email confirmation statistics
+GET {{baseUrl}}/email-confirmations/statistics
+
+### Create email confirmation
+POST {{baseUrl}}/email-confirmations
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "userId": "456e7890-e89b-12d3-a456-426614174000",
+  "email": "john.doe@example.com",
+  "confirmationCode": "ABC123XYZ",
+  "expiresAt": "2024-12-31T23:59:59Z",
+  "ipAddress": "192.168.1.100",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+}
+
+### Confirm email
+POST {{baseUrl}}/email-confirmations/confirm
+Content-Type: {{contentType}}
+
+{
+  "confirmationCode": "ABC123XYZ"
+}
+
+### Resend email confirmation
+POST {{baseUrl}}/email-confirmations/resend
+Content-Type: {{contentType}}
+
+{
+  "userId": "456e7890-e89b-12d3-a456-426614174000",
+  "newConfirmationCode": "DEF456GHI",
+  "newExpiresAt": "2024-12-31T23:59:59Z"
+}
+
+### ============================================
+### TWO-FACTOR AUTHENTICATION ROUTES
+### ============================================
+
+### Get two-factor auth by user ID
+GET {{baseUrl}}/two-factor-auth/by-user/123e4567-e89b-12d3-a456-426614174000
+
+### Get two-factor auth statistics
+GET {{baseUrl}}/two-factor-auth/statistics
+
+### Setup two-factor authentication
+POST {{baseUrl}}/two-factor-auth/setup
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "userId": "456e7890-e89b-12d3-a456-426614174000",
+  "secretKey": "JBSWY3DPEHPK3PXP",
+  "qrCodeUrl": "otpauth://totp/Example:john.doe@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Example"
+}
+
+### Activate two-factor authentication
+POST {{baseUrl}}/two-factor-auth/activate
+Content-Type: {{contentType}}
+
+{
+  "userId": "456e7890-e89b-12d3-a456-426614174000",
+  "totpCode": "123456"
+}
+
+### Verify two-factor authentication
+POST {{baseUrl}}/two-factor-auth/verify
+Content-Type: {{contentType}}
+
+{
+  "userId": "456e7890-e89b-12d3-a456-426614174000",
+  "totpCode": "123456"
+}
+
+### Disable two-factor authentication
+POST {{baseUrl}}/two-factor-auth/disable
+Content-Type: {{contentType}}
+
+{
+  "userId": "456e7890-e89b-12d3-a456-426614174000"
+}
+
+### ============================================
+### MULTI-FACTOR AUTHENTICATION ROUTES
+### ============================================
+
+### Get multi-factor auth by user ID
+GET {{baseUrl}}/multi-factor-auth/by-user/123e4567-e89b-12d3-a456-426614174000
+
+### Get enabled MFA methods by user ID
+GET {{baseUrl}}/multi-factor-auth/methods/by-user/123e4567-e89b-12d3-a456-426614174000
+
+### Get active MFA challenge by user ID
+GET {{baseUrl}}/multi-factor-auth/challenges/active/123e4567-e89b-12d3-a456-426614174000
+
+### Get multi-factor auth statistics
+GET {{baseUrl}}/multi-factor-auth/statistics
+
+### Setup multi-factor authentication
+POST {{baseUrl}}/multi-factor-auth/setup
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "userId": "456e7890-e89b-12d3-a456-426614174000",
+  "enabledMethods": [1, 2, 3],
+  "requiredMethods": 2
+}
+
+### Enable MFA method
+POST {{baseUrl}}/multi-factor-auth/methods/enable
+Content-Type: {{contentType}}
+
+{
+  "userId": "456e7890-e89b-12d3-a456-426614174000",
+  "method": 1
+}
+
+### Disable MFA method
+POST {{baseUrl}}/multi-factor-auth/methods/disable
+Content-Type: {{contentType}}
+
+{
+  "userId": "456e7890-e89b-12d3-a456-426614174000",
+  "method": 1
+}
+
+### Create MFA challenge
+POST {{baseUrl}}/multi-factor-auth/challenges
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "multiFactorAuthId": "456e7890-e89b-12d3-a456-426614174000",
+  "method": 1,
+  "challengeData": "challenge_data_here",
+  "expiresAt": "2024-12-31T23:59:59Z",
+  "ipAddress": "192.168.1.100",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+}
+
+### Verify MFA challenge
+POST {{baseUrl}}/multi-factor-auth/challenges/123e4567-e89b-12d3-a456-426614174000/verify
+Content-Type: {{contentType}}
+
+{
+  "challengeId": "123e4567-e89b-12d3-a456-426614174000",
+  "response": "challenge_response_here"
+}
+
+### ============================================
+### CREDENTIAL MANAGEMENT ROUTES
+### ============================================
+
+### Revoke credential
+POST {{baseUrl}}/credentials/123e4567-e89b-12d3-a456-426614174000/revoke
+Content-Type: {{contentType}}
+
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+### ============================================
+### TESTING NOTES
+### ============================================
+
+# Replace the GUIDs in the examples with actual GUIDs from your system
+# Adjust the baseUrl to match your API endpoint
+# Some endpoints may require authentication - add Authorization headers as needed
+# The timestamps in the examples are placeholders - use actual future dates
+# Email addresses, usernames, and other data should be replaced with test data
+# Pagination parameters: Page (1-based), ResultsPerPage (default: 10)

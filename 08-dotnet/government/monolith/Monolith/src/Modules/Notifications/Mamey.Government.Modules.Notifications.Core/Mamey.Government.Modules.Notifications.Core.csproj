@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  
+  <!-- General properties -->
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <UseLocalMicroMonolith Condition="Exists('..\\..\\..\\..\\..\\..\\Mamey\\src\\Mamey.MicroMonolith.Abstractions\\src\\Mamey.MicroMonolith.Abstractions\\Mamey.MicroMonolith.Abstractions.csproj') And Exists('..\\..\\..\\..\\..\\..\\Mamey\\src\\Mamey.MicroMonolith.Infrastructure\\src\\Mamey.MicroMonolith.Infrastructure\\Mamey.MicroMonolith.Infrastructure.csproj')">true</UseLocalMicroMonolith>
+  </PropertyGroup>
+
+  <!-- Define constants based on the database choice -->
+  <PropertyGroup>
+    <DefineConstants>USE_SQL</DefineConstants>
+  </PropertyGroup>
+
+  <!-- MongoDB Folder Inclusion -->
+  <ItemGroup Condition="'$(DefineConstants.Contains(`USE_MONGO`))'">
+    <Folder Include="Mongo\" />
+    <Folder Include="Mongo\Documents\" />
+    <Folder Include="Mongo\Repositories\" />
+  </ItemGroup>
+
+  <!-- EF Folder Inclusion -->
+
+  <!-- Project references for different configurations -->
+  <ItemGroup Condition="'$(UseLocalMicroMonolith)' == 'true'">
+    <ProjectReference Include="..\..\..\..\..\..\Mamey\src\Mamey.MicroMonolith.Abstractions\src\Mamey.MicroMonolith.Abstractions\Mamey.MicroMonolith.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\..\..\..\Mamey\src\Mamey.MicroMonolith.Infrastructure\src\Mamey.MicroMonolith.Infrastructure\Mamey.MicroMonolith.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\..\..\..\Mamey\src\Mamey.Emails\src\Mamey.Emails\Mamey.Emails.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMicroMonolith)' != 'true'">
+    <PackageReference Include="Mamey.MicroMonolith.Infrastructure" Version="2.0.*" />
+    <PackageReference Include="Mamey.MicroMonolith.Abstractions" Version="2.0.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Mamey.Government.Shared.Abstractions\Mamey.Government.Shared.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Templates\CitizenshipApplicationStart.cshtml" />
+    <EmbeddedResource Include="Templates\CitizenshipApplicationStart.cshtml" />
+    <None Remove="Templates\CitizenshipApplicationResume.cshtml" />
+    <EmbeddedResource Include="Templates\CitizenshipApplicationResume.cshtml" />
+    <None Remove="Templates\EmployeeWelcome.cshtml" />
+    <EmbeddedResource Include="Templates\EmployeeWelcome.cshtml" />
+    <None Remove="Templates\PasswordChange.cshtml" />
+    <None Remove="Templates\ResetPassword.cshtml" />
+    <EmbeddedResource Include="Templates\ResetPassword.cshtml" />
+    <None Remove="Templates\Welcome.cshtml" />
+    <EmbeddedResource Include="Templates\Welcome.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Commands\" />
+  </ItemGroup>
+  
+</Project>

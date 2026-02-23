@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  aftercare-service:
+    build:
+      context: ../
+      dockerfile: Pupitre.Aftercare/Dockerfile
+      args:
+        FEED_URL: ${FEED_URL}
+        FEED_PAT: ${FEED_PAT}
+        FEED_NAME: ${FEED_NAME}
+        FEED_USERNAME: ${FEED_USERNAME}
+    image: aftercare-service
+    container_name: aftercare-service
+    env_file: 
+      - ./.env-development
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_HTTPS_PORT=60025
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=${Certificates__Default__Path}
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${Certificates__Default__Password}
+    restart: unless-stopped
+    ports:
+      - 60025:443
+      - 5001:80
+    networks:
+      - mamey
+    volumes:
+      - ~/.aspnet/https:/https:ro
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+
+networks:
+  mamey:
+    name: mamey
+    external: true

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "infra.fullname" . }}-jaeger
+  labels:
+    app: jaeger
+spec:
+  type: ClusterIP
+  ports:
+  - name: http-query
+    port: {{ .Values.jaeger.ports.httpQuery }}
+    targetPort: {{ .Values.jaeger.ports.httpQuery }}
+  - name: collector
+    port: {{ .Values.jaeger.ports.collector }}
+    targetPort: {{ .Values.jaeger.ports.collector }}
+  - name: agent-udp
+    port: {{ .Values.jaeger.ports.agentUdp }}
+    targetPort: {{ .Values.jaeger.ports.agentUdp }}
+  - name: agent-udp2
+    port: {{ .Values.jaeger.ports.agentUdp2 }}
+    targetPort: {{ .Values.jaeger.ports.agentUdp2 }}
+  selector:
+    app: jaeger

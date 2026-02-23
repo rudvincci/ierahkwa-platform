@@ -1,0 +1,87 @@
+@page "/citizen/apply-progression"
+@layout CitizenLayout
+@attribute [Authorize]
+
+<PageTitle>Apply for Status Progression - Citizen Portal</PageTitle>
+
+<PageHeader Title="Apply for Status Progression" Subtitle="Advance to the next citizenship level" />
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" md="8">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Progression Application</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudAlert Severity="Severity.Info" Class="mb-4">
+                    You are currently a <strong>Resident</strong>. Complete this application to progress to <strong>Citizen</strong> status.
+                </MudAlert>
+
+                <MudText Typo="Typo.h6" Class="mb-2">Eligibility Checklist</MudText>
+                <MudList T="string" Dense="true">
+                    <MudListItem Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Success">
+                        12+ months as Resident ✓
+                    </MudListItem>
+                    <MudListItem Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Success">
+                        No outstanding violations ✓
+                    </MudListItem>
+                    <MudListItem Icon="@Icons.Material.Filled.RadioButtonUnchecked">
+                        Citizenship examination passed
+                    </MudListItem>
+                    <MudListItem Icon="@Icons.Material.Filled.RadioButtonUnchecked">
+                        Application fee paid
+                    </MudListItem>
+                </MudList>
+
+                <MudDivider Class="my-4" />
+
+                <MudText Typo="Typo.h6" Class="mb-2">Declaration</MudText>
+                <MudCheckBox @bind-Value="_declaration1" Label="I confirm that all information in my profile is accurate and up-to-date." />
+                <MudCheckBox @bind-Value="_declaration2" Label="I understand the rights and responsibilities of citizenship." />
+                <MudCheckBox @bind-Value="_declaration3" Label="I pledge to uphold the values and laws of the nation." />
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                           Disabled="@(!_declaration1 || !_declaration2 || !_declaration3)">
+                    Submit Application
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Application Fee</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText Typo="Typo.h4" Color="Color.Primary">$150.00</MudText>
+                <MudText Typo="Typo.caption" Class="mud-text-secondary">One-time processing fee</MudText>
+            </MudCardContent>
+        </MudCard>
+
+        <MudCard Elevation="2" Class="mt-4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Need Help?</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudList T="string" Dense="true">
+                    <MudListItem Icon="@Icons.Material.Filled.Help" Href="/faq">FAQ</MudListItem>
+                    <MudListItem Icon="@Icons.Material.Filled.Email">support@mamey.gov</MudListItem>
+                </MudList>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private bool _declaration1;
+    private bool _declaration2;
+    private bool _declaration3;
+}

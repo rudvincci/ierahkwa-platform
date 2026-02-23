@@ -1,0 +1,32 @@
+@using System.Collections.ObjectModel
+@using Mamey.ApplicationName.BlazorWasm.Models.Support
+
+<MudPaper Class="p-4 mb-4" Elevation="3">
+    <MudText Typo="Typo.h5">Your Support Tickets</MudText>
+
+    @if (Tickets != null && Tickets.Any())
+    {
+        <MudTable Items="Tickets" Hover="true">
+            <HeaderContent>
+                <MudTh>Subject</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created Date</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTr>
+                    <MudTd>@context.Subject</MudTd>
+                    <MudTd>@context.Status</MudTd>
+                    <MudTd>@context.CreatedDate.ToString("yyyy-MM-dd")</MudTd>
+                </MudTr>
+            </RowTemplate>
+        </MudTable>
+    }
+    else
+    {
+        <MudText Typo="Typo.body2">No support tickets found.</MudText>
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public ObservableCollection<SupportTicket> Tickets { get; set; }
+}

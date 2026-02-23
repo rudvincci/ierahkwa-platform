@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 DIGITAL VAULT | Ierahkwa Secure Storage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --green: #00FF41; --cyan: #00FFFF; --red: #FF1744; --purple: #9D4EDD; --orange: #FF6B35; --bg: #0a0e17; --card: #0d1a2d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17, #0a1a1a, #0a0e17); color: #fff; min-height: 100vh; }
+        
+        .header { background: var(--card); padding: 15px 30px; border-bottom: 3px solid var(--green); display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--green), #00cc33); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; box-shadow: 0 0 20px rgba(0,255,65,0.3); }
+        .logo h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--green); }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .security-badge { background: rgba(0,255,65,0.2); border: 1px solid var(--green); padding: 8px 15px; border-radius: 20px; color: var(--green); font-size: 0.85em; display: flex; align-items: center; gap: 8px; }
+        .nav-link { padding: 10px 20px; background: rgba(0,255,65,0.2); border: 1px solid var(--green); border-radius: 10px; color: var(--green); text-decoration: none; }
+        
+        .main { display: grid; grid-template-columns: 280px 1fr; height: calc(100vh - 80px); }
+        
+        /* Sidebar */
+        .sidebar { background: var(--card); border-right: 1px solid rgba(0,255,65,0.2); padding: 20px; overflow-y: auto; }
+        .sidebar-title { font-size: 0.7em; color: #666; text-transform: uppercase; margin: 20px 0 10px; }
+        .folder-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 10px; cursor: pointer; margin-bottom: 5px; }
+        .folder-item:hover, .folder-item.active { background: rgba(0,255,65,0.1); }
+        .folder-item.active { border-left: 3px solid var(--green); }
+        .folder-icon { font-size: 1.3em; }
+        .folder-count { margin-left: auto; background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 10px; font-size: 0.8em; }
+        
+        .storage-info { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; margin-top: 20px; }
+        .storage-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .storage-used { font-family: 'Orbitron', sans-serif; color: var(--gold); }
+        .storage-bar { height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .storage-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--cyan)); border-radius: 10px; }
+        .storage-text { display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8em; color: #888; }
+        
+        /* Content */
+        .content { padding: 25px; overflow-y: auto; }
+        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .content-title { font-family: 'Orbitron', sans-serif; color: var(--green); display: flex; align-items: center; gap: 10px; }
+        .header-actions { display: flex; gap: 10px; }
+        .action-btn { padding: 10px 20px; background: rgba(0,255,65,0.1); border: 1px solid var(--green); border-radius: 10px; color: var(--green); cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .action-btn.primary { background: var(--green); color: #000; }
+        
+        /* Vault Grid */
+        .vault-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .vault-item { background: var(--card); border-radius: 20px; padding: 20px; border: 2px solid rgba(0,255,65,0.2); cursor: pointer; transition: all 0.3s; text-align: center; position: relative; }
+        .vault-item:hover { border-color: var(--green); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,255,65,0.2); }
+        .vault-item.encrypted::before { content: '🔒'; position: absolute; top: 10px; right: 10px; font-size: 1em; }
+        .vault-icon { font-size: 3em; margin-bottom: 15px; }
+        .vault-name { font-weight: 600; margin-bottom: 5px; word-break: break-word; }
+        .vault-meta { font-size: 0.8em; color: #888; }
+        .vault-tags { display: flex; gap: 5px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+        .vault-tag { padding: 3px 10px; border-radius: 10px; font-size: 0.7em; background: rgba(0,255,65,0.1); color: var(--green); }
+        .vault-tag.confidential { background: rgba(255,23,68,0.2); color: var(--red); }
+        
+        /* Recent Activity */
+        .section { background: var(--card); border-radius: 20px; padding: 25px; margin-top: 25px; }
+        .section-title { font-family: 'Orbitron', sans-serif; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        .activity-item { display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3em; }
+        .activity-icon.upload { background: rgba(0,255,65,0.2); }
+        .activity-icon.download { background: rgba(0,255,255,0.2); }
+        .activity-icon.share { background: rgba(157,78,221,0.2); }
+        .activity-icon.delete { background: rgba(255,23,68,0.2); }
+        .activity-info { flex: 1; }
+        .activity-title { font-weight: 600; margin-bottom: 3px; }
+        .activity-meta { font-size: 0.8em; color: #888; }
+        .activity-time { font-size: 0.85em; color: var(--cyan); }
+        
+        /* Upload Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); border: 2px solid var(--green); border-radius: 20px; padding: 30px; width: 500px; max-width: 90%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .modal-title { font-family: 'Orbitron', sans-serif; color: var(--green); }
+        .close-btn { background: none; border: none; color: #fff; font-size: 1.5em; cursor: pointer; }
+        
+        .upload-zone { border: 3px dashed rgba(0,255,65,0.3); border-radius: 20px; padding: 50px; text-align: center; margin-bottom: 20px; cursor: pointer; transition: all 0.3s; }
+        .upload-zone:hover { border-color: var(--green); background: rgba(0,255,65,0.05); }
+        .upload-zone.dragover { border-color: var(--green); background: rgba(0,255,65,0.1); }
+        .upload-icon { font-size: 3em; margin-bottom: 15px; }
+        .upload-text { color: #888; margin-bottom: 10px; }
+        .upload-formats { font-size: 0.8em; color: #666; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: var(--cyan); margin-bottom: 8px; font-size: 0.9em; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 15px; border: 1px solid rgba(0,255,65,0.3); border-radius: 10px; background: rgba(0,0,0,0.3); color: #fff; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .checkbox-group input { width: auto; }
+        .submit-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--green), #00cc33); border: none; border-radius: 12px; color: #000; font-family: 'Orbitron', sans-serif; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🔐</div>
+            <div>
+                <h1>DIGITAL VAULT</h1>
+                <p style="color: #888; font-size: 0.75em;">AES-256 Encrypted Storage</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="security-badge">
+                <i class="bi bi-shield-lock-fill"></i>
+                End-to-End Encrypted
+            </div>
+            <a href="/platform" class="nav-link"><i class="bi bi-arrow-left"></i> Platform</a>
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Folders</div>
+            <div class="folder-item active">
+                <span class="folder-icon">📁</span>
+                <span>All Files</span>
+                <span class="folder-count">156</span>
+            </div>
+            <div class="folder-item">
+                <span class="folder-icon">⭐</span>
+                <span>Favorites</span>
+                <span class="folder-count">12</span>
+            </div>
+            <div class="folder-item">
+                <span class="folder-icon">🕐</span>
+                <span>Recent</span>
+                <span class="folder-count">25</span>
+            </div>
+            <div class="folder-item">
+                <span class="folder-icon">🗑️</span>
+                <span>Trash</span>
+                <span class="folder-count">3</span>
+            </div>
+            
+            <div class="sidebar-title">Categories</div>
+            <div class="folder-item">
+                <span class="folder-icon">📄</span>
+                <span>Documents</span>
+                <span class="folder-count">67</span>
+            </div>
+            <div class="folder-item">
+                <span class="folder-icon">🖼️</span>
+                <span>Images</span>
+                <span class="folder-count">34</span>
+            </div>
+            <div class="folder-item">
+                <span class="folder-icon">🔐</span>
+                <span>Confidential</span>
+                <span class="folder-count">23</span>
+            </div>
+            <div class="folder-item">
+                <span class="folder-icon">📜</span>
+                <span>Contracts</span>
+                <span class="folder-count">45</span>
+            </div>
+            <div class="folder-item">
+                <span class="folder-icon">🆔</span>
+                <span>IDs & Certs</span>
+                <span class="folder-count">12</span>
+            </div>
+            
+            <div class="storage-info">
+                <div class="storage-header">
+                    <span>Storage</span>
+                    <span class="storage-used">4.2 GB</span>
+                </div>
+                <div class="storage-bar">
+                    <div class="storage-bar-fill" style="width: 42%;"></div>
+                </div>
+                <div class="storage-text">
+                    <span>4.2 GB used</span>
+                    <span>10 GB total</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Content -->
+        <section class="content">
+            <div class="content-header">
+                <div class="content-title">🔐 All Files (156)</div>
+                <div class="header-actions">
+                    <input type="text" placeholder="Search files..." style="padding: 10px 20px; border: 1px solid rgba(0,255,65,0.3); border-radius: 25px; background: rgba(0,0,0,0.3); color: #fff; width: 250px;">
+                    <button class="action-btn primary" onclick="openUploadModal()"><i class="bi bi-cloud-upload"></i> Upload</button>
+                </div>
+            </div>
+            
+            <div class="vault-grid">
+                <div class="vault-item encrypted" onclick="viewFile(this)">
+                    <div class="vault-icon">📄</div>
+                    <div class="vault-name">Contract-2026-001.pdf</div>
+                    <div class="vault-meta">2.4 MB • Jan 20</div>
+                    <div class="vault-tags">
+                        <span class="vault-tag">PDF</span>
+                        <span class="vault-tag confidential">Confidential</span>
+                    </div>
+                </div>
+                
+                <div class="vault-item encrypted" onclick="viewFile(this)">
+                    <div class="vault-icon">🆔</div>
+                    <div class="vault-name">Government-ID.png</div>
+                    <div class="vault-meta">856 KB • Jan 18</div>
+                    <div class="vault-tags">
+                        <span class="vault-tag">Image</span>
+                        <span class="vault-tag confidential">Private</span>
+                    </div>
+                </div>
+                
+                <div class="vault-item encrypted" onclick="viewFile(this)">
+                    <div class="vault-icon">📊</div>
+                    <div class="vault-name">Financial-Report-Q4.xlsx</div>
+                    <div class="vault-meta">1.8 MB • Jan 15</div>
+                    <div class="vault-tags">
+                        <span class="vault-tag">Excel</span>
+                        <span class="vault-tag">Finance</span>
+                    </div>
+                </div>
+                
+                <div class="vault-item encrypted" onclick="viewFile(this)">
+                    <div class="vault-icon">🔑</div>
+                    <div class="vault-name">Crypto-Keys-Backup.enc</div>
+                    <div class="vault-meta">12 KB • Jan 10</div>
+                    <div class="vault-tags">
+                        <span class="vault-tag confidential">TOP SECRET</span>
+                    </div>
+                </div>
+                
+                <div class="vault-item encrypted" onclick="viewFile(this)">
+                    <div class="vault-icon">📝</div>
+                    <div class="vault-name">NDA-Partner-Inc.pdf</div>
+                    <div class="vault-meta">678 KB • Jan 8</div>
+                    <div class="vault-tags">
+                        <span class="vault-tag">PDF</span>
+                        <span class="vault-tag">Legal</span>
+                    </div>
+                </div>
+                
+                <div class="vault-item encrypted" onclick="viewFile(this)">
+                    <div class="vault-icon">🏛️</div>
+                    <div class="vault-name">Sovereign-Charter.pdf</div>
+                    <div class="vault-meta">3.2 MB • Dec 2025</div>
+                    <div class="vault-tags">
+                        <span class="vault-tag">PDF</span>
+                        <span class="vault-tag">Government</span>
+                    </div>
+                </div>
+                
+                <div class="vault-item encrypted" onclick="viewFile(this)">
+                    <div class="vault-icon">📁</div>
+                    <div class="vault-name">Tax-Documents-2025</div>
+                    <div class="vault-meta">Folder • 15 files</div>
+                    <div class="vault-tags">
+                        <span class="vault-tag">Folder</span>
+                        <span class="vault-tag">Tax</span>
+                    </div>
+                </div>
+                
+                <div class="vault-item encrypted" onclick="viewFile(this)">
+                    <div class="vault-icon">🖼️</div>
+                    <div class="vault-name">Passport-Scan.jpg</div>
+                    <div class="vault-meta">1.1 MB • Nov 2025</div>
+                    <div class="vault-tags">
+                        <span class="vault-tag">Image</span>
+                        <span class="vault-tag confidential">Private</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="section">
+                <div class="section-title"><i class="bi bi-clock-history"></i> Recent Activity</div>
+                <div class="activity-item">
+                    <div class="activity-icon upload">⬆️</div>
+                    <div class="activity-info">
+                        <div class="activity-title">Contract-2026-001.pdf uploaded</div>
+                        <div class="activity-meta">Encrypted with AES-256</div>
+                    </div>
+                    <div class="activity-time">2 hours ago</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon download">⬇️</div>
+                    <div class="activity-info">
+                        <div class="activity-title">Financial-Report-Q4.xlsx downloaded</div>
+                        <div class="activity-meta">By Ruddie S.</div>
+                    </div>
+                    <div class="activity-time">5 hours ago</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon share">🔗</div>
+                    <div class="activity-info">
+                        <div class="activity-title">NDA shared with María García</div>
+                        <div class="activity-meta">View-only access granted</div>
+                    </div>
+                    <div class="activity-time">Yesterday</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon upload">⬆️</div>
+                    <div class="activity-info">
+                        <div class="activity-title">Crypto-Keys-Backup.enc created</div>
+                        <div class="activity-meta">Biometric lock enabled</div>
+                    </div>
+                    <div class="activity-time">3 days ago</div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Upload Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📤 Upload to Vault</div>
+                <button class="close-btn" onclick="closeUploadModal()">&times;</button>
+            </div>
+            
+            <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Drag files here or click to browse</div>
+                <div class="upload-formats">PDF, DOC, XLS, PNG, JPG up to 100MB</div>
+                <input type="file" id="fileInput" style="display: none;" multiple>
+            </div>
+            
+            <div class="form-group">
+                <label>Folder</label>
+                <select>
+                    <option value="all">All Files</option>
+                    <option value="documents">Documents</option>
+                    <option value="confidential">Confidential</option>
+                    <option value="contracts">Contracts</option>
+                    <option value="ids">IDs & Certificates</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Security Level</label>
+                <div class="form-row">
+                    <div class="checkbox-group">
+                        <input type="checkbox" checked disabled>
+                        <span>AES-256 Encryption</span>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="biometric">
+                        <span>Biometric Lock</span>
+                    </div>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="blockchain">
+                    <span>Blockchain Verification</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Tags (comma separated)</label>
+                <input type="text" placeholder="e.g., confidential, legal, 2026">
+            </div>
+            
+            <button class="submit-btn" onclick="uploadFile()">
+                <i class="bi bi-shield-lock"></i> Encrypt & Upload
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function openUploadModal() { document.getElementById('uploadModal').classList.add('active'); }
+        function closeUploadModal() { document.getElementById('uploadModal').classList.remove('active'); }
+        
+        function viewFile(item) {
+            const name = item.querySelector('.vault-name').textContent;
+            alert(`🔐 SECURE FILE ACCESS\n\n📄 ${name}\n\n✅ Decrypting...\n✅ Verifying integrity...\n✅ Checking permissions...\n\n🔓 File ready for viewing.`);
+        }
+        
+        function uploadFile() {
+            alert('✅ FILE UPLOADED SUCCESSFULLY\n\n🔐 Encrypted with AES-256\n⛓️ Hash recorded on blockchain\n📁 Stored in secure vault\n\nYour file is now protected.');
+            closeUploadModal();
+        }
+        
+        // Drag and drop
+        const dropZone = document.getElementById('dropZone');
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+        dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); uploadFile(); });
+        
+        console.log('🔐 DIGITAL VAULT - Secure Storage Initialized');
+    </script>
+</body>
+</html>

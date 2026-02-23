@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "infra.fullname" . }}-rabbitmq
+  labels:
+    app: rabbitmq
+spec:
+  type: ClusterIP
+  ports:
+  - name: rabbit
+    port: {{ .Values.rabbitmq.ports.rabbit }}
+    targetPort: {{ .Values.rabbitmq.ports.rabbit }}
+  - name: management
+    port: {{ .Values.rabbitmq.ports.management }}
+    targetPort: {{ .Values.rabbitmq.ports.management }}
+  - name: additional
+    port: {{ .Values.rabbitmq.ports.additional }}
+    targetPort: {{ .Values.rabbitmq.ports.additional }}
+  selector:
+    app: rabbitmq

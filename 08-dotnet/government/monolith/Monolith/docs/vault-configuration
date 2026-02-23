@@ -1,0 +1,135 @@
+# Vault
+Vault will be used as a store for sensitive data: secrets, certificates, connections strings, etc. For development and production we will need to configure it so that the microservices can consume this service.
+
+## Access
+You could access the configuration either by the console or the GUI located at http://localhost:8200. 
+
+Local development configuration will use a the token `secret` for accessing vault.
+
+### Console
+1. Open a terminal and enter the Docker container.
+    ```bash
+    docker exec -it vault /bin/sh
+    ```
+2. Login to Vault and enter token
+    ```bash
+    vault login
+    Token (will be hidden):
+
+    # Command output
+    Success! You are now authenticated. The token information displayed below
+    is already stored in the token helper. You do NOT need to run "vault login"
+    again. Future Vault requests will automatically use this token.
+
+    Key                  Value
+    ---                  -----
+    token                secret
+    token_accessor       8w1tfT1zwBWSbFFGt9WHpcaP
+    token_duration       ∞
+    token_renewable      false
+    token_policies       ["root"]
+    identity_policies    []
+    policies             ["root"]
+    
+    ```
+
+## Enable the Secrets, Database connection string management, and PKI management
+In the console, enter the following commands to access enable the secrets, database, and PKI management features.
+
+```bash
+vault secrets enable -path="kv" -description="Futurehead KV" kv
+vault secrets enable database
+vault secrets enable pki
+vault secrets enable transit
+```
+Create a new secret for the `appsettings.json` file of each service.
+
+```bash
+vault kv put futurehead-kv/<service-name>/appsettings <KEY>=<VALUE>
+```
+
+Create a new key-value engine named `futurehead-kv` and then add a secret for each service `<service-name>/appsettings.json`. This secret will contain the contents of the service's `appsettings.json` file. 
+
+Configuration of the key-value management needs to be configured for each of the microservices as follows, respectively:
+```bash
+vault secrets enable -path="kv" -description="Key Vault" kv
+```
+Add the secret under the path `<service-name>/appsettings`,
+
+```bash
+vault kv put futurehead-kv/<service-name>/appsettings <KEY>=<VALUE>
+```
+
+
+### Appsettings configuration
+Modify the configuration settings, if not done already, to match the configuration entered in Vault. This is as follows:
+
+```json
+"vault": {
+        "enabled": false,
+        "url": "http://localhost:8200",
+        "authType": "token",
+        "token": "secret",
+        "username": "user",
+        "password": "secret",
+        "kv": {
+            "enabled": true,
+            "engineVersion": 2,
+            "mountPoint": "kv",
+            "path": "futurehead/bank-accounts-service/appsettings"
+        },
+        "pki": {
+            "enabled": true,
+            "roleName": "bank-accounts-service",
+            "commonName": "bank-accounts-service.futureheadbdet.com"
+        },
+        "lease": {
+            "mongo": {
+                "type": "database",
+                "roleName": "bank-accounts-service",
+                "enabled": true,
+                "autoRenewal": true,
+                "templates": {
+                    "connectionString": "mongodb://{{username}}:{{password}}@localhost:27017"
+                }
+            }
+        }
+    }
+```
+# PKI Configuration
+```bash
+vault write pki/config/urls \
+    issuing_certificates="http://localhost:8200/v1/pki/ca" \
+    crl_distribution_points="http://localhost:8200/v1/pki/crl"
+```
+
+## Microservice Configuration
+Below are the configurations for each of the services.
+
+#### Bootstrapper
+----------------
+```bash
+# Database connection string configuration
+vault write database/config/mongodb \
+     plugin_name=mongodb-database-plugin \
+     allowed_roles="corpsolutionsllc-internal-api" \
+     connection_url="mongodb://{{username}}:{{password}}@mongo:27017" \
+     username="root" \
+     password="secret"
+
+
+vault write database/roles/corpsolutionsllc-internal-api \
+     db_name=mongodb \
+     creation_statements='{ "db": "admin", "roles": [{"role": "readWrite", "db": "corpsolutionsllc-internal-api"}] }' \
+     default_ttl="1h" \
+     max_ttl="24h"
+
+vault write pki/roles/corpsolutionsllc-internal-api \
+    allowed_domains=futureheadbdet.com \
+    allow_localhost=true \
+    allow_subdomains=true \
+    max_ttl=72h
+
+vault write pki/issue/corpsolutionsllc-internal-api \
+    common_name=corpsolutionsllc-internal-api.futureheadbdet.com
+```

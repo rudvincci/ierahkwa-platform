@@ -1,0 +1,304 @@
+@using Mamey.ApplicationName.BlazorWasm.Services
+@using Mamey.ApplicationName.BlazorWasm.Services.Auth
+@using Mamey.BlazorWasm.Routing
+@using Mamey.BlazorWasm.Components
+@inject AuthenticationService _AuthenticationService
+<BaseNav Routes="_routes" DrawerOpen="DrawerOpen"/>
+<MudDivider/>
+<AuthorizeView>
+    <Authorized>
+        <MudButton Href="/accounts" EndIcon="@Icons.Material.Filled.Checklist" FullWidth="true" Variant="Variant.Outlined">Dashboard</MudButton>
+        <MudButton Href="/logout" EndIcon="@Icons.Material.Filled.Login" FullWidth="true" Variant="Variant.Outlined">Logout</MudButton>
+    </Authorized>
+    <NotAuthorized>
+        <MudButton Href="/apply" EndIcon="@Icons.Material.Filled.Checklist" FullWidth="true" Variant="Variant.Outlined">Apply</MudButton>
+        <MudButton Href="/login" EndIcon="@Icons.Material.Filled.Login" FullWidth="true" Variant="Variant.Outlined">Login</MudButton>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+@*     <MudNavLink Href="buy-tokens" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Phone">Contact Us</MudNavLink> *@
+@*     <MudNavLink Href="about" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountBox">About</MudNavLink> *@
+@* *@
+
+
+@code {
+    private List<Route> _routes;
+
+    [Parameter] public bool DrawerOpen { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _routes = GetRoutes();
+    }
+
+    private List<Route> GetRoutes()
+    {
+        return new List<Route>()
+        {
+            new Route
+            {
+                AuthenticationRequired = false,
+                Icon = Icons.Material.Filled.Home,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Page = "/",
+                Title = "Home",
+                RequiredScopes = new List<string>(),
+            },
+            new Route
+            {
+                AuthenticationRequired = false,
+                Icon = Icons.Material.Filled.Wallet,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Page = "/products",
+                Title = "Products",
+                RequiredScopes = new List<string>(),
+                ChildRoutes = new List<Route>()
+                {
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = Icons.Material.Filled.Token,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/products/crypto",
+                        Title = "Cryptocurrencies",
+                        RequiredScopes = new List<string>(),
+                        ChildRoutes = new List<Route>()
+                        {
+                            new Route
+                            {
+                                AuthenticationRequired = false,
+                                Icon = Icons.Material.Filled.Token,
+                                Match = NavLinkMatch.All,
+                                RequiredRoles = new List<string>(),
+                                Page = "/products/crypto/btch",
+                                Title = "Bitcoin Hemp",
+                                RequiredScopes = new List<string>(),
+                            },
+                            new Route
+                            {
+                                AuthenticationRequired = false,
+                                Icon = Icons.Material.Filled.AssuredWorkload,
+                                Match = NavLinkMatch.All,
+                                RequiredRoles = new List<string>(),
+                                Page = "/products/crypto/fhct",
+                                Title = "Futurehead Coin Trust",
+                                RequiredScopes = new List<string>(),
+                                ChildRoutes = new List<Route>()
+                                {
+                                    new Route
+                                    {
+                                        AuthenticationRequired = false,
+                                        Icon = Icons.Material.Filled.AssuredWorkload,
+                                        Match = NavLinkMatch.All,
+                                        RequiredRoles = new List<string>(),
+                                        Page = "/products/crypto/fhct/token",
+                                        Title = "FHCT Token",
+                                        RequiredScopes = new List<string>(),
+                                    },
+                                    new Route
+                                    {
+                                        AuthenticationRequired = false,
+                                        Icon = Icons.Material.Filled.AssuredWorkload,
+                                        Match = NavLinkMatch.All,
+                                        RequiredRoles = new List<string>(),
+                                        Page = "/products/crypto/fhct/token/structure",
+                                        Title = "Token Structure",
+                                        RequiredScopes = new List<string>(),
+                                    },
+                                }
+                            },
+                            new Route
+                            {
+                                AuthenticationRequired = false,
+                                Icon = Icons.Material.Filled.Token,
+                                Match = NavLinkMatch.All,
+                                RequiredRoles = new List<string>(),
+                                Page = "/fhc",
+                                Title = "Futurehead Coin",
+                                RequiredScopes = new List<string>(),
+                            },
+                            new Route
+                            {
+                                AuthenticationRequired = false,
+                                Icon = Icons.Material.Filled.Token,
+                                Match = NavLinkMatch.All,
+                                RequiredRoles = new List<string>(),
+                                Page = "/products/crypto/buy-tokens",
+                                Title = "Buy Tokens",
+                                RequiredScopes = new List<string>(),
+                            },
+                            new Route
+                            {
+                                AuthenticationRequired = false,
+                                Icon = Icons.Material.Filled.Token,
+                                Match = NavLinkMatch.All,
+                                RequiredRoles = new List<string>(),
+                                Page = "/products/crypto/community",
+                                Title = "Community",
+                                RequiredScopes = new List<string>(),
+                            },
+                            new Route
+                            {
+                                AuthenticationRequired = false,
+                                Icon = Icons.Material.Filled.Token,
+                                Match = NavLinkMatch.All,
+                                RequiredRoles = new List<string>(),
+                                Page = "/products/crypto/exchange",
+                                Title = "Exchange",
+                                RequiredScopes = new List<string>(),
+                            },
+                            new Route
+                            {
+                                AuthenticationRequired = false,
+                                Icon = Icons.Material.Filled.Token,
+                                Match = NavLinkMatch.All,
+                                RequiredRoles = new List<string>(),
+                                Page = "/products/crypto/empowering-opportunities",
+                                Title = "Empowering Opportunities",
+                                RequiredScopes = new List<string>(),
+                            },
+                            new Route
+                            {
+                                AuthenticationRequired = false,
+                                Icon = Icons.Material.Filled.Token,
+                                Match = NavLinkMatch.All,
+                                RequiredRoles = new List<string>(),
+                                Page = "/products/crypto/gas-pro",
+                                Title = "Gas Pro",
+                                RequiredScopes = new List<string>(),
+                            },
+                            new Route
+                            {
+                                AuthenticationRequired = false,
+                                Icon = Icons.Material.Filled.Token,
+                                Match = NavLinkMatch.All,
+                                RequiredRoles = new List<string>(),
+                                Page = "/products/crypto/nfts",
+                                Title = "NFTs",
+                                RequiredScopes = new List<string>(),
+                            },
+                        }
+                    },
+
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = Icons.Material.Filled.Token,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/raffle",
+                        Title = "Ierahkwa Raffle",
+                        RequiredScopes = new List<string>(),
+                        ChildRoutes = new List<Route>()
+                        {
+                            new Route
+                            {
+                                AuthenticationRequired = false,
+                                Icon = Icons.Material.Filled.Token,
+                                Match = NavLinkMatch.All,
+                                RequiredRoles = new List<string>(),
+                                Page = "/raffles",
+                                Title = "Raffles",
+                                RequiredScopes = new List<string>(),
+                            },
+                        }
+                    },
+                }
+            },
+            new Route
+            {
+                AuthenticationRequired = false,
+                Icon = Icons.Material.Filled.Hotel,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Page = "/cockleshell-bay",
+                Title = "Cockeshell Bay Resort & Casino",
+                RequiredScopes = new List<string>(),
+                ChildRoutes = new List<Route>()
+                {
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = Icons.Material.Filled.Token,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/cockleshell-bay/smart-city",
+                        Title = "Smart City",
+                        RequiredScopes = new List<string>(),
+                    },
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = Icons.Material.Filled.PermIdentity,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/cockleshell-bay/citizenship-programs",
+                        Title = "Citizenship Programs",
+                        RequiredScopes = new List<string>(),
+                    },
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = Icons.Material.Filled.Token,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/cockleshell-bay/crypto-casino",
+                        Title = "Crypto Casino",
+                        RequiredScopes = new List<string>(),
+                    },
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = Icons.Material.Filled.Token,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/cockleshell-bay/real-estate",
+                        Title = "Real Estate",
+                        RequiredScopes = new List<string>(),
+                    },
+                    new Route
+                    {
+                        AuthenticationRequired = false,
+                        Icon = Icons.Material.Filled.Token,
+                        Match = NavLinkMatch.All,
+                        RequiredRoles = new List<string>(),
+                        Page = "/cockleshell-bay/crypto-real-estate",
+                        Title = "Crypto Real Estate",
+                        RequiredScopes = new List<string>(),
+                    },
+                }
+            },
+            new Route
+            {
+                AuthenticationRequired = false,
+                Icon = Icons.Material.Filled.Token,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Page = "/development",
+                Title = "Development",
+                RequiredScopes = new List<string>(),
+            },
+            new Route
+            {
+                AuthenticationRequired = false,
+                Icon = Icons.Material.Filled.Wallet,
+                Match = NavLinkMatch.All,
+                RequiredRoles = new List<string>(),
+                Page = "/about",
+                Title = "About",
+                RequiredScopes = new List<string>(),
+            },
+        };
+    }
+
+    private async Task Logout()
+    {
+        await _AuthenticationService.LogoutAsync();
+    }
+
+}

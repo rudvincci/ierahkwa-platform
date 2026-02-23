@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT CERTIFICATES | Ierahkwa Sovereign Digital Credentials</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --gold-dark: #B8860B;
+            --neon-green: #00FF41;
+            --neon-cyan: #00FFFF;
+            --neon-magenta: #FF00FF;
+            --neon-purple: #9D4EDD;
+            --neon-orange: #FF6B35;
+            --neon-pink: #FF1493;
+            --bg-dark: #0a0e17;
+            --bg-card: #0d1a2d;
+            --bg-hover: #142238;
+            --border: #1e3a5f;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, #0a0e17 0%, #1a0a2e 50%, #0d1a2d 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: 
+                radial-gradient(circle at 30% 70%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
+        }
+        
+        .container { position: relative; z-index: 1; max-width: 1800px; margin: 0 auto; padding: 0 40px; }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, rgba(10, 14, 23, 0.98) 0%, rgba(26, 10, 46, 0.95) 100%);
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, var(--neon-purple), var(--neon-magenta), var(--gold), var(--neon-purple)) 1;
+            padding: 20px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+        
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo-icon {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-magenta));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 0 30px rgba(157, 78, 221, 0.5);
+            animation: pulse-purple 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse-purple {
+            from { box-shadow: 0 0 20px rgba(157, 78, 221, 0.5); }
+            to { box-shadow: 0 0 40px rgba(157, 78, 221, 0.8), 0 0 60px rgba(255, 0, 255, 0.4); }
+        }
+        
+        .logo-text h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8em;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--neon-purple), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo-text p {
+            color: var(--neon-cyan);
+            font-size: 0.85em;
+            letter-spacing: 3px;
+        }
+        
+        .main { padding: 40px 0; }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 60px 0;
+            margin-bottom: 50px;
+        }
+        
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5em;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--gold), var(--neon-purple), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.3em;
+            color: #aaa;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+        }
+        
+        .hero-stat {
+            text-align: center;
+        }
+        
+        .hero-stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5em;
+            font-weight: 900;
+            color: var(--gold);
+        }
+        
+        .hero-stat-label {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        /* Certificate Types */
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8em;
+            color: var(--gold);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .cert-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+        
+        .cert-type-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 35px;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .cert-type-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s;
+        }
+        
+        .cert-type-card:hover::before { left: 100%; }
+        
+        .cert-type-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(157, 78, 221, 0.3);
+        }
+        
+        .cert-type-card.gold { border-color: var(--gold); }
+        .cert-type-card.gold:hover { box-shadow: 0 20px 50px rgba(255, 215, 0, 0.3); }
+        
+        .cert-type-card.purple { border-color: var(--neon-purple); }
+        .cert-type-card.cyan { border-color: var(--neon-cyan); }
+        .cert-type-card.green { border-color: var(--neon-green); }
+        .cert-type-card.pink { border-color: var(--neon-pink); }
+        .cert-type-card.orange { border-color: var(--neon-orange); }
+        
+        .cert-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+        
+        .cert-icon.gold { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); }
+        .cert-icon.purple { background: linear-gradient(135deg, var(--neon-purple), #6b21a8); }
+        .cert-icon.cyan { background: linear-gradient(135deg, var(--neon-cyan), #0099cc); }
+        .cert-icon.green { background: linear-gradient(135deg, var(--neon-green), #00cc33); }
+        .cert-icon.pink { background: linear-gradient(135deg, var(--neon-pink), #cc1166); }
+        .cert-icon.orange { background: linear-gradient(135deg, var(--neon-orange), #cc4400); }
+        
+        .cert-type-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        
+        .cert-type-desc {
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .cert-stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .cert-stat {
+            background: var(--bg-hover);
+            padding: 10px 15px;
+            border-radius: 10px;
+        }
+        
+        .cert-stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        
+        .cert-stat-label {
+            font-size: 0.75em;
+            color: #888;
+        }
+        
+        /* NFT Gallery */
+        .nft-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+        
+        .nft-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s;
+        }
+        
+        .nft-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--gold);
+            box-shadow: 0 20px 50px rgba(255, 215, 0, 0.2);
+        }
+        
+        .nft-image {
+            height: 250px;
+            background: linear-gradient(135deg, var(--bg-hover), var(--bg-card));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nft-image::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent, var(--gold), transparent, var(--neon-purple), transparent);
+            animation: rotate 4s linear infinite;
+            opacity: 0.3;
+        }
+        
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+        
+        .nft-badge {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, var(--gold), var(--neon-purple));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+        }
+        
+        .nft-content {
+            padding: 25px;
+        }
+        
+        .nft-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .nft-holder {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .holder-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .holder-info span {
+            display: block;
+        }
+        
+        .holder-name {
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .holder-fwid {
+            font-size: 0.75em;
+            color: var(--neon-green);
+            font-family: monospace;
+        }
+        
+        .nft-meta {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .nft-meta-item {
+            text-align: center;
+        }
+        
+        .nft-meta-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            color: var(--gold);
+        }
+        
+        .nft-meta-label {
+            font-size: 0.7em;
+            color: #888;
+        }
+        
+        .verified-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--neon-green);
+            color: #000;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 2;
+        }
+        
+        /* Mint Section */
+        .mint-section {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(157, 78, 221, 0.1));
+            border: 2px solid var(--gold);
+            border-radius: 25px;
+            padding: 50px;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .mint-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2em;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+        
+        .mint-desc {
+            color: #aaa;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        .mint-btn {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+            border: none;
+            padding: 20px 50px;
+            border-radius: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mint-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--bg-card);
+            border-top: 3px solid var(--neon-purple);
+            padding: 30px 40px;
+            text-align: center;
+        }
+        
+        .footer-brand {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-purple);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .footer-text {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2em; }
+            .hero-stats { flex-direction: column; gap: 20px; }
+            .cert-types, .nft-gallery { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🎖️</div>
+                <div class="logo-text">
+                    <h1>NFT CERTIFICATES</h1>
+                    <p>SOVEREIGN DIGITAL CREDENTIALS</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="main container">
+        <!-- Hero -->
+        <section class="hero">
+            <h1>SOVEREIGN NFT CERTIFICATES</h1>
+            <p>Immutable, verifiable digital credentials on the Ierahkwa Sovereign Blockchain. Birth certificates, citizenship, diplomas, property titles - all secured as non-transferable NFTs.</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value">125,847</div>
+                    <div class="hero-stat-label">Certificates Issued</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">8</div>
+                    <div class="hero-stat-label">Certificate Types</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">100%</div>
+                    <div class="hero-stat-label">Blockchain Verified</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Certificate Types -->
+        <h2 class="section-title"><span>📜</span> Certificate Types</h2>
+        <div class="cert-types">
+            <div class="cert-type-card gold">
+                <div class="cert-icon gold">🏛️</div>
+                <h3 class="cert-type-title">Citizenship Certificate</h3>
+                <p class="cert-type-desc">Official proof of citizenship in the Sovereign Government of Ierahkwa Ne Kanienke. Non-transferable, linked to FutureWampumID.</p>
+                <div class="cert-stats">
+                    <div class="cert-stat">
+                        <div class="cert-stat-value">45,230</div>
+                        <div class="cert-stat-label">Issued</div>
+                    </div>
+                    <div class="cert-stat">
+                        <div class="cert-stat-value">SBT</div>
+                        <div class="cert-stat-label">Soulbound</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cert-type-card purple">
+                <div class="cert-icon purple">👶</div>
+                <h3 class="cert-type-title">Birth Certificate</h3>
+                <p class="cert-type-desc">Digital birth registration with biometric data hash. Immutable record from day one of citizenship.</p>
+                <div class="cert-stats">
+                    <div class="cert-stat">
+                        <div class="cert-stat-value">12,847</div>
+                        <div class="cert-stat-label">Issued</div>
+                    </div>
+                    <div class="cert-stat">
+                        <div class="cert-stat-value">SBT</div>
+                        <div class="cert-stat-label">Soulbound</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cert-type-card cyan">
+                <div class="cert-icon cyan">🎓</div>
+                <h3 class="cert-type-title">Education Diploma</h3>
+                <p class="cert-type-desc">Academic credentials and certifications from SmartSchool and accredited institutions.</p>
+                <div class="cert-stats">
+                    <div class="cert-stat">
+                        <div class="cert-stat-value">28,150</div>
+                        <div class="cert-stat-label">Issued</div>
+                    </div>
+                    <div class="cert-stat">
+                        <div class="cert-stat-value">SBT</div>
+                        <div class="cert-stat-label">Soulbound</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cert-type-card green">
+                <div class="cert-icon green">🏠</div>
+                <h3 class="cert-type-title">Property Title</h3>
+                <p class="cert-type-desc">Real estate and land ownership certificates. Transferable upon sale with full history tracking.</p>
+                <div class="cert-stats">
+                    <div class="cert-stat">
+                        <div class="cert-stat-value">8,420</div>
+                        <div class="cert-stat-label">Issued</div>
+                    </div>
+                    <div class="cert-stat">
+                        <div class="cert-stat-value">NFT</div>
+                        <div class="cert-stat-label">Transferable</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cert-type-card pink">
+                <div class="cert-icon pink">💍</div>
+                <h3 class="cert-type-title">Marriage Certificate</h3>
+                <p class="cert-type-desc">Legal union registration with dual-holder NFT structure. Linked to both partner FWIDs.</p>
+                <div class="cert-stats">
+                    <div class="cert-stat">
+                        <div class="cert-stat-value">5,200</div>
+                        <div class="cert-stat-label">Issued</div>
+                    </div>
+                    <div class="cert-stat">
+                        <div class="cert-stat-value">SBT</div>
+                        <div class="cert-stat-label">Dual-Bound</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cert-type-card orange">
+                <div class="cert-icon orange">🏢</div>
+                <h3 class="cert-type-title">Business License</h3>
+                <p class="cert-type-desc">Commercial operation permits and business registration. Required for TradeX merchant accounts.</p>
+                <div class="cert-stats">
+                    <div class="cert-stat">
+                        <div class="cert-stat-value">15,000</div>
+                        <div class="cert-stat-label">Issued</div>
+                    </div>
+                    <div class="cert-stat">
+                        <div class="cert-stat-value">NFT</div>
+                        <div class="cert-stat-label">Renewable</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Certificates -->
+        <h2 class="section-title"><span>🏆</span> Recently Issued Certificates</h2>
+        <div class="nft-gallery">
+            <div class="nft-card">
+                <div class="nft-image">
+                    <span class="verified-badge"><i class="bi bi-patch-check-fill"></i> VERIFIED</span>
+                    <div class="nft-badge">🏛️</div>
+                </div>
+                <div class="nft-content">
+                    <h3 class="nft-title">Citizenship Certificate #45230</h3>
+                    <div class="nft-holder">
+                        <div class="holder-avatar">JW</div>
+                        <div class="holder-info">
+                            <span class="holder-name">John Whitehorse</span>
+                            <span class="holder-fwid">FWID-2026-0001-7A3B</span>
+                        </div>
+                    </div>
+                    <div class="nft-meta">
+                        <div class="nft-meta-item">
+                            <div class="nft-meta-value">Jan 15, 2026</div>
+                            <div class="nft-meta-label">Issued</div>
+                        </div>
+                        <div class="nft-meta-item">
+                            <div class="nft-meta-value">SOULBOUND</div>
+                            <div class="nft-meta-label">Type</div>
+                        </div>
+                        <div class="nft-meta-item">
+                            <div class="nft-meta-value">#45230</div>
+                            <div class="nft-meta-label">Token ID</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nft-card">
+                <div class="nft-image">
+                    <span class="verified-badge"><i class="bi bi-patch-check-fill"></i> VERIFIED</span>
+                    <div class="nft-badge" style="background: linear-gradient(135deg, var(--neon-cyan), #0099cc);">🎓</div>
+                </div>
+                <div class="nft-content">
+                    <h3 class="nft-title">Bachelor's Degree - Computer Science</h3>
+                    <div class="nft-holder">
+                        <div class="holder-avatar">SR</div>
+                        <div class="holder-info">
+                            <span class="holder-name">Sarah Running Deer</span>
+                            <span class="holder-fwid">FWID-2025-0842-B2C4</span>
+                        </div>
+                    </div>
+                    <div class="nft-meta">
+                        <div class="nft-meta-item">
+                            <div class="nft-meta-value">Jan 10, 2026</div>
+                            <div class="nft-meta-label">Issued</div>
+                        </div>
+                        <div class="nft-meta-item">
+                            <div class="nft-meta-value">SOULBOUND</div>
+                            <div class="nft-meta-label">Type</div>
+                        </div>
+                        <div class="nft-meta-item">
+                            <div class="nft-meta-value">#28150</div>
+                            <div class="nft-meta-label">Token ID</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nft-card">
+                <div class="nft-image">
+                    <span class="verified-badge"><i class="bi bi-patch-check-fill"></i> VERIFIED</span>
+                    <div class="nft-badge" style="background: linear-gradient(135deg, var(--neon-green), #00cc33);">🏠</div>
+                </div>
+                <div class="nft-content">
+                    <h3 class="nft-title">Property Title - Lot #127 Akwesasne</h3>
+                    <div class="nft-holder">
+                        <div class="holder-avatar">MF</div>
+                        <div class="holder-info">
+                            <span class="holder-name">Michael Fire Eagle</span>
+                            <span class="holder-fwid">FWID-2024-0523-C8D1</span>
+                        </div>
+                    </div>
+                    <div class="nft-meta">
+                        <div class="nft-meta-item">
+                            <div class="nft-meta-value">Jan 8, 2026</div>
+                            <div class="nft-meta-label">Issued</div>
+                        </div>
+                        <div class="nft-meta-item">
+                            <div class="nft-meta-value">TRANSFERABLE</div>
+                            <div class="nft-meta-label">Type</div>
+                        </div>
+                        <div class="nft-meta-item">
+                            <div class="nft-meta-value">#8420</div>
+                            <div class="nft-meta-label">Token ID</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mint Section -->
+        <div class="mint-section">
+            <h2 class="mint-title">🎖️ Issue New Certificate</h2>
+            <p class="mint-desc">Government officials can issue new NFT certificates for citizens. All certificates are permanently recorded on the Ierahkwa Sovereign Blockchain.</p>
+            <button class="mint-btn">🔐 Government Portal Access</button>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="footer-brand">🎖️ NFT CERTIFICATES - IERAHKWA SOVEREIGN CREDENTIALS</div>
+        <div class="footer-text">
+            Immutable Digital Credentials | Chain ID: 777777 | © 2026 Sovereign Government of Ierahkwa
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,34 @@
+@* InfrastructureNavLayout.razor *@
+@using Mamey.BlazorWasm.Components
+@using Mamey.BlazorWasm.Routing
+@using MudBlazor
+@inject NavigationManager Navigation
+
+<MudNavMenu Margin="Margin.Dense" Rounded="false" Color="Color.Primary">
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">
+        @(DrawerOpen ? "Home" : "")
+    </MudNavLink>
+</MudNavMenu>
+
+<BaseNav Routes="_routes" DrawerOpen="DrawerOpen" DrawerMiniEnabled="true" />
+
+@code {
+    private List<Route> _routes = new();
+    [Parameter] public bool DrawerOpen { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var allRoutes = await RouteLoader.GetRoutesAsync(menu: true);
+        _routes = allRoutes.Where(r => 
+            r.Page?.StartsWith("/mameynode") == true ||
+            r.Page?.StartsWith("/explorer") == true ||
+            r.Page?.StartsWith("/ilp") == true ||
+            r.Page?.StartsWith("/sharding") == true ||
+            r.Page?.StartsWith("/metrics") == true ||
+            r.Page?.StartsWith("/webhooks") == true ||
+            r.Page?.StartsWith("/callbacks") == true ||
+            r.Page?.StartsWith("/node") == true ||
+            (r.Page?.StartsWith("/advanced") == true && r.Page?.Contains("satellite") == true)
+        ).ToList();
+    }
+}

@@ -1,0 +1,90 @@
+@using Mamey.BlazorWasm.Components.Foundation
+
+<MudStack Spacing="2" Class="@Class" Style="@Style">
+    <MudDatePicker T="DateTime?"
+                   Label="@Label"
+                   Placeholder="@DatePlaceholder"
+                   Date="@_date"
+                   DateChanged="@OnDateChanged"
+                   Required="@Required"
+                   Disabled="@Disabled"
+                   Variant="@Variant"
+                   Class="@Class" />
+    
+    <MudTimePicker T="TimeSpan?"
+                   Label="@TimeLabel"
+                   Placeholder="@TimePlaceholder"
+                   Time="@_time"
+                   TimeChanged="@OnTimeChanged"
+                   Required="@Required"
+                   Disabled="@Disabled"
+                   Variant="@Variant" />
+</MudStack>
+<FieldMessages HelperText="@HelperText" />
+
+@code {
+    [Parameter] public string Label { get; set; } = "Date & Time";
+    [Parameter] public string HelperText { get; set; } = "Select date and time";
+    [Parameter] public string DatePlaceholder { get; set; } = "Select date";
+    [Parameter] public string TimeLabel { get; set; } = "Time";
+    [Parameter] public string TimePlaceholder { get; set; } = "Select time";
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public DateTime? Value { get; set; }
+    [Parameter] public EventCallback<DateTime?> ValueChanged { get; set; }
+
+    private DateTime? _date;
+    private TimeSpan? _time;
+
+    protected override void OnParametersSet()
+    {
+        if (Value.HasValue)
+        {
+            _date = Value.Value.Date;
+            _time = Value.Value.TimeOfDay;
+        }
+        else
+        {
+            _date = null;
+            _time = null;
+        }
+    }
+
+    private async Task OnDateChanged(DateTime? date)
+    {
+        _date = date;
+        await UpdateValue();
+    }
+
+    private async Task OnTimeChanged(TimeSpan? time)
+    {
+        _time = time;
+        await UpdateValue();
+    }
+
+    private async Task UpdateValue()
+    {
+        if (_date.HasValue && _time.HasValue)
+        {
+            var dateTime = _date.Value.Date.Add(_time.Value);
+            await ValueChanged.InvokeAsync(dateTime);
+        }
+        else if (_date.HasValue)
+        {
+            await ValueChanged.InvokeAsync(_date.Value);
+        }
+        else
+        {
+            await ValueChanged.InvokeAsync(null);
+        }
+        StateHasChanged();
+    }
+}
+
+
+
+

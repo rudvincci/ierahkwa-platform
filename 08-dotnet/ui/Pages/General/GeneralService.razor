@@ -1,0 +1,509 @@
+@page "/general/service"
+@inject MameyGeneralClient GeneralClient
+@inject IMetadataService MetadataService
+@inject ILogger<GeneralService> Logger
+
+<PageTitle>General Service - MameyNode UI</PageTitle>
+
+<h1>General Service</h1>
+
+<p class="text-muted">
+    Contracts + token registry operations exposed by <code>GeneralService</code> on a General node.
+</p>
+
+<ErrorDisplay HasError="@hasError" ErrorMessage="@errorMessage" ErrorDetails="@errorDetails" OnDismiss="ClearError" />
+
+<div class="row mt-3">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Contracts</h5>
+                <button class="btn btn-primary" @onclick="LoadContractsAsync" disabled="@isLoadingContracts">
+                    @if (isLoadingContracts)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Loading...</text>
+                    }
+                    else
+                    {
+                        <text>Refresh</text>
+                    }
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="border rounded p-3 mb-3">
+                    <h6 class="mb-3">Deploy (dev)</h6>
+                    <div class="mb-2">
+                        <label class="form-label">Deployer Account</label>
+                        <input class="form-control" @bind="_deployDeployer" placeholder="alice" />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Contract Code (string)</label>
+                        <textarea class="form-control" rows="3" @bind="_deployCode"></textarea>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Gas Limit</label>
+                        <input class="form-control" @bind="_deployGasLimit" placeholder="50000" />
+                    </div>
+                    <button class="btn btn-outline-primary" @onclick="DeployContractAsync" disabled="@isDeploying">
+                        @if (isDeploying)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <text>Deploying...</text>
+                        }
+                        else
+                        {
+                            <text>Deploy Contract</text>
+                        }
+                    </button>
+                    @if (!string.IsNullOrWhiteSpace(_lastDeployedContract))
+                    {
+                        <div class="alert alert-success mt-2 mb-0">
+                            Deployed: <code>@_lastDeployedContract</code>
+                        </div>
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Deployer Account (optional)</label>
+                    <input class="form-control" @bind="_contractsDeployer" placeholder="account..." />
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col">
+                        <label class="form-label">Limit</label>
+                        <input class="form-control" type="number" @bind="_contractsLimit" />
+                    </div>
+                    <div class="col">
+                        <label class="form-label">Offset</label>
+                        <input class="form-control" type="number" @bind="_contractsOffset" />
+                    </div>
+                </div>
+
+                @if (contracts == null && !isLoadingContracts)
+                {
+                    <p class="text-muted mb-0">Click Refresh to load contracts.</p>
+                }
+                else if (isLoadingContracts)
+                {
+                    <p class="text-muted mb-0">Loading contracts...</p>
+                }
+                else if (contracts != null)
+                {
+                    @if (!contracts.Success)
+                    {
+                        <div class="alert alert-danger mb-0">
+                            ListContracts failed: @contracts.ErrorMessage
+                        </div>
+                    }
+                    else if (contracts.Contracts.Count == 0)
+                    {
+                        <div class="alert alert-info mb-0">No contracts returned.</div>
+                    }
+                    else
+                    {
+                        <div class="mb-2">
+                            <span class="badge bg-secondary">@contracts.TotalCount contract(s)</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th>Address</th>
+                                    <th>Deployer</th>
+                                    <th>Code hash</th>
+                                    <th>Deployed (UTC)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var c in contracts.Contracts)
+                                {
+                                    <tr>
+                                        <td><code>@c.ContractAddress</code></td>
+                                        <td><code>@c.DeployerAccount</code></td>
+                                        <td style="max-width: 220px; overflow: hidden; text-overflow: ellipsis;">
+                                            <code title="@c.ContractCodeHash">@c.ContractCodeHash</code>
+                                        </td>
+                                        <td>@(c.DeployedAt == 0 ? "-" : DateTimeOffset.FromUnixTimeSeconds((long)c.DeployedAt).UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mt-3 mt-lg-0">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Registered Tokens</h5>
+                <button class="btn btn-primary" @onclick="LoadRegisteredTokensAsync" disabled="@isLoadingTokens">
+                    @if (isLoadingTokens)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Loading...</text>
+                    }
+                    else
+                    {
+                        <text>Refresh</text>
+                    }
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Search</label>
+                    <input class="form-control" @bind="_tokenSearch" placeholder="name/symbol/address..." />
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col">
+                        <label class="form-label">Limit</label>
+                        <input class="form-control" type="number" @bind="_tokensLimit" />
+                    </div>
+                    <div class="col">
+                        <label class="form-label">Offset</label>
+                        <input class="form-control" type="number" @bind="_tokensOffset" />
+                    </div>
+                </div>
+
+                @if (registeredTokens == null && !isLoadingTokens)
+                {
+                    <p class="text-muted mb-0">Click Refresh to load registered tokens.</p>
+                }
+                else if (isLoadingTokens)
+                {
+                    <p class="text-muted mb-0">Loading tokens...</p>
+                }
+                else if (registeredTokens != null)
+                {
+                    @if (!registeredTokens.Success)
+                    {
+                        <div class="alert alert-danger mb-0">
+                            ListRegisteredTokens failed: @registeredTokens.ErrorMessage
+                        </div>
+                    }
+                    else if (registeredTokens.Tokens.Count == 0)
+                    {
+                        <div class="alert alert-info mb-0">No registered tokens returned.</div>
+                    }
+                    else
+                    {
+                        <div class="mb-2">
+                            <span class="badge bg-secondary">@registeredTokens.TotalCount token(s)</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th>Address</th>
+                                    <th>Name</th>
+                                    <th>Symbol</th>
+                                    <th>Registered (UTC)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var t in registeredTokens.Tokens)
+                                {
+                                    <tr>
+                                        <td><code>@t.TokenAddress</code></td>
+                                        <td>@t.Name</td>
+                                        <td><code>@t.Symbol</code></td>
+                                        <td>@(t.RegisteredAt == 0 ? "-" : DateTimeOffset.FromUnixTimeSeconds((long)t.RegisteredAt).UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+
+                <hr />
+                <div class="border rounded p-3">
+                    <h6 class="mb-3">Token quick actions (dev)</h6>
+
+                    <div class="mb-2">
+                        <label class="form-label">Create Token: name / symbol / supply / creator</label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <input class="form-control" @bind="_newTokenName" placeholder="TestToken" />
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" @bind="_newTokenSymbol" placeholder="TEST" />
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" @bind="_newTokenSupply" placeholder="1000" />
+                            </div>
+                        </div>
+                        <div class="row g-2 mt-1">
+                            <div class="col-md-6">
+                                <input class="form-control" @bind="_newTokenCreator" placeholder="alice" />
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-control" type="number" @bind="_newTokenDecimals" />
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-outline-primary w-100" @onclick="CreateTokenAsync" disabled="@isCreatingToken">Create</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Register Token: address / description</label>
+                        <input class="form-control" @bind="_registerTokenAddress" placeholder="token_..." />
+                        <input class="form-control mt-1" @bind="_registerTokenDescription" placeholder="Smoke token" />
+                        <button class="btn btn-outline-secondary mt-2" @onclick="RegisterTokenAsync" disabled="@isRegisteringToken">Register</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<MetadataDisplay />
+
+@code {
+    private bool hasError;
+    private string? errorMessage;
+    private string? errorDetails;
+
+    private bool isLoadingContracts;
+    private bool isLoadingTokens;
+    private bool isDeploying;
+    private bool isCreatingToken;
+    private bool isRegisteringToken;
+
+    private string? _contractsDeployer;
+    private uint _contractsLimit = 50;
+    private uint _contractsOffset;
+
+    private string? _tokenSearch;
+    private uint _tokensLimit = 50;
+    private uint _tokensOffset;
+
+    private string _deployDeployer = "alice";
+    private string _deployCode = "contract-code-v1";
+    private string _deployGasLimit = "50000";
+    private string? _lastDeployedContract;
+
+    private string _newTokenName = "TestToken";
+    private string _newTokenSymbol = "TEST";
+    private string _newTokenSupply = "1000";
+    private string _newTokenCreator = "alice";
+    private uint _newTokenDecimals = 18;
+
+    private string? _registerTokenAddress;
+    private string _registerTokenDescription = "Smoke token";
+
+    private ListContractsResponse? contracts;
+    private ListRegisteredTokensResponse? registeredTokens;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadContractsAsync();
+        await LoadRegisteredTokensAsync();
+    }
+
+    private Grpc.Core.CallOptions CreateCallOptions()
+    {
+        var correlationId = MetadataService.GetCorrelationId();
+        var metadata = MetadataService.GetMetadata(correlationId);
+        return new Grpc.Core.CallOptions(metadata, deadline: DateTime.UtcNow.AddSeconds(30));
+    }
+
+    private async Task LoadContractsAsync()
+    {
+        isLoadingContracts = true;
+        ClearError();
+        StateHasChanged();
+
+        try
+        {
+            contracts = await GeneralClient.Client.ListContractsAsync(new ListContractsRequest
+            {
+                DeployerAccount = _contractsDeployer?.Trim() ?? string.Empty,
+                Limit = _contractsLimit,
+                Offset = _contractsOffset
+            }, CreateCallOptions());
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to load contracts.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to load contracts");
+        }
+        finally
+        {
+            isLoadingContracts = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadRegisteredTokensAsync()
+    {
+        isLoadingTokens = true;
+        ClearError();
+        StateHasChanged();
+
+        try
+        {
+            registeredTokens = await GeneralClient.Client.ListRegisteredTokensAsync(new ListRegisteredTokensRequest
+            {
+                SearchQuery = _tokenSearch?.Trim() ?? string.Empty,
+                Limit = _tokensLimit,
+                Offset = _tokensOffset
+            }, CreateCallOptions());
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to load registered tokens.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to load registered tokens");
+        }
+        finally
+        {
+            isLoadingTokens = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeployContractAsync()
+    {
+        isDeploying = true;
+        ClearError();
+        _lastDeployedContract = null;
+        StateHasChanged();
+
+        try
+        {
+            var resp = await GeneralClient.Client.DeployContractAsync(new DeployContractRequest
+            {
+                ContractCode = _deployCode ?? string.Empty,
+                DeployerAccount = _deployDeployer ?? string.Empty,
+                GasLimit = _deployGasLimit ?? string.Empty
+            }, CreateCallOptions());
+
+            if (!resp.Success)
+            {
+                hasError = true;
+                errorMessage = "DeployContract failed.";
+                errorDetails = resp.ErrorMessage;
+                return;
+            }
+
+            _lastDeployedContract = resp.ContractAddress;
+            await LoadContractsAsync();
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to deploy contract.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to deploy contract");
+        }
+        finally
+        {
+            isDeploying = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateTokenAsync()
+    {
+        isCreatingToken = true;
+        ClearError();
+        StateHasChanged();
+
+        try
+        {
+            var resp = await GeneralClient.Client.CreateTokenAsync(new CreateTokenRequest
+            {
+                Name = _newTokenName,
+                Symbol = _newTokenSymbol,
+                TotalSupply = _newTokenSupply,
+                Decimals = _newTokenDecimals,
+                CreatorAccount = _newTokenCreator,
+            }, CreateCallOptions());
+
+            if (!resp.Success)
+            {
+                hasError = true;
+                errorMessage = "CreateToken failed.";
+                errorDetails = resp.ErrorMessage;
+                return;
+            }
+
+            _registerTokenAddress = resp.TokenAddress;
+            await LoadRegisteredTokensAsync();
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to create token.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to create token");
+        }
+        finally
+        {
+            isCreatingToken = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RegisterTokenAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_registerTokenAddress))
+        {
+            hasError = true;
+            errorMessage = "Token address is required to register.";
+            return;
+        }
+
+        isRegisteringToken = true;
+        ClearError();
+        StateHasChanged();
+
+        try
+        {
+            var resp = await GeneralClient.Client.RegisterTokenAsync(new RegisterTokenRequest
+            {
+                TokenAddress = _registerTokenAddress,
+                Name = _newTokenName,
+                Symbol = _newTokenSymbol,
+                Description = _registerTokenDescription ?? string.Empty
+            }, CreateCallOptions());
+
+            if (!resp.Success)
+            {
+                hasError = true;
+                errorMessage = "RegisterToken failed.";
+                errorDetails = resp.ErrorMessage;
+                return;
+            }
+
+            await LoadRegisteredTokensAsync();
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to register token.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to register token");
+        }
+        finally
+        {
+            isRegisteringToken = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearError()
+    {
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+    }
+}
+

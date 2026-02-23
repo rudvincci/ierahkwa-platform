@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Curricula.Api.Protos";
+
+package Pupitre.Curricula;
+
+// gRPC service for Curriculum operations
+service CurriculumService {
+    // Get a single Curriculum by ID
+    rpc GetCurriculum (GetCurriculumRequest) returns (CurriculumResponse) {};
+    
+    // List all Curriculums with pagination
+    rpc ListCurriculums (ListCurriculumsRequest) returns (ListCurriculumsResponse) {};
+    
+    // Stream Curriculum updates
+    rpc StreamCurriculumUpdates (StreamCurriculumUpdatesRequest) returns (stream CurriculumResponse) {};
+}
+
+message GetCurriculumRequest {
+    string id = 1;
+}
+
+message ListCurriculumsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListCurriculumsResponse {
+    repeated CurriculumResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message CurriculumResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamCurriculumUpdatesRequest {
+    string filter = 1;
+}

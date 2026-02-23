@@ -1,0 +1,96 @@
+@page "/futurewampum/gov/budget"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumGovClient FutureWampumGovClient
+@inject ILogger<Budget> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Budget Allocations" Icon="fas fa-chart-pie" Subtitle="Budget allocation management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Allocations" Value="@_allocations.Count.ToString()" Icon="fas fa-list" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Allocated" Value="@_totalAllocated.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Spent" Value="@_totalSpent.ToString("C")" Icon="fas fa-hand-holding-usd" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Remaining" Value="@_totalRemaining.ToString("C")" Icon="fas fa-wallet" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Budget Allocations" Class="mt-4">
+        <MudTable T="BudgetAllocationInfo" Items="@_allocations" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Allocation ID</MudTh>
+                <MudTh>Ministry</MudTh>
+                <MudTh>Allocated</MudTh>
+                <MudTh>Spent</MudTh>
+                <MudTh>Remaining</MudTh>
+                <MudTh>Fiscal Year</MudTh>
+                <MudTh>Status</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.AllocationId</MudTd>
+                <MudTd>@context.MinistryName</MudTd>
+                <MudTd>@decimal.Parse(context.AllocatedAmount).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.SpentAmount).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.RemainingAmount).ToString("C")</MudTd>
+                <MudTd>@context.FiscalYear</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : context.Status == "Overspent" ? Color.Error : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<BudgetAllocationInfo> _allocations = new();
+    private decimal _totalAllocated;
+    private decimal _totalSpent;
+    private decimal _totalRemaining;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _allocations = await FutureWampumGovClient.GetBudgetAllocationsAsync();
+            _totalAllocated = _allocations.Sum(a => decimal.Parse(a.AllocatedAmount));
+            _totalSpent = _allocations.Sum(a => decimal.Parse(a.SpentAmount));
+            _totalRemaining = _allocations.Sum(a => decimal.Parse(a.RemainingAmount));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading budget allocations");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

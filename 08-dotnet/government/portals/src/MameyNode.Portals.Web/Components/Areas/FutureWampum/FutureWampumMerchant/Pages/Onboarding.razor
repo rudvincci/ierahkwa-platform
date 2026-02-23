@@ -1,0 +1,96 @@
+@page "/merchant/onboarding"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumMerchantClient FutureWampumMerchantClient
+@inject ILogger<Onboarding> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Merchant Onboarding" Icon="fas fa-user-plus" Subtitle="Merchant onboarding management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Onboardings" Value="@_onboardings.Count.ToString()" Icon="fas fa-user-plus" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Approved" Value="@_approvedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Rejected" Value="@_rejectedCount.ToString()" Icon="fas fa-times-circle" Color="#EF4444" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Merchant Onboardings" Class="mt-4">
+        <MudTable T="MerchantOnboardingInfo" Items="@_onboardings" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Merchant ID</MudTh>
+                <MudTh>Business Name</MudTh>
+                <MudTh>Business Type</MudTh>
+                <MudTh>Contact Email</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Submitted</MudTh>
+                <MudTh>Approved</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.MerchantId</MudTd>
+                <MudTd>@context.BusinessName</MudTd>
+                <MudTd>@context.BusinessType</MudTd>
+                <MudTd>@context.ContactEmail</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Rejected" ? Color.Error : context.Status == "UnderReview" ? Color.Warning : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.SubmittedAt.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@(context.ApprovedAt?.ToString("yyyy-MM-dd") ?? "-")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<MerchantOnboardingInfo> _onboardings = new();
+    private int _approvedCount;
+    private int _pendingCount;
+    private int _rejectedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _onboardings = await FutureWampumMerchantClient.GetMerchantOnboardingsAsync();
+            _approvedCount = _onboardings.Count(o => o.Status == "Approved");
+            _pendingCount = _onboardings.Count(o => o.Status == "Pending" || o.Status == "UnderReview");
+            _rejectedCount = _onboardings.Count(o => o.Status == "Rejected");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading merchant onboardings");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

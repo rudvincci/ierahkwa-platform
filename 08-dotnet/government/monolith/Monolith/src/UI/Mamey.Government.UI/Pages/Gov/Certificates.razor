@@ -1,0 +1,403 @@
+@page "/gov/certificates"
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+@inject ICertificatesService CertificatesService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<PageTitle>Certificates - Government Portal</PageTitle>
+
+<MudPaper Elevation="0" Class="pa-6">
+    <MudStack Spacing="4">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h4" Color="Color.Primary">Certificate Management</MudText>
+            <MudStack Row="true" Spacing="2">
+                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FileDownload">
+                    Export
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Refresh"
+                           OnClick="RefreshData" Disabled="@_loading">
+                    Refresh
+                </MudButton>
+            </MudStack>
+        </MudStack>
+
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Elevation="2" Class="@GetCardClass("All")" @onclick="@(() => SetStatusFilter("All"))">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.body2" Color="Color.Primary">Total Issued</MudText>
+                                <MudText Typo="Typo.h4">@_totalCount</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.CardMembership" Size="Size.Large" Color="Color.Primary" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Elevation="2" Class="@GetCardClass("Active")" @onclick="@(() => SetStatusFilter("Active"))">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.body2" Color="Color.Success">Active</MudText>
+                                <MudText Typo="Typo.h4">@_activeCount</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Large" Color="Color.Success" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Elevation="2" Class="@GetCardClass("Archived")" @onclick="@(() => SetStatusFilter("Archived"))">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.body2" Color="Color.Warning">Archived</MudText>
+                                <MudText Typo="Typo.h4">@_archivedCount</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.Archive" Size="Size.Large" Color="Color.Warning" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Elevation="2" Class="@GetCardClass("Revoked")" @onclick="@(() => SetStatusFilter("Revoked"))">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.body2" Color="Color.Error">Revoked</MudText>
+                                <MudText Typo="Typo.h4">@_revokedCount</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.Cancel" Size="Size.Large" Color="Color.Error" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-4" />
+
+        <MudStack Row="true" Spacing="2">
+            <MudTextField @bind-Value="_searchQuery" Label="Search" Variant="Variant.Outlined"
+                          Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                          Placeholder="Search by certificate number or citizen name..." Class="flex-grow-1"
+                          Immediate="true" DebounceInterval="300" OnDebounceIntervalElapsed="SearchChanged" />
+            <MudSelect @bind-Value="_typeFilter" Label="Type" Variant="Variant.Outlined" Style="width: 180px;">
+                <MudSelectItem Value="@("All")">All Types</MudSelectItem>
+                <MudSelectItem Value="@("Birth")">Birth</MudSelectItem>
+                <MudSelectItem Value="@("Death")">Death</MudSelectItem>
+                <MudSelectItem Value="@("Marriage")">Marriage</MudSelectItem>
+                <MudSelectItem Value="@("Citizenship")">Citizenship</MudSelectItem>
+                <MudSelectItem Value="@("Good Standing")">Good Standing</MudSelectItem>
+            </MudSelect>
+            <MudSelect @bind-Value="_statusFilter" Label="Status" Variant="Variant.Outlined" Style="width: 160px;">
+                <MudSelectItem Value="@("All")">All Status</MudSelectItem>
+                <MudSelectItem Value="@("Active")">Active</MudSelectItem>
+                <MudSelectItem Value="@("Archived")">Archived</MudSelectItem>
+                <MudSelectItem Value="@("Revoked")">Revoked</MudSelectItem>
+            </MudSelect>
+            @if (_statusFilter != "All" || _typeFilter != "All")
+            {
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="ClearFilters">
+                    Clear Filters
+                </MudButton>
+            }
+        </MudStack>
+
+        <MudTable ServerData="@ServerReload" @ref="_table" Hover="true" Striped="true" Elevation="2"
+                  Loading="@_loading" LoadingProgressColor="Color.Primary">
+            <HeaderContent>
+                <MudTh>Certificate #</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Citizen</MudTh>
+                <MudTh>Issue Date</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Certificate #">
+                    <MudLink Href="@($"/gov/certificates/{context.CertificateNumber}")" Color="Color.Primary" Style="font-family: monospace;">
+                        @context.CertificateNumber
+                    </MudLink>
+                </MudTd>
+                <MudTd DataLabel="Type">
+                    <MudChip T="string" Color="@GetTypeColor(context.CertificateType)" Size="Size.Small">
+                        @context.CertificateType
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="Citizen">
+                    @if (context.CitizenId.HasValue)
+                    {
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                            <MudAvatar Size="Size.Small" Color="Color.Primary">
+                                @((context.CitizenName ?? "?")[0])
+                            </MudAvatar>
+                            <MudLink Href="@($"/gov/citizens/{context.CitizenId}")" Color="Color.Secondary">
+                                @(context.CitizenName ?? context.CitizenId.ToString()[..8])
+                            </MudLink>
+                        </MudStack>
+                    }
+                    else
+                    {
+                        <MudText>-</MudText>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Issue Date">@context.IssuedDate.ToString("MMM dd, yyyy")</MudTd>
+                <MudTd DataLabel="Status">
+                    <MudChip T="string" Color="@GetStatusColor(context.IsActive)" Size="Size.Small">
+                        @(context.IsActive ? "Active" : "Revoked")
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
+                        <MudButton Color="Color.Primary" Href="@($"/gov/certificates/{context.CertificateNumber}")">
+                            <MudIcon Icon="@Icons.Material.Filled.Visibility" Size="Size.Small" Class="mr-1" />
+                            View
+                        </MudButton>
+                        <MudButton Color="Color.Secondary" OnClick="@(() => DownloadCertificate(context))">
+                            <MudIcon Icon="@Icons.Material.Filled.Download" Size="Size.Small" Class="mr-1" />
+                            Download
+                        </MudButton>
+                        @if (context.IsActive)
+                        {
+                            <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Dense="true">
+                                <MudMenuItem Icon="@Icons.Material.Filled.Print">Print</MudMenuItem>
+                                <MudMenuItem Icon="@Icons.Material.Filled.ContentCopy">Issue Copy</MudMenuItem>
+                                <MudMenuItem Icon="@Icons.Material.Filled.Block" IconColor="Color.Error"
+                                             OnClick="@(() => OpenRevokeDialog(context))">Revoke</MudMenuItem>
+                            </MudMenu>
+                        }
+                    </MudButtonGroup>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Align="Align.Center" Class="pa-8">
+                    <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Default" Class="mb-2" />
+                    <br />
+                    No certificates found matching your criteria.
+                </MudText>
+            </NoRecordsContent>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+            </PagerContent>
+        </MudTable>
+    </MudStack>
+</MudPaper>
+
+@* Revoke Dialog *@
+<MudDialog @bind-Visible="_revokeDialogVisible">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Error" Class="mr-2" />
+            Revoke Certificate
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-4">
+            Are you sure you want to revoke Certificate <strong>@_certificateToRevoke?.CertificateNumber</strong>?
+            This action cannot be undone.
+        </MudText>
+        <MudTextField @bind-Value="_revokeReason" Label="Reason for Revocation" Variant="Variant.Outlined"
+                      Lines="3" Required="true" RequiredError="Please provide a reason" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _revokeDialogVisible = false)">Cancel</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="RevokeCertificate" Disabled="@_processing">
+            @if (_processing)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            Revoke
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private MudTable<CertificateSummaryModel>? _table;
+    private string _searchQuery = "";
+    private string _statusFilter = "All";
+    private string _typeFilter = "All";
+    private bool _loading = false;
+    private bool _processing = false;
+    private bool _revokeDialogVisible = false;
+    private string _revokeReason = "";
+    private CertificateSummaryModel? _certificateToRevoke;
+    
+    private long _totalCount = 0;
+    private int _activeCount = 0;
+    private int _archivedCount = 0;
+    private int _revokedCount = 0;
+    
+    // TODO: Get from user context or tenant service
+    private Guid _tenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStatusCountsAsync();
+    }
+
+    private async Task LoadStatusCountsAsync()
+    {
+        try
+        {
+            var all = await CertificatesService.BrowseAsync(_tenantId, null, null, null, 1, 1);
+            _totalCount = all.TotalResults;
+            
+            var active = await CertificatesService.BrowseAsync(_tenantId, null, "Active", null, 1, 1);
+            _activeCount = (int)active.TotalResults;
+            
+            var archived = await CertificatesService.BrowseAsync(_tenantId, null, "Archived", null, 1, 1);
+            _archivedCount = (int)archived.TotalResults;
+            
+            var revoked = await CertificatesService.BrowseAsync(_tenantId, null, "Revoked", null, 1, 1);
+            _revokedCount = (int)revoked.TotalResults;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading status counts: {ex.Message}");
+        }
+    }
+
+    private async Task<TableData<CertificateSummaryModel>> ServerReload(TableState state, CancellationToken cancellationToken)
+    {
+        _loading = true;
+        StateHasChanged();
+        
+        try
+        {
+            var certificateType = _typeFilter == "All" ? null : _typeFilter;
+            var status = _statusFilter == "All" ? null : _statusFilter;
+            var result = await CertificatesService.BrowseAsync(
+                _tenantId,
+                certificateType,
+                status,
+                string.IsNullOrWhiteSpace(_searchQuery) ? null : _searchQuery,
+                state.Page + 1,
+                state.PageSize,
+                cancellationToken);
+
+            return new TableData<CertificateSummaryModel>
+            {
+                Items = result.Items,
+                TotalItems = (int)result.TotalResults
+            };
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading certificates: {ex.Message}", Severity.Error);
+            return new TableData<CertificateSummaryModel>
+            {
+                Items = Array.Empty<CertificateSummaryModel>(),
+                TotalItems = 0
+            };
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SetStatusFilter(string status)
+    {
+        _statusFilter = status;
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+    }
+
+    private async Task ClearFilters()
+    {
+        _statusFilter = "All";
+        _typeFilter = "All";
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+    }
+
+    private async Task SearchChanged(string value)
+    {
+        _searchQuery = value;
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadStatusCountsAsync();
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+        Snackbar.Add("Data refreshed", Severity.Success);
+    }
+
+    private void DownloadCertificate(CertificateSummaryModel certificate)
+    {
+        Snackbar.Add($"Downloading Certificate {certificate.CertificateNumber}...", Severity.Info);
+    }
+
+    private void OpenRevokeDialog(CertificateSummaryModel certificate)
+    {
+        _certificateToRevoke = certificate;
+        _revokeReason = "";
+        _revokeDialogVisible = true;
+    }
+
+    private async Task RevokeCertificate()
+    {
+        if (string.IsNullOrWhiteSpace(_revokeReason))
+        {
+            Snackbar.Add("Please provide a reason for revocation", Severity.Warning);
+            return;
+        }
+
+        if (_certificateToRevoke == null) return;
+
+        _processing = true;
+        try
+        {
+            var success = await CertificatesService.RevokeAsync(_tenantId, _certificateToRevoke.Id, _revokeReason);
+            if (success)
+            {
+                Snackbar.Add($"Certificate {_certificateToRevoke.CertificateNumber} revoked", Severity.Info);
+                _revokeDialogVisible = false;
+                await RefreshData();
+            }
+            else
+            {
+                Snackbar.Add("Failed to revoke certificate", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _processing = false;
+            _certificateToRevoke = null;
+            _revokeReason = "";
+        }
+    }
+
+    private Color GetStatusColor(bool isActive) => isActive ? Color.Success : Color.Error;
+
+    private Color GetTypeColor(string type) => type switch
+    {
+        "Birth" => Color.Info,
+        "Death" => Color.Dark,
+        "Marriage" => Color.Tertiary,
+        "Citizenship" => Color.Primary,
+        "Good Standing" => Color.Secondary,
+        _ => Color.Default
+    };
+
+    private string GetCardClass(string status) => 
+        _statusFilter == status ? "cursor-pointer border-2 border-primary" : "cursor-pointer";
+}

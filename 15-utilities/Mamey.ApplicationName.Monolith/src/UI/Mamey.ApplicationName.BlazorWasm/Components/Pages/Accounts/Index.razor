@@ -1,0 +1,57 @@
+@page "/accounts"
+
+@using Mamey.ApplicationName.BlazorWasm.Components.Shared.Widgets
+@* @using Mamey.ApplicationName.BlazorWasm.Services.Accounts *@
+@* @using Mamey.ApplicationName.BlazorWasm.ViewModels.Accounts *@
+@* @inject AccountService AccountService *@
+@inject NavigationManager NavigationManager
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-5 p-6">
+    <!-- Welcome Message -->
+    <MudText Typo="Typo.h4">Hello, Slava</MudText>
+    <MudText Typo="Typo.subtitle2">
+        <MudLink Href="/update-profile">Update Profile</MudLink> |
+        <MudLink Href="/security-center">Security Center</MudLink>
+    </MudText>
+    <MudDivider Class="my-4" />
+
+    <MudGrid>
+        <!-- Main Content (Left Column) -->
+        <MudItem xs="8">
+
+            @* <AccountSection Title="Checking, Savings & CDs" *@
+            @*                 Accounts="@(AccountViewModel.Accounts.Where(a => a.Type == AccountType.Checking).ToObservableCollection())" *@
+            @*                 OnAccountSelected="NavigateToAccountDetails"/> *@
+            @* <AccountSection Title="Credit Cards" *@
+            @*                 Accounts="@(AccountViewModel.Accounts.Where(a => a.Type == AccountType.CreditCard).ToObservableCollection())" *@
+            @*                 OnAccountSelected="NavigateToAccountDetails"/> *@
+            @* <AccountSection  Title="Mortgages, Loans, or Lines of Credit" *@
+            @*                 Accounts="@(AccountViewModel.Accounts.Where(a => a.Type == AccountType.Loan).ToObservableCollection())" *@
+            @*                 OnAccountSelected="NavigateToAccountDetails"/> *@
+            @* <AccountSection Title="Investment Accounts" *@
+            @*                 Accounts="@(AccountViewModel.Accounts.Where(a => a.Type == AccountType.Investment).ToObservableCollection())" *@
+            @*                 OnAccountSelected="NavigateToAccountDetails"/> *@
+        </MudItem>
+
+        <!-- Activity Center (Right Column) -->
+        <MudItem xs="4">
+            <CurrentDateTimeWidget />
+            <ActivityCenter />
+        </MudItem>
+    </MudGrid>
+
+    <!-- Footer Section -->
+    <MudDivider Class="my-4" />
+    <MudText Typo="Typo.body2">Last sign in: 06/20/2023 at 06:40 PM ET</MudText>
+</MudContainer>
+
+@code {
+    // private AccountViewModel AccountViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // AccountViewModel = new AccountViewModel(AccountService);
+        // await AccountViewModel.LoadAccountsAsync();
+    }
+
+
+}

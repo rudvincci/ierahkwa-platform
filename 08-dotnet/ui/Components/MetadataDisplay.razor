@@ -1,0 +1,27 @@
+@inject IMetadataService MetadataService
+
+<div class="card mt-3">
+    <div class="card-header">
+        <h6 class="mb-0">Request Metadata</h6>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-4">Correlation ID:</dt>
+            <dd class="col-sm-8"><code>@MetadataService.GetCorrelationId()</code></dd>
+            
+            @if (!string.IsNullOrEmpty(MetadataService.GetInstitutionId()))
+            {
+                <dt class="col-sm-4">Institution ID:</dt>
+                <dd class="col-sm-8"><code>@MetadataService.GetInstitutionId()</code></dd>
+            }
+            
+            @if (MetadataService.GetCredentialChain() != null && MetadataService.GetCredentialChain()!.Count > 0)
+            {
+                <dt class="col-sm-4">Credentials:</dt>
+                <dd class="col-sm-8">
+                    <span class="badge bg-success">@MetadataService.GetCredentialChain()!.Count credential(s)</span>
+                </dd>
+            }
+        </dl>
+    </div>
+</div>

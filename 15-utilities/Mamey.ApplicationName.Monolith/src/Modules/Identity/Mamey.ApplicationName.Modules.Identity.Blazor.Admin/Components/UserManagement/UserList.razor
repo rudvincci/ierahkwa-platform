@@ -1,0 +1,101 @@
+@* @page "/admin/users" *@
+@* @using Mamey.ApplicationName.Modules.Identity.Blazor.Admin.Dto *@
+@* @using Mamey.ApplicationName.Modules.Identity.Blazor.Admin.ViewModels *@
+@* @using Mamey.ApplicationName.Modules.Identity.Blazor.Admin.Services *@
+@* @using Mamey.ApplicationName.Modules.Identity.Blazor.Admin.Clients *@
+@* @using MudBlazor *@
+@* @inject UserListViewModel ViewModel *@
+@* @inject NavigationManager Navigation *@
+@* *@
+@* <HeadContent> *@
+@*   <link href="css/admin-userlist.css" rel="stylesheet" /> *@
+@*   <script src="js/admin-userlist.js" defer></script> *@
+@* </HeadContent> *@
+@* *@
+@* <PageTitle>User Management</PageTitle> *@
+@* *@
+@* <MudPaper Class="pa-4"> *@
+@*   <MudText Typo="Typo.h5">User Management</MudText> *@
+@*   <MudDivider Class="my-2" /> *@
+@* *@
+@*   <!-- Toolbar --> *@
+@*   <MudStack Direction="Row" AlignItems="AlignItems.Center" Spacing="2"> *@
+@*     <MudTextField @bind-Value="ViewModel.SearchTerm" *@
+@*                   Placeholder="Search users..." *@
+@*                   Adornment="Adornment.Start" *@
+@*                   AdornmentIcon="@Icons.Material.Filled.Search" *@
+@*                   Immediate="true"  *@
+@*                   OnDebouncedValueChanged="ViewModel.OnSearchChanged" /> *@
+@*     <MudSpacer /> *@
+@*     <MudButton Variant="Variant.Filled" *@
+@*                Color="Color.Primary" *@
+@*                OnClick="@(() => Navigation.NavigateTo("/admin/users/create"))"> *@
+@*       <MudIcon Icon="@Icons.Material.Filled.Add" /> New User *@
+@*     </MudButton> *@
+@*     <MudButton Variant="Variant.Outlined" *@
+@*                Color="Color.Secondary" *@
+@*                OnClick="ViewModel.ExportCsv"> *@
+@*       <MudIcon Icon="@Icons.Material.Filled.FileDownload" /> Export CSV *@
+@*     </MudButton> *@
+@*   </MudStack> *@
+@* *@
+@*   <!-- Server‑driven table --> *@
+@*   <MudTable T="UserDto" Items="ViewModel.Users" *@
+@*             Loading="ViewModel.IsLoading" *@
+@*             ServerData="LoadServerData" *@
+@*             RowsPerPage="10" *@
+@*             SortLabel="Sort by" *@
+@*             Filter="ViewModel.FilterFunc" *@
+@*             Elevation="1" *@
+@*             Class="mt-4"> *@
+@*     <ToolBarContent> *@
+@*       <MudText Typo="Typo.subtitle2">Total: @ViewModel.TotalCount users</MudText> *@
+@*     </ToolBarContent> *@
+@* *@
+@*     <HeaderContent> *@
+@*       <MudTh><MudTableSortLabel SortBy="@(u => u.Email)">Email</MudTableSortLabel></MudTh> *@
+@*       <MudTh><MudTableSortLabel SortBy="@(u => u.FullName)">Name</MudTableSortLabel></MudTh> *@
+@*       <MudTh>Roles</MudTh> *@
+@*       <MudTh><MudTableSortLabel SortBy="@(u => u.LastLogin)">Last Login</MudTableSortLabel></MudTh> *@
+@*       <MudTh></MudTh> *@
+@*     </HeaderContent> *@
+@* *@
+@*     <RowTemplate> *@
+@*       <MudTd DataLabel="Email">@context.Email</MudTd> *@
+@*       <MudTd DataLabel="Name">@context.FullName</MudTd> *@
+@*       <MudTd DataLabel="Roles">@string.Join(", ", context.Roles)</MudTd> *@
+@*       <MudTd DataLabel="Last Login">@context.LastLogin?.ToString("g")</MudTd> *@
+@*       <MudTd> *@
+@*         <MudIconButton Icon="@Icons.Material.Filled.Edit" *@
+@*                        Color="Color.Primary" *@
+@*                        OnClick="() => ViewModel.EditUser(context.Id)" /> *@
+@*         <MudIconButton Icon="@Icons.Material.Filled.Delete" *@
+@*                        Color="Color.Error" *@
+@*                        OnClick="() => ViewModel.ConfirmDelete(context.Id, context.Email)" /> *@
+@*       </MudTd> *@
+@*     </RowTemplate> *@
+@* *@
+@*     <PagerContent> *@
+@*       <MudTablePager /> *@
+@*     </PagerContent> *@
+@*   </MudTable> *@
+@* </MudPaper> *@
+@* *@
+@* @code { *@
+@*   protected override async Task OnInitializedAsync() *@
+@*   { *@
+@*     await ViewModel.InitializeAsync(); *@
+@*   } *@
+@* *@
+@*   private Task<TableData<UserDto>> LoadServerData(TableState state, CancellationToken ct = default) *@
+@*   { *@
+@*     // Note: use state.PageSize, pass current SearchTerm as filter, and propagate the cancellation token *@
+@*     return ViewModel.LoadPageAsync( *@
+@*       page:          state.Page, *@
+@*       pageSize:      state.PageSize, *@
+@*       sortBy:        state.SortLabel, *@
+@*       sortDirection: state.SortDirection, *@
+@*       filter:        ViewModel.SearchTerm, *@
+@*       cancellationToken: ct); *@
+@*   } *@
+@* } *@

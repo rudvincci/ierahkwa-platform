@@ -1,0 +1,93 @@
+@inject ISnackbar Snackbar
+
+<MudPaper Elevation="0" Class="pa-4" Style="border: 2px dashed var(--mud-palette-lines-default); border-radius: 8px;">
+    <MudStack AlignItems="AlignItems.Center" Spacing="2">
+        @if (!string.IsNullOrEmpty(PhotoDataUrl))
+        {
+            <MudAvatar Size="Size.Large" Style="width: 150px; height: 200px; border-radius: 8px;">
+                <MudImage Src="@PhotoDataUrl" Alt="Captured photo" Style="object-fit: cover; width: 100%; height: 100%;" />
+            </MudAvatar>
+            <MudStack Row="true" Spacing="2">
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="ClearPhoto" StartIcon="@Icons.Material.Filled.Clear">
+                    Clear
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" HtmlTag="label" for="@_inputId" StartIcon="@Icons.Material.Filled.Refresh">
+                    Replace
+                </MudButton>
+            </MudStack>
+        }
+        else
+        {
+            <MudIcon Icon="@Icons.Material.Filled.AddAPhoto" Size="Size.Large" Class="mud-text-secondary" />
+            <MudText Typo="Typo.body1" Class="mud-text-secondary">@Label</MudText>
+            <MudText Typo="Typo.caption" Class="mud-text-secondary">@HelpText</MudText>
+            <InputFile id="@_inputId" OnChange="OnFileSelected" accept="image/*" hidden />
+            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" for="@_inputId" StartIcon="@Icons.Material.Filled.Upload">
+                Upload Photo
+            </MudButton>
+        }
+    </MudStack>
+</MudPaper>
+
+@code {
+    private readonly string _inputId = $"photo-input-{Guid.NewGuid():N}";
+
+    [Parameter]
+    public string Label { get; set; } = "Upload a passport-style photo";
+
+    [Parameter]
+    public string HelpText { get; set; } = "JPG or PNG, min 300x400 pixels, max 5MB";
+
+    [Parameter]
+    public string? PhotoDataUrl { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> PhotoDataUrlChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<IBrowserFile?> PhotoFileChanged { get; set; }
+
+    [Parameter]
+    public long MaxFileSize { get; set; } = 5 * 1024 * 1024; // 5MB
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        
+        if (file.Size > MaxFileSize)
+        {
+            Snackbar.Add($"Photo exceeds maximum size of {MaxFileSize / 1024 / 1024}MB", Severity.Error);
+            return;
+        }
+
+        if (!file.ContentType.StartsWith("image/"))
+        {
+            Snackbar.Add("Please select an image file", Severity.Error);
+            return;
+        }
+
+        try
+        {
+            using var stream = file.OpenReadStream(MaxFileSize);
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            var base64 = Convert.ToBase64String(memoryStream.ToArray());
+            var dataUrl = $"data:{file.ContentType};base64,{base64}";
+            
+            PhotoDataUrl = dataUrl;
+            await PhotoDataUrlChanged.InvokeAsync(dataUrl);
+            await PhotoFileChanged.InvokeAsync(file);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error reading file: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task ClearPhoto()
+    {
+        PhotoDataUrl = null;
+        await PhotoDataUrlChanged.InvokeAsync(null);
+        await PhotoFileChanged.InvokeAsync(null);
+    }
+}

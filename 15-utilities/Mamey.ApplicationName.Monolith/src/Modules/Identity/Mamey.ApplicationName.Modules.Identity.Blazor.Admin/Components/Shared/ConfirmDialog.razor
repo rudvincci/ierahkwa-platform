@@ -1,0 +1,28 @@
+@using MudBlazor
+
+@if (IsOpen)
+{
+    <MudDialog MaxWidth="MaxWidth.ExtraSmall" DisableBackdropClick="true">
+        <DialogContent>
+            <MudText Typo="Typo.h6">@Title</MudText>
+            <MudText Class="mt-2">@Message</MudText>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Secondary"
+                       OnClick="HandleCancelAsync">
+                @CancelText
+            </MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Disabled="@IsBusy"
+                       OnClick="HandleConfirmAsync">
+                @if (IsBusy)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2"/>
+                }
+                @ConfirmText
+            </MudButton>
+        </DialogActions>
+    </MudDialog>
+}

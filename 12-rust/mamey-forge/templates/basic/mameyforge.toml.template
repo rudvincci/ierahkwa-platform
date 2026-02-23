@@ -1,0 +1,35 @@
+[project]
+name = "{{project_name}}"
+version = "{{version}}"
+authors = ["{{author}}"]
+
+[contracts]
+path = "contracts"
+output = "artifacts"
+
+[build]
+optimization_level = "z"  # s, z, or 3
+strip = true
+lto = true
+
+[networks.devnet]
+url = "http://localhost:50051"
+chain_id = "mamey-general-devnet"
+gas_limit = 10000000
+
+[networks.testnet]
+url = "https://testnet.mamey.io:50051"
+chain_id = "mamey-general-testnet"
+gas_limit = 10000000
+
+[networks.mainnet]
+url = "https://mainnet.mamey.io:50051"
+chain_id = "mamey-general"
+gas_limit = 10000000
+
+[devnet]
+port = 50051
+data_dir = ".mameyforge/devnet"
+auto_mine = true
+block_time = 1
+docker_image = "mamey/general-node:latest"

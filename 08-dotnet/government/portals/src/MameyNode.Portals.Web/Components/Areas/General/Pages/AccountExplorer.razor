@@ -1,0 +1,131 @@
+@page "/explorer/accounts"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IInfrastructureClient InfrastructureClient
+@inject ILogger<AccountExplorer> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Account Explorer" Icon="fas fa-wallet" Subtitle="Browse accounts and view balances">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshAccount" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="8">
+            <MudTextField @bind-Value="_searchAccount" Label="Account Address" Variant="Variant.Outlined" Placeholder="Enter account address to search" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SearchAccount" FullWidth="true" StartIcon="@Icons.Material.Filled.Search">
+                Search Account
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+    @if (_selectedAccount != null)
+    {
+        <CardContainer Title="Account Details" Class="mt-4">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Account:</strong> @_selectedAccount.Account</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Balance:</strong> @_selectedAccount.Balance</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Head Block:</strong> @_selectedAccount.HeadBlock</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Representative:</strong> @_selectedAccount.Representative</MudText>
+                </MudItem>
+            </MudGrid>
+        </CardContainer>
+
+        @if (_accountHistory.Any())
+        {
+            <CardContainer Title="Account History" Class="mt-4">
+                <MudTable T="HistoryEntryInfo" Items="@_accountHistory" Hover="true" Dense="false" Striped="true" Elevation="0">
+                    <HeaderContent>
+                        <MudTh>Hash</MudTh>
+                        <MudTh>Type</MudTh>
+                        <MudTh>Amount</MudTh>
+                        <MudTh>Height</MudTh>
+                        <MudTh>Timestamp</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>
+                            <MudText Typo="Typo.body2" Class="text-truncate" Style="max-width: 200px;">
+                                @context.Hash
+                            </MudText>
+                        </MudTd>
+                        <MudTd>
+                            <MudChip Size="Size.Small" Color="@GetTypeColor(context.Type)">
+                                @context.Type
+                            </MudChip>
+                        </MudTd>
+                        <MudTd>@context.Amount</MudTd>
+                        <MudTd>@context.Height</MudTd>
+                        <MudTd>@context.LocalTimestamp.ToString("yyyy-MM-dd HH:mm:ss")</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+            </CardContainer>
+        }
+    }
+</PageContainer>
+
+@code {
+    private string _searchAccount = string.Empty;
+    private NodeAccountInfo? _selectedAccount;
+    private List<HistoryEntryInfo> _accountHistory = new();
+
+    private async Task SearchAccount()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(_searchAccount))
+            {
+                _selectedAccount = await InfrastructureClient.GetAccountAsync(_searchAccount);
+                if (_selectedAccount != null)
+                {
+                    _accountHistory = await InfrastructureClient.GetAccountHistoryAsync(_searchAccount, 100);
+                }
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error searching account");
+        }
+    }
+
+    private async Task RefreshAccount()
+    {
+        if (_selectedAccount != null)
+        {
+            _selectedAccount = await InfrastructureClient.GetAccountAsync(_selectedAccount.Account);
+            _accountHistory = await InfrastructureClient.GetAccountHistoryAsync(_selectedAccount.Account, 100);
+            StateHasChanged();
+        }
+    }
+
+    private Color GetTypeColor(string type)
+    {
+        return type switch
+        {
+            "send" => Color.Error,
+            "receive" => Color.Success,
+            "open" => Color.Info,
+            "change" => Color.Warning,
+            _ => Color.Default
+        };
+    }
+}
+
+

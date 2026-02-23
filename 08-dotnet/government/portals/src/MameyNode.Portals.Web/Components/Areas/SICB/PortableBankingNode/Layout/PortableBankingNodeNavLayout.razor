@@ -1,0 +1,28 @@
+@* PortableBankingNodeNavLayout.razor *@
+@using Mamey.BlazorWasm.Components
+@using Mamey.BlazorWasm.Routing
+@using MudBlazor
+@inject NavigationManager Navigation
+
+<MudNavMenu Margin="Margin.Dense" Rounded="false" Color="Color.Primary">
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">
+        @(DrawerOpen ? "Home" : "")
+    </MudNavLink>
+</MudNavMenu>
+
+<BaseNav Routes="_routes" DrawerOpen="DrawerOpen" DrawerMiniEnabled="true" />
+
+@code {
+    private List<Route> _routes = new();
+    [Parameter] public bool DrawerOpen { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var allRoutes = await RouteLoader.GetRoutesAsync(menu: true);
+        // Filter for portable banking node routes and UPG routes
+        _routes = allRoutes.Where(r => r.Page?.StartsWith("/portable") == true || 
+                                       r.Page?.StartsWith("/sicb/portable") == true ||
+                                       r.Page?.StartsWith("/upg") == true ||
+                                       r.Page?.StartsWith("/odl") == true).ToList();
+    }
+}

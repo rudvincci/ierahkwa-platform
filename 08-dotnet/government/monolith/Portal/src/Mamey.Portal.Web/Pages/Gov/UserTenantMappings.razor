@@ -1,0 +1,121 @@
+@page "/gov/user-tenant-mappings"
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Components.Authorization
+@using Mamey.Portal.Tenant.Application.Models
+@using Mamey.Portal.Shared.Auth
+@using Mamey.Portal.Web.ViewModels.Gov
+@inject UserTenantMappingsViewModel Vm
+@inject AuthenticationStateProvider AuthStateProvider
+@inject MudBlazor.ISnackbar Snackbar
+@inject Microsoft.Extensions.Options.IOptions<Mamey.Portal.Web.Auth.PortalAuthOptions> AuthOptions
+
+<PageTitle>User → Tenant Mappings</PageTitle>
+
+<MudText Typo="Typo.h5" Class="mb-2">User → Tenant Mappings (OIDC)</MudText>
+<MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
+    Maps an OIDC user (Issuer + Subject) to a tenant id. This is the admin-friendly way to onboard a new nation without changing IdP claims.
+</MudText>
+
+@if (!string.IsNullOrWhiteSpace(Vm.Error))
+{
+    <MudAlert Severity="Severity.Error" Dense="true" Class="mb-4">@Vm.Error</MudAlert>
+}
+
+<MudPaper Class="pa-4 mb-4" Elevation="1">
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudText Typo="Typo.subtitle1">Create / Update</MudText>
+            <MudTextField Label="Issuer" Variant="Variant.Outlined" FullWidth="true" @bind-Value="Vm.Issuer" />
+            <MudTextField Label="Subject (sub)" Variant="Variant.Outlined" FullWidth="true" @bind-Value="Vm.Subject" />
+            <MudTextField Label="Email (optional)" Variant="Variant.Outlined" FullWidth="true" @bind-Value="Vm.Email" />
+            <MudSelect T="string" Label="Tenant" Variant="Variant.Outlined" FullWidth="true" @bind-Value="Vm.TenantId">
+                @foreach (var t in Vm.TenantsList)
+                {
+                    <MudSelectItem T="string" Value="@t.TenantId">@t.TenantId (@t.DisplayName)</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudStack Row="true" Spacing="2" Class="mt-3">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@Vm.Busy" OnClick="@(() => Vm.Save.Execute().Subscribe())">Save</MudButton>
+                <MudButton Variant="Variant.Outlined" Disabled="@Vm.Busy" OnClick="UseMyIdentityAsync">Use my identity</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Secondary" Disabled="@Vm.Busy" OnClick="@(() => Vm.Reload.Execute().Subscribe())">Reload</MudButton>
+            </MudStack>
+
+            <MudDivider Class="my-3" />
+            <MudExpansionPanels>
+                <MudExpansionPanel Text="Create a new tenant (inline)">
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary mb-2">
+                        If the tenant you need doesn’t exist yet, create it here and then map the user to it.
+                    </MudText>
+                    <MudTextField Label="Tenant Id (slug)" Variant="Variant.Outlined" FullWidth="true" @bind-Value="Vm.NewTenantId" />
+                    <MudTextField Label="Display Name" Variant="Variant.Outlined" FullWidth="true" @bind-Value="Vm.NewTenantDisplayName" Class="mt-2" />
+                    <MudTextField Label="Contact Email" Variant="Variant.Outlined" FullWidth="true" @bind-Value="Vm.NewTenantEmail" Class="mt-2" />
+
+                    <MudStack Row="true" Spacing="2" Class="mt-3">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@Vm.Busy" OnClick="@(() => Vm.CreateTenant.Execute().Subscribe())">
+                            Create tenant
+                        </MudButton>
+                        <MudButton Variant="Variant.Text" Disabled="@Vm.Busy" OnClick="@(() => Vm.PrefillTenantFromSelection())">
+                            Prefill from selected tenant
+                        </MudButton>
+                    </MudStack>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudText Typo="Typo.subtitle1">Notes</MudText>
+            <MudList T="string" Dense="true">
+                <MudListItem T="string">Issuer defaults to the configured OIDC Authority.</MudListItem>
+                <MudListItem T="string">Subject is the stable OIDC <code>sub</code> claim.</MudListItem>
+                <MudListItem T="string">Tenant ids are normalized (lowercase, hyphens).</MudListItem>
+            </MudList>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+<MudPaper Class="pa-4" Elevation="1">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-2">
+        <MudText Typo="Typo.subtitle1">Existing mappings</MudText>
+        <MudTextField Placeholder="Filter…" Variant="Variant.Outlined" Margin="Margin.Dense" @bind-Value="Vm.Filter" />
+    </MudStack>
+
+    <MudTable Items="Vm.FilteredMappings" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Tenant</MudTh>
+            <MudTh>Email</MudTh>
+            <MudTh>Issuer</MudTh>
+            <MudTh>Subject</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Tenant">@context.TenantId</MudTd>
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+            <MudTd DataLabel="Issuer">@context.Issuer</MudTd>
+            <MudTd DataLabel="Subject">@context.Subject</MudTd>
+            <MudTd>
+                <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="@(() => Vm.LoadIntoForm(context))">Edit</MudButton>
+                <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Error" OnClick="@(() => Vm.Delete.Execute(context).Subscribe())">Delete</MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        Vm.Reload.Execute().Subscribe();
+        return Task.CompletedTask;
+    }
+
+    private async Task UseMyIdentityAsync()
+    {
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = state.User;
+        Vm.Issuer = OidcIssuerNormalizer.Normalize(user.FindFirst("iss")?.Value ?? AuthOptions.Value.Oidc.Authority);
+        Vm.Subject = user.FindFirst("sub")?.Value ?? string.Empty;
+        Vm.Email = user.FindFirst("email")?.Value;
+        Snackbar.Add("Prefilled from current login.", MudBlazor.Severity.Info);
+    }
+}
+
+

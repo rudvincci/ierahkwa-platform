@@ -1,0 +1,54 @@
+@page "/contact-us"
+<MudContainer MaxWidth="MaxWidth.Small" Class="contact-us-page-container">
+    <!-- Header Section -->
+    <MudPaper Class="header-section" Elevation="0">
+        <h1 class="page-title animate-slide-in">Contact Us</h1>
+        <p class="page-subtitle animate-fade-in">
+            We'd love to hear from you! Reach out for any inquiries, support, or partnership opportunities.
+        </p>
+    </MudPaper>
+
+    <!-- Contact Form Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Get in Touch</h2>
+            <MudForm @ref="@form" @onsubmit="HandleSubmit" >
+                <MudTextField T="string" Label="Full Name" Variant="Variant.Outlined" Required="true" T="string" For="@(() => Name)" @bind-Value="Name" Class="form-field" />
+                <MudTextField T="string" Label="Email Address" Variant="Variant.Outlined" Required="true" T="string" For="@(() => Email)" @bind-Value="Email" Class="form-field" />
+                <MudTextField T="string" Label="Subject" Variant="Variant.Outlined" Required="true" T="string" For="@(() => Subject)" @bind-Value="Subject" Class="form-field" />
+                <MudTextField T="string" Label="Message" Variant="Variant.Outlined" Required="true" T="string" For="@(() => Message)" @bind-Value="Message" AutoGrow Lines="5" Class="form-field" />
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="submit-button animate-fade-in">Send Message</MudButton>
+            </MudForm>
+        </MudPaper>
+    </section>
+
+    <!-- Contact Details Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Contact Details</h2>
+            <ul class="contact-details animate-fade-in">
+                <li><strong>Email:</strong> support@fhct.com</li>
+                <li><strong>Phone:</strong> +1 (123) 456-7890</li>
+                <li><strong>Address:</strong> 123 FHCT Avenue, Smart City, Indigenous Land</li>
+            </ul>
+        </MudPaper>
+    </section>
+</MudContainer>
+
+@code {
+    private MudForm form;
+    private string Name;
+    private string Email;
+    private string Subject;
+    private string Message;
+
+    private void HandleSubmit()
+    {
+        // Handle form submission logic
+        Console.WriteLine($"Name: {Name}, Email: {Email}, Subject: {Subject}, Message: {Message}");
+    }
+}
+
+@code {
+    
+}

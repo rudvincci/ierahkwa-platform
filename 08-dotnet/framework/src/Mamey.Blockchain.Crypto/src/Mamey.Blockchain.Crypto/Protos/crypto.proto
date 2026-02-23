@@ -1,0 +1,336 @@
+syntax = "proto3";
+
+package mamey.crypto;
+
+// Cryptography utilities service for MameyNode blockchain
+service CryptoService {
+    // Keypair operations
+    rpc GenerateKeypair(GenerateKeypairRequest) returns (GenerateKeypairResponse);
+    rpc GetPublicKey(GetPublicKeyRequest) returns (GetPublicKeyResponse);
+    rpc ValidateKeypair(ValidateKeypairRequest) returns (ValidateKeypairResponse);
+
+    // Algorithm discovery
+    rpc GetSupportedAlgorithms(GetSupportedAlgorithmsRequest) returns (GetSupportedAlgorithmsResponse);
+    
+    // Signature operations
+    rpc Sign(SignRequest) returns (SignResponse);
+    rpc Verify(VerifyRequest) returns (VerifyResponse);
+    rpc BatchSign(BatchSignRequest) returns (BatchSignResponse);
+    rpc BatchVerify(BatchVerifyRequest) returns (BatchVerifyResponse);
+    
+    // Wallet operations
+    rpc CreateWallet(CreateWalletRequest) returns (CreateWalletResponse);
+    rpc GetWallet(GetWalletRequest) returns (GetWalletResponse);
+    rpc ImportWallet(ImportWalletRequest) returns (ImportWalletResponse);
+    rpc ExportWallet(ExportWalletRequest) returns (ExportWalletResponse);
+    
+    // Hashing operations
+    rpc Hash(HashRequest) returns (HashResponse);
+    rpc HashWithSalt(HashWithSaltRequest) returns (HashWithSaltResponse);
+    rpc VerifyHash(VerifyHashRequest) returns (VerifyHashResponse);
+    
+    // Work generation
+    rpc GenerateWork(GenerateWorkRequest) returns (GenerateWorkResponse);
+    rpc VerifyWork(VerifyWorkRequest) returns (VerifyWorkResponse);
+}
+
+// Generate keypair request
+message GenerateKeypairRequest {
+    // Examples:
+    // - "ed25519", "secp256k1"
+    // - "ml-dsa-44", "ml-dsa-65", "ml-dsa-87"
+    // - "ml-kem-512", "ml-kem-768", "ml-kem-1024"
+    // - "hybrid-rsa-mldsa65", "hybrid-ecdsa-mldsa65"
+    string key_type = 1;
+
+    // Arbitrary algorithm-specific options.
+    map<string, string> options = 2;
+
+    // When true, the service will attempt to generate a hybrid key pair
+    // (classical + post-quantum) where applicable.
+    bool enable_hybrid = 3;
+
+    // Optional identifier of a classical algorithm to fall back to when
+    // PQC algorithms are not supported by the client or environment.
+    string classical_fallback = 4;
+}
+
+// Generate keypair response
+message GenerateKeypairResponse {
+    bytes public_key = 1;
+    bytes private_key = 2;
+    string key_id = 3;
+    bool success = 4;
+    string error_message = 5;
+
+    // Algorithm actually used to generate this key pair.
+    string algorithm_used = 6;
+}
+
+// Get public key request
+message GetPublicKeyRequest {
+    string key_id = 1;
+}
+
+// Get public key response
+message GetPublicKeyResponse {
+    bytes public_key = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Validate keypair request
+message ValidateKeypairRequest {
+    bytes public_key = 1;
+    bytes private_key = 2;
+}
+
+// Validate keypair response
+message ValidateKeypairResponse {
+    bool valid = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Sign request
+message SignRequest {
+    bytes data = 1;
+    bytes private_key = 2;
+    string algorithm = 3;
+
+    // When true, the service will produce a hybrid signature containing both
+    // classical and post-quantum components when the underlying key and
+    // algorithm support it.
+    bool use_hybrid = 4;
+}
+
+// Sign response
+message SignResponse {
+    // Classical signature component (e.g. RSA/ECDSA). May be empty when using
+    // PQC-only algorithms.
+    bytes classical_signature = 1;
+
+    // Post-quantum signature component (e.g. ML-DSA). May be empty when using
+    // classical-only algorithms.
+    bytes pq_signature = 2;
+
+    // Algorithm actually used to produce the signature.
+    string algorithm_used = 3;
+
+    bool success = 4;
+    string error_message = 5;
+}
+
+// Verify request
+message VerifyRequest {
+    bytes data = 1;
+    bytes signature = 2;
+    bytes public_key = 3;
+    string algorithm = 4;
+}
+
+// Verify response
+message VerifyResponse {
+    bool verified = 1;
+    bool success = 2;
+    string error_message = 3;
+
+    // Algorithm that was used during verification.
+    string algorithm_used = 4;
+}
+
+// Batch sign request
+message BatchSignRequest {
+    repeated bytes data = 1;
+    bytes private_key = 2;
+    string algorithm = 3;
+}
+
+// Batch sign response
+message BatchSignResponse {
+    repeated bytes signatures = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Batch verify request
+message BatchVerifyRequest {
+    repeated bytes data = 1;
+    repeated bytes signatures = 2;
+    bytes public_key = 3;
+    string algorithm = 4;
+}
+
+// Batch verify response
+message BatchVerifyResponse {
+    repeated bool verified = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Create wallet request
+message CreateWalletRequest {
+    string wallet_name = 1;
+    string key_type = 2;
+    string password = 3;
+}
+
+// Create wallet response
+message CreateWalletResponse {
+    string wallet_id = 1;
+    bytes public_key = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get wallet request
+message GetWalletRequest {
+    string wallet_id = 1;
+}
+
+// Get wallet response
+message GetWalletResponse {
+    WalletInfo wallet = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Import wallet request
+message ImportWalletRequest {
+    string wallet_name = 1;
+    bytes wallet_data = 2;
+    string password = 3;
+    string format = 4;
+}
+
+// Import wallet response
+message ImportWalletResponse {
+    string wallet_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Export wallet request
+message ExportWalletRequest {
+    string wallet_id = 1;
+    string password = 2;
+    string format = 3;
+}
+
+// Export wallet response
+message ExportWalletResponse {
+    bytes wallet_data = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Hash request
+message HashRequest {
+    bytes data = 1;
+    string algorithm = 2;  // "blake2b", "sha256", etc.
+}
+
+// Hash response
+message HashResponse {
+    bytes hash = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Hash with salt request
+message HashWithSaltRequest {
+    bytes data = 1;
+    bytes salt = 2;
+    string algorithm = 3;
+}
+
+// Hash with salt response
+message HashWithSaltResponse {
+    bytes hash = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Verify hash request
+message VerifyHashRequest {
+    bytes data = 1;
+    bytes hash = 2;
+    string algorithm = 3;
+}
+
+// Verify hash response
+message VerifyHashResponse {
+    bool verified = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Generate work request
+message GenerateWorkRequest {
+    bytes block_hash = 1;
+    uint64 difficulty = 2;
+}
+
+// Generate work response
+message GenerateWorkResponse {
+    bytes work = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Verify work request
+message VerifyWorkRequest {
+    bytes block_hash = 1;
+    bytes work = 2;
+    uint64 difficulty = 3;
+}
+
+// Verify work response
+message VerifyWorkResponse {
+    bool valid = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Wallet info
+message WalletInfo {
+    string wallet_id = 1;
+    string wallet_name = 2;
+    bytes public_key = 3;
+    string key_type = 4;
+    uint64 created_at = 5;
+}
+
+// Algorithm metadata for supported cryptographic algorithms (classical and PQC).
+message AlgorithmInfo {
+    // Human-readable name, e.g. "ML-DSA-65" or "RSA-2048".
+    string name = 1;
+
+    // Algorithm type/category, e.g. "signature", "kem", "hash".
+    string type = 2;
+
+    // Qualitative security level description, e.g. "NIST Level 1".
+    string security_level = 3;
+
+    // Sizes in bytes for keys and signatures/ciphertexts.
+    uint32 public_key_size = 4;
+    uint32 private_key_size = 5;
+    uint32 signature_size = 6;
+
+    // Whether this algorithm is considered quantum-resistant.
+    bool quantum_resistant = 7;
+
+    // NIST standardization status, e.g. "FIPS 204", "draft", "candidate".
+    string nist_status = 8;
+}
+
+// Request for supported algorithms.
+message GetSupportedAlgorithmsRequest {
+    // Include algorithms that are deprecated or not recommended for new systems.
+    bool include_deprecated = 1;
+}
+
+// Response with supported algorithms.
+message GetSupportedAlgorithmsResponse {
+    repeated AlgorithmInfo algorithms = 1;
+}

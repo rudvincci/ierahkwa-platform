@@ -1,0 +1,14 @@
+@namespace MameyNode.Portals.Shared.Components.Navigation
+
+<MudBreadcrumbs Items="@BreadcrumbItems" Class="@Class">
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+</MudBreadcrumbs>
+
+@code {
+    [Parameter] public List<BreadcrumbItem> BreadcrumbItems { get; set; } = new();
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

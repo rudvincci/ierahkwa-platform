@@ -1,0 +1,96 @@
+@page "/payments/multisig"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumPayClient FutureWampumPayClient
+@inject ILogger<Multisig> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Multisig" Icon="fas fa-key" Subtitle="Multisignature payment management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Payments" Value="@_payments.Count.ToString()" Icon="fas fa-key" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Completed" Value="@_completedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending Signatures" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Amount" Value="@_totalAmount.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Multisig Payments" Class="mt-4">
+        <MudTable T="MultisigPaymentInfo" Items="@_payments" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Payment ID</MudTh>
+                <MudTh>To Account</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Required</MudTh>
+                <MudTh>Current</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.PaymentId</MudTd>
+                <MudTd>@context.ToAccount</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>@context.RequiredSignatures</MudTd>
+                <MudTd>@context.CurrentSignatures</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == MultisigPaymentStatus.Completed ? Color.Success : context.Status == MultisigPaymentStatus.PendingSignatures ? Color.Warning : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<MultisigPaymentInfo> _payments = new();
+    private int _completedCount;
+    private int _pendingCount;
+    private decimal _totalAmount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _payments = await FutureWampumPayClient.GetMultisigPaymentsAsync(100);
+            _completedCount = _payments.Count(p => p.Status == MultisigPaymentStatus.Completed);
+            _pendingCount = _payments.Count(p => p.Status == MultisigPaymentStatus.PendingSignatures);
+            _totalAmount = _payments.Sum(p => decimal.Parse(p.Amount));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading multisig payments");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

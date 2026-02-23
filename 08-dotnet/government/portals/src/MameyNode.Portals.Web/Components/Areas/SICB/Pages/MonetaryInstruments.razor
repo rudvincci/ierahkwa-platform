@@ -1,0 +1,98 @@
+@page "/sicb/monetary-instruments"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject ISICBClient SICBClient
+@inject ILogger<MonetaryInstruments> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Monetary Instruments" Icon="fas fa-coins" Subtitle="Currency and bond management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Instruments" Value="@_instruments.Count.ToString()" Icon="fas fa-coins" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Supply" Value="@_totalSupply.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Circulating" Value="@_circulatingSupply.ToString("C")" Icon="fas fa-chart-line" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Monetary Instruments" Class="mt-4">
+        <MudTable T="MonetaryInstrumentInfo" Items="@_instruments" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Instrument ID</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Currency</MudTh>
+                <MudTh>Total Supply</MudTh>
+                <MudTh>Circulating</MudTh>
+                <MudTh>Issuer</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Issued</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.InstrumentId</MudTd>
+                <MudTd>@context.Type</MudTd>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd>@decimal.Parse(context.TotalSupply).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.CirculatingSupply).ToString("C")</MudTd>
+                <MudTd>@context.Issuer</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.IssuedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<MonetaryInstrumentInfo> _instruments = new();
+    private decimal _totalSupply;
+    private decimal _circulatingSupply;
+    private int _activeCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _instruments = await SICBClient.GetMonetaryInstrumentsAsync();
+            _totalSupply = _instruments.Sum(i => decimal.Parse(i.TotalSupply));
+            _circulatingSupply = _instruments.Sum(i => decimal.Parse(i.CirculatingSupply));
+            _activeCount = _instruments.Count(i => i.Status == "Active");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading monetary instruments");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

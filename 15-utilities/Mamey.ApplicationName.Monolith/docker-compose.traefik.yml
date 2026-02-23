@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  traefik:
+    image: traefik:v2.9
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--entryPoints.web.address=:80"
+    ports:
+      - "80:80"       # HTTP
+      - "8080:8080"   # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      # Enable Traefik for itself (optional: so you can access the dashboard)
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+    restart: always
+
+  bootstrapper:
+    build:
+      context: ../                # <-- The parent folder containing both
+      dockerfile: Mamey.Mamey.ApplicationName.Monolith/src/Bootstrapper/Mamey.ApplicationName.Bootstrapper/Dockerfile
+    container_name: mamey_bank_bootstrapper
+    labels:
+      - "traefik.enable=true"
+      # Route traffic for 'api.localhost' to the bootstrapper
+      - "traefik.http.routers.bootstrapper.rule=Host(`api.localhost`)"
+      - "traefik.http.services.bootstrapper.loadbalancer.server.port=80"
+    restart: always
+
+  blazorwasm:
+    build:
+      context: ../
+      dockerfile: Mamey.Mamey.ApplicationName.Monolith/src/UI/Mamey.ApplicationName.BlazorWasm/Dockerfile
+    container_name: mamey_bank_blazorwasm
+    labels:
+      - "traefik.enable=true"
+      # Route traffic for 'app.localhost' to the BlazorWasm
+      - "traefik.http.routers.blazorwasm.rule=Host(`app.localhost`)"
+      - "traefik.http.services.blazorwasm.loadbalancer.server.port=80"
+    restart: always

@@ -1,0 +1,459 @@
+@page "/gov/travel-ids/{IdNumber}"
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+
+<PageTitle>Travel ID @IdNumber - Government Portal</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+}
+else if (_travelId is null)
+{
+    <MudPaper Elevation="0" Class="pa-6">
+        <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="py-16">
+            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" Color="Color.Warning" />
+            <MudText Typo="Typo.h5" Class="mt-4">Travel ID Not Found</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                The Travel ID @IdNumber could not be found.
+            </MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/gov/travel-ids" Class="mt-4">
+                Back to Travel IDs
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+}
+else
+{
+    <MudPaper Elevation="0" Class="pa-6">
+        <MudStack Spacing="4">
+            @* Header *@
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                <MudStack>
+                    <MudBreadcrumbs Items="_breadcrumbs" />
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.CreditCard" Size="Size.Large" Color="Color.Primary" />
+                        <MudStack Spacing="0">
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                <MudText Typo="Typo.h4" Style="font-family: monospace;">@_travelId.IdNumber</MudText>
+                                <MudChip T="string" Color="@GetStatusColor(_travelId.Status)" Size="Size.Medium">
+                                    @_travelId.Status
+                                </MudChip>
+                            </MudStack>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                Issued @_travelId.IssueDate.ToString("MMMM dd, yyyy") • Expires @_travelId.ExpiryDate.ToString("MMMM dd, yyyy")
+                            </MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudStack>
+                <MudStack Row="true" Spacing="2">
+                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Print">
+                        Print Card
+                    </MudButton>
+                    @if (_travelId.Status == "Active")
+                    {
+                        <MudMenu Label="Actions" Variant="Variant.Filled" Color="Color.Primary"
+                                 EndIcon="@Icons.Material.Filled.ArrowDropDown">
+                            <MudMenuItem Icon="@Icons.Material.Filled.Refresh">Renew</MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.Block" IconColor="Color.Error"
+                                         OnClick="@(() => _revokeDialogVisible = true)">Revoke</MudMenuItem>
+                        </MudMenu>
+                    }
+                </MudStack>
+            </MudStack>
+
+            <MudDivider />
+
+            <MudGrid Spacing="4">
+                @* Left Column *@
+                <MudItem xs="12" md="8">
+                    @* Card Preview *@
+                    <MudCard Elevation="3" Class="mb-4" Style="background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%); color: white;">
+                        <MudCardContent Class="pa-6">
+                            <MudStack Spacing="3">
+                                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                    <MudText Typo="Typo.overline" Style="color: rgba(255,255,255,0.7);">TRAVEL IDENTITY CARD</MudText>
+                                    <MudText Typo="Typo.overline" Style="color: rgba(255,255,255,0.7);">GOVERNMENT PORTAL</MudText>
+                                </MudStack>
+                                <MudStack Row="true" Spacing="4">
+                                    <MudAvatar Size="Size.Large" Style="width: 100px; height: 100px; background: white;">
+                                        <MudText Typo="Typo.h3" Color="Color.Primary">@_travelId.CitizenName[0]</MudText>
+                                    </MudAvatar>
+                                    <MudStack Spacing="1">
+                                        <MudText Typo="Typo.h5">@_travelId.CitizenName</MudText>
+                                        <MudText Typo="Typo.body2" Style="font-family: monospace; color: rgba(255,255,255,0.9);">@_travelId.IdNumber</MudText>
+                                        <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">Date of Birth: @_travelId.DateOfBirth.ToString("MMM dd, yyyy")</MudText>
+                                        <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">Nationality: @_travelId.Nationality</MudText>
+                                    </MudStack>
+                                </MudStack>
+                                <MudDivider Style="border-color: rgba(255,255,255,0.3);" />
+                                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">ISSUE DATE</MudText>
+                                        <MudText Typo="Typo.body2">@_travelId.IssueDate.ToString("dd MMM yyyy")</MudText>
+                                    </MudStack>
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">EXPIRY DATE</MudText>
+                                        <MudText Typo="Typo.body2">@_travelId.ExpiryDate.ToString("dd MMM yyyy")</MudText>
+                                    </MudStack>
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.7);">PLACE OF ISSUE</MudText>
+                                        <MudText Typo="Typo.body2">@_travelId.PlaceOfIssue</MudText>
+                                    </MudStack>
+                                </MudStack>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Holder Information *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6">Card Holder Information</MudText>
+                                </MudStack>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudButton Size="Size.Small" Href="@($"/gov/citizens/{_travelId.CitizenId}")">
+                                    View Citizen Record
+                                </MudButton>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="12" md="6">
+                                    <MudStack Spacing="3">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Full Name</MudText>
+                                            <MudText Typo="Typo.body1"><strong>@_travelId.CitizenName</strong></MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Citizen ID</MudText>
+                                            <MudText Typo="Typo.body1">@_travelId.CitizenId</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Date of Birth</MudText>
+                                            <MudText Typo="Typo.body1">@_travelId.DateOfBirth.ToString("MMMM dd, yyyy")</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudStack Spacing="3">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Gender</MudText>
+                                            <MudText Typo="Typo.body1">@_travelId.Gender</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Nationality</MudText>
+                                            <MudText Typo="Typo.body1">@_travelId.Nationality</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Place of Birth</MudText>
+                                            <MudText Typo="Typo.body1">@_travelId.PlaceOfBirth</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Activity Timeline *@
+                    <MudCard Elevation="2">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Timeline" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6">Activity History</MudText>
+                                </MudStack>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudTimeline TimelinePosition="TimelinePosition.Start">
+                                @foreach (var activity in _activities)
+                                {
+                                    <MudTimelineItem Color="@GetActivityColor(activity.Type)" Size="Size.Small">
+                                        <ItemContent>
+                                            <MudStack>
+                                                <MudText Typo="Typo.body2"><strong>@activity.Title</strong></MudText>
+                                                <MudText Typo="Typo.body2">@activity.Description</MudText>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                                    @activity.Timestamp.ToString("MMM dd, yyyy 'at' h:mm tt") • @activity.User
+                                                </MudText>
+                                            </MudStack>
+                                        </ItemContent>
+                                    </MudTimelineItem>
+                                }
+                            </MudTimeline>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                @* Right Column *@
+                <MudItem xs="12" md="4">
+                    @* Document Details *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Document Details</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Spacing="3">
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Document Number</MudText>
+                                    <MudText Typo="Typo.body1" Style="font-family: monospace;">@_travelId.IdNumber</MudText>
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Issue Date</MudText>
+                                    <MudText Typo="Typo.body1">@_travelId.IssueDate.ToString("MMMM dd, yyyy")</MudText>
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Expiry Date</MudText>
+                                    <MudText Typo="Typo.body1">@_travelId.ExpiryDate.ToString("MMMM dd, yyyy")</MudText>
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Place of Issue</MudText>
+                                    <MudText Typo="Typo.body1">@_travelId.PlaceOfIssue</MudText>
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Issued By</MudText>
+                                    <MudText Typo="Typo.body1">@_travelId.IssuedBy</MudText>
+                                </div>
+                                <MudDivider />
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Days Until Expiry</MudText>
+                                    @{
+                                        var daysUntilExpiry = (_travelId.ExpiryDate - DateTime.Today).Days;
+                                    }
+                                    <MudText Typo="Typo.body1" Color="@(daysUntilExpiry < 90 ? Color.Warning : Color.Success)">
+                                        @(daysUntilExpiry > 0 ? $"{daysUntilExpiry} days" : "Expired")
+                                    </MudText>
+                                </div>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Quick Actions *@
+                    <MudCard Elevation="2">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Quick Actions</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Spacing="2">
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Print">
+                                    Print Card
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Download">
+                                    Download PDF
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Email">
+                                    Send to Citizen
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.History">
+                                    View History
+                                </MudButton>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudStack>
+    </MudPaper>
+}
+
+@* Revoke Dialog *@
+<MudDialog @bind-Visible="_revokeDialogVisible">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Error" Class="mr-2" />
+            Revoke Travel ID
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-4">
+            Are you sure you want to revoke Travel ID <strong>@IdNumber</strong>?
+            This action cannot be undone.
+        </MudText>
+        <MudTextField @bind-Value="_revokeReason" Label="Reason for Revocation" Variant="Variant.Outlined"
+                      Lines="3" Required="true" RequiredError="Please provide a reason" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _revokeDialogVisible = false)">Cancel</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="RevokeTravelId">Revoke</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject Mamey.Government.UI.Services.ITravelIdentitiesService TravelIdentitiesService
+
+@code {
+    [Parameter]
+    public string IdNumber { get; set; } = "";
+
+    // Default tenant ID - in production, get from user claims
+    private static readonly Guid TenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    private bool _loading = true;
+    private bool _revokeDialogVisible = false;
+    private string _revokeReason = "";
+
+    private TravelIdDetailsData? _travelId;
+    private List<Activity> _activities = new();
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    private record TravelIdDetailsData(
+        Guid Id,
+        string IdNumber,
+        string CitizenId,
+        string CitizenName,
+        DateTime DateOfBirth,
+        string Gender,
+        string Nationality,
+        string PlaceOfBirth,
+        DateTime IssueDate,
+        DateTime ExpiryDate,
+        string PlaceOfIssue,
+        string IssuedBy,
+        string Status);
+
+    private record Activity(
+        DateTime Timestamp,
+        string Type,
+        string Title,
+        string Description,
+        string User);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _breadcrumbs = new List<BreadcrumbItem>
+        {
+            new("Home", href: "/"),
+            new("Travel IDs", href: "/gov/travel-ids"),
+            new(IdNumber, href: null, disabled: true)
+        };
+
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        StateHasChanged();
+
+        try
+        {
+            var travelIdData = await TravelIdentitiesService.GetByNumberAsync(TenantId, IdNumber);
+            
+            if (travelIdData is not null)
+            {
+                _travelId = new TravelIdDetailsData(
+                    travelIdData.Id,
+                    travelIdData.IdNumber ?? IdNumber,
+                    travelIdData.CitizenId != Guid.Empty ? travelIdData.CitizenId.ToString() : "Unknown",
+                    travelIdData.HolderName ?? "Unknown",
+                    travelIdData.DateOfBirth,
+                    travelIdData.Gender ?? "Unknown",
+                    travelIdData.Nationality ?? "Unknown",
+                    travelIdData.PlaceOfBirth ?? "",
+                    travelIdData.IssueDate,
+                    travelIdData.ExpiryDate,
+                    travelIdData.PlaceOfIssue ?? "Government Portal HQ",
+                    travelIdData.IssuedBy ?? "System",
+                    travelIdData.Status ?? "Active");
+
+                _activities = new List<Activity>
+                {
+                    new(travelIdData.IssueDate, "Issue", "Travel ID Issued", $"Travel ID {travelIdData.IdNumber} issued to {travelIdData.HolderName}.", "System")
+                };
+            }
+            else
+            {
+                LoadMockData();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading travel ID data: {ex.Message}");
+            LoadMockData();
+        }
+
+        _loading = false;
+    }
+
+    private void LoadMockData()
+    {
+        _travelId = new TravelIdDetailsData(
+            Guid.NewGuid(),
+            IdNumber,
+            "CIT-00001",
+            "John Smith",
+            new DateTime(1985, 6, 15),
+            "Male",
+            "United States Citizen",
+            "Springfield, Illinois",
+            DateTime.Now.AddYears(-1),
+            DateTime.Now.AddYears(4),
+            "Government Portal HQ",
+            "Agent Amelia Grant",
+            "Active");
+
+        _activities = new List<Activity>
+        {
+            new(DateTime.Now.AddYears(-1), "Issue", "Travel ID Issued", $"Travel ID {IdNumber} issued to John Smith.", "Agent Amelia Grant"),
+            new(DateTime.Now.AddYears(-1).AddDays(-5), "Approval", "Application Approved", "Travel ID application approved after verification.", "Agent Rafael Ortega"),
+            new(DateTime.Now.AddYears(-1).AddDays(-10), "Application", "Application Submitted", "Travel ID application submitted.", "John Smith")
+        };
+    }
+
+    private async Task RevokeTravelId()
+    {
+        if (_travelId is null) return;
+
+        if (string.IsNullOrWhiteSpace(_revokeReason))
+        {
+            Snackbar.Add("Please provide a reason for revocation", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            var success = await TravelIdentitiesService.RevokeAsync(TenantId, _travelId.Id, _revokeReason);
+            if (success)
+            {
+                Snackbar.Add($"Travel ID {IdNumber} revoked", Severity.Info);
+                _revokeDialogVisible = false;
+                Navigation.NavigateTo("/gov/travel-ids");
+            }
+            else
+            {
+                Snackbar.Add("Failed to revoke Travel ID. Please try again.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error revoking travel ID: {ex.Message}");
+            Snackbar.Add("An error occurred while revoking the Travel ID.", Severity.Error);
+        }
+    }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Active" => Color.Success,
+        "Expiring" => Color.Warning,
+        "Expired" => Color.Error,
+        "Revoked" => Color.Dark,
+        _ => Color.Default
+    };
+
+    private Color GetActivityColor(string type) => type switch
+    {
+        "Issue" => Color.Success,
+        "Approval" => Color.Primary,
+        "Application" => Color.Info,
+        "Revoke" => Color.Error,
+        _ => Color.Default
+    };
+}

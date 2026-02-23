@@ -1,0 +1,94 @@
+@page "/admin/citizens"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<Citizens> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Citizen Management" Icon="fas fa-users" Subtitle="Manage citizens">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Citizens" Value="@_citizens.Count.ToString()" Icon="fas fa-users" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Suspended" Value="@_suspendedCount.ToString()" Icon="fas fa-ban" Color="#EF4444" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="New This Month" Value="@_newThisMonth.ToString()" Icon="fas fa-user-plus" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Citizens" Class="mt-4">
+        <MudTable T="CitizenInfo" Items="@_citizens" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Citizen ID</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Date of Birth</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Registered</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.CitizenId</MudTd>
+                <MudTd>@context.FirstName @context.LastName</MudTd>
+                <MudTd>@context.Email</MudTd>
+                <MudTd>@context.DateOfBirth</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : context.Status == "Suspended" ? Color.Error : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.RegisteredAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<CitizenInfo> _citizens = new();
+    private int _activeCount;
+    private int _suspendedCount;
+    private int _newThisMonth;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _citizens = await GovernmentClient.GetCitizensAsync();
+            _activeCount = _citizens.Count(c => c.Status == "Active");
+            _suspendedCount = _citizens.Count(c => c.Status == "Suspended");
+            _newThisMonth = _citizens.Count(c => c.RegisteredAt >= DateTime.Now.AddMonths(-1));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading citizens");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

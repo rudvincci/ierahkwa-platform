@@ -1,0 +1,242 @@
+@page "/general"
+@inject IMameyNodeClient NodeClient
+@inject IMetadataService MetadataService
+@inject ILogger<Dashboard> Logger
+
+<PageTitle>General Dashboard - MameyNode UI</PageTitle>
+
+<h1>General Node Dashboard</h1>
+
+<ErrorDisplay HasError="@hasError" ErrorMessage="@errorMessage" ErrorDetails="@errorDetails" OnDismiss="ClearError" />
+
+<div class="row mt-3">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Node</h5>
+                <button class="btn btn-primary" @onclick="RefreshAsync" disabled="@isLoading">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Loading...</text>
+                    }
+                    else
+                    {
+                        <text>Refresh</text>
+                    }
+                </button>
+            </div>
+            <div class="card-body">
+                @if (nodeInfo == null && !isLoading)
+                {
+                    <p class="text-muted">Click "Refresh" to load dashboard data.</p>
+                }
+                else if (isLoading)
+                {
+                    <p class="text-muted">Loading...</p>
+                }
+                else if (nodeInfo != null)
+                {
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Node ID</dt>
+                        <dd class="col-sm-8"><code>@nodeInfo.NodeId</code></dd>
+
+                        <dt class="col-sm-4">Version</dt>
+                        <dd class="col-sm-8"><code>@nodeInfo.Version</code></dd>
+
+                        <dt class="col-sm-4">Blocks</dt>
+                        <dd class="col-sm-8">@nodeInfo.BlockCount.ToString("N0")</dd>
+
+                        <dt class="col-sm-4">Accounts</dt>
+                        <dd class="col-sm-8">@nodeInfo.AccountCount.ToString("N0")</dd>
+
+                        <dt class="col-sm-4">Peers</dt>
+                        <dd class="col-sm-8">@nodeInfo.PeerCount.ToString("N0")</dd>
+                    </dl>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mt-3 mt-lg-0">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Network</h5>
+            </div>
+            <div class="card-body">
+                @if (networkInfo == null && !isLoading)
+                {
+                    <p class="text-muted">Network info will appear after refresh.</p>
+                }
+                else if (isLoading)
+                {
+                    <p class="text-muted">Loading...</p>
+                }
+                else if (networkInfo != null)
+                {
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Active peers</dt>
+                        <dd class="col-sm-7">@networkInfo.ActivePeers</dd>
+
+                        <dt class="col-sm-5">Max peers</dt>
+                        <dd class="col-sm-7">@networkInfo.MaxPeers</dd>
+
+                        <dt class="col-sm-5">Avg latency</dt>
+                        <dd class="col-sm-7">@networkInfo.AverageLatencyMs.ToString("N1") ms</dd>
+
+                        <dt class="col-sm-5">Bytes sent</dt>
+                        <dd class="col-sm-7">@networkInfo.BytesSent.ToString("N0")</dd>
+
+                        <dt class="col-sm-5">Bytes received</dt>
+                        <dd class="col-sm-7">@networkInfo.BytesReceived.ToString("N0")</dd>
+
+                        <dt class="col-sm-5">Protocol</dt>
+                        <dd class="col-sm-7"><code>@networkInfo.ProtocolVersion</code></dd>
+                    </dl>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Bootstrap</h5>
+            </div>
+            <div class="card-body">
+                @if (bootstrapStatus == null && !isLoading)
+                {
+                    <p class="text-muted">Bootstrap status will appear after refresh.</p>
+                }
+                else if (isLoading)
+                {
+                    <p class="text-muted">Loading...</p>
+                }
+                else if (bootstrapStatus != null)
+                {
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Phase</dt>
+                        <dd class="col-sm-7">@bootstrapStatus.Phase</dd>
+
+                        <dt class="col-sm-5">Bootstrapping</dt>
+                        <dd class="col-sm-7">
+                            @if (bootstrapStatus.IsBootstrapping)
+                            {
+                                <span class="badge bg-warning text-dark">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">No</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">Connections</dt>
+                        <dd class="col-sm-7">@bootstrapStatus.Connections</dd>
+
+                        <dt class="col-sm-5">Remaining blocks</dt>
+                        <dd class="col-sm-7">@bootstrapStatus.RemainingBlocks.ToString("N0")</dd>
+                    </dl>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mt-3 mt-lg-0">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Ledger Stats</h5>
+            </div>
+            <div class="card-body">
+                @if (ledgerStats == null && !isLoading)
+                {
+                    <p class="text-muted">Ledger stats will appear after refresh.</p>
+                }
+                else if (isLoading)
+                {
+                    <p class="text-muted">Loading...</p>
+                }
+                else if (ledgerStats != null)
+                {
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Blocks</dt>
+                        <dd class="col-sm-7">@ledgerStats.BlockCount.ToString("N0")</dd>
+
+                        <dt class="col-sm-5">Accounts</dt>
+                        <dd class="col-sm-7">@ledgerStats.AccountCount.ToString("N0")</dd>
+
+                        <dt class="col-sm-5">Cemented</dt>
+                        <dd class="col-sm-7">@ledgerStats.CementedCount.ToString("N0")</dd>
+
+                        <dt class="col-sm-5">Unchecked</dt>
+                        <dd class="col-sm-7">@ledgerStats.UncheckedCount.ToString("N0")</dd>
+
+                        <dt class="col-sm-5">DB size</dt>
+                        <dd class="col-sm-7">@ledgerStats.DatabaseSize</dd>
+                    </dl>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<MetadataDisplay />
+
+@code {
+    private GetNodeInfoResponse? nodeInfo;
+    private GetNetworkInfoResponse? networkInfo;
+    private GetBootstrapStatusResponse? bootstrapStatus;
+    private GetLedgerStatsResponse? ledgerStats;
+
+    private bool isLoading;
+    private bool hasError;
+    private string? errorMessage;
+    private string? errorDetails;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshAsync();
+    }
+
+    private async Task RefreshAsync()
+    {
+        isLoading = true;
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+        StateHasChanged();
+
+        try
+        {
+            var correlationId = MetadataService.GetCorrelationId();
+            var metadata = MetadataService.GetMetadata(correlationId);
+            var callOptions = new Grpc.Core.CallOptions(metadata, deadline: DateTime.UtcNow.AddSeconds(30));
+
+            nodeInfo = await NodeClient.Client.GetNodeInfoAsync(new GetNodeInfoRequest(), callOptions);
+            networkInfo = await NodeClient.Client.GetNetworkInfoAsync(new GetNetworkInfoRequest(), callOptions);
+            bootstrapStatus = await NodeClient.Client.GetBootstrapStatusAsync(new GetBootstrapStatusRequest(), callOptions);
+            ledgerStats = await NodeClient.Client.GetLedgerStatsAsync(new GetLedgerStatsRequest(), callOptions);
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to load dashboard data.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to refresh General dashboard");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearError()
+    {
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+    }
+}
+

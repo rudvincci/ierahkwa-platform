@@ -1,0 +1,33 @@
+[package]
+name = "mameyforge-token-contract"
+version = "0.1.0"
+edition = "2021"
+authors = ["MameyForge"]
+description = "Fungible token (ERC-20-like) contract template for MameyFutureNode"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Mamey SDK — contract base + shared utilities
+mamey-contracts-base = { git = "https://github.com/Mamey-io/mamey-contracts.git", package = "mamey-contracts-base" }
+mamey-contracts-shared = { git = "https://github.com/Mamey-io/mamey-contracts.git", package = "mamey-contracts-shared" }
+
+# Token standard library
+mamey-token-std = { git = "https://github.com/Mamey-io/mamey-contracts.git", package = "mamey-token-std" }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+panic = "abort"
+
+[profile.release.package."*"]
+opt-level = "z"

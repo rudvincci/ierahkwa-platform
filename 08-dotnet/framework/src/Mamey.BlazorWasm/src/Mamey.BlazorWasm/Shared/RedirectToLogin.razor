@@ -1,0 +1,20 @@
+﻿@using Mamey.Auth.Identity.Managers
+@inject IIdentityRedirectManager RedirectManager
+@inject NavigationManager Nav
+
+@code {
+    private bool _didNavigate;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _didNavigate) return;
+
+        _didNavigate = true;
+        // Let the first frame paint to avoid flashing
+        await Task.Yield();
+
+        var returnUrl = Uri.EscapeDataString(Nav.Uri);
+        // Prefer client-side nav; only use forceLoad if you truly need a full page load
+        RedirectManager.RedirectTo($"/Account/Login?returnUrl={returnUrl}", forceLoad: false);
+    }
+}

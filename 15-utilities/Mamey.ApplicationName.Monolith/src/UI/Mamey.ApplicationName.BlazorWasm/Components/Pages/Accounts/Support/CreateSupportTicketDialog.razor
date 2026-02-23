@@ -1,0 +1,36 @@
+@using Mamey.ApplicationName.BlazorWasm.Models.Support
+
+<MudDialog @ref="dialogRef" MaxWidth="MaxWidth.Small">
+    <DialogContent>
+        <MudTextField T="string" Label="Subject" Variant="Variant.Outlined" FullWidth="true" @bind-Value="NewTicket.Subject" />
+        <MudTextField T="string" Label="Description" Variant="Variant.Outlined" FullWidth="true" Multiline="true" Rows="4" @bind-Value="NewTicket.Description" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" OnClick="CreateTicketAsync">Create Ticket</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="CloseDialog">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private MudDialog dialogRef;
+    private SupportTicket NewTicket = new();
+
+    [Parameter] public EventCallback<SupportTicket> OnTicketCreated { get; set; }
+
+    private async Task CreateTicketAsync()
+    {
+        NewTicket.Id = Guid.NewGuid();
+        NewTicket.Status = "Open";
+        NewTicket.CreatedDate = DateTime.Now;
+        await OnTicketCreated.InvokeAsync(NewTicket);
+        await CloseDialog();
+    }
+
+    private async Task CloseDialog() => await dialogRef.CloseAsync();
+
+    public async Task OpenDialog()
+    {
+        NewTicket = new SupportTicket();
+        await dialogRef.ShowAsync();
+    }
+}

@@ -1,0 +1,96 @@
+@page "/dex/trading-pairs"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<TradingPairs> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Trading Pairs" Icon="fas fa-chart-line" Subtitle="Trading pair management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Pairs" Value="@_tradingPairs.Count.ToString()" Icon="fas fa-chart-line" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="24h Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="24h Trades" Value="@_totalTrades.ToString()" Icon="fas fa-list" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Trading Pairs" Class="mt-4">
+        <MudTable T="TradingPairInfo" Items="@_tradingPairs" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Trading Pair</MudTh>
+                <MudTh>Base Currency</MudTh>
+                <MudTh>Quote Currency</MudTh>
+                <MudTh>Last Price</MudTh>
+                <MudTh>Volume 24h</MudTh>
+                <MudTh>Min Trade</MudTh>
+                <MudTh>Status</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.TradingPair</MudTd>
+                <MudTd>@context.BaseCurrency</MudTd>
+                <MudTd>@context.QuoteCurrency</MudTd>
+                <MudTd>@decimal.Parse(context.LastPrice ?? "0").ToString("F4")</MudTd>
+                <MudTd>@decimal.Parse(context.Volume24h ?? "0").ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.MinTradeAmount ?? "0").ToString("F2")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success">
+                        Active
+                    </MudChip>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<TradingPairInfo> _tradingPairs = new();
+    private int _activeCount;
+    private decimal _totalVolume;
+    private int _totalTrades;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _tradingPairs = await FutureWampumXClient.GetTradingPairsAsync();
+            _activeCount = _tradingPairs.Count; // All pairs are considered active
+            _totalVolume = _tradingPairs.Sum(p => decimal.Parse(p.Volume24h ?? "0"));
+            _totalTrades = _tradingPairs.Count; // Use count as proxy for trades
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading trading pairs");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

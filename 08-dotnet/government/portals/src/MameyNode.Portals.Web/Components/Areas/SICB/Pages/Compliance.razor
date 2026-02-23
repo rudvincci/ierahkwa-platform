@@ -1,0 +1,100 @@
+@page "/sicb/compliance"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject ISICBClient SICBClient
+@inject ILogger<Compliance> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Compliance & Enforcement" Icon="fas fa-gavel" Subtitle="Compliance monitoring and enforcement">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Enforcements" Value="@_enforcements.Count.ToString()" Icon="fas fa-gavel" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Open Cases" Value="@_openCount.ToString()" Icon="fas fa-folder-open" Color="#EF4444" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Resolved" Value="@_resolvedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Critical" Value="@_criticalCount.ToString()" Icon="fas fa-exclamation-circle" Color="#EF4444" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Compliance Enforcements" Class="mt-4">
+        <MudTable T="ComplianceEnforcementInfo" Items="@_enforcements" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Enforcement ID</MudTh>
+                <MudTh>Entity</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Violation</MudTh>
+                <MudTh>Severity</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Reported</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.EnforcementId</MudTd>
+                <MudTd>@context.EntityId</MudTd>
+                <MudTd>@context.EntityType</MudTd>
+                <MudTd>@context.ViolationType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Severity == "Critical" ? Color.Error : context.Severity == "High" ? Color.Warning : Color.Info)">
+                        @context.Severity
+                    </MudChip>
+                </MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Resolved" ? Color.Success : context.Status == "Open" ? Color.Warning : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.ReportedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<ComplianceEnforcementInfo> _enforcements = new();
+    private int _openCount;
+    private int _resolvedCount;
+    private int _criticalCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _enforcements = await SICBClient.GetComplianceEnforcementsAsync();
+            _openCount = _enforcements.Count(e => e.Status == "Open");
+            _resolvedCount = _enforcements.Count(e => e.Status == "Resolved");
+            _criticalCount = _enforcements.Count(e => e.Severity == "Critical");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading compliance enforcements");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

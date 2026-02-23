@@ -1,0 +1,27 @@
+@page "/redirect-to-login"
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var baseRelativePath = Navigation.ToBaseRelativePath(Navigation.Uri);
+
+        if(string.IsNullOrWhiteSpace(baseRelativePath))
+        {
+            Navigation.NavigateTo($"login", true);
+        } else
+        {
+            Navigation.NavigateTo($"login?returnUrl={Uri.EscapeDataString(baseRelativePath)}", true);
+        }
+        // var currentUrl = Navigation.Uri;
+        // var storedUrl = await LocalStorage.GetItemAsync<string>("returnUrl");
+        //
+        // if (string.IsNullOrEmpty(storedUrl))
+        // {
+        //     await LocalStorage.SetItemAsync("returnUrl", currentUrl);
+        // }
+        //
+        // Navigation.NavigateTo("/login");
+    }
+}

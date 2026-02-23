@@ -1,0 +1,30 @@
+@using Mamey.ApplicationName.BlazorWasm.Services
+@using Mamey.ApplicationName.BlazorWasm.Services.Auth
+@inject NavigationManager Navigation
+@inject AuthenticationService _AuthenticationService
+
+<AuthorizeView>
+    <Authorized>
+        Hello, @context.User.Identity?.Name!
+        <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Logout" OnClick="BeginLogOut"
+                   Color="Color.Primary">Log out</MudButton>
+        @* <button class="nav-link btn btn-link" @onclick="BeginLogOut">Log out</button> *@
+    </Authorized>
+    <NotAuthorized>
+        <MudButton Href="/login"
+                   Variant="Variant.Text"
+                   EndIcon="@Icons.Material.Filled.Login"
+                   Color="Color.Primary">
+            Login
+        </MudButton>
+        @* <a href="authentication/login">Log in</a> *@
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    public async Task BeginLogOut()
+    {
+        await _AuthenticationService.LogoutAsync();
+        Navigation.NavigateTo("/");
+    }
+}

@@ -1,0 +1,38 @@
+@namespace MameyNode.Portals.Shared.Components.Forms
+@using MudBlazor
+
+<MudExpansionPanels MultiExpansion="false">
+    <MudExpansionPanel Text="@Title" Icon="@Icons.Material.Filled.FilterList" IsExpanded="@IsExpanded">
+        <MudStack Spacing="3">
+            @ChildContent
+            <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                <MudButton Variant="Variant.Text" OnClick="ClearFilters" Size="Size.Small">Clear</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ApplyFilters" Size="Size.Small">Apply</MudButton>
+            </MudStack>
+        </MudStack>
+    </MudExpansionPanel>
+</MudExpansionPanels>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Filters";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool IsExpanded { get; set; } = false;
+    [Parameter] public EventCallback OnApply { get; set; }
+    [Parameter] public EventCallback OnClear { get; set; }
+
+    private async Task ApplyFilters()
+    {
+        if (OnApply.HasDelegate)
+        {
+            await OnApply.InvokeAsync();
+        }
+    }
+
+    private async Task ClearFilters()
+    {
+        if (OnClear.HasDelegate)
+        {
+            await OnClear.InvokeAsync();
+        }
+    }
+}

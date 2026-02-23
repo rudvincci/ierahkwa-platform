@@ -1,0 +1,121 @@
+@page "/gov/document-naming"
+@attribute [Authorize(Roles = "GovernmentAgent,Admin")]
+@using Mamey.Portal.Shared.Storage.DocumentNaming
+@using Mamey.Portal.Shared.Tenancy
+@inject ITenantContext Tenant
+@inject IDocumentNamingStore Store
+
+<PageTitle>Document Naming</PageTitle>
+
+@code {
+    private DocumentNamingPattern _pattern = DocumentNamingPattern.Default;
+    private string? _saved;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _pattern = await Store.GetAsync(Tenant.TenantId);
+    }
+
+    private async Task Save()
+    {
+        _saved = null;
+        _error = null;
+
+        try
+        {
+            await Store.SetAsync(Tenant.TenantId, _pattern);
+            _saved = "Saved.";
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+}
+
+<MudStack Spacing="3" Style="max-width: 900px;">
+    <MudText Typo="Typo.h4">Document Naming (Tenant)</MudText>
+    <MudAlert Severity="Severity.Info">
+        Configure tenant-specific object-key patterns for citizenship uploads.
+        Supported tokens: <code>{TenantId}</code>, <code>{ApplicationNumber}</code>, <code>{ApplicationId}</code>, <code>{Kind}</code>,
+        <code>{OriginalFileName}</code>, <code>{Unique}</code>, <code>{Date:yyyyMMdd}</code>.
+    </MudAlert>
+
+    @if (!string.IsNullOrWhiteSpace(_saved))
+    {
+        <MudAlert Severity="Severity.Success">@_saved</MudAlert>
+    }
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+
+    <MudPaper Class="pa-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">Citizenship Uploads</MudText>
+
+        <MudTextField @bind-Value="_pattern.PersonalDocumentPattern"
+                      Label="Personal documents pattern"
+                      Variant="Variant.Outlined"
+                      Lines="2" />
+
+        <MudTextField Class="mt-3"
+                      @bind-Value="_pattern.PassportPhotoPattern"
+                      Label="Passport photo pattern"
+                      Variant="Variant.Outlined"
+                      Lines="2" />
+
+        <MudTextField Class="mt-3"
+                      @bind-Value="_pattern.SignatureImagePattern"
+                      Label="Signature image pattern"
+                      Variant="Variant.Outlined"
+                      Lines="2" />
+
+        <MudTextField Class="mt-3"
+                      @bind-Value="_pattern.PassportDocumentPattern"
+                      Label="Passport document pattern"
+                      Variant="Variant.Outlined"
+                      Lines="2" />
+
+        <MudTextField Class="mt-3"
+                      @bind-Value="_pattern.IdCardDocumentPattern"
+                      Label="ID card document pattern"
+                      Variant="Variant.Outlined"
+                      Lines="2" />
+
+        <MudTextField Class="mt-3"
+                      @bind-Value="_pattern.VehicleTagDocumentPattern"
+                      Label="Vehicle tag document pattern"
+                      Variant="Variant.Outlined"
+                      Lines="2" />
+
+        <MudTextField Class="mt-3"
+                      @bind-Value="_pattern.CitizenshipCertificatePattern"
+                      Label="Citizenship certificate pattern"
+                      Variant="Variant.Outlined"
+                      Lines="2" />
+
+        <MudTextField Class="mt-3"
+                      @bind-Value="_pattern.BirthCertificatePattern"
+                      Label="Birth certificate pattern"
+                      Variant="Variant.Outlined"
+                      Lines="2" />
+
+        <MudTextField Class="mt-3"
+                      @bind-Value="_pattern.MarriageCertificatePattern"
+                      Label="Marriage certificate pattern"
+                      Variant="Variant.Outlined"
+                      Lines="2" />
+
+        <MudTextField Class="mt-3"
+                      @bind-Value="_pattern.NameChangeCertificatePattern"
+                      Label="Name change certificate pattern"
+                      Variant="Variant.Outlined"
+                      Lines="2" />
+
+        <MudStack Row="true" Spacing="2" Class="mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save">Save</MudButton>
+        </MudStack>
+    </MudPaper>
+</MudStack>
+

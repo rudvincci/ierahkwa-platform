@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
+
+  <!-- Exclude tests that need extensive API updates -->
+  <ItemGroup>
+    <Compile Remove="_excluded\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.*" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.*" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Shouldly" Version="4.3.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+<PrivateAssets>all</PrivateAssets>
+</PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Mamey.FWID.Identities.Api\Mamey.FWID.Identities.Api.csproj" />
+    <ProjectReference Include="..\..\src\Mamey.FWID.Identities.Infrastructure\Mamey.FWID.Identities.Infrastructure.csproj" />
+    <ProjectReference Include="..\Mamey.FWID.Identities.Tests.Shared\Mamey.FWID.Identities.Tests.Shared.csproj" />
+    <!-- Add ADRaffy.ENSNormalize to resolve transitive dependency from Nethereum.ENS -->
+    <PackageReference Include="ADRaffy.ENSNormalize" Version="0.1.5" />
+  </ItemGroup>
+
+  <!-- Copy API project's deps.json to test output directory for WebApplicationFactory -->
+  <Target Name="CopyDepsJson" AfterTargets="Build">
+    <ItemGroup>
+      <ApiDepsJson Include="..\..\src\Mamey.FWID.Identities.Api\bin\$(Configuration)\$(TargetFramework)\*.deps.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ApiDepsJson)" 
+          DestinationFolder="$(OutputPath)" 
+          SkipUnchangedFiles="true" 
+          Condition="Exists('%(ApiDepsJson.Identity)')" />
+  </Target>
+
+</Project>

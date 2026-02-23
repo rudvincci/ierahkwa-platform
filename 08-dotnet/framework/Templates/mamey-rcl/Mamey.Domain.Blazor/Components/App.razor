@@ -1,0 +1,51 @@
+<Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="@_additionalAssemblies">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized>
+                @if (context.User.Identity?.IsAuthenticated != true)
+                {
+                    <MudContainer Class="mt-4">
+                        <MudAlert Severity="Severity.Warning">Please log in to access this page.</MudAlert>
+                        <MudButton Href="/account/login" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
+                            Go to Login
+                        </MudButton>
+                    </MudContainer>
+                }
+                else
+                {
+                    <MudContainer Class="mt-4">
+                        <MudAlert Severity="Severity.Error">You are not authorized to access this resource.</MudAlert>
+                    </MudContainer>
+                }
+            </NotAuthorized>
+            <Authorizing>
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+            </Authorizing>
+        </AuthorizeRouteView>
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <MudContainer>
+                <MudText Typo="Typo.h4">Not found</MudText>
+                <MudText Typo="Typo.body1">Sorry, there's nothing at this address.</MudText>
+                <MudButton Href="/" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
+                    Return to Home
+                </MudButton>
+            </MudContainer>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    // Additional assemblies for route discovery (BlazorWasm projects)
+    // These are automatically discovered from referenced BlazorWasm projects
+    // You can manually add assemblies here if needed:
+    // private static readonly System.Reflection.Assembly[] _additionalAssemblies = new[]
+    // {
+    //     typeof(Mamey.Domain.Service1.BlazorWasm.Components.Pages.EntityIndex).Assembly,
+    //     typeof(Mamey.Domain.Service2.BlazorWasm.Components.Pages.EntityIndex).Assembly
+    // };
+    private static readonly System.Reflection.Assembly[] _additionalAssemblies = Array.Empty<System.Reflection.Assembly>();
+}
+

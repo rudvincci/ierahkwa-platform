@@ -1,0 +1,95 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-INKG.CitizenPortal.ApiGataway-eff3b8f8-422e-47c1-b00d-1093d7a5f1d1</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <ItemGroup>
+    <PackageReference Include="Ocelot" Version="23.3.3" />
+    <PackageReference Include="Ocelot.Provider.Polly" Version="23.3.3" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="3.10.0" />
+    <PackageReference Include="OpenTracing" Version="0.12.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="ocelot.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.local.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Mamey.WebApi" Version="2.0.*" />
+    <PackageReference Include="Mamey.Tracing.Jaeger" Version="2.0.*" />
+    <PackageReference Include="Mamey.Tracing.Jaeger.RabbitMQ" Version="2.0.*" />
+    <PackageReference Include="Mamey.Security" Version="2.0.*" />
+    <PackageReference Include="Mamey.Secrets.Vault" Version="2.0.*" />
+    <PackageReference Include="Mamey.Metrics.AppMetrics" Version="2.0.*" />
+    <PackageReference Include="Mamey.MessageBrokers" Version="2.0.*" />
+    <PackageReference Include="Mamey.MessageBrokers.RabbitMQ" Version="2.0.*" />
+    <PackageReference Include="Mamey.MessageBrokers.CQRS" Version="2.0.*" />
+    <PackageReference Include="Mamey.Logging" Version="2.0.*" />
+    <PackageReference Include="Mamey.Auth" Version="2.0.*" />
+    <PackageReference Include="Mamey.Net" Version="2.0.*" />
+    <PackageReference Include="Mamey.Azure.Abstractions" Version="2.0.*" />
+    <PackageReference Include="Mamey.Graph" Version="2.0.*" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Auth\src\Mamey.Auth\Mamey.Auth.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Logging\src\Mamey.Logging\Mamey.Logging.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.MessageBrokers.CQRS\src\Mamey.MessageBrokers.CQRS\Mamey.MessageBrokers.CQRS.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.MessageBrokers.RabbitMQ\src\Mamey.MessageBrokers.RabbitMQ\Mamey.MessageBrokers.RabbitMQ.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Metrics.AppMetrics\src\Mamey.Metrics.AppMetrics\Mamey.Metrics.AppMetrics.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Net\src\Mamey.Net\Mamey.Net.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Secrets.Vault\src\Mamey.Secrets.Vault\Mamey.Secrets.Vault.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Security\src\Mamey.Security\Mamey.Security.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Tracing.Jaeger\src\Mamey.Tracing.Jaeger\Mamey.Tracing.Jaeger.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Tracing.Jaeger.RabbitMQ\src\Mamey.Tracing.Jaeger.RabbitMQ\Mamey.Tracing.Jaeger.RabbitMQ.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.WebApi\src\Mamey.WebApi\Mamey.WebApi.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.MessageBrokers\src\Mamey.MessageBrokers\Mamey.MessageBrokers.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Infrastructure\" />
+    <None Remove="certs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastructure\" />
+    <Folder Include="certs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Auth.Jwt\src\Mamey.Auth.Jwt\Mamey.Auth.Jwt.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

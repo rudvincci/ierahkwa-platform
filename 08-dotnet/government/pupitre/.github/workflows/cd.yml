@@ -1,0 +1,150 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - 'v*'
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository_owner }}/pupitre
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    strategy:
+      matrix:
+        service:
+          # Foundation Services
+          - { name: users, path: src/Services/Foundation/Pupitre.Users/src/Pupitre.Users.Api, port: 60001 }
+          - { name: gles, path: src/Services/Foundation/Pupitre.GLEs/src/Pupitre.GLEs.Api, port: 60002 }
+          - { name: curricula, path: src/Services/Foundation/Pupitre.Curricula/src/Pupitre.Curricula.Api, port: 60003 }
+          - { name: lessons, path: src/Services/Foundation/Pupitre.Lessons/src/Pupitre.Lessons.Api, port: 60004 }
+          - { name: assessments, path: src/Services/Foundation/Pupitre.Assessments/src/Pupitre.Assessments.Api, port: 60005 }
+          - { name: progress, path: src/Services/Foundation/Pupitre.Progress/src/Pupitre.Progress.Api, port: 60006 }
+          - { name: rewards, path: src/Services/Foundation/Pupitre.Rewards/src/Pupitre.Rewards.Api, port: 60007 }
+          - { name: notifications, path: src/Services/Foundation/Pupitre.Notifications/src/Pupitre.Notifications.Api, port: 60008 }
+          - { name: parents, path: src/Services/Foundation/Pupitre.Parents/src/Pupitre.Parents.Api, port: 60009 }
+          - { name: analytics, path: src/Services/Foundation/Pupitre.Analytics/src/Pupitre.Analytics.Api, port: 60010 }
+          # AI Services
+          - { name: ai-tutors, path: src/Services/AI/Pupitre.AITutors/src/Pupitre.AITutors.Api, port: 60101 }
+          - { name: ai-assessments, path: src/Services/AI/Pupitre.AIAssessments/src/Pupitre.AIAssessments.Api, port: 60102 }
+          - { name: ai-content, path: src/Services/AI/Pupitre.AIContent/src/Pupitre.AIContent.Api, port: 60103 }
+          - { name: ai-speech, path: src/Services/AI/Pupitre.AISpeech/src/Pupitre.AISpeech.Api, port: 60104 }
+          - { name: ai-adaptive, path: src/Services/AI/Pupitre.AIAdaptive/src/Pupitre.AIAdaptive.Api, port: 60105 }
+          - { name: ai-behavior, path: src/Services/AI/Pupitre.AIBehavior/src/Pupitre.AIBehavior.Api, port: 60106 }
+          - { name: ai-safety, path: src/Services/AI/Pupitre.AISafety/src/Pupitre.AISafety.Api, port: 60107 }
+          - { name: ai-recommendations, path: src/Services/AI/Pupitre.AIRecommendations/src/Pupitre.AIRecommendations.Api, port: 60108 }
+          - { name: ai-translation, path: src/Services/AI/Pupitre.AITranslation/src/Pupitre.AITranslation.Api, port: 60109 }
+          - { name: ai-vision, path: src/Services/AI/Pupitre.AIVision/src/Pupitre.AIVision.Api, port: 60110 }
+          # Support Services
+          - { name: educators, path: src/Services/Support/Pupitre.Educators/src/Pupitre.Educators.Api, port: 60022 }
+          - { name: fundraising, path: src/Services/Support/Pupitre.Fundraising/src/Pupitre.Fundraising.Api, port: 60023 }
+          - { name: bookstore, path: src/Services/Support/Pupitre.Bookstore/src/Pupitre.Bookstore.Api, port: 60024 }
+          - { name: aftercare, path: src/Services/Support/Pupitre.Aftercare/src/Pupitre.Aftercare.Api, port: 60025 }
+          - { name: accessibility, path: src/Services/Support/Pupitre.Accessibility/src/Pupitre.Accessibility.Api, port: 60026 }
+          - { name: compliance, path: src/Services/Support/Pupitre.Compliance/src/Pupitre.Compliance.Api, port: 60027 }
+          - { name: ministries, path: src/Services/Support/Pupitre.Ministries/src/Pupitre.Ministries.Api, port: 60028 }
+          - { name: operations, path: src/Services/Support/Pupitre.Operations/src/Pupitre.Operations.Api, port: 60029 }
+          # Infrastructure
+          - { name: api-gateway, path: src/Infrastructure/Pupitre.ApiGateway, port: 60000 }
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service.name }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=sha,prefix=
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.service.path }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-staging:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+      
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > kubeconfig
+          export KUBECONFIG=kubeconfig
+      
+      - name: Deploy to staging
+        run: |
+          helm upgrade --install pupitre ./deploy/helm/pupitre \
+            --namespace pupitre-staging \
+            --create-namespace \
+            -f ./deploy/helm/pupitre/values-staging.yaml \
+            --set global.imageTag=${{ github.sha }}
+
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment: production
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+      
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > kubeconfig
+          export KUBECONFIG=kubeconfig
+      
+      - name: Deploy to production
+        run: |
+          helm upgrade --install pupitre ./deploy/helm/pupitre \
+            --namespace pupitre-production \
+            --create-namespace \
+            -f ./deploy/helm/pupitre/values-production.yaml \
+            --set global.imageTag=${{ github.ref_name }}
+      
+      - name: Notify deployment
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "🚀 Pupitre ${{ github.ref_name }} deployed to production!"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

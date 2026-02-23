@@ -1,0 +1,215 @@
+@page "/citizen/dashboard"
+@layout CitizenLayout
+@attribute [Authorize]
+
+<PageTitle>Citizen Dashboard</PageTitle>
+
+<PageHeader Title="My Dashboard" Subtitle="Welcome back! Here's an overview of your citizen services." />
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" md="8">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderAvatar>
+                    <MudAvatar Color="Color.Primary" Size="Size.Large">JS</MudAvatar>
+                </CardHeaderAvatar>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">@_citizenName</MudText>
+                    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                        <StatusChip Status="@_citizenshipStatus" />
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                            Member since @_memberSince.ToString("MMMM yyyy")
+                        </MudText>
+                    </MudStack>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/citizen/profile">
+                        Edit Profile
+                    </MudButton>
+                </CardHeaderActions>
+            </MudCardHeader>
+        </MudCard>
+
+        <MudText Typo="Typo.h6" Class="mt-4 mb-2">My Documents</MudText>
+        <MudGrid Spacing="2">
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="1" Class="cursor-pointer" onclick="window.location.href='/citizen/passport'">
+                    <MudCardContent>
+                        <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                            <MudIcon Icon="@Icons.Material.Filled.Book" Size="Size.Large" Color="Color.Primary" />
+                            <MudText Typo="Typo.subtitle1">Passport</MudText>
+                            @if (_hasPassport)
+                            {
+                                <StatusChip Status="Active" />
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Expires: @_passportExpiry?.ToString("d")</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Not issued</MudText>
+                            }
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="1" Class="cursor-pointer" onclick="window.location.href='/citizen/travel-id'">
+                    <MudCardContent>
+                        <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                            <MudIcon Icon="@Icons.Material.Filled.CreditCard" Size="Size.Large" Color="Color.Secondary" />
+                            <MudText Typo="Typo.subtitle1">Travel ID</MudText>
+                            @if (_hasTravelId)
+                            {
+                                <StatusChip Status="Active" />
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Expires: @_travelIdExpiry?.ToString("d")</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Not issued</MudText>
+                            }
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="1" Class="cursor-pointer" onclick="window.location.href='/citizen/certificates'">
+                    <MudCardContent>
+                        <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                            <MudIcon Icon="@Icons.Material.Filled.CardMembership" Size="Size.Large" Color="Color.Tertiary" />
+                            <MudText Typo="Typo.subtitle1">Certificates</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">@_certificateCount document(s)</MudText>
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+
+        <MudText Typo="Typo.h6" Class="mt-4 mb-2">Recent Activity</MudText>
+        <MudTimeline TimelinePosition="TimelinePosition.Start">
+            @foreach (var activity in _recentActivities)
+            {
+                <MudTimelineItem Color="@activity.Color" Size="Size.Small">
+                    <ItemContent>
+                        <MudText Typo="Typo.body2">@activity.Description</MudText>
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">@activity.Timestamp.ToString("g")</MudText>
+                    </ItemContent>
+                </MudTimelineItem>
+            }
+        </MudTimeline>
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Quick Actions</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Spacing="2">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true"
+                               StartIcon="@Icons.Material.Filled.Refresh" Href="/citizen/request-renewal">
+                        Request Document Renewal
+                    </MudButton>
+                    
+                    @if (_citizenshipStatus != "Citizen")
+                    {
+                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" FullWidth="true"
+                                   StartIcon="@Icons.Material.Filled.TrendingUp" Href="/citizen/apply-progression">
+                            Apply for Status Progression
+                        </MudButton>
+                    }
+                    
+                    <MudButton Variant="Variant.Outlined" Color="Color.Default" FullWidth="true"
+                               StartIcon="@Icons.Material.Filled.Download" Href="/citizen/documents">
+                        Download Documents
+                    </MudButton>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+
+        <MudCard Elevation="2" Class="mt-3">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.h6">Notifications</MudText>
+                        <MudBadge Content="@_unreadNotifications" Color="Color.Error" Overlap="true" Visible="@(_unreadNotifications > 0)">
+                            <MudIcon Icon="@Icons.Material.Filled.Notifications" />
+                        </MudBadge>
+                    </MudStack>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (_notifications.Any())
+                {
+                    <MudList T="string" Dense="true">
+                        @foreach (var notification in _notifications.Take(5))
+                        {
+                            <MudListItem>
+                                <MudStack Spacing="0">
+                                    <MudText Typo="Typo.body2">@notification.Title</MudText>
+                                    <MudText Typo="Typo.caption" Class="mud-text-secondary">@notification.Timestamp.ToString("g")</MudText>
+                                </MudStack>
+                            </MudListItem>
+                        }
+                    </MudList>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" FullWidth="true" Href="/citizen/notifications">
+                        View All Notifications
+                    </MudButton>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary">No new notifications</MudText>
+                }
+            </MudCardContent>
+        </MudCard>
+
+        <MudCard Elevation="2" Class="mt-3">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Need Help?</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudList T="string" Dense="true">
+                    <MudListItem Icon="@Icons.Material.Filled.Help" Href="/faq">FAQ</MudListItem>
+                    <MudListItem Icon="@Icons.Material.Filled.Email" Href="mailto:support@mamey.gov">Contact Support</MudListItem>
+                    <MudListItem Icon="@Icons.Material.Filled.Chat" Href="/citizen/support">Live Chat</MudListItem>
+                </MudList>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private string _citizenName = "John Smith";
+    private string _citizenshipStatus = "Resident";
+    private DateTime _memberSince = new(2024, 3, 15);
+    
+    private bool _hasPassport = true;
+    private DateTime? _passportExpiry = DateTime.Now.AddYears(4);
+    
+    private bool _hasTravelId = true;
+    private DateTime? _travelIdExpiry = DateTime.Now.AddYears(3);
+    
+    private int _certificateCount = 2;
+    private int _unreadNotifications = 3;
+
+    private List<ActivityItem> _recentActivities = new()
+    {
+        new("Travel ID renewed successfully", DateTime.Now.AddDays(-5), Color.Success),
+        new("Profile information updated", DateTime.Now.AddDays(-12), Color.Info),
+        new("Status progression approved", DateTime.Now.AddMonths(-2), Color.Primary),
+    };
+
+    private List<NotificationItem> _notifications = new()
+    {
+        new("Document Expiry Reminder", "Your passport expires in 6 months", DateTime.Now.AddDays(-1)),
+        new("New Service Available", "Apply for variant ID cards online", DateTime.Now.AddDays(-3)),
+        new("System Maintenance", "Scheduled maintenance on Sunday", DateTime.Now.AddDays(-5)),
+    };
+
+    private record ActivityItem(string Description, DateTime Timestamp, Color Color);
+    private record NotificationItem(string Title, string Message, DateTime Timestamp);
+}

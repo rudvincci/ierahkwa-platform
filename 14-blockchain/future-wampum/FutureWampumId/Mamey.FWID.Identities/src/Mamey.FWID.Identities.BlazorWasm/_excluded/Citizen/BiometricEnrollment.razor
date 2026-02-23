@@ -1,0 +1,356 @@
+@* This file is excluded and should not be compiled. Route disabled. *@
+@* @page "/identity/biometrics" - REMOVED to prevent duplicate route *@
+@inject IIdentityService IdentityService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IJSRuntime JS
+
+<PageTitle>Biometrics - FutureWampumID</PageTitle>
+
+<MudGrid>
+    <MudItem xs="12">
+        <div class="d-flex align-center mb-4">
+            <MudText Typo="Typo.h4">Biometric Management</MudText>
+            <MudSpacer />
+            <MudButton Color="Color.Primary" 
+                       Variant="Variant.Filled" 
+                       StartIcon="@Icons.Material.Filled.Add"
+                       OnClick="@OpenEnrollmentDialog">
+                Enroll New Biometric
+            </MudButton>
+        </div>
+    </MudItem>
+</MudGrid>
+
+<!-- Info Banner -->
+<MudAlert Severity="Severity.Info" Class="mb-4" Icon="@Icons.Material.Filled.Fingerprint">
+    <MudText Typo="Typo.body1">
+        <strong>Secure Biometric Authentication:</strong> Your biometric templates are stored securely on the blockchain and are never shared with third parties.
+    </MudText>
+</MudAlert>
+
+@if (_isLoading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mb-4" />
+}
+else if (!_biometrics.Any())
+{
+    <MudCard Elevation="2" Class="pa-8 text-center">
+        <MudIcon Icon="@Icons.Material.Filled.Fingerprint" Size="Size.Large" Color="Color.Primary" Style="font-size: 4rem;" />
+        <MudText Typo="Typo.h5" Class="mt-4">No Biometrics Enrolled</MudText>
+        <MudText Typo="Typo.body1" Class="mud-text-secondary mt-2 mb-4">
+            Add biometric authentication for enhanced security.
+        </MudText>
+        <MudButton Color="Color.Primary" 
+                   Variant="Variant.Filled" 
+                   StartIcon="@Icons.Material.Filled.Add"
+                   OnClick="@OpenEnrollmentDialog">
+            Enroll Your First Biometric
+        </MudButton>
+    </MudCard>
+}
+else
+{
+    <MudGrid>
+        @foreach (var biometric in _biometrics)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="2">
+                    <MudCardHeader>
+                        <CardHeaderAvatar>
+                            <MudAvatar Color="@(biometric.IsActive ? Color.Success : Color.Default)">
+                                <MudIcon Icon="@GetModalityIcon(biometric.Modality)" />
+                            </MudAvatar>
+                        </CardHeaderAvatar>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@biometric.Modality</MudText>
+                            <MudChip T="string" Size="Size.Small" Color="@(biometric.IsActive ? Color.Success : Color.Default)">
+                                @(biometric.IsActive ? "Active" : "Inactive")
+                            </MudChip>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                            Enrolled: @biometric.EnrolledAt.ToLocalTime().ToString("g")
+                        </MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Color="Color.Primary" 
+                                   Variant="Variant.Text" 
+                                   Size="Size.Small"
+                                   OnClick="@(() => VerifyBiometric(biometric))">
+                            Test
+                        </MudButton>
+                        <MudButton Color="Color.Error" 
+                                   Variant="Variant.Text" 
+                                   Size="Size.Small"
+                                   OnClick="@(() => RemoveBiometric(biometric))">
+                            Remove
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+<!-- Enrollment Dialog -->
+<MudDialog @bind-Visible="_showEnrollmentDialog" Options="@_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Fingerprint" Class="mr-2" />
+            Enroll New Biometric
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudSelect @bind-Value="_selectedModality" Label="Biometric Type" Variant="Variant.Outlined">
+                    <MudSelectItem Value="@("Fingerprint")">
+                        <div class="d-flex align-center">
+                            <MudIcon Icon="@Icons.Material.Filled.Fingerprint" Class="mr-2" />
+                            Fingerprint
+                        </div>
+                    </MudSelectItem>
+                    <MudSelectItem Value="@("Face")">
+                        <div class="d-flex align-center">
+                            <MudIcon Icon="@Icons.Material.Filled.Face" Class="mr-2" />
+                            Face Recognition
+                        </div>
+                    </MudSelectItem>
+                    <MudSelectItem Value="@("Voice")">
+                        <div class="d-flex align-center">
+                            <MudIcon Icon="@Icons.Material.Filled.Mic" Class="mr-2" />
+                            Voice Print
+                        </div>
+                    </MudSelectItem>
+                    <MudSelectItem Value="@("Iris")">
+                        <div class="d-flex align-center">
+                            <MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Class="mr-2" />
+                            Iris Scan
+                        </div>
+                    </MudSelectItem>
+                </MudSelect>
+            </MudItem>
+            
+            <MudItem xs="12">
+                <MudAlert Severity="Severity.Info" Dense="true">
+                    <MudText Typo="Typo.body2">
+                        @GetModalityInstructions()
+                    </MudText>
+                </MudAlert>
+            </MudItem>
+            
+            @if (_isCapturing)
+            {
+                <MudItem xs="12" Class="text-center">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+                    <MudText Typo="Typo.body2" Class="mt-2">Capturing biometric data...</MudText>
+                </MudItem>
+            }
+            else if (_capturedData != null)
+            {
+                <MudItem xs="12">
+                    <MudAlert Severity="Severity.Success" Dense="true">
+                        Biometric data captured successfully!
+                    </MudAlert>
+                </MudItem>
+            }
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@CloseEnrollmentDialog">Cancel</MudButton>
+        @if (_capturedData == null)
+        {
+            <MudButton Color="Color.Primary" 
+                       Variant="Variant.Filled" 
+                       OnClick="@CaptureBiometric"
+                       Disabled="@(string.IsNullOrEmpty(_selectedModality) || _isCapturing)">
+                <MudIcon Icon="@Icons.Material.Filled.PhotoCamera" Class="mr-1" />
+                Capture
+            </MudButton>
+        }
+        else
+        {
+            <MudButton Color="Color.Primary" 
+                       Variant="Variant.Filled" 
+                       OnClick="@EnrollBiometric"
+                       Disabled="@_isEnrolling">
+                @if (_isEnrolling)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-1" />
+                }
+                Enroll
+            </MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private bool _isLoading = true;
+    private bool _showEnrollmentDialog = false;
+    private bool _isCapturing = false;
+    private bool _isEnrolling = false;
+    private string? _selectedModality;
+    private string? _capturedData;
+    private List<BiometricInfoDto> _biometrics = new();
+
+    // Mock identity ID - in production, get from auth state
+    private Guid _identityId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    private DialogOptions _dialogOptions = new()
+    {
+        MaxWidth = MaxWidth.Small,
+        FullWidth = true
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBiometricsAsync();
+    }
+
+    private async Task LoadBiometricsAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            _biometrics = await IdentityService.GetBiometricsAsync(_identityId);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading biometrics: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private string GetModalityIcon(string modality)
+    {
+        return modality?.ToLower() switch
+        {
+            "fingerprint" => Icons.Material.Filled.Fingerprint,
+            "face" => Icons.Material.Filled.Face,
+            "voice" => Icons.Material.Filled.Mic,
+            "iris" => Icons.Material.Filled.RemoveRedEye,
+            _ => Icons.Material.Filled.Security
+        };
+    }
+
+    private string GetModalityInstructions()
+    {
+        return _selectedModality?.ToLower() switch
+        {
+            "fingerprint" => "Place your finger on the scanner when prompted.",
+            "face" => "Look directly at the camera and ensure good lighting.",
+            "voice" => "Speak the displayed phrase clearly when prompted.",
+            "iris" => "Look at the iris scanner and keep your eyes open.",
+            _ => "Select a biometric type to see instructions."
+        };
+    }
+
+    private void OpenEnrollmentDialog()
+    {
+        _selectedModality = null;
+        _capturedData = null;
+        _showEnrollmentDialog = true;
+    }
+
+    private void CloseEnrollmentDialog()
+    {
+        _showEnrollmentDialog = false;
+        _selectedModality = null;
+        _capturedData = null;
+    }
+
+    private async Task CaptureBiometric()
+    {
+        _isCapturing = true;
+        StateHasChanged();
+
+        try
+        {
+            // Simulate biometric capture - in production, this would interface with hardware
+            await Task.Delay(2000);
+            
+            // Generate mock template data
+            _capturedData = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            
+            Snackbar.Add("Biometric captured successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Capture failed: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isCapturing = false;
+        }
+    }
+
+    private async Task EnrollBiometric()
+    {
+        if (string.IsNullOrEmpty(_selectedModality) || string.IsNullOrEmpty(_capturedData))
+            return;
+
+        _isEnrolling = true;
+        try
+        {
+            var request = new BiometricEnrollmentDto(_selectedModality, _capturedData);
+            var result = await IdentityService.EnrollBiometricAsync(_identityId, request);
+
+            if (result.Success)
+            {
+                Snackbar.Add("Biometric enrolled successfully", Severity.Success);
+                CloseEnrollmentDialog();
+                await LoadBiometricsAsync();
+            }
+            else
+            {
+                Snackbar.Add($"Enrollment failed: {result.ErrorMessage}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error enrolling biometric: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isEnrolling = false;
+        }
+    }
+
+    private async Task VerifyBiometric(BiometricInfoDto biometric)
+    {
+        try
+        {
+            // Simulate verification test
+            await Task.Delay(1000);
+            
+            var mockTemplate = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            var request = new BiometricVerificationDto(biometric.Modality, mockTemplate);
+            var result = await IdentityService.VerifyBiometricAsync(_identityId, request);
+
+            if (result.IsMatch)
+            {
+                Snackbar.Add($"Verification successful! Confidence: {result.Confidence:P0}", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Verification failed: {result.ErrorMessage}", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error during verification: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task RemoveBiometric(BiometricInfoDto biometric)
+    {
+        // In production, show confirmation dialog first
+        Snackbar.Add($"Removing {biometric.Modality} biometric...", Severity.Info);
+        await LoadBiometricsAsync();
+    }
+}

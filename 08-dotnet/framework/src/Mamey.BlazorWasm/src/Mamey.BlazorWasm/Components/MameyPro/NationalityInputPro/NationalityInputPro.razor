@@ -1,0 +1,101 @@
+@using Mamey.Types
+@using Mamey.BlazorWasm.Components.Foundation
+@using System.ComponentModel.DataAnnotations
+
+<MudSelect T="string"
+           Label="@Label"
+           Placeholder="@Placeholder"
+           Value="@_selectedValue"
+           ValueChanged="@OnValueChanged"
+           Required="@Required"
+           Disabled="@Disabled"
+           Variant="@Variant"
+           Dense="@Dense"
+           Error="_error"
+           ErrorText="@_errorText"
+           Class="@Class"
+           Style="@Style">
+    @if (AllowEmpty && !Required)
+    {
+        <MudSelectItem T="string" Value="@((string?)null)">-- Select --</MudSelectItem>
+    }
+    @foreach (var nationality in _nationalities)
+    {
+        <MudSelectItem T="string" Value="@nationality.Code">@nationality.Name</MudSelectItem>
+    }
+</MudSelect>
+<FieldMessages HelperText="@HelperText" />
+
+@code {
+    [Parameter] public string Label { get; set; } = "Nationality";
+    [Parameter] public string HelperText { get; set; } = "Select your nationality";
+    [Parameter] public string Placeholder { get; set; } = "Select nationality";
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public bool Dense { get; set; } = true;
+    [Parameter] public bool AllowEmpty { get; set; } = true;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public Nationality? Value { get; set; }
+    [Parameter] public EventCallback<Nationality?> ValueChanged { get; set; }
+
+    private string? _selectedValue;
+    private bool _error = false;
+    private string _errorText = "";
+
+    private readonly List<NationalityOption> _nationalities = new()
+    {
+        new("PL", "Poland"),
+        new("DE", "Germany"),
+        new("FR", "France"),
+        new("ES", "Spain"),
+        new("GB", "United Kingdom")
+    };
+
+    protected override void OnParametersSet()
+    {
+        if (Value is not null)
+        {
+            _selectedValue = Value.Value;
+        }
+        else if (!Required)
+        {
+            _selectedValue = null;
+        }
+    }
+
+    private async Task OnValueChanged(string? value)
+    {
+        _error = false;
+        _errorText = "";
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            await ValueChanged.InvokeAsync(null);
+            StateHasChanged();
+            return;
+        }
+
+        try
+        {
+            var nationality = new Nationality(value);
+            await ValueChanged.InvokeAsync(nationality);
+        }
+        catch (Exception ex)
+        {
+            _error = true;
+            _errorText = ex.Message;
+            await ValueChanged.InvokeAsync(null);
+        }
+        StateHasChanged();
+    }
+
+    private record NationalityOption(string Code, string Name);
+}
+
+
+
+
+

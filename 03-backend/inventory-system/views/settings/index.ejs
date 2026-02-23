@@ -1,0 +1,71 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid p-4">
+    <h2 class="mb-4"><i class="bi bi-gear"></i> Settings</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Application Settings</div>
+                <div class="card-body">
+                    <form method="POST" action="/settings">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Company Name</label>
+                                <input type="text" name="company_name" class="form-control" value="<%= settings.company_name || '' %>">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Currency</label>
+                                <input type="text" name="currency" class="form-control" value="<%= settings.currency || 'USD' %>">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Date Format</label>
+                                <input type="text" name="date_format" class="form-control" value="<%= settings.date_format || 'YYYY-MM-DD' %>">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Items per Page</label>
+                                <input type="number" name="items_per_page" class="form-control" value="<%= settings.items_per_page || 25 %>">
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input type="checkbox" name="low_stock_alert" class="form-check-input" id="low_stock_alert" <%= settings.low_stock_alert === 'true' ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="low_stock_alert">Enable Low Stock Alerts</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Save Settings</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">Database Backup</div>
+                <div class="card-body">
+                    <p class="text-muted">Download a backup of your database.</p>
+                    <a href="/settings/backup" class="btn btn-success w-100 mb-2">
+                        <i class="bi bi-download"></i> Download Database
+                    </a>
+                    <a href="/settings/backup-all" class="btn btn-outline-success w-100">
+                        <i class="bi bi-archive"></i> Full Backup (ZIP)
+                    </a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">Quick Links</div>
+                <div class="card-body">
+                    <a href="/settings/help" class="btn btn-outline-info w-100 mb-2">
+                        <i class="bi bi-question-circle"></i> Help Documentation
+                    </a>
+                    <a href="/settings/about" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-info-circle"></i> About
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

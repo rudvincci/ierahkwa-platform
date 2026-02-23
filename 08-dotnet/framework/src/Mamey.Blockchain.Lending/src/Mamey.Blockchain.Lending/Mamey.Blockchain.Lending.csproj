@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>Mamey.Blockchain.Lending - .NET client library for MameyNode LendingService via gRPC</Description>
+    <Authors>Mamey.io</Authors>
+    <LangVersion>Latest</LangVersion>
+    <AssemblyName>Mamey.Blockchain.Lending</AssemblyName>
+    <Title>Mamey.Blockchain.Lending</Title>
+    <PackageId>Mamey.Blockchain.Lending</PackageId>
+    <PackageTags>Mamey;Blockchain;LendingService;gRPC</PackageTags>
+    <Version>2.0.0</Version>
+    <PackageLicenseExpression>Proprietary</PackageLicenseExpression>
+    <Copyright>Copyright (c) 2025 Mamey.io</Copyright>
+    <Company>Mamey.io</Company>
+    <PackageProjectUrl>https://github.com/Mamey-io/Mamey</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Mamey-io/Mamey</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" Version="2.59.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.59.0" PrivateAssets="All" />
+    <PackageReference Include="Google.Protobuf" Version="3.31.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.11" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey\Mamey.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Protobuf Include="Protos\lending.proto" GrpcServices="Client">
+      <Link>Protos\lending.proto</Link>
+    </Protobuf>
+  </ItemGroup>
+</Project>

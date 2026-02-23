@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- This is a library project, not a standalone application -->
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.65.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Google.Protobuf" Version="3.31.1" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.65.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.66.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  
+  <!-- Framework reference for Program.cs (testing/demo only) -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <!-- Removed project reference to Identities.Api to break circular dependency -->
+  <!-- Proto file is referenced directly via file path below -->
+  <!-- Conditional references: Project reference in Debug, Package reference in Release -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey\src\Mamey\Mamey.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Logging\src\Mamey.Logging\Mamey.Logging.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Secrets.Vault\src\Mamey.Secrets.Vault\Mamey.Secrets.Vault.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Mamey" Version="2.0.*" />
+    <PackageReference Include="Mamey.Logging" Version="2.0.*" />
+    <PackageReference Include="Mamey.Secrets.Vault" Version="2.0.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Protos\Biometric.proto" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Exclude generated files from compilation to avoid duplicates -->
+    <Compile Remove="Generated\**" />
+    <Compile Remove="Generated\*.cs" />
+    <!-- Exclude Program.cs from library build - it's only for testing/demo -->
+    <Compile Remove="Program.cs" Condition="'$(Configuration)' == 'Release'" />
+  </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="..\Mamey.FWID.Identities.Api\Protos\Biometric.proto" GrpcServices="Client">
+      <Access>public</Access>
+      <ProtoCompile>true</ProtoCompile>
+      <CompileOutputs>true</CompileOutputs>
+      <OutputDir>$(ProjectDir)Generated</OutputDir>
+      <Generator></Generator>
+    </Protobuf>
+  </ItemGroup>
+</Project>
+
+

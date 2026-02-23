@@ -1,0 +1,98 @@
+@page "/ledger/transactions"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumLedgerClient FutureWampumLedgerClient
+@inject ILogger<Transactions> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Transactions" Icon="fas fa-list" Subtitle="Transaction management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Transactions" Value="@_transactions.Count.ToString()" Icon="fas fa-list" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Confirmed" Value="@_confirmedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Transactions" Class="mt-4">
+        <MudTable T="TransactionInfo" Items="@_transactions" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Transaction ID</MudTh>
+                <MudTh>From</MudTh>
+                <MudTh>To</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Currency</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Timestamp</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.TransactionId</MudTd>
+                <MudTd>@context.FromAccount</MudTd>
+                <MudTd>@context.ToAccount</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd>@context.TransactionType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == TransactionStatus.Confirmed ? Color.Success : context.Status == TransactionStatus.Pending ? Color.Warning : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.Timestamp.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<TransactionInfo> _transactions = new();
+    private decimal _totalVolume;
+    private int _confirmedCount;
+    private int _pendingCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _transactions = await FutureWampumLedgerClient.GetTransactionsAsync(100);
+            _totalVolume = _transactions.Sum(t => decimal.Parse(t.Amount));
+            _confirmedCount = _transactions.Count(t => t.Status == TransactionStatus.Confirmed);
+            _pendingCount = _transactions.Count(t => t.Status == TransactionStatus.Pending);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading transactions");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

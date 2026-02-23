@@ -1,0 +1,36 @@
+### Mamey FutureWampumID Operations API Routes
+### Base URL: http://localhost:5007
+
+@baseUrl = http://localhost:5007
+@contentType = application/json
+
+### ============================================
+### HEALTH & INFO
+### ============================================
+
+### Root Endpoint (Server Status)
+GET {{baseUrl}}/
+
+### Health Check
+GET {{baseUrl}}/health
+
+### ============================================
+### OPERATIONS INFO
+### ============================================
+
+# The Operations service provides:
+# - Server status and metrics
+# - Real-time operation tracking via SignalR hub at /fwid
+# - gRPC service for operation queries
+# - Event handlers for all FWID service events
+
+### ============================================
+### TESTING NOTES
+### ============================================
+
+# The Operations service is primarily event-driven
+# It tracks operations from all FWID services (Identities, DIDs, ZKPs, AccessControls, Credentials)
+# Use SignalR client to connect to /fwid hub for real-time updates
+# gRPC service available for operation queries
+
+

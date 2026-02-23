@@ -1,0 +1,100 @@
+@page "/ledger-integration/compliance"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumLedgerClient FutureWampumLedgerClient
+@inject ILogger<Compliance> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Compliance" Icon="fas fa-shield-alt" Subtitle="Ledger compliance integration">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Flags" Value="@_flags.Count.ToString()" Icon="fas fa-flag" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Open" Value="@_openCount.ToString()" Icon="fas fa-folder-open" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="High Severity" Value="@_highSeverityCount.ToString()" Icon="fas fa-exclamation-circle" Color="#EF4444" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Resolved" Value="@_resolvedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Transaction Flags" Class="mt-4">
+        <MudTable T="TransactionFlagInfo" Items="@_flags" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Flag ID</MudTh>
+                <MudTh>Transaction ID</MudTh>
+                <MudTh>Flag Type</MudTh>
+                <MudTh>Severity</MudTh>
+                <MudTh>Reason</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.FlagId</MudTd>
+                <MudTd>@context.TransactionId</MudTd>
+                <MudTd>@context.FlagType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Severity == "Critical" ? Color.Error : context.Severity == "High" ? Color.Warning : Color.Info)">
+                        @context.Severity
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.Reason</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == FlagStatus.Resolved ? Color.Success : context.Status == FlagStatus.Active ? Color.Warning : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<TransactionFlagInfo> _flags = new();
+    private int _openCount;
+    private int _highSeverityCount;
+    private int _resolvedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _flags = await FutureWampumLedgerClient.GetTransactionFlagsAsync();
+            _openCount = _flags.Count(f => f.Status == FlagStatus.Active);
+            _highSeverityCount = _flags.Count(f => f.Severity == "High" || f.Severity == "Critical");
+            _resolvedCount = _flags.Count(f => f.Status == FlagStatus.Resolved);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading transaction flags");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

@@ -1,0 +1,32 @@
+﻿@*@inject IHubContext<UploadHub> UploadHubContext*@
+
+@*<div class="mud-container">
+    <MudCard>
+        <MudCardContent>
+            <MudText Typo="Typo.h5">File Upload</MudText>
+            <MudFileUpload
+            <MudFileInput Multiple="false" OnChanged="UploadFile" />
+            @if (!string.IsNullOrEmpty(uploadedFileName))
+            {
+                <MudAlert Severity="Severity.Success" Variant="Variant.Filled">
+                    Successfully uploaded @uploadedFileName!
+                </MudAlert>
+            }
+        </MudCardContent>
+    </MudCard>
+</div>*@
+
+@*@code {
+    private string uploadedFileName;
+
+    private async Task UploadFile(IMudFile mudFile)
+    {
+        // This is just a mock-up, in a real-world scenario you'd be sending the file to a server or some storage.
+        await Task.Delay(1000); // simulating some delay
+
+        uploadedFileName = mudFile.Name;
+
+        // Triggering SignalR hub to notify of upload completion (or progress, if you wish)
+        await UploadHubContext.Clients.All.SendAsync("FileUploaded", uploadedFileName);
+    }
+}*@

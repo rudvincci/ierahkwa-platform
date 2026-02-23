@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <!-- Conditional references: Project reference in Debug, Package reference in Release -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Microservice.Abstractions\src\Mamey.Microservice.Abstractions\Mamey.Microservice.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Mamey.Microservice.Abstractions" Version="2.0.*" />
+  </ItemGroup>
+</Project>

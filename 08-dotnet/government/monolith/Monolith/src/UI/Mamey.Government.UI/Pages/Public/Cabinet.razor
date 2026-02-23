@@ -1,0 +1,61 @@
+@page "/cabinet"
+
+<PageTitle>Cabinet - Mamey Government Portal</PageTitle>
+
+<MudPaper Elevation="0" Class="pa-6">
+    <MudStack Spacing="4">
+        <MudText Typo="Typo.h4" Color="Color.Primary">Government Cabinet</MudText>
+        
+        <MudText Typo="Typo.body1">
+            Our government is led by dedicated public servants committed to serving our citizens with integrity,
+            transparency, and excellence.
+        </MudText>
+
+        <MudDivider Class="my-4" />
+
+        <MudGrid>
+            @foreach (var member in _cabinetMembers)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="2">
+                        <MudCardContent>
+                            <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                                <MudAvatar Size="Size.Large" Color="Color.Primary">
+                                    <MudIcon Icon="@Icons.Material.Filled.Person" />
+                                </MudAvatar>
+                                <MudText Typo="Typo.h6" Align="Align.Center">@member.Name</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Primary" Align="Align.Center">@member.Title</MudText>
+                                <MudText Typo="Typo.caption" Align="Align.Center" Class="mud-text-secondary">@member.Department</MudText>
+                            </MudStack>
+                        </MudCardContent>
+                        <MudCardActions Class="d-flex justify-center">
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" Size="Size.Small">View Profile</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="Typo.h5" Color="Color.Primary">Government Structure</MudText>
+        <MudText Typo="Typo.body1">
+            Our government operates on principles of separation of powers, accountability, and citizen participation.
+            The cabinet meets regularly to address national priorities and ensure effective governance.
+        </MudText>
+    </MudStack>
+</MudPaper>
+
+@code {
+    private record CabinetMember(string Name, string Title, string Department);
+
+    private readonly List<CabinetMember> _cabinetMembers = new()
+    {
+        new("Chief Executive", "Head of Government", "Executive Office"),
+        new("Secretary of State", "Foreign Affairs", "Department of State"),
+        new("Secretary of Treasury", "Finance & Economy", "Department of Treasury"),
+        new("Secretary of Interior", "Internal Affairs", "Department of Interior"),
+        new("Secretary of Justice", "Legal Affairs", "Department of Justice"),
+        new("Secretary of Education", "Education & Culture", "Department of Education")
+    };
+}

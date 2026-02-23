@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "infra.fullname" . }}-vault
+  labels:
+    app: vault
+spec:
+  replicas: {{ .Values.vault.replicaCount }}
+  selector:
+    matchLabels:
+      app: vault
+  template:
+    metadata:
+      labels:
+        app: vault
+    spec:
+      containers:
+      - name: vault
+        image: "{{ .Values.vault.image }}"
+        imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+        env:
+        - name: VAULT_ADDR
+          value: "{{ .Values.vault.env.VAULT_ADDR }}"
+        - name: VAULT_DEV_ROOT_TOKEN_ID
+          value: "{{ .Values.vault.env.VAULT_DEV_ROOT_TOKEN_ID }}"
+        ports:
+        - containerPort: {{ .Values.vault.port }}
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.vault.port }}
+          initialDelaySeconds: 20
+          periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.vault.port }}
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"

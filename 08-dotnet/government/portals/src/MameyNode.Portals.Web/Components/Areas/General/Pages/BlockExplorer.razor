@@ -1,0 +1,153 @@
+@page "/explorer/blocks"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IInfrastructureClient InfrastructureClient
+@inject ILogger<BlockExplorer> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Block Explorer" Icon="fas fa-cubes" Subtitle="Browse and search blockchain blocks">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshBlocks" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="8">
+            <MudTextField @bind-Value="_searchBlockHash" Label="Block Hash" Variant="Variant.Outlined" Placeholder="Enter block hash to search" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SearchBlock" FullWidth="true" StartIcon="@Icons.Material.Filled.Search">
+                Search Block
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+    @if (_selectedBlock != null)
+    {
+        <CardContainer Title="Block Details" Class="mt-4">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Block Hash:</strong> @_selectedBlock.BlockHash</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Previous Hash:</strong> @_selectedBlock.Previous</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Account:</strong> @_selectedBlock.Account</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Timestamp:</strong> @_selectedBlock.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.body1"><strong>Block Data:</strong> @Convert.ToBase64String(_selectedBlock.BlockData)</MudText>
+                </MudItem>
+            </MudGrid>
+        </CardContainer>
+    }
+
+    @if (_blocks.Any())
+    {
+        <CardContainer Title="Recent Blocks" Class="mt-4">
+            <MudTable T="BlockInfo" Items="@_blocks" Hover="true" Dense="false" Striped="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>Hash</MudTh>
+                    <MudTh>Account</MudTh>
+                    <MudTh>Timestamp</MudTh>
+                    <MudTh>Previous Hash</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <MudText Typo="Typo.body2" Class="text-truncate" Style="max-width: 200px;">
+                            @context.BlockHash
+                        </MudText>
+                    </MudTd>
+                    <MudTd>
+                        <MudText Typo="Typo.body2" Class="text-truncate" Style="max-width: 150px;">
+                            @context.Account
+                        </MudText>
+                    </MudTd>
+                    <MudTd>@context.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</MudTd>
+                    <MudTd>
+                        <MudText Typo="Typo.body2" Class="text-truncate" Style="max-width: 200px;">
+                            @context.Previous
+                        </MudText>
+                    </MudTd>
+                    <MudTd>
+                        <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="() => ViewBlock(context)">
+                            View
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </CardContainer>
+    }
+</PageContainer>
+
+@code {
+    private string _searchBlockHash = string.Empty;
+    private NodeBlockInfo? _selectedBlock;
+    private List<NodeBlockInfo> _blocks = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRecentBlocksAsync();
+    }
+
+    private async Task LoadRecentBlocksAsync()
+    {
+        try
+        {
+            // In real implementation, would get list of recent blocks
+            // For now, create mock list
+            _blocks = new List<NodeBlockInfo>();
+            for (int i = 0; i < 20; i++)
+            {
+                var block = await InfrastructureClient.GetBlockAsync($"0x{Guid.NewGuid():N}");
+                if (block != null)
+                    _blocks.Add(block);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading blocks");
+        }
+    }
+
+    private async Task SearchBlock()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(_searchBlockHash))
+            {
+                _selectedBlock = await InfrastructureClient.GetBlockAsync(_searchBlockHash);
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error searching block");
+        }
+    }
+
+    private async Task ViewBlock(NodeBlockInfo block)
+    {
+        _selectedBlock = block;
+        StateHasChanged();
+    }
+
+    private async Task RefreshBlocks()
+    {
+        await LoadRecentBlocksAsync();
+        StateHasChanged();
+    }
+}
+
+

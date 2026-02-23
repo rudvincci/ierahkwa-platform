@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advocate Office | IERAHKWA — IGT-LEGAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --gold-dark: #B8860B; --neon-green: #00FF41; --neon-cyan: #00FFFF; --bg-dark: #0a0e17; --bg-card: #0d1a2d; --border: #1e3a5f; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17 0%, #0d1a2d 50%, #1a0a2e 100%); color: #fff; min-height: 100vh; }
+        .header { background: rgba(13,26,45,0.95); border-bottom: 2px solid var(--gold); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .logo h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--gold); }
+        .logo span { color: var(--neon-cyan); font-size: 0.8em; letter-spacing: 2px; }
+        .badge { background: rgba(0,255,65,0.2); color: var(--neon-green); padding: 4px 10px; border-radius: 8px; font-size: 0.75em; }
+        .nav { display: flex; gap: 8px; flex-wrap: wrap; }
+        .nav a, .nav button { padding: 10px 16px; border-radius: 10px; text-decoration: none; color: #ccc; font-size: 0.95em; border: 1px solid var(--border); background: transparent; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+        .nav a:hover, .nav button:hover { color: var(--gold); border-color: var(--gold); }
+        .main { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        .section { margin-bottom: 24px; }
+        .section h2 { font-family: 'Orbitron', sans-serif; color: var(--gold); margin-bottom: 16px; font-size: 1.2em; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+        .card { background: var(--bg-card); border: 2px solid var(--border); border-radius: 16px; padding: 20px; text-align: center; transition: all 0.3s; }
+        .card:hover { border-color: var(--gold); box-shadow: 0 0 20px rgba(255,215,0,0.2); }
+        .card .icon { font-size: 32px; margin-bottom: 8px; opacity: 0.9; }
+        .card .val { font-family: 'Orbitron', sans-serif; font-size: 2em; color: var(--gold); }
+        .card .lbl { color: #888; font-size: 0.9em; margin-top: 4px; }
+        .card a { color: inherit; text-decoration: none; display: block; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon"><i class="bi bi-briefcase-fill"></i></div>
+            <div>
+                <h1>ADVOCATE OFFICE</h1>
+                <span>IGT-LEGAL · IERAHKWA</span>
+            </div>
+            <span class="badge">.NET 10</span>
+        </div>
+        <nav class="nav">
+            <a href="/swagger" target="_blank"><i class="bi bi-code-slash"></i> API</a>
+            <a href="login.html"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+            <button type="button" id="logout"><i class="bi bi-box-arrow-right"></i> Salir</button>
+        </nav>
+    </header>
+    <main class="main">
+        <section class="section">
+            <h2>Panel de control</h2>
+            <div class="grid" id="stats"></div>
+        </section>
+        <section class="section">
+            <h2>Módulos InfixAdvocate</h2>
+            <div class="grid">
+                <a class="card" href="/swagger#/Cases" target="_blank"><div class="icon"><i class="bi bi-folder2-open"></i></div><div class="lbl">Casos</div></a>
+                <a class="card" href="/swagger#/Clients" target="_blank"><div class="icon"><i class="bi bi-people"></i></div><div class="lbl">Clientes</div></a>
+                <a class="card" href="/swagger#/Courts" target="_blank"><div class="icon"><i class="bi bi-building"></i></div><div class="lbl">Tribunales</div></a>
+                <a class="card" href="/swagger#/Appointments" target="_blank"><div class="icon"><i class="bi bi-calendar-event"></i></div><div class="lbl">Citas</div></a>
+                <a class="card" href="/swagger#/Tasks" target="_blank"><div class="icon"><i class="bi bi-check2-square"></i></div><div class="lbl">Tareas</div></a>
+                <a class="card" href="/swagger#/Contacts" target="_blank"><div class="icon"><i class="bi bi-telephone"></i></div><div class="lbl">Contactos</div></a>
+            </div>
+        </section>
+        <p class="footer">Advocate Office Management System · .NET 10 · Integrado en IERAHKWA</p>
+    </main>
+    <script>
+        const API = '';
+        const token = localStorage.getItem('token');
+        function authHeaders() { return { 'Authorization': 'Bearer ' + (token || '') }; }
+        async function check() {
+            const r = await fetch(API + '/api/auth/check', { headers: authHeaders() });
+            const d = await r.json();
+            if (!d.authenticated) { location.href = 'login.html'; return false; }
+            return true;
+        }
+        async function load() {
+            if (!await check()) return;
+            try {
+                const r = await fetch(API + '/api/dashboard/stats', { headers: authHeaders() });
+                const s = await r.json();
+                document.getElementById('stats').innerHTML = [
+                    [s.clients, 'Clientes', 'bi-people'],
+                    [s.cases, 'Casos', 'bi-folder2'],
+                    [s.tasks ?? 0, 'Tareas pendientes', 'bi-check2-square'],
+                    [s.appointments ?? 0, 'Citas próximas', 'bi-calendar-event'],
+                    [s.invoices ?? 0, 'Facturas', 'bi-receipt'],
+                    [s.invoicesPaid ?? 0, 'Facturas pagadas', 'bi-currency-dollar']
+                ].map(([v,l,i]) => `<div class="card"><div class="icon"><i class="bi ${i}"></i></div><div class="val">${v}</div><div class="lbl">${l}</div></div>`).join('');
+            } catch (e) {
+                document.getElementById('stats').innerHTML = '<div class="card"><div class="lbl">Error al cargar estadísticas. Compruebe que la API esté en marcha.</div></div>';
+            }
+        }
+        document.getElementById('logout').onclick = () => { localStorage.removeItem('token'); localStorage.removeItem('user'); location.href = 'login.html'; };
+        load();
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+@* FutureWampumXNavLayout.razor *@
+@using Mamey.BlazorWasm.Components
+@using Mamey.BlazorWasm.Routing
+@using MudBlazor
+@inject NavigationManager Navigation
+
+<MudNavMenu Margin="Margin.Dense" Rounded="false" Color="Color.Primary">
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">
+        @(DrawerOpen ? "Home" : "")
+    </MudNavLink>
+</MudNavMenu>
+
+<BaseNav Routes="_routes" DrawerOpen="DrawerOpen" DrawerMiniEnabled="true" />
+
+@code {
+    private List<Route> _routes = new();
+    [Parameter] public bool DrawerOpen { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var allRoutes = await RouteLoader.GetRoutesAsync(menu: true);
+        // Include dex, crypto-exchange, bridge, travel-rule, trust-lines, advanced/tokenization
+        _routes = allRoutes.Where(r => r.Page?.StartsWith("/dex") == true || 
+                                       r.Page?.StartsWith("/crypto-exchange") == true ||
+                                       r.Page?.StartsWith("/bridge") == true ||
+                                       r.Page?.StartsWith("/travel-rule") == true ||
+                                       r.Page?.StartsWith("/trust-lines") == true ||
+                                       (r.Page?.StartsWith("/advanced") == true && r.Page?.Contains("tokenization") == true)).ToList();
+    }
+}

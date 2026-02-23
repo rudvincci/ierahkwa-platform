@@ -1,0 +1,62 @@
+@page "/service/create"
+@using Mamey.Domain.Service.Contracts
+@inject IServiceService Service
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Create Entity</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Create Entity</MudText>
+    
+    <FormPro Model="@_command" OnValidSubmit="OnSubmit">
+        <MudTextField @bind-Value="_command.Name" 
+                     Label="Name" 
+                     Required="true"
+                     RequiredError="Name is required"
+                     Variant="Variant.Outlined" />
+        
+        <MudButton ButtonType="ButtonType.Submit" 
+                   Variant="Variant.Filled" 
+                   Color="Color.Primary"
+                   Class="mt-4">
+            Create
+        </MudButton>
+        
+        <MudButton Variant="Variant.Text" 
+                   Color="Color.Default"
+                   Href="/service"
+                   Class="mt-4 ml-2">
+            Cancel
+        </MudButton>
+    </FormPro>
+</MudContainer>
+
+@code {
+    private CreateEntityCommand _command = new();
+
+    private async Task OnSubmit()
+    {
+        try
+        {
+            var id = await Service.CreateAsync(_command);
+            Snackbar.Add("Entity created successfully", Severity.Success);
+            Navigation.NavigateTo($"/service/{id}");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error creating entity: {ex.Message}", Severity.Error);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+

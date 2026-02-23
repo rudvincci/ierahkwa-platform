@@ -1,0 +1,38 @@
+@* @using System.Reactive.Linq *@
+@* @typeparam TViewModel where TViewModel : Mamey.BlazorWasm.Models.IUIModel, System.ComponentModel.INotifyPropertyChanged *@
+@* *@
+@* <ToggleVisibility ViewModel="ViewModel" /> *@
+@* *@
+@* <MudTable Items="ViewModel.FilteredAndSortedItems" *@
+@*           ServerData="@(ViewModel.FetchGridItemsAsync)" *@
+@*           Dense="true" Hover="true" Bordered="true" Striped="true"> *@
+@*     <Columns> *@
+@*         @foreach (var column in ViewModel.VisibleColumns) *@
+@*         { *@
+@*             <MudTh @if (!string.IsNullOrEmpty(column.Tooltip)) @attributes="@("title", column.Tooltip)"> *@
+@*                 @column.Header *@
+@*             </MudTh> *@
+@*         } *@
+@*     </Columns> *@
+@*     <RowTemplate> *@
+@*         @foreach (var column in ViewModel.VisibleColumns) *@
+@*         { *@
+@*             @if (column.ColumnTemplate != null) *@
+@*             { *@
+@*                 column.ColumnTemplate((TViewModel)context); *@
+@*             } *@
+@*             else *@
+@*             { *@
+@*                 <MudTd>@column.Property.Compile().Invoke((TViewModel)context)</MudTd> *@
+@*             } *@
+@*         } *@
+@*     </RowTemplate> *@
+@*     <PagerContent> *@
+@*         <MudPagination  @bind-Page="ViewModel.CurrentPage" PageSize="ViewModel.PageSize" TotalItems="@ViewModel.Items.Count" /> *@
+@*     </PagerContent> *@
+@* </MudTable> *@
+@* *@
+@* @code { *@
+@*     [Parameter] *@
+@*     public MameyGridViewModel<TViewModel> ViewModel { get; set; } = default!; *@
+@* } *@

@@ -1,0 +1,36 @@
+@namespace MameyNode.Portals.Shared.Components.Forms
+
+<MudTextField 
+    @bind-Value="@SearchText"
+    Variant="Variant.Outlined"
+    Placeholder="@Placeholder"
+    Adornment="Adornment.Start"
+    AdornmentIcon="@Icons.Material.Filled.Search"
+    IconSize="Size.Medium"
+    Immediate="true"
+    Class="@Class">
+    <AdornmentEnd>
+        @if (!string.IsNullOrEmpty(SearchText))
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.Clear" OnClick="ClearSearch" Size="Size.Small" />
+        }
+    </AdornmentEnd>
+</MudTextField>
+
+@code {
+    [Parameter] public string SearchText { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> SearchTextChanged { get; set; }
+    [Parameter] public string Placeholder { get; set; } = "Search...";
+    [Parameter] public string? Class { get; set; }
+
+    private async Task ClearSearch()
+    {
+        SearchText = string.Empty;
+        if (SearchTextChanged.HasDelegate)
+        {
+            await SearchTextChanged.InvokeAsync(SearchText);
+        }
+    }
+}
+
+

@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  maestro:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mamey/maestro:latest
+    container_name: maestro
+    volumes:
+      # Mount user's repository (where workflows will run)
+      - ${WORKSPACE_PATH:-../..}:/workspace:rw
+      
+      # Mount Maestro data directories (persist across container restarts)
+      - maestro-checkpoints:/workspace/.maestro/checkpoints
+      - maestro-cache:/workspace/.maestro/cache
+      - maestro-reports:/workspace/.maestro/reports
+      - maestro-logs:/workspace/.maestro/logs
+      - maestro-config:/workspace/.maestro/config
+      
+      # Mount cursor-agent if available on host
+      # Adjust path based on your cursor-agent installation
+      # Uncomment and set CURSOR_AGENT_PATH if cursor-agent is on host:
+      # - ${CURSOR_AGENT_PATH}:/usr/local/bin/cursor-agent:ro
+      
+      # Mount git config (for private sync) - optional, comment out if not needed
+      # - ${HOME}/.gitconfig:/root/.gitconfig:ro
+      # - ${HOME}/.ssh:/root/.ssh:ro
+    ports:
+      - "${DASHBOARD_PORT:-3000}:3000"  # Dashboard
+      - "${MCP_PORT:-3001}:3001"       # MCP Server
+    environment:
+      - NODE_ENV=production
+      - WORKSPACE_PATH=/workspace
+      - DASHBOARD_PORT=3000
+      - MCP_PORT=3001
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    # Keep container running
+    command: tail -f /dev/null
+
+  # Optional: Dashboard-only service
+  maestro-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mamey/maestro:latest
+    container_name: maestro-dashboard
+    volumes:
+      - ${WORKSPACE_PATH:-../..}:/workspace:rw
+      - maestro-checkpoints:/workspace/.maestro/checkpoints
+      - maestro-cache:/workspace/.maestro/cache
+      - maestro-reports:/workspace/.maestro/reports
+      - maestro-logs:/workspace/.maestro/logs
+      - maestro-config:/workspace/.maestro/config
+    ports:
+      - "${DASHBOARD_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+    command: node /app/dist/cli/index.js dashboard
+    profiles:
+      - dashboard-only
+
+volumes:
+  maestro-checkpoints:
+    driver: local
+  maestro-cache:
+    driver: local
+  maestro-reports:
+    driver: local
+  maestro-logs:
+    driver: local
+  maestro-config:
+    driver: local

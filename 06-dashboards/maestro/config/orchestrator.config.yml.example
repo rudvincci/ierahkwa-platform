@@ -1,0 +1,117 @@
+# Orchestrator Configuration
+# Copy this file to orchestrator.config.yml and customize for your needs
+# NOTE: orchestrator.config.yml is excluded from git to protect your settings
+
+# Memory Integration Settings
+memory:
+  # Enable/disable memory integration
+  enabled: true
+  
+  # Auto-initialize submodules if not initialized
+  autoInitializeSubmodules: true  # Enabled for convenience
+  
+  # Memory systems to use (can disable individual systems)
+  systems:
+    skmemory:
+      enabled: true
+      # Path relative to project root (default: .skmemory)
+      path: .skmemory
+    composermemory:
+      enabled: true
+      # Path relative to project root (default: .composermemory)
+      path: .composermemory
+    orchestrator:
+      enabled: true
+      # Path relative to project root (default: .maestro)
+      path: .maestro
+  
+  # Search settings
+  search:
+    # Maximum number of results per memory system
+    maxResults: 20  # Increased for better context
+    # Minimum relevance score (0.0 - 1.0)
+    minRelevance: 0.2  # Lower threshold for more results
+    # Timeout in milliseconds for memory searches
+    timeout: 10000  # Increased timeout for thorough searches
+
+# Manager Agent Settings
+manager:
+  # Enable/disable manager agent features
+  enabled: true
+  
+  # Use memory in manager agent operations
+  useMemory: true
+  
+  # Fallback behavior when memory unavailable
+  # Options: "warn" (show warning), "skip" (silently skip), "error" (throw error)
+  memoryUnavailableBehavior: "warn"
+
+# Workflow Execution Settings
+execution:
+  # Maximum parallel tasks
+  maxConcurrency: 10  # Increased for better parallelization
+  
+  # Default timeout for workflow execution (seconds)
+  defaultTimeout: 7200  # 2 hours for complex workflows
+  
+  # Retry settings
+  retry:
+    enabled: true
+    maxAttempts: 3
+    backoffMs: 1000
+
+# Logging Settings
+logging:
+  # Log level: trace, debug, info, warn, error
+  level: info
+  
+  # Log to file
+  file:
+    enabled: true
+    path: logs/orchestrator.log
+    maxSize: 10MB
+    maxFiles: 5
+  
+  # Log to console
+  console:
+    enabled: true
+
+# Private Data Sync (OPT-IN ONLY)
+# This allows syncing your workflow data to a private git repository
+# for AI assistance. Disabled by default - requires explicit enablement.
+privateSync:
+  # Enable/disable private data sync
+  enabled: false  # OPT-IN ONLY - set to true to enable
+  
+  # Private repository URL (your private git repo)
+  # Example: "https://github.com/your-username/your-private-repo.git"
+  # Or use SSH: "git@github.com:your-username/your-private-repo.git"
+  repositoryUrl: ""  # Set your private repository URL here
+  
+  # OR use local repository path instead of URL
+  # repositoryPath: "/path/to/local/repo"
+  
+  # Git branch to sync to
+  branch: "main"
+  
+  # Encryption key for sensitive data (optional but recommended)
+  # Generate with: openssl rand -hex 32
+  # Keep this key secure - you'll need it to decrypt data
+  encryptionKey: ""  # Set your encryption key here
+  
+  # Sync interval in minutes (0 = manual sync only)
+  syncInterval: 60  # Sync every 60 minutes (set to 0 for manual only)
+  
+  # What data to sync
+  includeCheckpoints: true   # Workflow execution state
+  includeCache: false        # Cached task results (usually not needed)
+  includeReports: true       # Execution reports
+  includeLogs: false         # Log files (can be large)
+  
+  # Patterns to exclude from sync (even if category is included)
+  excludePatterns: []
+  # Example:
+  # excludePatterns:
+  #   - "*sensitive*"
+  #   - "*secret*"
+  #   - "checkpoint-*test*"

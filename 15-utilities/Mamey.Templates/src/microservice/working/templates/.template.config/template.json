@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Mamey Digital Solutions LLC",
+  "name": "Mamey Microservice",
+  "shortName": "mamey-micro",
+  "defaultName": "Mamey.Entity",
+  "sourceName": "Mamey.ServiceName",
+  "identity": "Mamey.Microservice.Template",
+  "groupIdentity": "Mamey.Microservice",
+  "classifications": ["Mamey", "Microservice", "Multi-Project", "C#"],
+  "tags": { "language": "C#", "type": "project" },
+  "preferNameDirectory": true,
+
+  "guids": [
+    "827E0CD3-B72D-47B6-A68D-7590B98EB39B",
+    "42D5E3F6-A0DC-43BF-824D-0C9F42F25814",
+    "4E98474D-0B16-4A4A-97E9-1C0CBC810422",
+    "A32C49E1-E58B-4726-A8BB-8E29C337208F",
+    "6F6BCFFC-2368-48F3-B449-9A5113FA33A9",
+    "92307078-26E0-4333-B1CE-BED879D5AA9B",
+    "1E1C3EEE-EF8C-4A7D-9F27-515C47A4FE60",
+    "FD8AB724-C2A9-405F-8976-5FAFF2DFE994",
+    "8FCC8517-D850-449C-A6F3-D83D44D1329E",
+    "E2C294D3-4F21-47A3-9000-95673713BEF9",
+    "9A8310FE-7309-4877-91E3-6999F624786D",
+    "6C15DD84-A0FB-4147-B725-0D3F0C237D08",
+    "27C9BFC4-A8F0-4809-AF98-1F38BA0F4653",
+    "B8488439-1BCA-46DB-8896-494B11D6FC64",
+    "60F1BAE1-7DEA-43A0-A1D6-578EB9D59514"
+  ],
+
+  "symbols": {
+    "service": {
+      "type": "parameter", "datatype": "text",
+      "replaces": "ServiceName", "fileRename": "ServiceName",
+      "defaultValue": "Service", "isRequired": true,
+      "description": "Name of the service"
+    },
+    "entity": {
+      "type": "parameter", "datatype": "text",
+      "replaces": "EntityName", "fileRename": "EntityName",
+      "defaultValue": "Entity", "isRequired": true,
+      "description": "Domain AggregateRoot entity name (singular)"
+    },
+    "port": {
+      "type": "parameter", "datatype": "text",
+      "replaces": "serviceport", "isRequired": true,
+      "defaultValue": "5001",
+      "description": "Internal service port (default: 5001)"
+    },
+    "serviceLower": {
+      "type": "generated", "generator": "casing",
+      "parameters": { "source": "service", "toLower": true },
+      "replaces": "servicename"
+    },
+    "entityLower": {
+      "type": "generated", "generator": "casing",
+      "parameters": { "source": "entity", "toLower": true },
+      "replaces": "entityname"
+    },
+    "skipRestore": {
+      "type": "parameter", "datatype": "bool",
+      "description": "Skip automatic restore after create.",
+      "defaultValue": "false"
+    }
+  },
+
+  "sources": [{
+    "modifiers": [
+      { "exclude": [ ".vs/**", ".template_config/**" ] }
+    ]
+  }],
+
+  "primaryOutputs": [
+    { "path": "Mamey.ServiceName.sln" },
+    { "path": "src/Mamey.ServiceName.Api/Mamey.ServiceName.Api.csproj" },
+    { "path": "src/Mamey.ServiceName.Application/Mamey.ServiceName.Application.csproj" },
+    { "path": "src/Mamey.ServiceName.BlazorWasm/Mamey.ServiceName.BlazorWasm.csproj" },
+    { "path": "src/Mamey.ServiceName.Contracts/Mamey.ServiceName.Contracts.csproj" },
+    { "path": "src/Mamey.ServiceName.Domain/Mamey.ServiceName.Domain.csproj" },
+    { "path": "src/Mamey.ServiceName.Infrastructure/Mamey.ServiceName.Infrastructure.csproj" },
+    { "path": "src/Mamey.ServiceName.Maui/Mamey.ServiceName.Maui.csproj" },
+    { "path": "src/Mamey.ServiceName.Net/Mamey.ServiceName.Net.csproj" }
+  ],
+
+  "postActions": [
+    {
+      "condition": "(OS != \"Windows_NT\")",
+      "description": "Make scripts executable",
+      "manualInstructions": [{ "text": "Run 'chmod +x *.sh src/scripts/*.sh'" }],
+      "actionId": "cb9a6cf3-4f5c-4860-b9d2-03a574959774",
+      "args": { "+x": "*.sh" },
+      "continueOnError": false
+    },
+    {
+      "condition": "(!skipRestore)",
+      "description": "Restore NuGet packages for created solution/projects.",
+      "manualInstructions": [{ "text": "Run 'dotnet restore'" }],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": false
+    },
+    {
+      "condition": "(OS != \"Windows_NT\")",
+      "description": "Mamey Post-Restore.",
+      "args": {
+        "executable": "post-restore.sh",
+        "args": "",
+        "redirectStandardOutput": false,
+        "redirectStandardError": false
+      },
+      "manualInstructions": [{ "text": "Run 'post-restore.sh'" }],
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "continueOnError": false
+    }
+  ]
+}

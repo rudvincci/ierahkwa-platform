@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pupitre-data
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: pupitre
+  source:
+    repoURL: https://github.com/pupitre/pupitre.git
+    targetRevision: HEAD
+    path: deploy/helm/pupitre
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-data.yaml
+      parameters:
+        - name: postgresql.enabled
+          value: "true"
+        - name: mongodb.enabled
+          value: "true"
+        - name: redis.enabled
+          value: "true"
+        - name: rabbitmq.enabled
+          value: "true"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pupitre-data
+  syncPolicy:
+    automated:
+      prune: false  # Don't auto-prune data services
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  revisionHistoryLimit: 10

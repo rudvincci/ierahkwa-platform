@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contribution Graph | Ierahkwa NET10 Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --gold-dark: #B8860B;
+            --neon-green: #00FF41;
+            --neon-cyan: #00FFFF;
+            --neon-magenta: #FF00FF;
+            --neon-purple: #9D4EDD;
+            --bg-dark: #0a0e17;
+            --bg-card: #111827;
+            --bg-hover: #1f2937;
+            --border: #2d3748;
+            
+            /* GitHub-style contribution colors */
+            --contrib-0: #161b22;
+            --contrib-1: #0e4429;
+            --contrib-2: #006d32;
+            --contrib-3: #26a641;
+            --contrib-4: #39d353;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-dark);
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%);
+            border-bottom: 2px solid var(--gold);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px var(--neon-green); }
+            50% { box-shadow: 0 0 40px var(--neon-cyan); }
+        }
+        .logo-text h1 { font-family: 'Orbitron', sans-serif; font-size: 1.5em; color: var(--gold); }
+        .logo-text p { font-size: 0.8em; color: var(--neon-cyan); }
+        
+        .nav { display: flex; gap: 20px; }
+        .nav a {
+            color: #ccc; text-decoration: none; font-weight: 500;
+            transition: color 0.3s; padding: 8px 16px; border-radius: 8px;
+        }
+        .nav a:hover, .nav a.active { color: var(--gold); background: rgba(255, 215, 0, 0.1); }
+        
+        /* Main */
+        .main { padding: 30px; max-width: 1400px; margin: 0 auto; }
+        
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2em;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-body { padding: 24px; }
+        
+        /* Profile Section */
+        .profile-section {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), var(--neon-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-family: 'Orbitron', sans-serif;
+            border: 4px solid var(--border);
+        }
+        .profile-info { flex: 1; }
+        .profile-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2em;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+        .profile-username {
+            color: #888;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        .profile-bio {
+            color: #ccc;
+            margin-bottom: 15px;
+            max-width: 600px;
+        }
+        .profile-stats {
+            display: flex;
+            gap: 30px;
+        }
+        .profile-stat {
+            text-align: center;
+        }
+        .profile-stat .value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            color: var(--neon-green);
+        }
+        .profile-stat .label {
+            font-size: 0.85em;
+            color: #888;
+        }
+        
+        /* Year Selector */
+        .year-selector {
+            display: flex;
+            gap: 10px;
+        }
+        .year-btn {
+            padding: 8px 16px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #888;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        .year-btn:hover { border-color: var(--gold); color: var(--gold); }
+        .year-btn.active { background: var(--gold); color: #000; border-color: var(--gold); }
+        
+        /* Contribution Graph */
+        .contribution-graph {
+            overflow-x: auto;
+            padding: 20px 0;
+        }
+        .graph-container {
+            display: flex;
+            gap: 10px;
+        }
+        .month-labels {
+            display: flex;
+            margin-left: 40px;
+            margin-bottom: 10px;
+        }
+        .month-label {
+            font-size: 0.75em;
+            color: #888;
+            flex: 1;
+            min-width: 60px;
+        }
+        .day-labels {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-right: 10px;
+            font-size: 0.7em;
+            color: #888;
+        }
+        .day-label {
+            height: 13px;
+            display: flex;
+            align-items: center;
+        }
+        .weeks-container {
+            display: flex;
+            gap: 3px;
+        }
+        .week {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .day {
+            width: 13px;
+            height: 13px;
+            border-radius: 2px;
+            background: var(--contrib-0);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .day:hover {
+            transform: scale(1.3);
+            outline: 2px solid var(--gold);
+        }
+        .day.level-0 { background: var(--contrib-0); }
+        .day.level-1 { background: var(--contrib-1); }
+        .day.level-2 { background: var(--contrib-2); }
+        .day.level-3 { background: var(--contrib-3); }
+        .day.level-4 { background: var(--contrib-4); }
+        
+        /* Tooltip */
+        .tooltip {
+            position: fixed;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.85em;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+        .tooltip.visible { display: block; }
+        .tooltip-count {
+            font-weight: 700;
+            color: var(--neon-green);
+        }
+        .tooltip-date {
+            color: #888;
+            margin-top: 3px;
+        }
+        
+        /* Legend */
+        .graph-legend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 15px;
+            font-size: 0.85em;
+            color: #888;
+        }
+        .legend-box {
+            width: 13px;
+            height: 13px;
+            border-radius: 2px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--bg-hover);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .stat-card .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .stat-card .value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8em;
+            color: var(--neon-green);
+            margin-bottom: 5px;
+        }
+        .stat-card .label {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        /* Activity Feed */
+        .activity-feed {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+        .activity-icon.commit { background: rgba(0, 255, 65, 0.2); color: var(--neon-green); }
+        .activity-icon.pr { background: rgba(157, 78, 221, 0.2); color: var(--neon-purple); }
+        .activity-icon.issue { background: rgba(255, 215, 0, 0.2); color: var(--gold); }
+        .activity-icon.review { background: rgba(0, 255, 255, 0.2); color: var(--neon-cyan); }
+        .activity-icon.deploy { background: rgba(255, 0, 255, 0.2); color: var(--neon-magenta); }
+        .activity-icon.transaction { background: rgba(255, 107, 53, 0.2); color: #FF6B35; }
+        .activity-content { flex: 1; }
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        .activity-meta {
+            font-size: 0.85em;
+            color: #888;
+        }
+        .activity-project {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--bg-hover);
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: var(--neon-cyan);
+            margin-left: 8px;
+        }
+        .activity-hash {
+            font-family: monospace;
+            color: var(--gold);
+        }
+        
+        /* Project Cards */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .project-card {
+            background: var(--bg-hover);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        .project-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-3px);
+        }
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .project-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            color: var(--gold);
+        }
+        .project-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+        .project-badge.private { background: rgba(239, 68, 68, 0.2); color: #EF4444; }
+        .project-badge.public { background: rgba(0, 255, 65, 0.2); color: var(--neon-green); }
+        .project-desc {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        .project-language {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .language-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .project-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85em;
+            color: #888;
+        }
+        .project-stat i { margin-right: 4px; }
+        
+        /* Leaderboard */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .leaderboard-table th {
+            color: #888;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+        .leaderboard-table tr:hover td {
+            background: rgba(255, 215, 0, 0.05);
+        }
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+        .rank-badge.gold { background: var(--gold); color: #000; }
+        .rank-badge.silver { background: #C0C0C0; color: #000; }
+        .rank-badge.bronze { background: #CD7F32; color: #000; }
+        .rank-badge.normal { background: var(--bg-hover); color: #888; }
+        
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85em;
+        }
+        
+        /* Type Distribution */
+        .type-distribution {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .type-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--bg-hover);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .type-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+        }
+        .type-count {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-green);
+        }
+        .type-name {
+            color: #888;
+            font-size: 0.85em;
+        }
+        
+        /* User Selector */
+        .user-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .user-btn:hover { border-color: var(--gold); color: var(--gold); }
+        .user-btn.active { background: var(--gold); color: #000; border-color: var(--gold); }
+        .user-btn .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75em;
+            font-weight: 700;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-section { flex-direction: column; align-items: center; text-align: center; }
+            .profile-stats { justify-content: center; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .main { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon"><i class="bi bi-graph-up"></i></div>
+            <div class="logo-text">
+                <h1>CONTRIBUTION GRAPH</h1>
+                <p>IERAHKWA ACTIVITY TRACKER</p>
+            </div>
+        </div>
+        
+        <nav class="nav">
+            <a href="/index.html"><i class="bi bi-arrow-left-right"></i> DeFi</a>
+            <a href="/contributions.html" class="active"><i class="bi bi-graph-up"></i> Contributions</a>
+            <a href="/swagger"><i class="bi bi-code-slash"></i> API</a>
+        </nav>
+    </header>
+    
+    <main class="main">
+        <!-- User Selector -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title"><i class="bi bi-people"></i> Select User</span>
+            </div>
+            <div class="card-body">
+                <div class="user-selector" id="userSelector">
+                    <!-- Users loaded dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <div class="profile-avatar" id="profileAvatar">AD</div>
+            <div class="profile-info">
+                <h1 class="profile-name" id="profileName">Administrator</h1>
+                <p class="profile-username" id="profileUsername">@admin</p>
+                <p class="profile-bio">Sovereign Government of Ierahkwa Ne Kanienke - Platform Administrator</p>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <div class="value" id="totalContributions">0</div>
+                        <div class="label">Contributions</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="value" id="currentStreak">0</div>
+                        <div class="label">Day Streak</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="value" id="longestStreak">0</div>
+                        <div class="label">Longest Streak</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="value" id="totalProjects">0</div>
+                        <div class="label">Projects</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contribution Graph -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title"><i class="bi bi-calendar3"></i> <span id="graphYearTitle">2026</span> Contribution Activity</span>
+                <div class="year-selector" id="yearSelector">
+                    <button class="year-btn" data-year="2024">2024</button>
+                    <button class="year-btn" data-year="2025">2025</button>
+                    <button class="year-btn active" data-year="2026">2026</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="contribution-graph">
+                    <div class="month-labels" id="monthLabels"></div>
+                    <div class="graph-container">
+                        <div class="day-labels">
+                            <div class="day-label"></div>
+                            <div class="day-label">Mon</div>
+                            <div class="day-label"></div>
+                            <div class="day-label">Wed</div>
+                            <div class="day-label"></div>
+                            <div class="day-label">Fri</div>
+                            <div class="day-label"></div>
+                        </div>
+                        <div class="weeks-container" id="weeksContainer"></div>
+                    </div>
+                </div>
+                <div class="graph-legend">
+                    <span>Less</span>
+                    <div class="legend-box" style="background: var(--contrib-0);"></div>
+                    <div class="legend-box" style="background: var(--contrib-1);"></div>
+                    <div class="legend-box" style="background: var(--contrib-2);"></div>
+                    <div class="legend-box" style="background: var(--contrib-3);"></div>
+                    <div class="legend-box" style="background: var(--contrib-4);"></div>
+                    <span>More</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="statsGrid">
+            <!-- Stats loaded dynamically -->
+        </div>
+        
+        <!-- Two Column Layout -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <!-- Activity Feed -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title"><i class="bi bi-activity"></i> Recent Activity</span>
+                </div>
+                <div class="card-body">
+                    <div class="activity-feed" id="activityFeed">
+                        <!-- Activities loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Type Distribution -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title"><i class="bi bi-pie-chart"></i> Activity by Type</span>
+                </div>
+                <div class="card-body">
+                    <div class="type-distribution" id="typeDistribution">
+                        <!-- Distribution loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Projects -->
+        <div class="card" style="margin-top: 24px;">
+            <div class="card-header">
+                <span class="card-title"><i class="bi bi-folder"></i> Projects</span>
+            </div>
+            <div class="card-body">
+                <div class="projects-grid" id="projectsGrid">
+                    <!-- Projects loaded dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Leaderboard -->
+        <div class="card" style="margin-top: 24px;">
+            <div class="card-header">
+                <span class="card-title"><i class="bi bi-trophy"></i> Top Contributors</span>
+            </div>
+            <div class="card-body">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Contributions</th>
+                            <th>Current Streak</th>
+                            <th>Projects</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <!-- Leaderboard loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip">
+        <div class="tooltip-count">0 contributions</div>
+        <div class="tooltip-date">Date</div>
+    </div>
+    
+    <script>
+        // State
+        let selectedUser = 'admin';
+        let selectedYear = new Date().getFullYear();
+        let contributionData = null;
+        
+        const users = ['admin', 'developer1', 'citizen001', 'treasurer', 'prime-minister'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        const typeIcons = {
+            'Commit': { icon: 'bi-git', color: 'var(--neon-green)' },
+            'PullRequest': { icon: 'bi-arrow-repeat', color: 'var(--neon-purple)' },
+            'Issue': { icon: 'bi-exclamation-circle', color: 'var(--gold)' },
+            'Review': { icon: 'bi-eye', color: 'var(--neon-cyan)' },
+            'Deployment': { icon: 'bi-rocket', color: 'var(--neon-magenta)' },
+            'Transaction': { icon: 'bi-currency-exchange', color: '#FF6B35' },
+            'Vote': { icon: 'bi-check2-square', color: '#10B981' },
+            'Stake': { icon: 'bi-lock', color: '#F59E0B' },
+            'Swap': { icon: 'bi-arrow-left-right', color: '#3B82F6' },
+            'Farm': { icon: 'bi-flower1', color: '#8B5CF6' },
+            'Document': { icon: 'bi-file-text', color: '#EC4899' },
+            'Meeting': { icon: 'bi-calendar-event', color: '#06B6D4' },
+            'Task': { icon: 'bi-check-circle', color: '#14B8A6' },
+            'Other': { icon: 'bi-circle', color: '#888' }
+        };
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderUserSelector();
+            loadContributionGraph();
+            loadLeaderboard();
+            setupYearSelector();
+        });
+        
+        function renderUserSelector() {
+            const container = document.getElementById('userSelector');
+            container.innerHTML = users.map(user => `
+                <button class="user-btn ${user === selectedUser ? 'active' : ''}" onclick="selectUser('${user}')">
+                    <div class="avatar">${user.substring(0, 2).toUpperCase()}</div>
+                    <span>${user}</span>
+                </button>
+            `).join('');
+        }
+        
+        function selectUser(userId) {
+            selectedUser = userId;
+            renderUserSelector();
+            loadContributionGraph();
+        }
+        
+        function setupYearSelector() {
+            document.querySelectorAll('.year-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedYear = parseInt(btn.dataset.year);
+                    document.getElementById('graphYearTitle').textContent = selectedYear;
+                    loadContributionGraph();
+                });
+            });
+        }
+        
+        async function loadContributionGraph() {
+            try {
+                const res = await fetch(`/api/contribution/graph/${selectedUser}/${selectedYear}`);
+                contributionData = await res.json();
+                
+                updateProfile(contributionData.stats);
+                renderContributionGraph(contributionData);
+                renderStats(contributionData.stats);
+                renderTypeDistribution(contributionData.stats.byType);
+                loadUserProjects();
+                loadRecentActivity();
+            } catch (e) {
+                console.error('Failed to load contribution graph:', e);
+            }
+        }
+        
+        function updateProfile(stats) {
+            document.getElementById('profileAvatar').textContent = selectedUser.substring(0, 2).toUpperCase();
+            document.getElementById('profileName').textContent = selectedUser.charAt(0).toUpperCase() + selectedUser.slice(1);
+            document.getElementById('profileUsername').textContent = '@' + selectedUser;
+            document.getElementById('totalContributions').textContent = stats.totalContributions.toLocaleString();
+            document.getElementById('currentStreak').textContent = stats.currentStreak;
+            document.getElementById('longestStreak').textContent = stats.longestStreak;
+            document.getElementById('totalProjects').textContent = stats.totalProjects;
+        }
+        
+        function renderContributionGraph(data) {
+            const container = document.getElementById('weeksContainer');
+            const monthLabels = document.getElementById('monthLabels');
+            
+            // Render month labels
+            monthLabels.innerHTML = months.map(m => `<span class="month-label">${m}</span>`).join('');
+            
+            // Render weeks
+            container.innerHTML = data.weeks.map(week => `
+                <div class="week">
+                    ${week.days.map(day => `
+                        <div class="day level-${day.level}" 
+                             data-date="${day.date}" 
+                             data-count="${day.count}"
+                             onmouseenter="showTooltip(event, ${day.count}, '${day.date}')"
+                             onmouseleave="hideTooltip()">
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+        
+        function showTooltip(event, count, date) {
+            const tooltip = document.getElementById('tooltip');
+            const formattedDate = new Date(date).toLocaleDateString('en-US', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            
+            tooltip.querySelector('.tooltip-count').textContent = 
+                count === 0 ? 'No contributions' : 
+                count === 1 ? '1 contribution' : 
+                `${count} contributions`;
+            tooltip.querySelector('.tooltip-date').textContent = formattedDate;
+            
+            tooltip.style.left = event.pageX + 15 + 'px';
+            tooltip.style.top = event.pageY + 15 + 'px';
+            tooltip.classList.add('visible');
+        }
+        
+        function hideTooltip() {
+            document.getElementById('tooltip').classList.remove('visible');
+        }
+        
+        function renderStats(stats) {
+            const grid = document.getElementById('statsGrid');
+            grid.innerHTML = `
+                <div class="stat-card">
+                    <div class="icon">📅</div>
+                    <div class="value">${stats.contributionsThisYear.toLocaleString()}</div>
+                    <div class="label">This Year</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">📆</div>
+                    <div class="value">${stats.contributionsThisMonth.toLocaleString()}</div>
+                    <div class="label">This Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">📊</div>
+                    <div class="value">${stats.contributionsThisWeek.toLocaleString()}</div>
+                    <div class="label">This Week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">🎯</div>
+                    <div class="value">${stats.contributionsToday.toLocaleString()}</div>
+                    <div class="label">Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">🔥</div>
+                    <div class="value">${stats.currentStreak}</div>
+                    <div class="label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">🏆</div>
+                    <div class="value">${stats.longestStreak}</div>
+                    <div class="label">Best Streak</div>
+                </div>
+            `;
+        }
+        
+        function renderTypeDistribution(byType) {
+            const container = document.getElementById('typeDistribution');
+            const entries = Object.entries(byType).sort((a, b) => b[1] - a[1]);
+            
+            container.innerHTML = entries.map(([type, count]) => {
+                const typeInfo = typeIcons[type] || typeIcons['Other'];
+                return `
+                    <div class="type-badge">
+                        <div class="type-icon" style="background: ${typeInfo.color}20; color: ${typeInfo.color};">
+                            <i class="bi ${typeInfo.icon}"></i>
+                        </div>
+                        <div>
+                            <div class="type-count">${count.toLocaleString()}</div>
+                            <div class="type-name">${type}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        async function loadRecentActivity() {
+            try {
+                const res = await fetch(`/api/contribution/user/${selectedUser}?limit=20`);
+                const activities = await res.json();
+                
+                const feed = document.getElementById('activityFeed');
+                feed.innerHTML = activities.map(a => {
+                    const typeInfo = typeIcons[a.type] || typeIcons['Other'];
+                    const timeAgo = getTimeAgo(new Date(a.timestamp));
+                    
+                    return `
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: ${typeInfo.color}20; color: ${typeInfo.color};">
+                                <i class="bi ${typeInfo.icon}"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">
+                                    ${a.title}
+                                    <span class="activity-project">${a.projectName}</span>
+                                </div>
+                                <div class="activity-meta">
+                                    <span class="activity-hash">${a.hash}</span> • ${timeAgo}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error('Failed to load recent activity:', e);
+            }
+        }
+        
+        async function loadUserProjects() {
+            try {
+                const res = await fetch(`/api/contribution/projects/${selectedUser}`);
+                const projects = await res.json();
+                
+                const grid = document.getElementById('projectsGrid');
+                grid.innerHTML = projects.slice(0, 6).map(p => `
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-name"><i class="bi bi-folder"></i> ${p.projectName}</div>
+                            <span class="project-badge ${p.isPrivate ? 'private' : 'public'}">${p.isPrivate ? 'Private' : 'Public'}</span>
+                        </div>
+                        <p class="project-desc">${p.description}</p>
+                        <div class="project-language">
+                            <div class="language-dot" style="background: ${p.languageColor};"></div>
+                            <span>${p.language}</span>
+                        </div>
+                        <div class="project-stats">
+                            <span><i class="bi bi-star"></i> ${p.stars}</span>
+                            <span><i class="bi bi-diagram-2"></i> ${p.forks}</span>
+                            <span><i class="bi bi-code-slash"></i> ${p.totalContributions} commits</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to load projects:', e);
+            }
+        }
+        
+        async function loadLeaderboard() {
+            try {
+                const res = await fetch('/api/contribution/leaderboard?limit=10');
+                const leaders = await res.json();
+                
+                const tbody = document.getElementById('leaderboardBody');
+                tbody.innerHTML = leaders.map((l, i) => {
+                    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'normal';
+                    
+                    return `
+                        <tr>
+                            <td><span class="rank-badge ${rankClass}">${i + 1}</span></td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar">${l.username.substring(0, 2).toUpperCase()}</div>
+                                    <div>
+                                        <div style="font-weight: 600;">${l.username}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="color: var(--neon-green); font-weight: 600;">${l.totalContributions.toLocaleString()}</td>
+                            <td>${l.currentStreak} days</td>
+                            <td>${l.totalProjects}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error('Failed to load leaderboard:', e);
+            }
+        }
+        
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' min ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
+            if (seconds < 604800) return Math.floor(seconds / 86400) + ' days ago';
+            return date.toLocaleDateString();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using Mamey.Portal.Web.Auth
+@using Mamey.Portal.Web.Shared
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Nav
+@inject MudBlazor.IDialogService Dialogs
+@inject IServiceProvider Services
+@inject Microsoft.Extensions.Options.IOptions<PortalAuthOptions> AuthOptions
+
+<AuthorizeView>
+    <Authorized>
+        <MudMenu Dense="true" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+            <ActivatorContent>
+                <MudButton Variant="Variant.Text" Color="Color.Inherit" StartIcon="@Icons.Material.Filled.AccountCircle">
+                    @context.User.Identity?.Name
+                </MudButton>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem Disabled="true">
+                    Tenant: @context.User.FindFirst("tenant")?.Value
+                </MudMenuItem>
+                <MudMenuItem Disabled="true">
+                    Role: @context.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+                </MudMenuItem>
+                <MudDivider />
+                @if (IsMockMode && (context.User.IsInRole("Admin") || context.User.IsInRole("GovernmentAgent") || context.User.IsInRole("ContentEditor")))
+                {
+                    <MudMenuItem OnClick="SwitchTenant">Switch tenant (dev)</MudMenuItem>
+                    <MudDivider />
+                }
+                <MudMenuItem OnClick="SignOut">Logout</MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+    </Authorized>
+    <NotAuthorized>
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" StartIcon="@Icons.Material.Filled.Login" Href="/auth/login">
+            Login
+        </MudButton>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private bool IsMockMode
+        => string.Equals(AuthOptions.Value.Mode, "Mock", StringComparison.OrdinalIgnoreCase)
+           || string.IsNullOrWhiteSpace(AuthOptions.Value.Mode);
+
+    private async Task SwitchTenant()
+    {
+        var session = Services.GetService<MockAuthSession>();
+        if (session is null)
+        {
+            return;
+        }
+
+        var dialog = Dialogs.Show<SwitchTenantDialog>(
+            "Switch Tenant",
+            new DialogParameters { ["CurrentTenantId"] = session.Tenant },
+            new DialogOptions { CloseButton = true, MaxWidth = MudBlazor.MaxWidth.Small, FullWidth = true });
+
+        var result = await dialog.Result;
+        if (result.Canceled)
+        {
+            return;
+        }
+
+        var tenant = (result.Data as string ?? "").Trim();
+        if (string.IsNullOrWhiteSpace(tenant))
+        {
+            tenant = "default";
+        }
+
+        session.SignIn(tenant, session.UserName, session.Role);
+        (AuthStateProvider as MockAuthStateProvider)?.NotifyChanged();
+
+        // Force a navigation so layouts re-evaluate tenant-scoped branding.
+        Nav.NavigateTo(Nav.Uri, forceLoad: true);
+    }
+
+    private void SignOut()
+    {
+        if (IsMockMode)
+        {
+            var session = Services.GetService<MockAuthSession>();
+            session?.SignOut();
+            (AuthStateProvider as MockAuthStateProvider)?.NotifyChanged();
+            Nav.NavigateTo("/");
+        }
+        else
+        {
+            // Force-load to hit server endpoint (cookie signout).
+            Nav.NavigateTo("/auth/oidc/logout", forceLoad: true);
+        }
+    }
+}
+
+

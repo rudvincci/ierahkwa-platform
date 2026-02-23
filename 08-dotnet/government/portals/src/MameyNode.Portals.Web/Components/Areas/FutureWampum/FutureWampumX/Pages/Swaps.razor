@@ -1,0 +1,96 @@
+@page "/dex/swaps"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<Swaps> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Swaps" Icon="fas fa-exchange-alt" Subtitle="Token swap operations">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Swaps" Value="@_swaps.Count.ToString()" Icon="fas fa-exchange-alt" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Completed" Value="@_completedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Swaps" Class="mt-4">
+        <MudTable T="SwapInfo" Items="@_swaps" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Swap ID</MudTh>
+                <MudTh>Token In</MudTh>
+                <MudTh>Token Out</MudTh>
+                <MudTh>Amount In</MudTh>
+                <MudTh>Amount Out</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Executed</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.SwapId</MudTd>
+                <MudTd>@context.TokenIn</MudTd>
+                <MudTd>@context.TokenOut</MudTd>
+                <MudTd>@decimal.Parse(context.AmountIn ?? "0").ToString("F2")</MudTd>
+                <MudTd>@decimal.Parse(context.AmountOut ?? "0").ToString("F2")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Completed" ? Color.Success : context.Status == "Pending" ? Color.Warning : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.ExecutedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<SwapInfo> _swaps = new();
+    private decimal _totalVolume;
+    private int _completedCount;
+    private int _pendingCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _swaps = await FutureWampumXClient.GetSwapsAsync();
+            _totalVolume = _swaps.Where(s => s.Status == "Completed").Sum(s => decimal.Parse(s.AmountIn ?? "0"));
+            _completedCount = _swaps.Count(s => s.Status == "Completed");
+            _pendingCount = _swaps.Count(s => s.Status == "Pending");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading swaps");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

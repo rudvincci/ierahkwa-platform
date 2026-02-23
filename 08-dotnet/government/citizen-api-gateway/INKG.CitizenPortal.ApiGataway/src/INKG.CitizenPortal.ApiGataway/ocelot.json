@@ -1,0 +1,366 @@
+﻿{
+    "GlobalConfiguration": {
+        "BaseUrl": "https://localhost:6000",
+        "RequestIdKey": "OcRequestId",
+        "ServiceDiscoveryProvider": {
+            "Host": "localhost",
+            "Port": 8500,
+            "ConfigurationKey": "Ocelot",
+            "PollingInterval": 1000
+        },
+        "QoSOptions": {
+            "ExceptionsAllowedBeforeBreaking": 3,
+            "DurationOfBreak": 1000,
+            "TimeoutValue": 5000
+        },
+        "HttpHandlerOptions": {
+            "UseTracing": true,
+            "MaxConnectionsPerServer": 50
+        }
+    },
+    "Logging": {
+        "LogLevel": {
+            "Default": "Debug",
+            "Microsoft": "Warning",
+            "Ocelot": "Debug"
+        }
+
+    },
+    "Routes": [
+        {
+            "UpstreamPathTemplate": "/identity/{everything}",
+            //"UpstreamHttpMethod": [ "GET", "POST" ],
+            "DownstreamPathTemplate": "/{everything}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5001
+                }
+            ],
+            "RateLimitOptions": {
+                "EnableRateLimiting": true,
+                "Period": "10s",
+                "PeriodTimespan": 10,
+                "Limit": 3
+            },
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            },
+            "QoSOptions": {
+                "ExceptionsAllowedBeforeBreaking": 3,
+                "DurationOfBreak": 1000,
+                "TimeoutValue": 5000
+            },
+            "HttpHandlerOptions": {
+                "AllowAutoRedirect": false,
+                "UseCookieContainer": true,
+                "UseTracing": true,
+                "MaxConnectionsPerServer": 100,
+                "UseProxy": true,
+                "UseChunkedEncoding": true // Enable chunked encoding
+            }
+        } //,
+            //{
+            //    "UpstreamPathTemplate": "/api/v1/identity/{everything}",
+            //    "UpstreamHttpMethod": [ "Get" ],
+            //    "DownstreamPathTemplate": "/identity/{everything}",
+            //    "DownstreamScheme": "http",
+            //    "DownstreamHostAndPorts": [
+            //        {
+            //            "Host": "localhost",
+            //            "Port": 5001
+            //        }
+            //    ],
+            //    //"AuthenticationOptions": {
+            //    //    "AuthenticationProviderKey": "Bearer"
+            //    //    //"AllowedScopes": ["API.Gateway.Access"]
+            //    //},
+            //    "QoSOptions": {
+            //        "ExceptionsAllowedBeforeBreaking": 3,
+            //        "DurationOfBreak": 1000,
+            //        "TimeoutValue": 5000
+            //    }
+            //},
+            //{
+            //    "UpstreamPathTemplate": "/api/v1/me",
+            //    "UpstreamHttpMethod": [ "Get" ],
+            //    "DownstreamPathTemplate": "/me",
+            //    "DownstreamScheme": "http",
+            //    "DownstreamHostAndPorts": [
+            //        {
+            //            "Host": "localhost",
+            //            "Port": 39035
+            //        }
+            //    ],
+            //    //"AuthenticationOptions": {
+            //    //    "AuthenticationProviderKey": "Bearer"
+            //    //    //"AllowedScopes": ["API.Gateway.Access"]
+            //    //},
+            //    "QoSOptions": {
+            //        "ExceptionsAllowedBeforeBreaking": 3,
+            //        "DurationOfBreak": 1000,
+            //        "TimeoutValue": 5000
+            //    }
+            //},
+            //{
+            //    "UpstreamHttpMethod": [ "Get" ],
+            //    "UpstreamPathTemplate": "/api/v1/citizens/ping",
+            //    "UpstreamHeaderTemplates": {}, // dictionary
+            //    "UpstreamHost": "",
+            //    "DownstreamPathTemplate": "/",
+            //    "DownstreamScheme": "http",
+            //    "DownstreamHttpMethod": "",
+            //    "DownstreamHttpVersion": "",
+            //    "DownstreamHttpVersionPolicy": "",
+            //    "DownstreamHostAndPorts": [
+            //        {
+            //            "Host": "localhost",
+            //            "Port": 39035
+            //        }
+            //    ],
+            //    "AddHeadersToRequest": {},
+            //    "AddClaimsToRequest": {},
+            //    "RouteClaimsRequirement": {},
+            //    "AddQueriesToRequest": {},
+            //    "RequestIdKey": "",
+            //    //"FileCacheOptions": {
+            //    //    "TtlSeconds": 0,
+            //    //    "Region": "europe-central"
+            //    //},
+            //    "RouteIsCaseSensitive": false,
+            //    "ServiceName": "",
+            //    "QoSOptions": {
+            //        "ExceptionsAllowedBeforeBreaking": 3,
+            //        "DurationOfBreak": 1000,
+            //        "TimeoutValue": 5000
+            //    },
+            //    "LoadBalancer": "",
+            //    "RateLimitOptions": {
+            //        "ClientWhitelist": [],
+            //        "EnableRateLimiting": false,
+            //        "Period": "",
+            //        "PeriodTimespan": 0,
+            //        "Limit": 0
+            //    },
+            //    //"AuthenticationOptions": {
+            //    //    "AuthenticationProviderKey": "Bearer",
+            //    //    //"AllowedScopes": [ "API.Gateway.Access" ]
+            //    //},
+            //    "HttpHandlerOptions": {
+            //        "AllowAutoRedirect": false,
+            //        "UseCookieContainer": false,
+            //        "UseTracing": true,
+            //        "MaxConnectionsPerServer": 100
+            //    },
+            //    "DangerousAcceptAnyServerCertificateValidator": false,
+            //    "SecurityOptions": {
+            //        "IPAllowedList": [],
+            //        "IPBlockedList": [],
+            //        "ExcludeAllowedFromBlocked": false
+            //    },
+            //    "Metadata": {}
+            //},
+            //{
+            //    "UpstreamHttpMethod": [ "Get" ],
+            //    "UpstreamPathTemplate": "/api/v1/citizens",
+            //    "UpstreamHeaderTemplates": {}, // dictionary
+            //    "UpstreamHost": "",
+            //    "DownstreamPathTemplate": "/",
+            //    "DownstreamScheme": "http",
+            //    "DownstreamHttpMethod": "",
+            //    "DownstreamHttpVersion": "",
+            //    "DownstreamHttpVersionPolicy": "",
+            //    "DownstreamHostAndPorts": [
+            //        {
+            //            "Host": "localhost",
+            //            "Port": 39035
+            //        }
+            //    ],
+            //    "AddHeadersToRequest": {},
+            //    "AddClaimsToRequest": {},
+            //    "RouteClaimsRequirement": {},
+            //    "AddQueriesToRequest": {},
+            //    "RequestIdKey": "",
+            //    //"FileCacheOptions": {
+            //    //    "TtlSeconds": 0,
+            //    //    "Region": "europe-central"
+            //    //},
+            //    "RouteIsCaseSensitive": false,
+            //    "ServiceName": "",
+            //    "QoSOptions": {
+            //        "ExceptionsAllowedBeforeBreaking": 3,
+            //        "DurationOfBreak": 1000,
+            //        "TimeoutValue": 5000
+            //    },
+            //    "LoadBalancer": "",
+            //    "RateLimitOptions": {
+            //        "ClientWhitelist": [],
+            //        "EnableRateLimiting": false,
+            //        "Period": "",
+            //        "PeriodTimespan": 0,
+            //        "Limit": 0
+            //    },
+            //    //"AuthenticationOptions": {
+            //    //    "AuthenticationProviderKey": "Bearer",
+            //    //    //"AllowedScopes": [ "API.Gateway.Access" ]
+            //    //},
+            //    "HttpHandlerOptions": {
+            //        "AllowAutoRedirect": false,
+            //        "UseCookieContainer": false,
+            //        "UseTracing": true,
+            //        "MaxConnectionsPerServer": 100
+            //    },
+            //    "DangerousAcceptAnyServerCertificateValidator": false,
+            //    "SecurityOptions": {
+            //        "IPAllowedList": [],
+            //        "IPBlockedList": [],
+            //        "ExcludeAllowedFromBlocked": false
+            //    },
+            //    "Metadata": {}
+            //},
+            //{
+            //    "UpstreamHttpMethod": [ "Get" ],
+            //    "UpstreamPathTemplate": "/api/v1/citizens/me",
+            //    "UpstreamHeaderTemplates": {}, // dictionary
+            //    "UpstreamHost": "",
+            //    "DownstreamPathTemplate": "/me",
+            //    "DownstreamScheme": "http",
+            //    "DownstreamHttpMethod": "",
+            //    "DownstreamHttpVersion": "",
+            //    "DownstreamHttpVersionPolicy": "",
+            //    "DownstreamHostAndPorts": [
+            //        {
+            //            "Host": "localhost",
+            //            "Port": 39035
+            //        }
+            //    ],
+            //    "AddHeadersToRequest": {},
+            //    "AddClaimsToRequest": {},
+            //    "RouteClaimsRequirement": {},
+            //    "AddQueriesToRequest": {},
+            //    "RequestIdKey": "",
+            //    //"FileCacheOptions": {
+            //    //    "TtlSeconds": 0,
+            //    //    "Region": "europe-central"
+            //    //},
+            //    "RouteIsCaseSensitive": false,
+            //    "ServiceName": "",
+            //    "QoSOptions": {
+            //        "ExceptionsAllowedBeforeBreaking": 3,
+            //        "DurationOfBreak": 1000,
+            //        "TimeoutValue": 5000
+            //    },
+            //    "LoadBalancer": "",
+            //    "RateLimitOptions": {
+            //        "ClientWhitelist": [],
+            //        "EnableRateLimiting": false,
+            //        "Period": "",
+            //        "PeriodTimespan": 0,
+            //        "Limit": 0
+            //    },
+            //    //"AuthenticationOptions": {
+            //    //    "AuthenticationProviderKey": "Bearer",
+            //    //    //"AllowedScopes": [ "API.Gateway.Access" ]
+            //    //},
+            //    "HttpHandlerOptions": {
+            //        "AllowAutoRedirect": false,
+            //        "UseCookieContainer": false,
+            //        "UseTracing": true,
+            //        "MaxConnectionsPerServer": 100
+            //    },
+            //    "DangerousAcceptAnyServerCertificateValidator": false,
+            //    "SecurityOptions": {
+            //        "IPAllowedList": [],
+            //        "IPBlockedList": [],
+            //        "ExcludeAllowedFromBlocked": false
+            //    },
+            //    "Metadata": {}
+            //},
+            //{
+            //    "UpstreamHttpMethod": [ "Get" ],
+            //    "UpstreamPathTemplate": "/api/v1/citizens/{everything}",
+            //    "UpstreamHeaderTemplates": {}, // dictionary
+            //    "UpstreamHost": "",
+            //    "DownstreamPathTemplate": "/citizens/{everything}",
+            //    "DownstreamScheme": "http",
+            //    "DownstreamHttpMethod": "",
+            //    "DownstreamHttpVersion": "",
+            //    "DownstreamHttpVersionPolicy": "",
+            //    "DownstreamHostAndPorts": [
+            //        {
+            //            "Host": "localhost",
+            //            "Port": 39035
+            //        }
+            //    ],
+            //    "AddHeadersToRequest": {},
+            //    "AddClaimsToRequest": {},
+            //    "RouteClaimsRequirement": {},
+            //    "AddQueriesToRequest": {},
+            //    "RequestIdKey": "",
+            //    //"FileCacheOptions": {
+            //    //    "TtlSeconds": 0,
+            //    //    "Region": "europe-central"
+            //    //},
+            //    "RouteIsCaseSensitive": false,
+            //    "ServiceName": "",
+            //    "QoSOptions": {
+            //        "ExceptionsAllowedBeforeBreaking": 3,
+            //        "DurationOfBreak": 1000,
+            //        "TimeoutValue": 5000
+            //    },
+            //    "LoadBalancer": "",
+            //    "RateLimitOptions": {
+            //        "ClientWhitelist": [],
+            //        "EnableRateLimiting": false,
+            //        "Period": "",
+            //        "PeriodTimespan": 0,
+            //        "Limit": 0
+            //    },
+            //    //"AuthenticationOptions": {
+            //    //    "AuthenticationProviderKey": "Bearer",
+            //    //    //"AllowedScopes": [ "API.Gateway.Access" ]
+            //    //},
+            //    "HttpHandlerOptions": {
+            //        "AllowAutoRedirect": false,
+            //        "UseCookieContainer": false,
+            //        "UseTracing": true,
+            //        "MaxConnectionsPerServer": 100
+            //    },
+            //    "DangerousAcceptAnyServerCertificateValidator": false,
+            //    "SecurityOptions": {
+            //        "IPAllowedList": [],
+            //        "IPBlockedList": [],
+            //        "ExcludeAllowedFromBlocked": false
+            //    },
+            //    "Metadata": {}
+            //}
+    ],
+    "AnonymousRoutes": {
+        "Routes": [
+            "/identity/sign-in",
+            "/register"
+            //"/identity/sign-up",
+            //"/accounts/ping",
+            //"/members/ping",
+            //"/branches/ping",
+            //"/organizations/ping"
+            // "/swagger"
+
+        ]
+    },
+    "AsyncRoutes": {
+        "Authenticate": true,
+        "Routes": {
+            //"POST /availability/resources": {
+            //    "Exchange": "availability",
+            //    "RoutingKey": "add_resource"
+            //},
+            //"POST /availability/resources/reservations": {
+            //    "Exchange": "availability",
+            //    "RoutingKey": "reserve_resource"
+            //}
+        }
+    }
+}

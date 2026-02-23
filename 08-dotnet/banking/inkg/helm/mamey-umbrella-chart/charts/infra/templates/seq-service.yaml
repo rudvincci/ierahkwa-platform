@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "infra.fullname" . }}-seq
+  labels:
+    app: seq
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.seq.port }}
+    targetPort: {{ .Values.seq.port }}
+  selector:
+    app: seq

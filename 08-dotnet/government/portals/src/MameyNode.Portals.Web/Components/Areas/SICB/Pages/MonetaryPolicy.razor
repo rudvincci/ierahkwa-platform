@@ -1,0 +1,95 @@
+@page "/sicb/monetary-policy"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject ISICBClient SICBClient
+@inject ILogger<MonetaryPolicy> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Monetary Policy" Icon="fas fa-sliders-h" Subtitle="Policy rate control and management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Active Policies" Value="@_activePolicies.ToString()" Icon="fas fa-sliders-h" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Avg Interest Rate" Value="@_avgInterestRateText" Icon="fas fa-percentage" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Reserve Requirement" Value="@_avgReserveReqText" Icon="fas fa-vault" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Monetary Policies" Class="mt-4">
+        <MudTable T="MonetaryPolicyInfo" Items="@_policies" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Policy ID</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Interest Rate</MudTh>
+                <MudTh>Reserve Req</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Effective Date</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.PolicyId</MudTd>
+                <MudTd>@context.PolicyType</MudTd>
+                <MudTd>@decimal.Parse(context.InterestRate).ToString("F2")%</MudTd>
+                <MudTd>@decimal.Parse(context.ReserveRequirement).ToString("F2")%</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.EffectiveDate.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<MonetaryPolicyInfo> _policies = new();
+    private int _activePolicies;
+    private decimal _avgInterestRate;
+    private string _avgInterestRateText = "0.00%";
+    private decimal _avgReserveReq;
+    private string _avgReserveReqText = "0.00%";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _policies = await SICBClient.GetMonetaryPoliciesAsync();
+            _activePolicies = _policies.Count(p => p.Status == "Active");
+            _avgInterestRate = _policies.Any() ? _policies.Average(p => decimal.Parse(p.InterestRate)) : 0;
+            _avgInterestRateText = $"{_avgInterestRate:F2}%";
+            _avgReserveReq = _policies.Any() ? _policies.Average(p => decimal.Parse(p.ReserveRequirement)) : 0;
+            _avgReserveReqText = $"{_avgReserveReq:F2}%";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading monetary policies");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

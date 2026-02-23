@@ -1,0 +1,73 @@
+@page "/gov/tenant-invites"
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Tenant Invites - Administration</PageTitle>
+
+<MudPaper Elevation="0" Class="pa-6">
+    <MudStack Spacing="4">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h4" Color="Color.Primary">Tenant Invites</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Mail">
+                Send Invite
+            </MudButton>
+        </MudStack>
+
+        <MudText Typo="Typo.body1">
+            Manage invitations for users to join specific tenants with predefined roles.
+        </MudText>
+
+        <MudTable Items="@_invites" Hover="true" Striped="true" Dense="true" Elevation="2">
+            <HeaderContent>
+                <MudTh>Email</MudTh>
+                <MudTh>Tenant</MudTh>
+                <MudTh>Role</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Sent</MudTh>
+                <MudTh>Expires</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Email</MudTd>
+                <MudTd><MudChip T="string" Color="Color.Primary" Size="Size.Small">@context.Tenant</MudChip></MudTd>
+                <MudTd>@context.Role</MudTd>
+                <MudTd>
+                    <MudChip T="string" Color="@GetStatusColor(context.Status)" Size="Size.Small">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.Sent.ToString("MMM dd, yyyy")</MudTd>
+                <MudTd>@context.Expires.ToString("MMM dd, yyyy")</MudTd>
+                <MudTd>
+                    <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
+                        @if (context.Status == "Pending")
+                        {
+                            <MudButton Color="Color.Primary">Resend</MudButton>
+                            <MudButton Color="Color.Error">Revoke</MudButton>
+                        }
+                    </MudButtonGroup>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudStack>
+</MudPaper>
+
+@code {
+    private record Invite(string Email, string Tenant, string Role, string Status, DateTime Sent, DateTime Expires);
+
+    private readonly List<Invite> _invites = new()
+    {
+        new("newuser@email.com", "default", "Citizen", "Pending", DateTime.Now.AddDays(-2), DateTime.Now.AddDays(5)),
+        new("agent@email.com", "default", "GovernmentAgent", "Accepted", DateTime.Now.AddDays(-10), DateTime.Now.AddDays(-3)),
+        new("editor@email.com", "demo", "ContentEditor", "Expired", DateTime.Now.AddDays(-15), DateTime.Now.AddDays(-8)),
+        new("admin@email.com", "default", "Admin", "Pending", DateTime.Now.AddDays(-1), DateTime.Now.AddDays(6))
+    };
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Pending" => Color.Warning,
+        "Accepted" => Color.Success,
+        "Expired" => Color.Error,
+        "Revoked" => Color.Default,
+        _ => Color.Default
+    };
+}

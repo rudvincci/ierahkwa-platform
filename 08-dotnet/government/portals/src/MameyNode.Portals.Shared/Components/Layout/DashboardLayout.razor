@@ -1,0 +1,18 @@
+@namespace MameyNode.Portals.Shared.Components.Layout
+@using MudBlazor
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <MudText Typo="Typo.h4" Class="mb-4">@Title</MudText>
+    }
+    <MudGrid Spacing="3">
+        @ChildContent
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
+

@@ -1,0 +1,115 @@
+@inject IDialogService DialogService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.SwapHoriz" Class="mr-2" />
+            Switch Tenant
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Typo="Typo.body2" Class="mb-4">
+            Select a tenant to switch to. You will be redirected to the selected tenant's context.
+        </MudText>
+        
+        @if (_isLoading)
+        {
+            <div class="d-flex justify-center py-4">
+                <MudProgressCircular Indeterminate="true" />
+            </div>
+        }
+        else
+        {
+            <MudList T="TenantItem" @bind-SelectedValue="_selectedTenant" SelectionMode="SelectionMode.SingleSelection">
+                @foreach (var tenant in _tenants)
+                {
+                    <MudListItem Value="@tenant">
+                        <div class="d-flex align-center gap-3">
+                            <MudAvatar Color="@(tenant.IsActive ? Color.Success : Color.Default)" Size="Size.Small">
+                                @tenant.DisplayName[0]
+                            </MudAvatar>
+                            <div>
+                                <MudText Typo="Typo.body1">@tenant.DisplayName</MudText>
+                                <MudText Typo="Typo.caption" Color="Color.Default">@tenant.Domain</MudText>
+                            </div>
+                            @if (tenant.Id == _currentTenantId)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Primary">Current</MudChip>
+                            }
+                        </div>
+                    </MudListItem>
+                }
+            </MudList>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Confirm" Disabled="@(_selectedTenant == null || _selectedTenant.Id == _currentTenantId)">
+            Switch
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public IMudDialogInstance MudDialog { get; set; } = null!;
+    
+    [Parameter] public Guid CurrentTenantId { get; set; }
+    [Parameter] public List<TenantItem>? Tenants { get; set; }
+
+    private bool _isLoading;
+    private List<TenantItem> _tenants = new();
+    private TenantItem? _selectedTenant;
+    private Guid _currentTenantId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _currentTenantId = CurrentTenantId;
+        
+        if (Tenants != null)
+        {
+            _tenants = Tenants;
+        }
+        else
+        {
+            await LoadTenants();
+        }
+        
+        _selectedTenant = _tenants.FirstOrDefault(t => t.Id == _currentTenantId);
+    }
+
+    private async Task LoadTenants()
+    {
+        _isLoading = true;
+        try
+        {
+            // TODO: Load from API
+            _tenants = new List<TenantItem>
+            {
+                new() { Id = Guid.NewGuid(), DisplayName = "Default Tenant", Domain = "default.gov", IsActive = true },
+                new() { Id = Guid.NewGuid(), DisplayName = "Test Tenant", Domain = "test.gov", IsActive = true },
+            };
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Confirm()
+    {
+        if (_selectedTenant != null)
+        {
+            MudDialog.Close(DialogResult.Ok(_selectedTenant));
+        }
+    }
+
+    public class TenantItem
+    {
+        public Guid Id { get; set; }
+        public string DisplayName { get; set; } = string.Empty;
+        public string? Domain { get; set; }
+        public bool IsActive { get; set; }
+    }
+}

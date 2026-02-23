@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BúsquedaSoberana — Motor de Búsqueda Soberano | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#08080c;--bg2:#111117;--bg3:#19191f;--bg4:#222230;
+  --gold:#d4a853;--gold-d:rgba(212,168,83,0.1);
+  --tq:#2dd4a8;--tq-d:rgba(45,212,168,0.1);
+  --wp:#9b6dff;--wp-d:rgba(155,109,255,0.1);
+  --red:#ff4d6a;
+  --txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;
+  --brd:#2a2a36;--r:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+/* LANDING STATE */
+.landing{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;transition:all 0.4s}
+.landing.hidden{display:none}
+.landing-logo{font-size:56px;margin-bottom:12px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.landing h1{font-family:'Instrument Serif',serif;font-size:42px;color:var(--gold);margin-bottom:4px}
+.landing .sub{font-size:14px;color:var(--txt3);margin-bottom:32px;font-family:'IBM Plex Mono',monospace}
+
+.search-box{width:100%;max-width:640px;position:relative}
+.search-box input{
+  width:100%;padding:16px 52px 16px 20px;background:var(--bg2);border:1px solid var(--brd);
+  border-radius:28px;color:var(--txt);font-size:16px;font-family:'DM Sans',sans-serif;outline:none;
+  transition:all 0.3s;
+}
+.search-box input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,83,0.15)}
+.search-box .search-go{
+  position:absolute;right:6px;top:6px;width:40px;height:40px;border-radius:50%;
+  background:var(--gold);border:none;color:#08080c;font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s;
+}
+.search-box .search-go:hover{filter:brightness(1.15);transform:scale(1.05)}
+
+.quick-links{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap;justify-content:center}
+.qlink{
+  padding:8px 14px;background:var(--bg2);border:1px solid var(--brd);border-radius:20px;
+  font-size:12px;color:var(--txt2);cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;
+}
+.qlink:hover{background:var(--bg3);color:var(--txt);border-color:var(--gold)}
+
+.landing-footer{margin-top:48px;display:flex;gap:24px;font-size:11px;color:var(--txt3)}
+.landing-footer span{cursor:pointer;transition:color 0.15s}
+.landing-footer span:hover{color:var(--txt2)}
+
+/* RESULTS STATE */
+.results-page{display:none;min-height:100vh}
+.results-page.visible{display:block}
+
+.results-topbar{
+  position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--brd);
+  padding:12px 24px;display:flex;align-items:center;gap:16px;
+}
+.results-topbar .logo-sm{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
+.results-topbar .logo-sm span{font-size:22px}
+.results-topbar .logo-sm h2{font-family:'Instrument Serif',serif;font-size:18px;color:var(--gold)}
+.results-search{flex:1;max-width:640px;position:relative}
+.results-search input{
+  width:100%;padding:10px 44px 10px 16px;background:var(--bg2);border:1px solid var(--brd);
+  border-radius:24px;color:var(--txt);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;
+  transition:border-color 0.2s;
+}
+.results-search input:focus{border-color:var(--gold)}
+.results-search button{
+  position:absolute;right:4px;top:4px;width:32px;height:32px;border-radius:50%;
+  background:var(--gold);border:none;color:#08080c;font-size:14px;cursor:pointer;
+}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.tb-btn{
+  width:34px;height:34px;border-radius:50%;background:none;border:1px solid var(--brd);
+  color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:14px;transition:all 0.15s;
+}
+.tb-btn:hover{background:var(--bg3);color:var(--txt)}
+
+.results-tabs{
+  display:flex;gap:4px;padding:8px 24px;border-bottom:1px solid var(--brd);background:var(--bg);
+}
+.tab{
+  padding:6px 14px;border-radius:16px;font-size:12px;font-weight:600;color:var(--txt2);
+  cursor:pointer;transition:all 0.15s;background:none;border:none;font-family:'DM Sans',sans-serif;
+}
+.tab:hover{background:var(--bg3);color:var(--txt)}
+.tab.active{background:var(--gold-d);color:var(--gold)}
+
+.results-body{display:grid;grid-template-columns:1fr 360px;max-width:1200px;margin:0 auto;padding:20px 24px;gap:24px}
+
+/* Search Results */
+.results-list{display:flex;flex-direction:column;gap:16px}
+.result-info{font-size:12px;color:var(--txt3);margin-bottom:8px;font-family:'IBM Plex Mono',monospace}
+
+.result-card{padding:16px;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);transition:border-color 0.2s;cursor:pointer}
+.result-card:hover{border-color:rgba(212,168,83,0.3)}
+.result-url{font-size:12px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.result-url .favicon{width:16px;height:16px;border-radius:4px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:9px}
+.result-title{font-size:17px;font-weight:600;color:var(--gold);margin-bottom:6px;line-height:1.3}
+.result-title:hover{text-decoration:underline}
+.result-snippet{font-size:13px;color:var(--txt2);line-height:1.6}
+.result-snippet em{color:var(--txt);font-style:normal;font-weight:600}
+.result-tags{display:flex;gap:4px;margin-top:8px}
+.rtag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:2px 6px;border-radius:3px}
+.rtag-sov{background:var(--gold-d);color:var(--gold)}
+.rtag-enc{background:var(--tq-d);color:var(--tq)}
+.rtag-bdet{background:var(--wp-d);color:var(--wp)}
+.rtag-ver{background:rgba(52,211,153,0.1);color:#34d399}
+.rtag-ext{background:rgba(255,77,106,0.08);color:var(--txt3)}
+
+/* AI Answer */
+.ai-answer{
+  background:linear-gradient(135deg,rgba(212,168,83,0.06),rgba(45,212,168,0.06));
+  border:1px solid rgba(212,168,83,0.15);border-radius:var(--r);padding:16px;margin-bottom:16px;
+}
+.ai-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--tq);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ai-text{font-size:14px;line-height:1.7;color:var(--txt)}
+.ai-text strong{color:var(--gold)}
+.ai-sources{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.ai-source{font-size:10px;padding:3px 8px;background:var(--bg2);border:1px solid var(--brd);border-radius:4px;color:var(--txt3)}
+
+/* Knowledge Panel */
+.knowledge-panel{position:sticky;top:120px}
+.kp-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.kp-banner{height:120px;background:linear-gradient(135deg,#1a1520,#0d1520,#151025);display:flex;align-items:center;justify-content:center;font-size:48px;position:relative}
+.kp-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 50%,var(--bg2))}
+.kp-body{padding:16px}
+.kp-title{font-family:'Instrument Serif',serif;font-size:22px;color:var(--txt);margin-bottom:2px}
+.kp-subtitle{font-size:12px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;margin-bottom:12px}
+.kp-desc{font-size:13px;color:var(--txt2);line-height:1.6;margin-bottom:14px}
+.kp-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kp-stat{padding:8px;background:var(--bg3);border-radius:6px;text-align:center}
+.kp-stat .num{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;color:var(--gold)}
+.kp-stat .label{font-size:10px;color:var(--txt3);margin-top:1px}
+
+.kp-links{padding:12px 16px;border-top:1px solid var(--brd);display:flex;flex-direction:column;gap:6px}
+.kp-link{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tq);cursor:pointer;transition:color 0.15s}
+.kp-link:hover{color:var(--gold)}
+
+/* Related Searches */
+.related{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:14px}
+.related-title{font-size:13px;font-weight:700;margin-bottom:10px}
+.related-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.related-item{
+  padding:8px 12px;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;
+  font-size:12px;color:var(--txt2);cursor:pointer;transition:all 0.15s;
+}
+.related-item:hover{background:var(--bg4);color:var(--txt);border-color:var(--gold)}
+
+@media(max-width:1024px){.results-body{grid-template-columns:1fr}.knowledge-panel{position:static}}
+@media(max-width:640px){.results-topbar .logo-sm h2{display:none}.results-body{padding:12px}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- ═══ LANDING PAGE ═══ -->
+<div class="landing" id="landing">
+  <div class="landing-logo">🔍</div>
+  <h1>BúsquedaSoberana</h1>
+  <div class="sub">Motor de Búsqueda Soberano · MameyNode · Sin Tracking</div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Buscar en la web soberana..." onkeydown="if(event.key==='Enter')doSearch()" autofocus />
+    <button class="search-go" onclick="doSearch()">⌕</button>
+  </div>
+
+  <div class="quick-links">
+    <button class="qlink" onclick="searchFor('BDET Bank')">💎 BDET Bank</button>
+    <button class="qlink" onclick="searchFor('SoberanoMarket artesanías')">🛒 Artesanías</button>
+    <button class="qlink" onclick="searchFor('soberanía digital indígena')">🦅 Soberanía Digital</button>
+    <button class="qlink" onclick="searchFor('MameyNode blockchain')">⛓ MameyNode</button>
+    <button class="qlink" onclick="searchFor('pueblos indígenas Americas')">🌎 Pueblos Indígenas</button>
+    <button class="qlink" onclick="searchFor('Atabey traductor idiomas')">🌐 Atabey</button>
+    <button class="qlink" onclick="searchFor('RentaSoberano trabajo')">💼 Trabajo</button>
+  </div>
+
+  <div class="landing-footer">
+    <span>🔒 Sin tracking</span>
+    <span>🌐 14 idiomas</span>
+    <span>⛓ MameyNode</span>
+    <span>🛡 AI Fortress</span>
+    <span>💎 BDET integrado</span>
+  </div>
+</div>
+
+<!-- ═══ RESULTS PAGE ═══ -->
+<div class="results-page" id="resultsPage">
+
+  <div class="results-topbar">
+    <div class="logo-sm" onclick="goHome()">
+      <span>🔍</span>
+      <h2>BúsquedaSoberana</h2>
+    </div>
+    <div class="results-search">
+      <input type="text" id="resultsInput" value="soberanía digital indígena" onkeydown="if(event.key==='Enter')doSearch()" />
+      <button onclick="doSearch()">⌕</button>
+    </div>
+    <div class="topbar-right">
+      <button class="tb-btn" title="Atabey Traducir">🌐</button>
+      <button class="tb-btn" title="Cifrado">🔒</button>
+      <button class="tb-btn" title="Configuración">⚙</button>
+    </div>
+  </div>
+
+  <div class="results-tabs">
+    <button class="tab active">🌐 Todos</button>
+    <button class="tab">📷 Imágenes</button>
+    <button class="tab">📺 Video</button>
+    <button class="tab">📰 Noticias</button>
+    <button class="tab">🛒 Mercado</button>
+    <button class="tab">📚 Académico</button>
+    <button class="tab">🗺 Mapas</button>
+  </div>
+
+  <div class="results-body">
+
+    <div class="results-list">
+
+      <div class="result-info">Aproximadamente 847,291 resultados (0.042s) · Cifrado · Sin tracking · MameyNode</div>
+
+      <!-- AI Answer -->
+      <div class="ai-answer">
+        <div class="ai-label">🤖 MameyAI · Respuesta Soberana</div>
+        <div class="ai-text">
+          La <strong>soberanía digital indígena</strong> es el derecho de los pueblos originarios a controlar su propia infraestructura tecnológica, datos y presencia digital. En las Américas, más de <strong>72 millones</strong> de personas indígenas buscan alternativas a las plataformas de Big Tech que extraen datos sin consentimiento.
+          <br><br>
+          Iniciativas clave incluyen el <strong>Center for Tribal Digital Sovereignty</strong> del NCAI (574 naciones tribales), la plataforma <strong>Soberano</strong> (296 servicios sobre MameyNode blockchain), y los esfuerzos de FILAC en 19 países. La infraestructura incluye blockchain soberana, telecomunicaciones satelitales, cifrado cuántico post-quantum, y 42 motores de IA independientes.
+        </div>
+        <div class="ai-sources">
+          <span class="ai-source">soberano.bo</span>
+          <span class="ai-source">ncai.org</span>
+          <span class="ai-source">filac.org</span>
+          <span class="ai-source">coicamazonia.org</span>
+        </div>
+      </div>
+
+      <!-- Result 1 -->
+      <div class="result-card">
+        <div class="result-url"><div class="favicon">🌐</div> soberano.bo › ecosistema › plataformas</div>
+        <div class="result-title">Ecosistema Soberano — 296 Plataformas para la Soberanía Digital</div>
+        <div class="result-snippet">El <em>Ecosistema Soberano</em> comprende 296 plataformas integradas sobre MameyNode blockchain, incluyendo BDET Bank, RentaSoberano, SoberanoMarket, SoberanoDoctor, y 20+ servicios de IA. Diseñado para <em>72 millones de personas indígenas</em> en las Américas...</div>
+        <div class="result-tags"><span class="rtag rtag-sov">Soberano</span><span class="rtag rtag-enc">Cifrado</span><span class="rtag rtag-ver">Verificado</span></div>
+      </div>
+
+      <!-- Result 2 -->
+      <div class="result-card">
+        <div class="result-url"><div class="favicon">🦅</div> ncai.org › digital-sovereignty › center</div>
+        <div class="result-title">Center for Tribal Digital Sovereignty — NCAI</div>
+        <div class="result-snippet">The National Congress of American Indians' Center for <em>Tribal Digital Sovereignty</em> works to ensure that <em>574 tribal nations</em> have control over their digital infrastructure, data governance, and technological futures. Recent partnership with the <em>Sovereign Americas Network</em>...</div>
+        <div class="result-tags"><span class="rtag rtag-ver">Verificado</span><span class="rtag rtag-ext">Externo</span></div>
+      </div>
+
+      <!-- Result 3 -->
+      <div class="result-card">
+        <div class="result-url"><div class="favicon">💎</div> bdet.soberano.bo › sobre-nosotros</div>
+        <div class="result-title">BDET Bank — Banco Digital de Economía Taína · Inclusión Financiera Soberana</div>
+        <div class="result-snippet"><em>BDET Bank</em> procesa más de Ⓦ 1.2M diarios a través de 24 plataformas Soberano. Cuentas gratuitas, microcréditos, seguros comunitarios, y pagos instantáneos sobre <em>MameyNode blockchain</em>. Sin comisiones abusivas. 100% del pueblo, para el pueblo...</div>
+        <div class="result-tags"><span class="rtag rtag-bdet">BDET</span><span class="rtag rtag-sov">Soberano</span><span class="rtag rtag-enc">Cifrado</span></div>
+      </div>
+
+      <!-- Result 4 -->
+      <div class="result-card">
+        <div class="result-url"><div class="favicon">🌍</div> filac.org › programas › tecnologia-indigena</div>
+        <div class="result-title">FILAC — Tecnología con Identidad: Desarrollo Digital para Pueblos Indígenas</div>
+        <div class="result-snippet">El Fondo para el Desarrollo de los Pueblos Indígenas de América Latina y el Caribe promueve la <em>soberanía tecnológica</em> en 19 países. Alianza estratégica con la <em>Red Soberana</em> para llevar infraestructura digital a <em>58 millones</em> de personas...</div>
+        <div class="result-tags"><span class="rtag rtag-ver">Verificado</span><span class="rtag rtag-ext">Externo</span></div>
+      </div>
+
+      <!-- Result 5 -->
+      <div class="result-card">
+        <div class="result-url"><div class="favicon">⛓</div> mameynode.soberano.bo › docs › whitepaper</div>
+        <div class="result-title">MameyNode — Blockchain Soberana: Whitepaper v4.2</div>
+        <div class="result-snippet">Documentación técnica de <em>MameyNode</em>, la blockchain soberana con cifrado cuántico post-quantum. Soporta 12,847 TPS, smart contracts para 24 plataformas, consensus mechanism adaptado para gobernanza <em>indígena</em> comunitaria...</div>
+        <div class="result-tags"><span class="rtag rtag-sov">Soberano</span><span class="rtag rtag-enc">Cuántico</span></div>
+      </div>
+
+      <!-- Result 6 -->
+      <div class="result-card">
+        <div class="result-url"><div class="favicon">🌳</div> coicamazonia.org › soberania-digital</div>
+        <div class="result-title">COICA — Soberanía Digital para la Amazonía: 9 Países, 3.5 Millones de Personas</div>
+        <div class="result-snippet">La Coordinadora de Organizaciones <em>Indígenas</em> de la Cuenca Amazónica impulsa la <em>soberanía digital</em> en Ecuador, Perú, Brasil, Colombia, Bolivia, Venezuela, Guyana, Surinam y Guayana Francesa. Piloto con SoberanoFarm y conectividad satelital...</div>
+        <div class="result-tags"><span class="rtag rtag-ver">Verificado</span><span class="rtag rtag-ext">Externo</span></div>
+      </div>
+
+      <!-- Result 7 -->
+      <div class="result-card">
+        <div class="result-url"><div class="favicon">📚</div> pupitre.soberano.bo › sobre</div>
+        <div class="result-title">Pupitre Soberano — Educación en 14 Idiomas Indígenas con IA</div>
+        <div class="result-snippet">Sistema educativo soberano con 12,847 estudiantes activos. Lecciones en Quechua, Aymara, Guaraní, Taíno, Maya, Nahuatl y 8 idiomas más. Certificados en blockchain. Integrado con <em>Atabey Translator</em> para preservación lingüística...</div>
+        <div class="result-tags"><span class="rtag rtag-sov">Soberano</span></div>
+      </div>
+
+      <!-- Result 8 -->
+      <div class="result-card">
+        <div class="result-url"><div class="favicon">🩺</div> soberanodoctor.soberano.bo</div>
+        <div class="result-title">SoberanoDoctor — Telemedicina con IA para Comunidades Indígenas</div>
+        <div class="result-snippet">847 consultas diarias de telemedicina. Triage AI en 47 segundos. 8 idiomas soportados. Cobertura rural vía satélite. Pagos a través de BDET Bank. Satisfacción del paciente: 4.9/5.0. Cero errores de diagnóstico reportados...</div>
+        <div class="result-tags"><span class="rtag rtag-sov">Soberano</span><span class="rtag rtag-enc">Cifrado</span><span class="rtag rtag-bdet">BDET</span></div>
+      </div>
+
+      <!-- Related Searches -->
+      <div class="related">
+        <div class="related-title">Búsquedas relacionadas</div>
+        <div class="related-grid">
+          <div class="related-item" onclick="searchFor('BDET Bank cuenta gratis')">💎 BDET Bank cuenta gratis</div>
+          <div class="related-item" onclick="searchFor('RentaSoberano trabajo')">💼 Trabajar en RentaSoberano</div>
+          <div class="related-item" onclick="searchFor('MameyNode smart contracts')">⛓ MameyNode smart contracts</div>
+          <div class="related-item" onclick="searchFor('Atabey traductor quechua')">🌐 Atabey traductor Quechua</div>
+          <div class="related-item" onclick="searchFor('SoberanoMarket vender artesanías')">🛒 Vender en SoberanoMarket</div>
+          <div class="related-item" onclick="searchFor('Red Soberana registrarse')">🌐 Registrarse Red Soberana</div>
+          <div class="related-item" onclick="searchFor('pueblos indígenas derechos digitales')">🦅 Derechos digitales indígenas</div>
+          <div class="related-item" onclick="searchFor('cifrado cuántico explicado')">🔒 Cifrado cuántico explicado</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- KNOWLEDGE PANEL -->
+    <div class="knowledge-panel">
+
+      <div class="kp-card">
+        <div class="kp-banner">🦅🌎🔒</div>
+        <div class="kp-body">
+          <div class="kp-title">Soberanía Digital Indígena</div>
+          <div class="kp-subtitle">Movimiento · Tecnología · Autodeterminación</div>
+          <div class="kp-desc">Movimiento de los pueblos indígenas de las Américas para controlar su propia infraestructura digital, datos, y presencia en internet. Impulsado por organizaciones como NCAI, FILAC, COICA y la plataforma Soberano.</div>
+          <div class="kp-stats">
+            <div class="kp-stat"><div class="num">72M+</div><div class="label">Personas</div></div>
+            <div class="kp-stat"><div class="num">574</div><div class="label">Naciones Tribales</div></div>
+            <div class="kp-stat"><div class="num">19</div><div class="label">Países</div></div>
+            <div class="kp-stat"><div class="num">296</div><div class="label">Plataformas</div></div>
+          </div>
+        </div>
+        <div class="kp-links">
+          <div class="kp-link">🌐 soberano.bo — Plataforma principal</div>
+          <div class="kp-link">💎 bdet.soberano.bo — Banco Digital</div>
+          <div class="kp-link">🦅 ncai.org — NCAI Digital Sovereignty</div>
+          <div class="kp-link">🌍 filac.org — FILAC</div>
+          <div class="kp-link">🌳 coicamazonia.org — COICA</div>
+        </div>
+      </div>
+
+      <!-- Quick Facts -->
+      <div class="kp-card">
+        <div class="kp-body">
+          <div style="font-size:13px;font-weight:700;margin-bottom:10px">⚡ Datos Rápidos</div>
+          <div style="font-size:12px;color:var(--txt2);line-height:1.8">
+            <strong style="color:var(--gold)">Blockchain:</strong> MameyNode v4.2<br>
+            <strong style="color:var(--gold)">TPS:</strong> 12,847 transacciones/segundo<br>
+            <strong style="color:var(--gold)">Cifrado:</strong> Post-quantum E2E<br>
+            <strong style="color:var(--gold)">IA:</strong> 42 motores soberanos<br>
+            <strong style="color:var(--gold)">Idiomas:</strong> 14 indígenas + 6 globales<br>
+            <strong style="color:var(--gold)">Telecom:</strong> Satelital + Mesh 5G<br>
+            <strong style="color:var(--gold)">Moneda:</strong> Wampum (Ⓦ)<br>
+            <strong style="color:var(--gold)">Gobierno:</strong> 24 departamentos digitales
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding:12px;font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace">
+        🔒 Sin tracking · Sin cookies · Sin publicidad<br>
+        Búsqueda cifrada sobre MameyNode<br>
+        Tu privacidad es soberana
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function doSearch() {
+  const input = document.getElementById('searchInput').value || document.getElementById('resultsInput').value;
+  if (!input.trim()) return;
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('resultsPage').classList.add('visible');
+  document.getElementById('resultsInput').value = input;
+}
+
+function searchFor(query) {
+  document.getElementById('searchInput').value = query;
+  document.getElementById('resultsInput').value = query;
+  doSearch();
+}
+
+function goHome() {
+  document.getElementById('landing').classList.remove('hidden');
+  document.getElementById('resultsPage').classList.remove('visible');
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchInput').focus();
+}
+</script>
+</body>
+</html>

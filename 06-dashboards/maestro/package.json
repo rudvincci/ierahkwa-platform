@@ -1,0 +1,73 @@
+{
+  "name": "maestro",
+  "version": "1.0.0",
+  "description": "Maestro - Orchestrate AI agents and workflows",
+  "main": "dist/cli/index.js",
+  "bin": {
+    "agent-orchestrator": "dist/cli/index.js",
+    "maestro": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "npm run build:dashboard && tsc",
+    "build:dashboard": "cd dashboard && npm install && npm run build",
+    "build:server": "tsc",
+    "start": "node dist/cli/index.js",
+    "dev": "ts-node src/cli/index.ts",
+    "dev:dashboard": "cd dashboard && npm run dev",
+    "test": "jest",
+    "enable": "node dist/cli/index.js enable",
+    "disable": "node dist/cli/index.js disable",
+    "dashboard": "node dist/cli/index.js dashboard",
+    "status": "node dist/cli/index.js status",
+    "docker:build": "docker build -t mamey/maestro:latest .",
+    "docker:build:dev": "docker build -f Dockerfile.dev -t mamey/maestro:dev .",
+    "docker:run": "docker-compose up -d maestro",
+    "docker:stop": "docker-compose down",
+    "docker:logs": "docker-compose logs -f maestro",
+    "docker:exec": "docker-compose exec maestro maestro",
+    "docker:shell": "docker-compose exec maestro sh"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "orchestrator",
+    "cursor",
+    "workflow"
+  ],
+  "author": "Mamey Technologies",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mamey-io/Maestro.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Mamey-io/Maestro/issues"
+  },
+  "homepage": "https://github.com/Mamey-io/Maestro#readme",
+  "dependencies": {
+    "@types/mime-types": "^3.0.1",
+    "commander": "^12.1.0",
+    "express": "^4.21.2",
+    "glob": "^11.0.0",
+    "js-yaml": "^4.1.1",
+    "mime-types": "^3.0.2",
+    "uuid": "^11.0.3",
+    "winston": "^3.15.0",
+    "ws": "^8.18.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "@types/glob": "^9.0.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.10.5",
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.18.1",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
+    "eslint": "^9.18.0",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  }
+}

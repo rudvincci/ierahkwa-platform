@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+option csharp_namespace = "Mamey.FWID.Identities.Api.Protos";
+
+package Services.PermissionSync;
+
+service PermissionSyncService {
+    rpc SyncPermissions (SyncPermissionsRequest) returns (SyncPermissionsResponse) {}
+    rpc GetPermissions (GetPermissionsRequest) returns (GetPermissionsResponse) {}
+    rpc UpdatePermissions (UpdatePermissionsRequest) returns (UpdatePermissionsResponse) {}
+}
+
+message SyncPermissionsRequest {
+    string serviceName = 1;
+    repeated string permissions = 2;
+    string certificateSubject = 3;
+    string certificateIssuer = 4;
+    string certificateThumbprint = 5;
+}
+
+message SyncPermissionsResponse {
+    bool success = 1;
+    string serviceName = 2;
+    repeated string permissions = 3;
+    string message = 4;
+}
+
+message GetPermissionsRequest {
+    string serviceName = 1;
+}
+
+message GetPermissionsResponse {
+    bool success = 1;
+    string serviceName = 2;
+    repeated string permissions = 3;
+    string certificateSubject = 4;
+    string certificateIssuer = 5;
+    string certificateThumbprint = 6;
+    string message = 7;
+}
+
+message UpdatePermissionsRequest {
+    string serviceName = 1;
+    repeated string permissions = 2;
+    string certificateSubject = 3;
+    string certificateIssuer = 4;
+    string certificateThumbprint = 5;
+}
+
+message UpdatePermissionsResponse {
+    bool success = 1;
+    string serviceName = 2;
+    repeated string permissions = 3;
+    string message = 4;
+}
+

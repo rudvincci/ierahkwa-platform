@@ -1,0 +1,22 @@
+apiVersion: v2
+name: mamey-umbrella
+description: An umbrella Helm chart for Mamey infrastructure, microservices, and API gateways.
+version: 0.1.0
+appVersion: "1.0.0"
+dependencies:
+  - name: infra
+    version: 0.1.0
+    repository: "file://charts/infra"
+    condition: infra.enabled
+  - name: microservices
+    version: 0.1.0
+    repository: "file://charts/microservices"
+    condition: microservices.enabled
+  - name: api-gateway
+    version: 0.1.0
+    repository: "file://charts/api-gateway"
+    condition: api-gateway.enabled
+  - name: internal-api-gateway
+    version: 0.1.0
+    repository: "file://charts/internal-api-gateway"
+    condition: internal-api-gateway.enabled

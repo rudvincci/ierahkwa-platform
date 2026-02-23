@@ -1,0 +1,152 @@
+@page "/public/validate-citizen"
+@using Mamey.Portal.Web.ViewModels.Public
+@using Microsoft.AspNetCore.Components.Forms
+@inject ValidateCitizenViewModel Vm
+
+<PageTitle>Validate Citizen ID</PageTitle>
+
+<h1>Validate Citizen Identification</h1>
+
+<MudPaper Class="pa-4" MaxWidth="600px">
+    <MudText Typo="Typo.body1" Class="mb-3">
+        Validate a public document number (passport / ID card / vehicle tag). This page only returns <strong>valid/invalid</strong> and does not expose private citizen data.
+    </MudText>
+
+    <MudTabs Elevation="0" Variant="Variant.Text" Class="mb-3">
+        <MudTabPanel Text="Enter Document Number">
+            <MudStack Spacing="2" Class="mt-3">
+                <MudTextField @bind-Value="Vm.DocumentNumber"
+                              Label="Document number"
+                              Placeholder="e.g. P-DEFAULT-260104-ABC123"
+                              Variant="Variant.Outlined" />
+            </MudStack>
+        </MudTabPanel>
+        <MudTabPanel Text="Scan Barcode from Image">
+            <MudStack Spacing="2" Class="mt-3">
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Upload an image of an ID card to automatically scan the PDF417 barcode and extract the document number.
+                </MudText>
+                <InputFile OnChange="OnImageSelected" Accept="image/*" />
+                @if (_selectedImage != null)
+                {
+                    <MudChip T="string" Color="Color.Primary" Size="Size.Medium" OnClose="OnFileRemoved" CloseIcon="@Icons.Material.Filled.Close">
+                        @_selectedImage.Name (@((_selectedImage.Size / 1024.0).ToString("F1")) KB)
+                    </MudChip>
+                }
+                @if (_selectedImage != null)
+                {
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Disabled="@(_scanning)"
+                               OnClick="ScanBarcodeFromImage"
+                               StartIcon="@Icons.Material.Filled.QrCodeScanner">
+                        @if (_scanning)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Scanning...</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Scan Barcode</MudText>
+                        }
+                    </MudButton>
+                }
+            </MudStack>
+        </MudTabPanel>
+    </MudTabs>
+
+    <MudStack Spacing="2">
+
+        <MudStack Row="true" Spacing="2">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Disabled="@(!Vm.CanValidate)"
+                       OnClick="RunValidate">
+                Validate
+            </MudButton>
+
+            <MudButton Variant="Variant.Text" Color="Color.Secondary"
+                       OnClick="Clear">
+                Clear
+            </MudButton>
+        </MudStack>
+
+        @if (!string.IsNullOrWhiteSpace(Vm.Message))
+        {
+            <MudAlert Severity="@(Vm.Result?.IsValid == true ? Severity.Success : Severity.Warning)">
+                @Vm.Message
+            </MudAlert>
+        }
+
+        @if (Vm.Result is not null && Vm.Result.Found)
+        {
+            <MudPaper Class="pa-3 mt-2" Outlined="true">
+                <MudText Typo="Typo.subtitle2">Result</MudText>
+                <MudText Typo="Typo.body2"><strong>Kind:</strong> @Vm.Result.Kind</MudText>
+                <MudText Typo="Typo.body2"><strong>Number:</strong> @Vm.Result.DocumentNumberMasked</MudText>
+                <MudText Typo="Typo.body2"><strong>Status:</strong> @Vm.Result.Status</MudText>
+                <MudText Typo="Typo.body2"><strong>Issued:</strong> @(Vm.Result.IssuedAt?.LocalDateTime.ToString() ?? "-")</MudText>
+                <MudText Typo="Typo.body2"><strong>Expires:</strong> @(Vm.Result.ExpiresAt?.LocalDateTime.ToString() ?? "-")</MudText>
+            </MudPaper>
+        }
+    </MudStack>
+</MudPaper>
+
+@code
+{
+    private IBrowserFile? _selectedImage;
+    private bool _scanning = false;
+
+    private void RunValidate()
+    {
+        Vm.Validate.Execute().Subscribe(_ => InvokeAsync(StateHasChanged));
+    }
+
+    private void Clear()
+    {
+        Vm.Reset();
+        _selectedImage = null;
+        StateHasChanged();
+    }
+
+    private void OnImageSelected(InputFileChangeEventArgs e)
+    {
+        _selectedImage = e.File;
+        StateHasChanged();
+    }
+
+    private void OnFileRemoved(MudChip<string> chip)
+    {
+        _selectedImage = null;
+        StateHasChanged();
+    }
+
+    private async Task ScanBarcodeFromImage()
+    {
+        if (_selectedImage == null) return;
+
+        try
+        {
+            _scanning = true;
+            StateHasChanged();
+
+            using var stream = _selectedImage.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10MB limit
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
+
+            Vm.ScanBarcode.Execute(memoryStream).Subscribe();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error scanning barcode: {ex.Message}");
+        }
+        finally
+        {
+            _scanning = false;
+            StateHasChanged();
+        }
+    }
+}
+
+

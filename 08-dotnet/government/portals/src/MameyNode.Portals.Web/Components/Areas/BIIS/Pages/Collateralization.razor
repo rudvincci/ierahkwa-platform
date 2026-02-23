@@ -1,0 +1,93 @@
+@page "/biis/collateralization"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IBIISClient BIISClient
+@inject ILogger<Collateralization> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Asset Collateralization" Icon="fas fa-shield-alt" Subtitle="Manage collateralized assets">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Collateral" Value="@_collaterals.Count.ToString()" Icon="fas fa-shield-alt" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Value" Value="@_totalValue.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Avg Ratio" Value="@_avgRatio.ToString("P2")" Icon="fas fa-percentage" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Collateralized Assets" Class="mt-4">
+        <MudTable T="AssetCollateralizationInfo" Items="@_collaterals" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Collateral ID</MudTh>
+                <MudTh>Asset ID</MudTh>
+                <MudTh>Asset Type</MudTh>
+                <MudTh>Collateral Value</MudTh>
+                <MudTh>Loan Amount</MudTh>
+                <MudTh>Ratio</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.CollateralId</MudTd>
+                <MudTd>@context.AssetId</MudTd>
+                <MudTd>@context.AssetType</MudTd>
+                <MudTd>@decimal.Parse(context.CollateralValue).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.LoanAmount).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.CollateralRatio).ToString("P2")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<AssetCollateralizationInfo> _collaterals = new();
+    private decimal _totalValue;
+    private decimal _avgRatio;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _collaterals = await BIISClient.GetCollateralizedAssetsAsync();
+            _totalValue = _collaterals.Sum(c => decimal.Parse(c.CollateralValue));
+            _avgRatio = _collaterals.Any() ? _collaterals.Average(c => decimal.Parse(c.CollateralRatio)) : 0;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading collateralized assets");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

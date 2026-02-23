@@ -1,0 +1,3 @@
+namespace Mamey.OpenBanking.Specifications.AccountsTransactions;
+
+

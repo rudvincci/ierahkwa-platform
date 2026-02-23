@@ -1,0 +1,52 @@
+@* @typeparam TModel *@
+@* *@
+@* *@
+@* @if (Items == null && ObservableItems == null) *@
+@* { *@
+@*     <MudProgressCircular Color="LoadingProgressColor" Indeterminate="true" /> *@
+@* } *@
+@* else *@
+@* { *@
+@*     <MudPaper Class="ma-5 pa-5"> *@
+@*         <MudTable @form="@mudTable" *@
+@*                   Items="Items" *@
+@*                   SelectedItem="SelectedItem" *@
+@*                   ServerData="ServerReload" *@
+@*                   Class="Class" *@
+@*                   Filter="Filter" *@
+@*                   OnRowClick="OnRowClicked" *@
+@*                   Hover="Hover" *@
+@*                   Elevation="Elevation" *@
+@*                   Dense="Dense" *@
+@*                   Bordered="Bordered" *@
+@*                   Striped="Striped" *@
+@*                   SortLabel="SortLabel" *@
+@*                   RowClass="cursor-pointer" *@
+@*                   RowClassFunc="@SelectedRowClassFunc" *@
+@*                   AllowUnsorted="AllowUnsorted"> *@
+@* *@
+@*             <HeaderContent> *@
+@*                 @foreach (var column in Columns) *@
+@*                 { *@
+@*                     <MudTh> *@
+@*                         <MudTableSortLabel T="TModel" @onclick="() => ApplySort(column.Metadata.Property)" *@
+@*                                            SortDirection="GetSortDirection(column.Metadata.Property)"> *@
+@*                             @column.Metadata.Header *@
+@*                         </MudTableSortLabel> *@
+@*                     </MudTh> *@
+@*                 } *@
+@*             </HeaderContent> *@
+@* *@
+@*             <RowTemplate Context="item"> *@
+@*                 @foreach (var column in Columns) *@
+@*                 { *@
+@*                     <MudTd>@(GetColumnValue(item, column.Metadata.Property))</MudTd> *@
+@*                 } *@
+@*             </RowTemplate> *@
+@* *@
+@*             <PagerContent> *@
+@*                 <MudTablePager PageSizeOptions="new int[]{10, 20, 50, 100}" /> *@
+@*             </PagerContent> *@
+@*         </MudTable> *@
+@*     </MudPaper> *@
+@* } *@

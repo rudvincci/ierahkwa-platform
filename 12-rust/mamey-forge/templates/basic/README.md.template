@@ -1,0 +1,70 @@
+# {{project_name}}
+
+A smart contract for [MameyFutureNode](https://github.com/Mamey-io/MameyFutureNode), scaffolded with [MameyForge](https://github.com/Mamey-io/MameyForge).
+
+## Getting Started
+
+### Prerequisites
+
+- Rust 1.75+ with the `wasm32-unknown-unknown` target
+- MameyForge CLI
+
+```bash
+rustup target add wasm32-unknown-unknown
+```
+
+### Build
+
+```bash
+mameyforge build
+```
+
+### Test
+
+```bash
+mameyforge test
+```
+
+### Deploy
+
+```bash
+# Local devnet
+mameyforge devnet start
+mameyforge deploy --network devnet
+
+# Testnet
+mameyforge deploy --network testnet
+```
+
+### Interact
+
+```bash
+# Call a state-changing function
+mameyforge call --contract <ADDRESS> --function execute_set --args '{"key":"greeting","value":"hello"}'
+
+# Query (read-only)
+mameyforge query --contract <ADDRESS> --function query_get --args '{"key":"greeting"}'
+```
+
+## Project Structure
+
+```
+{{project_name}}/
+├── contracts/
+│   └── src/
+│       └── lib.rs          # Contract source code
+├── tests/
+│   └── integration.rs      # Integration tests
+├── scripts/
+│   └── deploy.rs           # Deployment script
+├── Cargo.toml              # Rust dependencies
+└── mameyforge.toml         # MameyForge configuration
+```
+
+## Configuration
+
+See `mameyforge.toml` for project configuration including network endpoints, build options, and devnet settings.
+
+## License
+
+MIT OR Apache-2.0

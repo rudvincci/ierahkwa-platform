@@ -1,0 +1,70 @@
+@* CIT-001-H: Consent to Verification and Data Processing *@
+@using Mamey.Government.UI.ViewModels.Citizenship
+@using Mamey.Government.UI.Components.Inputs
+@using Mamey.BlazorWasm.Components.MameyPro.ImageUploadPro
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h6">CIT-001-H: Consent to Verification and Data Processing</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary">
+        Consent for verification and data processing. This section will be populated with all fields from CIT-001-H Consent to Verification and Data Processing.pdf
+    </MudText>
+
+    <MudStack Spacing="3">
+        <MudText Typo="Typo.subtitle1">Signature</MudText>
+        <MudRadioGroup T="bool" @bind-SelectedOption="ViewModel.UseSignaturePad" Row="true">
+            <MudRadio T="bool" Option="true">Draw signature</MudRadio>
+            <MudRadio T="bool" Option="false">Upload image</MudRadio>
+        </MudRadioGroup>
+
+        @if (ViewModel.UseSignaturePad)
+        {
+            <SignaturePad Label="Signature (draw)" 
+                         Height="180"
+                         DataUrl="ViewModel.SignatureDataUrl"
+                         DataUrlChanged="@(s => ViewModel.SignatureDataUrl = s)" />
+        }
+        else
+        {
+            <ImageUploadPro Label="Signature image"
+                           HelperText="Upload a scanned signature (PNG/JPG)."
+                           Multiple="false"
+                           ImageAccept="image/png,image/jpeg"
+                           MaxAllowedSize="@(2 * 1024 * 1024)"
+                           Files="ViewModel.SignatureImage"
+                           FilesChanged="@(files => ViewModel.SignatureImage = files)" />
+        }
+
+        <MudPaper Class="pa-4 mt-4">
+            <MudText Typo="Typo.subtitle2" Class="mb-4">Consent to Verification and Data Processing</MudText>
+
+            <MudAlert Severity="Severity.Info" Class="mb-4">
+                <MudText Typo="Typo.body2">
+                    <strong>Data Privacy:</strong> Your personal data will be processed in accordance with applicable 
+                    privacy laws and regulations. Both consents below are required to proceed with your application.
+                </MudText>
+            </MudAlert>
+
+            <MudText Typo="Typo.body1" Class="mb-4">
+                I consent to the verification of the information provided in this application and to the processing 
+                of my personal data for the purposes of citizenship application review, document issuance, and 
+                government record-keeping.
+            </MudText>
+
+            <MudCheckBox T="bool" @bind-Selected="ViewModel.ConsentToVerification" 
+                        Label="I consent to verification of my application information" 
+                        Required="true" 
+                        Class="mb-2" />
+
+            <MudCheckBox T="bool" @bind-Selected="ViewModel.ConsentToDataProcessing" 
+                        Label="I consent to the processing of my personal data as described above" 
+                        Required="true" />
+        </MudPaper>
+    </MudStack>
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public BecomeCitizenViewModel ViewModel { get; set; } = null!;
+}
+
+

@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Assessments.Api.Protos";
+
+package Pupitre.Assessments;
+
+// gRPC service for Assessment operations
+service AssessmentService {
+    // Get a single Assessment by ID
+    rpc GetAssessment (GetAssessmentRequest) returns (AssessmentResponse) {};
+    
+    // List all Assessments with pagination
+    rpc ListAssessments (ListAssessmentsRequest) returns (ListAssessmentsResponse) {};
+    
+    // Stream Assessment updates
+    rpc StreamAssessmentUpdates (StreamAssessmentUpdatesRequest) returns (stream AssessmentResponse) {};
+}
+
+message GetAssessmentRequest {
+    string id = 1;
+}
+
+message ListAssessmentsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListAssessmentsResponse {
+    repeated AssessmentResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message AssessmentResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamAssessmentUpdatesRequest {
+    string filter = 1;
+}

@@ -1,0 +1,124 @@
+version: '3.8'
+
+services:
+  grpc-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "50100:50100"
+    environment:
+      - GRPC_SERVER_PORT=50100
+      - INFERENCE_ENGINE_URL=http://inference:50101
+      - MODEL_REGISTRY_URL=http://registry:50103
+      - REDIS_URL=redis://redis:6379
+      - POSTGRES_HOST=postgres
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - JAEGER_AGENT_HOST=jaeger
+    depends_on:
+      - redis
+      - postgres
+      - mlflow
+      - jaeger
+    volumes:
+      - ./mamey_future_ai:/app/mamey_future_ai
+    command: python -m mamey_future_ai.grpc_server
+
+  inference:
+    build:
+      context: .
+      dockerfile: Dockerfile.inference
+    ports:
+      - "50101:50101"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - MODEL_REGISTRY_URL=http://registry:50103
+    depends_on:
+      - redis
+      - registry
+    volumes:
+      - ./models:/app/models
+
+  registry:
+    build:
+      context: .
+      dockerfile: Dockerfile.registry
+    ports:
+      - "50103:50103"
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - POSTGRES_HOST=postgres
+      - S3_ENDPOINT_URL=http://minio:9000
+    depends_on:
+      - mlflow
+      - postgres
+      - minio
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.8.1
+    ports:
+      - "5000:5000"
+    environment:
+      - BACKEND_STORE_URI=postgresql://mamey_ai:changeme@postgres:5432/mamey_ai
+      - DEFAULT_ARTIFACT_ROOT=s3://mamey-ai-models/
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
+      - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
+    depends_on:
+      - postgres
+      - minio
+    volumes:
+      - mlflow-data:/mlflow
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=mamey_ai
+      - POSTGRES_USER=mamey_ai
+      - POSTGRES_PASSWORD=changeme
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "6831:6831/udp"
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+
+volumes:
+  postgres-data:
+  redis-data:
+  mlflow-data:
+  minio-data:
+  prometheus-data:

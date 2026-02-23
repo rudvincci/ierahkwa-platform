@@ -1,0 +1,285 @@
+@* This file is excluded and should not be compiled. Route disabled. *@
+@* @page "/identity/profile" - REMOVED to prevent duplicate route *@
+@inject IIdentityService IdentityService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>My Profile - FutureWampumID</PageTitle>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudText Typo="Typo.h4" Class="mb-4">My Profile</MudText>
+    </MudItem>
+</MudGrid>
+
+@if (_isLoading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mb-4" />
+}
+else if (_identity is not null)
+{
+    <MudGrid>
+        <!-- Profile Card -->
+        <MudItem xs="12" md="4">
+            <MudCard Elevation="2">
+                <MudCardContent Class="text-center">
+                    <MudAvatar Size="Size.Large" Color="Color.Primary" Style="width: 100px; height: 100px; font-size: 2.5rem;">
+                        @GetInitials()
+                    </MudAvatar>
+                    <MudText Typo="Typo.h5" Class="mt-4">@_identity.FirstName @_identity.LastName</MudText>
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@_identity.Email</MudText>
+                    
+                    <div class="d-flex justify-center gap-2 mt-4">
+                        <MudChip T="string" Color="@GetVerificationColor()" Size="Size.Small">
+                            @GetVerificationStatus()
+                        </MudChip>
+                        @if (_identity.DID is not null)
+                        {
+                            <MudChip T="string" Color="Color.Success" Size="Size.Small" Icon="@Icons.Material.Filled.Key">
+                                DID Linked
+                            </MudChip>
+                        }
+                    </div>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Profile Form -->
+        <MudItem xs="12" md="8">
+            <MudCard Elevation="2">
+                <MudCardHeader>
+                    <MudText Typo="Typo.h6">Profile Information</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <EditForm Model="@_editModel" OnValidSubmit="@SaveProfile">
+                        <DataAnnotationsValidator />
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_editModel.FirstName" 
+                                              Label="First Name" 
+                                              Required="true"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_editModel.LastName" 
+                                              Label="Last Name" 
+                                              Required="true"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudTextField @bind-Value="_editModel.Email" 
+                                              Label="Email" 
+                                              Required="true"
+                                              InputType="InputType.Email"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="_editModel.DateOfBirth" 
+                                               Label="Date of Birth" 
+                                               Variant="Variant.Outlined"
+                                               MaxDate="@DateTime.Now.AddYears(-16)" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_editModel.Phone" 
+                                              Label="Phone Number" 
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+                        </MudGrid>
+                    </EditForm>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Color="Color.Primary" 
+                               Variant="Variant.Filled" 
+                               OnClick="@SaveProfile"
+                               Disabled="@_isSaving">
+                        @if (_isSaving)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        }
+                        Save Changes
+                    </MudButton>
+                    <MudButton Color="Color.Secondary" 
+                               Variant="Variant.Outlined" 
+                               OnClick="@ResetForm"
+                               Disabled="@_isSaving">
+                        Reset
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <!-- Quick Actions -->
+        <MudItem xs="12">
+            <MudCard Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6" Class="mb-4">Quick Actions</MudText>
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudButton Variant="Variant.Outlined" 
+                                   Color="Color.Primary" 
+                                   FullWidth="true"
+                                   OnClick="@GoToBiometrics">
+                            <MudIcon Icon="@Icons.Material.Filled.Fingerprint" Class="mr-2" />
+                            Biometrics
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudButton Variant="Variant.Outlined" 
+                                   Color="Color.Secondary" 
+                                   FullWidth="true"
+                                   OnClick="@GoToMfa">
+                            <MudIcon Icon="@Icons.Material.Filled.Security" Class="mr-2" />
+                            MFA Settings
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudButton Variant="Variant.Outlined" 
+                                   Color="Color.Info" 
+                                   FullWidth="true"
+                                   OnClick="@GoToVerification">
+                            <MudIcon Icon="@Icons.Material.Filled.VerifiedUser" Class="mr-2" />
+                            Verification
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudButton Variant="Variant.Outlined" 
+                                   Color="Color.Warning" 
+                                   FullWidth="true"
+                                   OnClick="@GoToDIDs">
+                            <MudIcon Icon="@Icons.Material.Filled.Key" Class="mr-2" />
+                            Manage DIDs
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <MudAlert Severity="Severity.Warning">
+        Profile not found. Please contact support.
+    </MudAlert>
+}
+
+@code {
+    private bool _isLoading = true;
+    private bool _isSaving = false;
+    private IdentityDto? _identity;
+    private ProfileEditModel _editModel = new();
+
+    // Mock identity ID - in production, get from auth state
+    private Guid _identityId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadIdentityAsync();
+    }
+
+    private async Task LoadIdentityAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            _identity = await IdentityService.GetIdentityAsync(_identityId);
+            if (_identity is not null)
+            {
+                PopulateEditModel();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading profile: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void PopulateEditModel()
+    {
+        if (_identity is null) return;
+        
+        _editModel = new ProfileEditModel
+        {
+            FirstName = _identity.FirstName,
+            LastName = _identity.LastName,
+            Email = _identity.Email,
+            // DateOfBirth and Phone would come from extended identity data
+        };
+    }
+
+    private async Task SaveProfile()
+    {
+        if (_identity is null) return;
+
+        _isSaving = true;
+        try
+        {
+            var command = new UpdateIdentity(
+                _identity.Id,
+                _editModel.FirstName,
+                _editModel.LastName,
+                _editModel.Email
+            );
+
+            var success = await IdentityService.UpdateIdentityAsync(command);
+            if (success)
+            {
+                Snackbar.Add("Profile updated successfully", Severity.Success);
+                await LoadIdentityAsync();
+            }
+            else
+            {
+                Snackbar.Add("Failed to update profile", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving profile: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    private void ResetForm()
+    {
+        PopulateEditModel();
+    }
+
+    private string GetInitials()
+    {
+        if (_identity is null) return "?";
+        var first = !string.IsNullOrEmpty(_identity.FirstName) ? _identity.FirstName[0] : '?';
+        var last = !string.IsNullOrEmpty(_identity.LastName) ? _identity.LastName[0] : '?';
+        return $"{first}{last}".ToUpper();
+    }
+
+    private string GetVerificationStatus()
+    {
+        // In production, get from identity verification status
+        return "Verified";
+    }
+
+    private Color GetVerificationColor()
+    {
+        // In production, based on actual verification status
+        return Color.Success;
+    }
+
+    private void GoToBiometrics() => Navigation.NavigateTo("/identity/biometrics");
+    private void GoToMfa() => Navigation.NavigateTo("/identity/mfa");
+    private void GoToVerification() => Navigation.NavigateTo("/identity/verification");
+    private void GoToDIDs() => Navigation.NavigateTo("/did");
+
+    public class ProfileEditModel
+    {
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public DateTime? DateOfBirth { get; set; }
+        public string? Phone { get; set; }
+    }
+}

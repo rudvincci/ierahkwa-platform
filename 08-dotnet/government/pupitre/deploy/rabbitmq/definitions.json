@@ -1,0 +1,319 @@
+{
+  "rabbit_version": "3.12",
+  "vhosts": [
+    { "name": "/" },
+    { "name": "pupitre" }
+  ],
+  "users": [
+    {
+      "name": "pupitre",
+      "password_hash": "pupitre_dev_password",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "pupitre",
+      "vhost": "pupitre",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "pupitre.commands",
+      "vhost": "pupitre",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "pupitre.events",
+      "vhost": "pupitre",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "pupitre.events.rejected",
+      "vhost": "pupitre",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "pupitre.dlx",
+      "vhost": "pupitre",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "queues": [
+    {
+      "name": "pupitre.users.commands",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.users.events",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.gles.commands",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.gles.events",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.curricula.commands",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.curricula.events",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.lessons.commands",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.lessons.events",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.assessments.commands",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.assessments.events",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.notifications.commands",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.notifications.events",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.ai.tutors.commands",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.ai.assessments.commands",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "pupitre.dlx"
+      }
+    },
+    {
+      "name": "pupitre.dlq",
+      "vhost": "pupitre",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "pupitre.commands",
+      "vhost": "pupitre",
+      "destination": "pupitre.users.commands",
+      "destination_type": "queue",
+      "routing_key": "users.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.events",
+      "vhost": "pupitre",
+      "destination": "pupitre.users.events",
+      "destination_type": "queue",
+      "routing_key": "users.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.commands",
+      "vhost": "pupitre",
+      "destination": "pupitre.gles.commands",
+      "destination_type": "queue",
+      "routing_key": "gles.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.events",
+      "vhost": "pupitre",
+      "destination": "pupitre.gles.events",
+      "destination_type": "queue",
+      "routing_key": "gles.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.commands",
+      "vhost": "pupitre",
+      "destination": "pupitre.curricula.commands",
+      "destination_type": "queue",
+      "routing_key": "curricula.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.events",
+      "vhost": "pupitre",
+      "destination": "pupitre.curricula.events",
+      "destination_type": "queue",
+      "routing_key": "curricula.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.commands",
+      "vhost": "pupitre",
+      "destination": "pupitre.lessons.commands",
+      "destination_type": "queue",
+      "routing_key": "lessons.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.events",
+      "vhost": "pupitre",
+      "destination": "pupitre.lessons.events",
+      "destination_type": "queue",
+      "routing_key": "lessons.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.commands",
+      "vhost": "pupitre",
+      "destination": "pupitre.assessments.commands",
+      "destination_type": "queue",
+      "routing_key": "assessments.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.events",
+      "vhost": "pupitre",
+      "destination": "pupitre.assessments.events",
+      "destination_type": "queue",
+      "routing_key": "assessments.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.commands",
+      "vhost": "pupitre",
+      "destination": "pupitre.notifications.commands",
+      "destination_type": "queue",
+      "routing_key": "notifications.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.events",
+      "vhost": "pupitre",
+      "destination": "pupitre.notifications.events",
+      "destination_type": "queue",
+      "routing_key": "notifications.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.commands",
+      "vhost": "pupitre",
+      "destination": "pupitre.ai.tutors.commands",
+      "destination_type": "queue",
+      "routing_key": "ai.tutors.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.commands",
+      "vhost": "pupitre",
+      "destination": "pupitre.ai.assessments.commands",
+      "destination_type": "queue",
+      "routing_key": "ai.assessments.#",
+      "arguments": {}
+    },
+    {
+      "source": "pupitre.dlx",
+      "vhost": "pupitre",
+      "destination": "pupitre.dlq",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    }
+  ]
+}

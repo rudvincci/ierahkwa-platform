@@ -1,0 +1,40 @@
+@page "/accounts/statements"
+@using Mamey.ApplicationName.BlazorWasm.Services.Statements
+@using Mamey.ApplicationName.BlazorWasm.ViewModels.Statements
+@inject StatementService StatementService
+@attribute [Authorize]
+<MudContainer MaxWidth="MaxWidth.Large" Class="m-auto p-6">
+    <!-- Statements Section -->
+    <MudPaper Class="p-4 mb-4" Elevation="3">
+        <MudText Typo="Typo.h4">Account Statements</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ViewModel.ShowGenerateStatementDialog">Generate Statement</MudButton>
+        <MudTextField Label="Search Statements" @bind-Value="ViewModel.SearchQuery" Variant="Variant.Outlined" FullWidth="true" Immediate="true" />
+        <MudDateRangePicker Label="Date Range" @bind-DateRange="ViewModel.DateRange" FullWidth="true" />
+
+        <MudGrid Spacing="3">
+            @foreach (var statement in ViewModel.FilteredStatements)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <StatementCard Statement="statement" />
+                </MudItem>
+            }
+        </MudGrid>
+    </MudPaper>
+
+    <!-- Documents Section -->
+    <MudPaper Class="p-4 mt-4" Elevation="3">
+        <MudText Typo="Typo.h4">Manage Documents</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="ViewModel.ShowUploadDocumentDialog">Upload Document</MudButton>
+        <DocumentList Documents="ViewModel.Documents" />
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private StatementsViewModel ViewModel;
+    protected override async Task OnInitializedAsync()
+    {
+        // Pass the injected UserService to the ProfileViewModel
+        ViewModel = new StatementsViewModel(StatementService);
+        await Task.CompletedTask;
+    }
+}

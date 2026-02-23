@@ -1,0 +1,31 @@
+@if (HasError)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h5 class="alert-heading">Error</h5>
+        <p class="mb-0">@ErrorMessage</p>
+        @if (!string.IsNullOrEmpty(ErrorDetails))
+        {
+            <hr>
+            <details>
+                <summary>Details</summary>
+                <pre class="mb-0">@ErrorDetails</pre>
+            </details>
+        }
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @onclick="Dismiss"></button>
+    </div>
+}
+
+@code {
+    [Parameter] public bool HasError { get; set; }
+    [Parameter] public string? ErrorMessage { get; set; }
+    [Parameter] public string? ErrorDetails { get; set; }
+    [Parameter] public EventCallback OnDismiss { get; set; }
+
+    private void Dismiss()
+    {
+        HasError = false;
+        ErrorMessage = null;
+        ErrorDetails = null;
+        OnDismiss.InvokeAsync();
+    }
+}

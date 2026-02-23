@@ -1,0 +1,213 @@
+{
+	"info": {
+		"_postman_id": "fwid-identities-api-collection",
+		"name": "Mamey FutureWampumID Identities API",
+		"description": "Complete API collection for Mamey FutureWampumID Identities microservice",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5001",
+			"type": "string"
+		},
+		{
+			"key": "identityId",
+			"value": "123e4567-e89b-12d3-a456-426614174000",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health & Info",
+			"item": [
+				{
+					"name": "Root Endpoint",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": ["{{baseUrl}}"],
+							"path": [""]
+						}
+					}
+				},
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Identity Queries",
+			"item": [
+				{
+					"name": "Get Identity by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/identities/{{identityId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "identities", "{{identityId}}"]
+						}
+					}
+				},
+				{
+					"name": "Find Identities",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/identities",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "identities"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Identity CRUD",
+			"item": [
+				{
+					"name": "Register Identity",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{identityId}}\",\n  \"name\": {\n    \"firstName\": \"John\",\n    \"middleName\": \"Michael\",\n    \"lastName\": \"Doe\",\n    \"suffix\": \"Jr.\"\n  },\n  \"personalDetails\": {\n    \"dateOfBirth\": \"1990-01-15T00:00:00Z\",\n    \"placeOfBirth\": \"Springfield, IL\",\n    \"gender\": \"Male\",\n    \"nationality\": \"USA\"\n  },\n  \"contactInformation\": {\n    \"email\": \"john.doe@example.com\",\n    \"phone\": {\n      \"number\": \"555-1234\",\n      \"type\": \"Mobile\"\n    },\n    \"address\": {\n      \"street\": \"123 Main St\",\n      \"city\": \"Springfield\",\n      \"state\": \"IL\",\n      \"zipCode\": \"62701\",\n      \"country\": \"USA\",\n      \"type\": \"Residential\"\n    }\n  },\n  \"biometricData\": {\n    \"type\": \"Fingerprint\",\n    \"data\": \"base64encodedfingerprintdata\",\n    \"storageLocation\": \"minio://biometrics/fingerprints/{{identityId}}\"\n  },\n  \"zone\": \"zone-001\",\n  \"clanRegistrarId\": null\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/identities",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "identities"]
+						}
+					}
+				},
+				{
+					"name": "Revoke Identity",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identityId\": \"{{identityId}}\",\n  \"reason\": \"Identity revoked by administrator\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/identities/{{identityId}}/revoke",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "identities", "{{identityId}}", "revoke"]
+						}
+					}
+				},
+				{
+					"name": "Update Zone",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identityId\": \"{{identityId}}\",\n  \"zone\": \"zone-002\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/identities/{{identityId}}/zone",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "identities", "{{identityId}}", "zone"]
+						}
+					}
+				},
+				{
+					"name": "Update Contact Information",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identityId\": \"{{identityId}}\",\n  \"email\": \"john.doe.updated@example.com\",\n  \"phone\": {\n    \"number\": \"555-5678\",\n    \"type\": \"Mobile\"\n  },\n  \"address\": {\n    \"street\": \"456 Oak Avenue\",\n    \"city\": \"Springfield\",\n    \"state\": \"IL\",\n    \"zipCode\": \"62702\",\n    \"country\": \"USA\",\n    \"type\": \"Residential\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/identities/{{identityId}}/contact",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "identities", "{{identityId}}", "contact"]
+						}
+					}
+				},
+				{
+					"name": "Update Biometric",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identityId\": \"{{identityId}}\",\n  \"type\": \"Fingerprint\",\n  \"data\": \"updatedbase64encodedfingerprintdata\",\n  \"storageLocation\": \"minio://biometrics/fingerprints/{{identityId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/identities/{{identityId}}/biometric",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "identities", "{{identityId}}", "biometric"]
+						}
+					}
+				},
+				{
+					"name": "Verify Biometric",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identityId\": \"{{identityId}}\",\n  \"biometricData\": \"base64encodedfingerprintdata\",\n  \"type\": \"Fingerprint\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/identities/{{identityId}}/verify",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "identities", "{{identityId}}", "verify"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
+
+

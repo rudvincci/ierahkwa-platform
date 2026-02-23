@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Educators.Api.Protos";
+
+package Pupitre.Educators;
+
+// gRPC service for Educator operations
+service EducatorService {
+    // Get a single Educator by ID
+    rpc GetEducator (GetEducatorRequest) returns (EducatorResponse) {};
+    
+    // List all Educators with pagination
+    rpc ListEducators (ListEducatorsRequest) returns (ListEducatorsResponse) {};
+    
+    // Stream Educator updates
+    rpc StreamEducatorUpdates (StreamEducatorUpdatesRequest) returns (stream EducatorResponse) {};
+}
+
+message GetEducatorRequest {
+    string id = 1;
+}
+
+message ListEducatorsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListEducatorsResponse {
+    repeated EducatorResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message EducatorResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamEducatorUpdatesRequest {
+    string filter = 1;
+}

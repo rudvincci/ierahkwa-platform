@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Rewards.Api.Protos";
+
+package Pupitre.Rewards;
+
+// gRPC service for Reward operations
+service RewardService {
+    // Get a single Reward by ID
+    rpc GetReward (GetRewardRequest) returns (RewardResponse) {};
+    
+    // List all Rewards with pagination
+    rpc ListRewards (ListRewardsRequest) returns (ListRewardsResponse) {};
+    
+    // Stream Reward updates
+    rpc StreamRewardUpdates (StreamRewardUpdatesRequest) returns (stream RewardResponse) {};
+}
+
+message GetRewardRequest {
+    string id = 1;
+}
+
+message ListRewardsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListRewardsResponse {
+    repeated RewardResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message RewardResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamRewardUpdatesRequest {
+    string filter = 1;
+}

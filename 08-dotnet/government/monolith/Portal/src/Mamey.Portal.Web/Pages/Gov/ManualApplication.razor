@@ -1,0 +1,200 @@
+@page "/gov/manual-application"
+@attribute [Authorize(Roles = "GovernmentAgent,Admin")]
+@using Microsoft.AspNetCore.Components.Forms
+@using Mamey.Portal.Citizenship.Application.Requests
+@using Mamey.Portal.Citizenship.Application.Services
+@using Mamey.BlazorWasm.Components.MameyPro.DocumentUploadPro
+@using Mamey.BlazorWasm.Components.MameyPro.ImageUploadPro
+@inject ICitizenshipBackofficeService Backoffice
+
+<PageTitle>Manual Application Entry</PageTitle>
+
+@code {
+    private string _firstName = string.Empty;
+    private string _lastName = string.Empty;
+    private DateTime? _dob;
+    private string? _email;
+    private string? _address1;
+    private string? _city;
+    private string? _region;
+    private string? _postal;
+
+    private IReadOnlyList<IBrowserFile>? _personalDocuments;
+    private IReadOnlyList<IBrowserFile>? _passportPhoto;
+    private IReadOnlyList<IBrowserFile>? _signatureImage;
+
+    private bool _submitting;
+    private string? _result;
+    private string? _error;
+
+    private bool CanSubmit =>
+        !_submitting
+        && !string.IsNullOrWhiteSpace(_firstName)
+        && !string.IsNullOrWhiteSpace(_lastName)
+        && _dob.HasValue
+        && _personalDocuments is { Count: > 0 }
+        && _passportPhoto is { Count: > 0 }
+        && _signatureImage is { Count: > 0 };
+
+    private async Task Submit()
+    {
+        _error = null;
+        _result = null;
+
+        if (!CanSubmit || _dob is null || _personalDocuments is null || _passportPhoto is null || _signatureImage is null)
+        {
+            return;
+        }
+
+        _submitting = true;
+        try
+        {
+            var request = new SubmitCitizenshipApplicationRequest(
+                FirstName: _firstName,
+                LastName: _lastName,
+                DateOfBirth: DateOnly.FromDateTime(_dob.Value),
+                Email: string.IsNullOrWhiteSpace(_email) ? null : _email.Trim(),
+                AddressLine1: string.IsNullOrWhiteSpace(_address1) ? null : _address1.Trim(),
+                City: string.IsNullOrWhiteSpace(_city) ? null : _city.Trim(),
+                Region: string.IsNullOrWhiteSpace(_region) ? null : _region.Trim(),
+                PostalCode: string.IsNullOrWhiteSpace(_postal) ? null : _postal.Trim());
+
+            var docs = new List<UploadFile>();
+            foreach (var d in _personalDocuments)
+            {
+                docs.Add(new UploadFile(
+                    d.Name,
+                    d.ContentType,
+                    d.Size,
+                    d.OpenReadStream(maxAllowedSize: 25 * 1024 * 1024)));
+            }
+
+            var passport = _passportPhoto.Single();
+            var signature = _signatureImage.Single();
+
+            var appNo = await Backoffice.CreateManualApplicationAsync(
+                request,
+                docs,
+                new UploadFile(passport.Name, passport.ContentType, passport.Size, passport.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024)),
+                new UploadFile(signature.Name, signature.ContentType, signature.Size, signature.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024)));
+
+            _result = appNo;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _submitting = false;
+        }
+    }
+}
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h4">Manual Application Entry</MudText>
+    <MudAlert Severity="Severity.Info">
+        Use this when a government agent is entering an application received by mail/PDF. This is Phase 4.1.2 wiring and persists to Postgres + object storage.
+    </MudAlert>
+
+    @if (!string.IsNullOrWhiteSpace(_result))
+    {
+        <MudAlert Severity="Severity.Success">
+            Application created: <strong>@_result</strong> (Status: SubmittedByAgent)
+            <MudLink Href="/gov/applications" Class="ml-2">Go to list</MudLink>
+        </MudAlert>
+    }
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+
+    <MudPaper Class="pa-4">
+        <MudStepper Linear="false" Elevation="0">
+            <MudStep Label="Applicant">
+                <MudGrid Spacing="2">
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="_firstName" Label="First name" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="_lastName" Label="Last name" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudDatePicker @bind-Date="_dob" Label="Date of birth" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="_email" Label="Email (optional)" Variant="Variant.Outlined" />
+                    </MudItem>
+                </MudGrid>
+            </MudStep>
+
+            <MudStep Label="Address">
+                <MudGrid Spacing="2">
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_address1" Label="Address line 1 (optional)" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudTextField @bind-Value="_city" Label="City (optional)" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudTextField @bind-Value="_region" Label="State/Region (optional)" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudTextField @bind-Value="_postal" Label="Postal code (optional)" Variant="Variant.Outlined" />
+                    </MudItem>
+                </MudGrid>
+            </MudStep>
+
+            <MudStep Label="Documents">
+                <MudStack Spacing="3">
+                    <MudText Typo="Typo.subtitle1">Personal documents</MudText>
+                    <DocumentUploadPro Label="Personal documents"
+                                      HelperText="Upload scanned identity/supporting documents (PDF/images)."
+                                      Multiple="true"
+                                      DocumentAccept=".pdf,.jpg,.jpeg,.png"
+                                      Files="_personalDocuments"
+                                      FilesChanged="@(files => _personalDocuments = files)" />
+
+                    <MudText Typo="Typo.subtitle1">2x2 passport photo</MudText>
+                    <ImageUploadPro Label="Passport photo (2x2)"
+                                   HelperText="Upload a clear, front-facing photo."
+                                   Multiple="false"
+                                   ImageAccept="image/*"
+                                   Files="_passportPhoto"
+                                   FilesChanged="@(files => _passportPhoto = files)" />
+
+                    <MudText Typo="Typo.subtitle1">Signature</MudText>
+                    <ImageUploadPro Label="Signature image"
+                                   HelperText="Upload a scanned signature (PNG/JPG)."
+                                   Multiple="false"
+                                   ImageAccept="image/*"
+                                   Files="_signatureImage"
+                                   FilesChanged="@(files => _signatureImage = files)" />
+                </MudStack>
+            </MudStep>
+
+            <MudStep Label="Review & Create">
+                <MudStack Spacing="2">
+                    <MudText Typo="Typo.subtitle1">Review</MudText>
+                    <MudText Typo="Typo.body2">Name: @_firstName @_lastName</MudText>
+                    <MudText Typo="Typo.body2">DOB: @(_dob?.ToShortDateString() ?? "-")</MudText>
+                    <MudDivider />
+                    <MudText Typo="Typo.body2">Personal documents: @(_personalDocuments?.Count ?? 0)</MudText>
+                    <MudText Typo="Typo.body2">Passport photo: @(_passportPhoto?.Count ?? 0)</MudText>
+                    <MudText Typo="Typo.body2">Signature: @(_signatureImage?.Count ?? 0)</MudText>
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Disabled="@(!CanSubmit)"
+                               OnClick="Submit">
+                        Create application
+                    </MudButton>
+                </MudStack>
+            </MudStep>
+        </MudStepper>
+    </MudPaper>
+</MudStack>
+
+
+
+

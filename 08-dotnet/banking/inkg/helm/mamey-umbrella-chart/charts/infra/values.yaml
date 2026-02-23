@@ -1,0 +1,109 @@
+consul:
+  replicaCount: 1
+  image: "hashicorp/consul:latest"
+  port: 8500
+  persistence:
+    enabled: true
+    storageClass: standard
+    size: "1Gi"
+
+fabio:
+  replicaCount: 1
+  image: "fabiolb/fabio:latest"
+  port: 9998
+  extraPorts:
+    - containerPort: 9999
+  env:
+    FABIO_REGISTRY_CONSUL_ADDR: "consul:8500"
+
+grafana:
+  replicaCount: 1
+  image: "grafana/grafana:latest"
+  port: 3000
+  persistence:
+    enabled: true
+    storageClass: standard
+    size: "1Gi"
+
+jaeger:
+  replicaCount: 1
+  image: "jaegertracing/jaeger:latest"
+  ports:
+    httpQuery: 16686
+    collector: 14268
+    agentUdp: 6831
+    agentUdp2: 6832
+
+mongo:
+  replicaCount: 1
+  image: "mongo:latest"
+  port: 27017
+  persistence:
+    enabled: true
+    storageClass: standard
+    size: "2Gi"
+  credentials:
+    username: "root"
+    password: "secret"
+
+prometheus:
+  replicaCount: 1
+  image: "prom/prometheus:latest"
+  port: 9090
+  persistence:
+    enabled: true
+    storageClass: standard
+    size: "2Gi"
+
+postgres:
+  replicaCount: 1
+  image: "postgres:latest"
+  port: 5432
+  persistence:
+    enabled: true
+    storageClass: standard
+    size: "2Gi"
+  credentials:
+    user: "admin"
+    password: "secret"
+    database: "postgres"
+
+rabbitmq:
+  replicaCount: 1
+  image: "rabbitmq:management:latest"
+  ports:
+    rabbit: 5672
+    management: 15672
+    additional: 15692
+  persistence:
+    enabled: true
+    storageClass: standard
+    size: "1Gi"
+
+redis:
+  replicaCount: 1
+  image: "redis:latest"
+  port: 6379
+  persistence:
+    enabled: true
+    storageClass: standard
+    size: "1Gi"
+
+seq:
+  replicaCount: 1
+  image: "datalust/seq:latest"
+  port: 5341
+  persistence:
+    enabled: true
+    storageClass: standard
+    size: "1Gi"
+  env:
+    ACCEPT_EULA: "Y"
+
+vault:
+  replicaCount: 1
+  image: "vault:latest"
+  port: 8200
+  env:
+    VAULT_ADDR: "http://vault:8200"
+    VAULT_DEV_ROOT_TOKEN_ID: "secret"

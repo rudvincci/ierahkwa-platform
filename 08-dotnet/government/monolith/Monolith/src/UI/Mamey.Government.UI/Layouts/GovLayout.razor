@@ -1,0 +1,87 @@
+@inherits LayoutComponentBase
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+
+<MudThemeProvider Theme="_theme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Dark">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" />
+        <MudIcon Icon="@Icons.Material.Filled.Shield" Class="mr-2" />
+        <MudText Typo="Typo.h6">Government Portal</MudText>
+        <MudSpacer />
+        <UserMenu />
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" Variant="DrawerVariant.Responsive" Elevation="1" ClipMode="DrawerClipMode.Always">
+        <MudNavMenu>
+            <MudNavLink Href="/gov/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+
+            <MudDivider Class="my-2" />
+
+            <MudText Typo="Typo.overline" Class="px-4 pt-2">Citizenship</MudText>
+            <MudNavLink Href="/gov/applications" Icon="@Icons.Material.Filled.FactCheck">Applications</MudNavLink>
+            <MudNavLink Href="/gov/manual-application" Icon="@Icons.Material.Filled.NoteAdd">Manual Entry</MudNavLink>
+            <MudNavLink Href="/gov/citizens" Icon="@Icons.Material.Filled.People">Citizens</MudNavLink>
+            <MudNavLink Href="/gov/progression-applications" Icon="@Icons.Material.Filled.TrendingUp">Status Progression</MudNavLink>
+
+            <MudDivider Class="my-2" />
+
+            <MudText Typo="Typo.overline" Class="px-4 pt-2">Documents</MudText>
+            <MudNavLink Href="/gov/passports" Icon="@Icons.Material.Filled.Book">Passports</MudNavLink>
+            <MudNavLink Href="/gov/travel-ids" Icon="@Icons.Material.Filled.CreditCard">Travel IDs</MudNavLink>
+            <MudNavLink Href="/gov/certificates" Icon="@Icons.Material.Filled.CardMembership">Certificates</MudNavLink>
+            <MudNavLink Href="/gov/library" Icon="@Icons.Material.Filled.LibraryBooks">Library</MudNavLink>
+
+            <MudDivider Class="my-2" />
+
+            <MudText Typo="Typo.overline" Class="px-4 pt-2">Configuration</MudText>
+            <MudNavLink Href="/gov/document-naming" Icon="@Icons.Material.Filled.TextFields">Document Naming</MudNavLink>
+            <MudNavLink Href="/gov/templates" Icon="@Icons.Material.Filled.Article">Templates</MudNavLink>
+
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <MudDivider Class="my-2" />
+                    <MudText Typo="Typo.overline" Class="px-4 pt-2">Administration</MudText>
+                    <MudNavLink Href="/gov/tenants" Icon="@Icons.Material.Filled.Domain">Tenants</MudNavLink>
+                    <MudNavLink Href="/gov/user-tenant-mappings" Icon="@Icons.Material.Filled.Badge">User Mappings</MudNavLink>
+                    <MudNavLink Href="/gov/tenant-invites" Icon="@Icons.Material.Filled.Mail">Tenant Invites</MudNavLink>
+                    <MudNavLink Href="/gov/audit-log" Icon="@Icons.Material.Filled.History">Audit Log</MudNavLink>
+                </Authorized>
+            </AuthorizeView>
+
+            <MudDivider Class="my-2" />
+            <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Back to Main</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+
+    <MudMainContent Class="pa-4" style="margin-top:64px;">
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight
+        {
+            Primary = "#37474F",
+            Secondary = "#FF7043",
+            AppbarBackground = "#263238",
+            Background = "#ECEFF1",
+            Surface = "#FFFFFF",
+            DrawerBackground = "#FAFAFA",
+            DrawerText = "#37474F",
+            TextPrimary = "#263238",
+            TextSecondary = "#546E7A"
+        }
+    };
+
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+}

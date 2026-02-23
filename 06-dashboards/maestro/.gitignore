@@ -1,0 +1,99 @@
+# Dependencies
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+*.cert
+secrets/
+*.secret
+
+# User Configuration (contains user-specific settings like private repo URLs)
+# The .example file is committed as a template
+# These patterns match orchestrator.config.yml in various locations
+**/orchestrator.config.yml
+orchestrator.config.yml
+.maestro/config/orchestrator.config.yml
+config/orchestrator.config.yml
+
+# User Data - NEVER COMMIT THESE
+# Checkpoints contain workflow execution state and may contain sensitive data
+.maestro/checkpoints/
+.maestro/cache/
+.maestro/reports/
+.maestro/logs/
+.maestro/dashboard.pid
+.maestro/dashboard-wrapper.js
+.maestro/*.pid
+.maestro/state/
+.maestro/temp/
+.maestro/tmp/
+
+# User-created workflows (templates in config/ are OK to commit)
+# Note: If you create workflows via the dashboard, they are saved to .maestro/config/orchestration.yml
+# Review this file before committing to ensure it doesn't contain sensitive workflow data
+# Uncomment the line below if you want to exclude user workflows:
+# .maestro/config/orchestration.yml
+
+# Private sync repository (if using optional private data sync feature)
+.maestro/private-sync/
+
+# Memory storage (if used)
+.skmemory/v1/memory/public/short-term/orchestrator-checkpoints/
+.skmemory/v1/memory/private/
+.claudememory/checkpoints/
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+.cache/
+
+# Test coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# Build artifacts
+build/
+out/
+*.map
+
+# Docker
+docker-compose.override.yml
+.docker/
+.env
+.env.local
+

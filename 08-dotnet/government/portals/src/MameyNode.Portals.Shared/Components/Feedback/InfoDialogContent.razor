@@ -1,0 +1,26 @@
+@namespace MameyNode.Portals.Shared.Components.Feedback
+
+<MudDialog>
+    <DialogContent>
+        @if (Content != null)
+        {
+            @Content
+        }
+        else
+        {
+            <MudText Typo="Typo.body1">@Message</MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Close">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public IDialogService? DialogService { get; set; }
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public string ButtonText { get; set; } = "OK";
+    [Parameter] public RenderFragment? Content { get; set; }
+
+    private void Close() { }
+}

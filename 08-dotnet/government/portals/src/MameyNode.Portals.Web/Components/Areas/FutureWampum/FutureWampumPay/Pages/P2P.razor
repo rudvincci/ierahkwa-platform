@@ -1,0 +1,96 @@
+@page "/payments/p2p"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumPayClient FutureWampumPayClient
+@inject ILogger<P2P> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="P2P Payments" Icon="fas fa-user-friends" Subtitle="Peer-to-peer payment management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Payments" Value="@_payments.Count.ToString()" Icon="fas fa-user-friends" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Completed" Value="@_completedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="P2P Payments" Class="mt-4">
+        <MudTable T="PaymentInfo" Items="@_payments" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Payment ID</MudTh>
+                <MudTh>From</MudTh>
+                <MudTh>To</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Currency</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.PaymentId</MudTd>
+                <MudTd>@context.FromAccount</MudTd>
+                <MudTd>@context.ToAccount</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == PaymentStatus.Completed ? Color.Success : context.Status == PaymentStatus.Pending ? Color.Warning : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<PaymentInfo> _payments = new();
+    private decimal _totalVolume;
+    private int _completedCount;
+    private int _pendingCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _payments = await FutureWampumPayClient.GetP2PPaymentsAsync(100);
+            _totalVolume = _payments.Where(p => p.Status == PaymentStatus.Completed).Sum(p => decimal.Parse(p.Amount));
+            _completedCount = _payments.Count(p => p.Status == PaymentStatus.Completed);
+            _pendingCount = _payments.Count(p => p.Status == PaymentStatus.Pending);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading P2P payments");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

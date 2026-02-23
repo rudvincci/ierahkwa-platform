@@ -1,0 +1,23 @@
+@typeparam TEntity where TEntity : Mamey.Blazor.Abstractions.Types.IUIModel, System.ComponentModel.INotifyPropertyChanged
+
+<MudPopover Anchor="toggleButton" Open="@showVisibilityToggle" OffsetY="true">
+    <MudList T="bool">
+        @foreach (var column in ViewModel.Columns)
+        {
+            <MudListItem T="bool">
+                <MudCheckBox T="bool" @bind-Checked="column.Visible" Label="@column.Header" />
+            </MudListItem>
+        }
+    </MudList>
+</MudPopover>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="() => showVisibilityToggle = !showVisibilityToggle" id="toggleButton">
+    Toggle Columns
+</MudButton>
+
+@code {
+    [Parameter]
+    public MameyGridViewModel<TEntity> ViewModel { get; set; } = default!;
+
+    private bool showVisibilityToggle = false;
+}

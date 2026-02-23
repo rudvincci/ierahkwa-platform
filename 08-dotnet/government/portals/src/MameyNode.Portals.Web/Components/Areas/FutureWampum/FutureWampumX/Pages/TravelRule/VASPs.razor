@@ -1,0 +1,95 @@
+@page "/travel-rule/vasps"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<VASPs> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="VASP Directory" Icon="fas fa-building" Subtitle="Virtual Asset Service Provider directory">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total VASPs" Value="@_vasps.Count.ToString()" Icon="fas fa-building" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Verified" Value="@_verifiedCount.ToString()" Icon="fas fa-shield-alt" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Countries" Value="@_countryCount.ToString()" Icon="fas fa-globe" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="VASP Directory" Class="mt-4">
+        <MudTable T="VASPDirectoryInfo" Items="@_vasps" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>VASP ID</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Country</MudTh>
+                <MudTh>License</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Verified</MudTh>
+                <MudTh>Registered</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.VASPId</MudTd>
+                <MudTd>@context.VASPName</MudTd>
+                <MudTd>@context.VASPAddress</MudTd>
+                <MudTd>@context.PublicKey.Substring(0, Math.Min(20, context.PublicKey.Length))...</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.IsActive ? Color.Success : Color.Default)">
+                        @(context.IsActive ? "Active" : "Inactive")
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.RegisteredAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<VASPDirectoryInfo> _vasps = new();
+    private int _activeCount;
+    private int _verifiedCount;
+    private int _countryCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _vasps = await FutureWampumXClient.GetVASPDirectoryAsync();
+            _activeCount = _vasps.Count(v => v.IsActive);
+            _verifiedCount = _vasps.Count;
+            _countryCount = _vasps.Select(v => v.VASPAddress.Split(':').FirstOrDefault() ?? "").Distinct().Count();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading VASP directory");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

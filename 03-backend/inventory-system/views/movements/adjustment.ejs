@@ -1,0 +1,211 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-sliders text-warning"></i> Stock Adjustment</h2>
+        <a href="/movements" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle"></i> 
+        Stock adjustment will set the product's stock to the specified quantity. Use this to correct inventory counts.
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning">Adjust Stock</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Document Number</label>
+                        <input type="text" id="documentNumber" class="form-control" value="<%= documentNumber %>" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Search Product</label>
+                        <input type="text" id="productSearch" class="form-control" placeholder="Search by code or name..." autofocus>
+                        <div id="searchResults" class="list-group position-absolute" style="z-index: 1000;"></div>
+                    </div>
+                    <div id="selectedProduct" style="display: none;">
+                        <div class="alert alert-info">
+                            <strong id="productName"></strong>
+                            <div class="row mt-2">
+                                <div class="col-6">
+                                    <small>Code: <span id="productCode"></span></small>
+                                </div>
+                                <div class="col-6">
+                                    <small>Current Stock: <strong id="currentStock" class="text-primary"></strong></small>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="productId">
+                        <div class="mb-3">
+                            <label class="form-label">New Stock Quantity *</label>
+                            <input type="number" id="newQuantity" class="form-control form-control-lg" min="0">
+                            <small class="text-muted">Enter the correct stock count</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Reason</label>
+                            <select id="reason" class="form-select">
+                                <option value="Physical count correction">Physical count correction</option>
+                                <option value="Damaged goods">Damaged goods</option>
+                                <option value="Missing items">Missing items</option>
+                                <option value="Found items">Found items</option>
+                                <option value="Data entry error">Data entry error</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <button type="button" id="addAdjustment" class="btn btn-warning w-100">
+                            <i class="bi bi-plus-circle"></i> Add Adjustment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Adjustments to Apply</div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0" id="itemsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-center">From</th>
+                                <th class="text-center">To</th>
+                                <th class="text-center">Diff</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <button id="saveAdjustments" class="btn btn-warning w-100">
+                        <i class="bi bi-check-circle"></i> Save Adjustments
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const products = <%- products %>;
+let items = [];
+
+$('#productSearch').on('input', function() {
+    const term = $(this).val().toLowerCase();
+    if (term.length < 1) { $('#searchResults').hide(); return; }
+    
+    const matches = products.filter(p => 
+        p.code.toLowerCase().includes(term) || p.name.toLowerCase().includes(term)
+    ).slice(0, 8);
+    
+    let html = '';
+    matches.forEach(p => {
+        html += `<a href="#" class="list-group-item list-group-item-action" data-id="${p.id}">
+            <strong>${p.code}</strong> - ${p.name} (Stock: ${p.current_stock})
+        </a>`;
+    });
+    $('#searchResults').html(html).show();
+});
+
+$('#searchResults').on('click', 'a', function(e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    const product = products.find(p => p.id === id);
+    
+    if (product) {
+        $('#productId').val(product.id);
+        $('#productName').text(product.name);
+        $('#productCode').text(product.code);
+        $('#currentStock').text(product.current_stock);
+        $('#newQuantity').val(product.current_stock);
+        $('#selectedProduct').show();
+        $('#productSearch').val('');
+        $('#searchResults').hide();
+        $('#newQuantity').focus().select();
+    }
+});
+
+$('#addAdjustment').click(function() {
+    const productId = parseInt($('#productId').val());
+    const product = products.find(p => p.id === productId);
+    const newQty = parseInt($('#newQuantity').val());
+    const reason = $('#reason').val();
+    
+    if (isNaN(newQty) || newQty < 0) {
+        alert('Please enter a valid quantity');
+        return;
+    }
+    
+    // Remove if already exists
+    items = items.filter(i => i.product_id !== productId);
+    
+    items.push({
+        product_id: productId,
+        code: product.code,
+        name: product.name,
+        current_stock: product.current_stock,
+        quantity: newQty,
+        unit_price: product.purchase_price,
+        difference: newQty - product.current_stock,
+        reason: reason
+    });
+    
+    renderItems();
+    $('#selectedProduct').hide();
+    $('#productSearch').focus();
+});
+
+function renderItems() {
+    let html = '';
+    items.forEach((item, index) => {
+        const diffClass = item.difference > 0 ? 'text-success' : item.difference < 0 ? 'text-danger' : '';
+        const diffSign = item.difference > 0 ? '+' : '';
+        html += `<tr>
+            <td>${item.name}<br><small class="text-muted">${item.code}</small></td>
+            <td class="text-center">${item.current_stock}</td>
+            <td class="text-center"><strong>${item.quantity}</strong></td>
+            <td class="text-center ${diffClass}"><strong>${diffSign}${item.difference}</strong></td>
+            <td><button class="btn btn-sm btn-outline-danger" onclick="removeItem(${index})"><i class="bi bi-x"></i></button></td>
+        </tr>`;
+    });
+    $('#itemsTable tbody').html(html);
+}
+
+function removeItem(index) {
+    items.splice(index, 1);
+    renderItems();
+}
+
+$('#saveAdjustments').click(function() {
+    if (items.length === 0) {
+        alert('No adjustments to save');
+        return;
+    }
+    
+    if (!confirm('Apply ' + items.length + ' adjustment(s)?')) return;
+    
+    $(this).prop('disabled', true);
+    
+    $.post('/movements/process', {
+        type: 'adjustment',
+        document_number: $('#documentNumber').val(),
+        reference: items.map(i => i.reason).join('; '),
+        items: JSON.stringify(items)
+    }).done(function(response) {
+        if (response.success) {
+            alert(response.message);
+            window.location.href = '/movements';
+        } else {
+            alert('Error: ' + response.message);
+            $('#saveAdjustments').prop('disabled', false);
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

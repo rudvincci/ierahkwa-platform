@@ -1,0 +1,35 @@
+@* CIT-001-G: Declaration of Understanding *@
+@using Mamey.Government.UI.ViewModels.Citizenship
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h6">CIT-001-G: Declaration of Understanding</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary">
+        Declaration of understanding. This section will be populated with all fields from CIT-001-G Declaration of Understanding.pdf
+    </MudText>
+
+    <MudPaper Class="pa-4">
+        <MudText Typo="Typo.body1" Class="mb-4">
+            I declare that I understand the rights and responsibilities of citizenship, including but not limited to:
+        </MudText>
+
+        <MudList T="string" Dense="true" Class="mb-4">
+            <MudListItem T="string">My right to vote in elections</MudListItem>
+            <MudListItem T="string">My right to hold public office (subject to eligibility requirements)</MudListItem>
+            <MudListItem T="string">My responsibility to obey all laws</MudListItem>
+            <MudListItem T="string">My responsibility to pay taxes</MudListItem>
+            <MudListItem T="string">My responsibility to serve on juries when called</MudListItem>
+            <MudListItem T="string">My responsibility to defend the jurisdiction if required</MudListItem>
+        </MudList>
+
+        <MudCheckBox T="bool" @bind-Selected="ViewModel.DeclareUnderstanding" 
+                    Label="I declare that I understand the rights and responsibilities listed above" 
+                    Required="true" />
+    </MudPaper>
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public BecomeCitizenViewModel ViewModel { get; set; } = null!;
+}
+
+

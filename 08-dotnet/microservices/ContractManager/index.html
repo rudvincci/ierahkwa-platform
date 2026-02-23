@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📄 CONTRACT MANAGER | Ierahkwa Legal System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --green: #00FF41; --cyan: #00FFFF; --red: #FF1744; --purple: #9D4EDD; --orange: #FF6B35; --blue: #0066FF; --bg: #0a0e17; --card: #0d1a2d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17, #0a0e2a, #0a0e17); color: #fff; min-height: 100vh; }
+        
+        .header { background: var(--card); padding: 15px 30px; border-bottom: 3px solid var(--blue); display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--blue), var(--cyan)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+        .logo h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--blue); }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .contract-count { background: rgba(0,102,255,0.2); border: 1px solid var(--blue); padding: 8px 15px; border-radius: 20px; color: var(--blue); font-family: 'Orbitron', sans-serif; }
+        .nav-link { padding: 10px 20px; background: rgba(0,102,255,0.2); border: 1px solid var(--blue); border-radius: 10px; color: var(--blue); text-decoration: none; }
+        
+        .main { display: grid; grid-template-columns: 280px 1fr 350px; height: calc(100vh - 80px); }
+        
+        /* Sidebar */
+        .sidebar { background: var(--card); border-right: 1px solid rgba(0,102,255,0.2); padding: 20px; overflow-y: auto; }
+        .sidebar-title { font-size: 0.7em; color: #666; text-transform: uppercase; margin: 20px 0 10px; }
+        .filter-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 10px; cursor: pointer; margin-bottom: 5px; }
+        .filter-item:hover, .filter-item.active { background: rgba(0,102,255,0.15); }
+        .filter-item.active { border-left: 3px solid var(--blue); }
+        .filter-icon { font-size: 1.2em; width: 30px; text-align: center; }
+        .filter-count { margin-left: auto; background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 10px; font-size: 0.8em; }
+        
+        .expiring-alert { background: rgba(255,23,68,0.1); border: 1px solid var(--red); border-radius: 15px; padding: 15px; margin-top: 20px; }
+        .expiring-alert h4 { color: var(--red); font-size: 0.9em; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .expiring-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85em; }
+        .expiring-item:last-child { border-bottom: none; }
+        .expiring-days { color: var(--red); font-family: 'Orbitron', sans-serif; }
+        
+        /* Content */
+        .content { padding: 25px; overflow-y: auto; }
+        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .content-title { font-family: 'Orbitron', sans-serif; color: var(--blue); }
+        .search-box { display: flex; gap: 10px; }
+        .search-box input { padding: 10px 20px; border: 1px solid rgba(0,102,255,0.3); border-radius: 25px; background: rgba(0,0,0,0.3); color: #fff; width: 300px; }
+        .add-btn { padding: 10px 20px; background: var(--blue); border: none; border-radius: 10px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        /* Stats Row */
+        .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--card); border-radius: 15px; padding: 20px; text-align: center; border: 1px solid rgba(0,102,255,0.2); }
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 1.5em; color: var(--blue); }
+        .stat-label { font-size: 0.8em; color: #888; margin-top: 5px; }
+        
+        /* Contract Table */
+        .contracts-table { background: var(--card); border-radius: 15px; overflow: hidden; }
+        .contracts-table table { width: 100%; border-collapse: collapse; }
+        .contracts-table th { background: rgba(0,102,255,0.2); padding: 15px; text-align: left; font-family: 'Orbitron', sans-serif; color: var(--blue); font-size: 0.85em; }
+        .contracts-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .contracts-table tr:hover { background: rgba(0,102,255,0.05); cursor: pointer; }
+        
+        .contract-status { padding: 4px 12px; border-radius: 15px; font-size: 0.8em; }
+        .contract-status.active { background: rgba(0,255,65,0.2); color: var(--green); }
+        .contract-status.pending { background: rgba(255,215,0,0.2); color: var(--gold); }
+        .contract-status.expired { background: rgba(255,23,68,0.2); color: var(--red); }
+        .contract-status.draft { background: rgba(102,102,102,0.2); color: #888; }
+        
+        .contract-type { display: flex; align-items: center; gap: 10px; }
+        .type-icon { width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1em; }
+        .type-icon.service { background: rgba(0,102,255,0.2); }
+        .type-icon.nda { background: rgba(157,78,221,0.2); }
+        .type-icon.vendor { background: rgba(255,215,0,0.2); }
+        .type-icon.employment { background: rgba(0,255,65,0.2); }
+        
+        .party-cell { display: flex; align-items: center; gap: 8px; }
+        .party-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--cyan)); display: flex; align-items: center; justify-content: center; font-size: 0.8em; }
+        
+        /* Details Panel */
+        .details-panel { background: var(--card); border-left: 1px solid rgba(0,102,255,0.2); padding: 20px; overflow-y: auto; }
+        .panel-header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid rgba(0,102,255,0.2); margin-bottom: 20px; }
+        .panel-icon { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--cyan)); display: flex; align-items: center; justify-content: center; font-size: 2.5em; margin: 0 auto 15px; }
+        .panel-title { font-family: 'Orbitron', sans-serif; color: var(--blue); }
+        .panel-id { color: var(--cyan); font-size: 0.85em; font-family: monospace; }
+        
+        .detail-section { margin-bottom: 20px; }
+        .detail-section-title { font-size: 0.75em; color: #666; text-transform: uppercase; margin-bottom: 10px; }
+        .detail-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9em; }
+        .detail-label { color: #888; }
+        .detail-value { color: #fff; max-width: 60%; text-align: right; }
+        
+        .parties-section { background: rgba(0,102,255,0.1); border: 1px solid rgba(0,102,255,0.3); border-radius: 15px; padding: 15px; margin-bottom: 20px; }
+        .parties-title { color: var(--blue); font-family: 'Orbitron', sans-serif; margin-bottom: 15px; font-size: 0.9em; }
+        .party-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .party-item:last-child { border-bottom: none; }
+        .party-info { flex: 1; }
+        .party-name { font-weight: 600; font-size: 0.9em; }
+        .party-role { font-size: 0.75em; color: #888; }
+        .party-signed { font-size: 0.75em; }
+        .party-signed.yes { color: var(--green); }
+        .party-signed.no { color: var(--orange); }
+        
+        .timeline { margin-top: 20px; }
+        .timeline-item { display: flex; gap: 15px; padding: 10px 0; }
+        .timeline-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--blue); margin-top: 5px; position: relative; }
+        .timeline-dot::after { content: ''; position: absolute; left: 5px; top: 12px; width: 2px; height: 30px; background: rgba(0,102,255,0.3); }
+        .timeline-item:last-child .timeline-dot::after { display: none; }
+        .timeline-content { flex: 1; }
+        .timeline-title { font-size: 0.9em; margin-bottom: 3px; }
+        .timeline-date { font-size: 0.75em; color: #888; }
+        
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .action-btn { padding: 12px; border-radius: 10px; cursor: pointer; font-size: 0.85em; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .action-btn.primary { background: var(--blue); border: none; color: #fff; }
+        .action-btn.secondary { background: transparent; border: 1px solid var(--cyan); color: var(--cyan); }
+        .action-btn.sign { background: var(--green); border: none; color: #000; grid-column: span 2; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); border: 2px solid var(--blue); border-radius: 20px; padding: 30px; width: 700px; max-width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .modal-title { font-family: 'Orbitron', sans-serif; color: var(--blue); }
+        .close-btn { background: none; border: none; color: #fff; font-size: 1.5em; cursor: pointer; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: var(--cyan); margin-bottom: 8px; font-size: 0.9em; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid rgba(0,102,255,0.3); border-radius: 10px; background: rgba(0,0,0,0.3); color: #fff; font-size: 1em; }
+        .form-group.full { grid-column: span 2; }
+        .submit-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--blue), var(--cyan)); border: none; border-radius: 12px; color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📄</div>
+            <div>
+                <h1>CONTRACT MANAGER</h1>
+                <p style="color: #888; font-size: 0.75em;">Legal & Compliance System</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="contract-count">156 Contracts</div>
+            <a href="/platform" class="nav-link"><i class="bi bi-arrow-left"></i> Platform</a>
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Status</div>
+            <div class="filter-item active">
+                <span class="filter-icon">📋</span>
+                <span>All Contracts</span>
+                <span class="filter-count">156</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">✅</span>
+                <span>Active</span>
+                <span class="filter-count">98</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">⏳</span>
+                <span>Pending Signature</span>
+                <span class="filter-count">12</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">📝</span>
+                <span>Draft</span>
+                <span class="filter-count">23</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🔴</span>
+                <span>Expired</span>
+                <span class="filter-count">23</span>
+            </div>
+            
+            <div class="sidebar-title">Type</div>
+            <div class="filter-item">
+                <span class="filter-icon">🤝</span>
+                <span>Service Agreements</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🔒</span>
+                <span>NDAs</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🏢</span>
+                <span>Vendor Contracts</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">👥</span>
+                <span>Employment</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🏛️</span>
+                <span>Government</span>
+            </div>
+            
+            <div class="expiring-alert">
+                <h4><i class="bi bi-exclamation-triangle"></i> Expiring Soon</h4>
+                <div class="expiring-item">
+                    <span>Tech Corp Agreement</span>
+                    <span class="expiring-days">7 days</span>
+                </div>
+                <div class="expiring-item">
+                    <span>Cloud Services NDA</span>
+                    <span class="expiring-days">12 days</span>
+                </div>
+                <div class="expiring-item">
+                    <span>Consulting Contract</span>
+                    <span class="expiring-days">15 days</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Content -->
+        <section class="content">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value">156</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--green);">98</div>
+                    <div class="stat-label">Active</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--gold);">12</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--red);">3</div>
+                    <div class="stat-label">Expiring</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$2.4M</div>
+                    <div class="stat-label">Total Value</div>
+                </div>
+            </div>
+            
+            <div class="content-header">
+                <div class="content-title">📄 All Contracts</div>
+                <div class="search-box">
+                    <input type="text" placeholder="Search contracts...">
+                    <button class="add-btn" onclick="openModal()"><i class="bi bi-plus"></i> New Contract</button>
+                </div>
+            </div>
+            
+            <div class="contracts-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Contract</th>
+                            <th>Parties</th>
+                            <th>Value</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr onclick="selectContract(this)">
+                            <td>
+                                <div class="contract-type">
+                                    <div class="type-icon service">🤝</div>
+                                    <div>
+                                        <div style="font-weight: 600;">Service Agreement - Tech Corp</div>
+                                        <div style="font-size: 0.8em; color: #888;">CTR-2026-001</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="party-cell">
+                                    <div class="party-avatar">I</div>
+                                    <div class="party-avatar" style="margin-left: -10px;">T</div>
+                                    <span>2 parties</span>
+                                </div>
+                            </td>
+                            <td>$50,000</td>
+                            <td>Jan 1, 2026</td>
+                            <td>Dec 31, 2026</td>
+                            <td><span class="contract-status active">✓ Active</span></td>
+                        </tr>
+                        <tr onclick="selectContract(this)">
+                            <td>
+                                <div class="contract-type">
+                                    <div class="type-icon nda">🔒</div>
+                                    <div>
+                                        <div style="font-weight: 600;">NDA - Partner Inc</div>
+                                        <div style="font-size: 0.8em; color: #888;">CTR-2026-002</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="party-cell">
+                                    <div class="party-avatar">I</div>
+                                    <div class="party-avatar" style="margin-left: -10px;">P</div>
+                                    <span>2 parties</span>
+                                </div>
+                            </td>
+                            <td>N/A</td>
+                            <td>Jan 10, 2026</td>
+                            <td>Jan 10, 2028</td>
+                            <td><span class="contract-status pending">⏳ Pending</span></td>
+                        </tr>
+                        <tr onclick="selectContract(this)">
+                            <td>
+                                <div class="contract-type">
+                                    <div class="type-icon vendor">🏢</div>
+                                    <div>
+                                        <div style="font-weight: 600;">Cloud Services Agreement</div>
+                                        <div style="font-size: 0.8em; color: #888;">CTR-2026-003</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="party-cell">
+                                    <div class="party-avatar">I</div>
+                                    <div class="party-avatar" style="margin-left: -10px;">A</div>
+                                    <span>2 parties</span>
+                                </div>
+                            </td>
+                            <td>$120,000/yr</td>
+                            <td>Feb 1, 2025</td>
+                            <td>Feb 1, 2026</td>
+                            <td><span class="contract-status active">✓ Active</span></td>
+                        </tr>
+                        <tr onclick="selectContract(this)">
+                            <td>
+                                <div class="contract-type">
+                                    <div class="type-icon employment">👥</div>
+                                    <div>
+                                        <div style="font-weight: 600;">Employment - María García</div>
+                                        <div style="font-size: 0.8em; color: #888;">CTR-2025-045</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="party-cell">
+                                    <div class="party-avatar">I</div>
+                                    <div class="party-avatar" style="margin-left: -10px;">👩</div>
+                                    <span>2 parties</span>
+                                </div>
+                            </td>
+                            <td>$85,000/yr</td>
+                            <td>Jun 1, 2025</td>
+                            <td>Indefinite</td>
+                            <td><span class="contract-status active">✓ Active</span></td>
+                        </tr>
+                        <tr onclick="selectContract(this)">
+                            <td>
+                                <div class="contract-type">
+                                    <div class="type-icon service">🤝</div>
+                                    <div>
+                                        <div style="font-weight: 600;">Consulting Agreement</div>
+                                        <div style="font-size: 0.8em; color: #888;">CTR-2026-008</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="party-cell">
+                                    <div class="party-avatar">I</div>
+                                    <div class="party-avatar" style="margin-left: -10px;">C</div>
+                                    <span>2 parties</span>
+                                </div>
+                            </td>
+                            <td>$25,000</td>
+                            <td>Jan 15, 2026</td>
+                            <td>Apr 15, 2026</td>
+                            <td><span class="contract-status draft">📝 Draft</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Details Panel -->
+        <aside class="details-panel">
+            <div class="panel-header">
+                <div class="panel-icon">📄</div>
+                <div class="panel-title">Service Agreement</div>
+                <div class="panel-id">CTR-2026-001</div>
+            </div>
+            
+            <div class="detail-section">
+                <div class="detail-section-title">Contract Information</div>
+                <div class="detail-item"><span class="detail-label">Type</span><span class="detail-value">Service Agreement</span></div>
+                <div class="detail-item"><span class="detail-label">Value</span><span class="detail-value" style="color: var(--gold);">$50,000 USD</span></div>
+                <div class="detail-item"><span class="detail-label">Duration</span><span class="detail-value">12 months</span></div>
+                <div class="detail-item"><span class="detail-label">Auto-Renew</span><span class="detail-value">Yes</span></div>
+                <div class="detail-item"><span class="detail-label">Status</span><span class="detail-value" style="color: var(--green);">Active</span></div>
+            </div>
+            
+            <div class="parties-section">
+                <div class="parties-title"><i class="bi bi-people"></i> Parties</div>
+                <div class="party-item">
+                    <div class="party-avatar">I</div>
+                    <div class="party-info">
+                        <div class="party-name">Ierahkwa Government</div>
+                        <div class="party-role">Client</div>
+                    </div>
+                    <div class="party-signed yes">✓ Signed</div>
+                </div>
+                <div class="party-item">
+                    <div class="party-avatar">T</div>
+                    <div class="party-info">
+                        <div class="party-name">Tech Corp Inc.</div>
+                        <div class="party-role">Service Provider</div>
+                    </div>
+                    <div class="party-signed yes">✓ Signed</div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <div class="detail-section-title">Key Dates</div>
+                <div class="detail-item"><span class="detail-label">Created</span><span class="detail-value">Dec 15, 2025</span></div>
+                <div class="detail-item"><span class="detail-label">Signed</span><span class="detail-value">Dec 28, 2025</span></div>
+                <div class="detail-item"><span class="detail-label">Start Date</span><span class="detail-value">Jan 1, 2026</span></div>
+                <div class="detail-item"><span class="detail-label">End Date</span><span class="detail-value">Dec 31, 2026</span></div>
+                <div class="detail-item"><span class="detail-label">Renewal</span><span class="detail-value">Dec 1, 2026</span></div>
+            </div>
+            
+            <div class="timeline">
+                <div class="detail-section-title">Timeline</div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Contract Activated</div>
+                        <div class="timeline-date">Jan 1, 2026</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Signed by Tech Corp</div>
+                        <div class="timeline-date">Dec 28, 2025</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Signed by Ierahkwa</div>
+                        <div class="timeline-date">Dec 27, 2025</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-btn primary"><i class="bi bi-eye"></i> View PDF</button>
+                <button class="action-btn secondary"><i class="bi bi-pencil"></i> Amend</button>
+                <button class="action-btn secondary"><i class="bi bi-clock-history"></i> History</button>
+                <button class="action-btn secondary"><i class="bi bi-download"></i> Download</button>
+            </div>
+        </aside>
+    </main>
+    
+    <!-- New Contract Modal -->
+    <div class="modal" id="contractModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">➕ Create New Contract</div>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form onsubmit="submitContract(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contract Title</label>
+                        <input type="text" placeholder="Service Agreement - Company Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contract Type</label>
+                        <select required>
+                            <option value="">Select type...</option>
+                            <option>Service Agreement</option>
+                            <option>NDA</option>
+                            <option>Vendor Contract</option>
+                            <option>Employment Contract</option>
+                            <option>Government Agreement</option>
+                            <option>Partnership Agreement</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Counterparty Name</label>
+                        <input type="text" placeholder="Company or Individual Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Counterparty Email</label>
+                        <input type="email" placeholder="contact@company.com">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contract Value</label>
+                        <input type="text" placeholder="$50,000 or N/A">
+                    </div>
+                    <div class="form-group">
+                        <label>Currency</label>
+                        <select>
+                            <option>USD</option>
+                            <option>EUR</option>
+                            <option>IGT</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date">
+                    </div>
+                </div>
+                <div class="form-group full">
+                    <label>Description</label>
+                    <textarea rows="3" placeholder="Brief description of the contract..."></textarea>
+                </div>
+                <div class="form-group full">
+                    <label>Upload Contract Document</label>
+                    <input type="file" accept=".pdf,.doc,.docx">
+                </div>
+                <button type="submit" class="submit-btn">Create Contract</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function selectContract(row) {
+            document.querySelectorAll('tbody tr').forEach(r => r.style.background = '');
+            row.style.background = 'rgba(0,102,255,0.1)';
+        }
+        function openModal() { document.getElementById('contractModal').classList.add('active'); }
+        function closeModal() { document.getElementById('contractModal').classList.remove('active'); }
+        function submitContract(e) {
+            e.preventDefault();
+            alert('✅ Contract created successfully!\n\nContract ID: CTR-2026-XXX\nStatus: Draft\n\nSend for signature to activate.');
+            closeModal();
+        }
+        
+        console.log('📄 CONTRACT MANAGER - Legal System Initialized');
+    </script>
+</body>
+</html>

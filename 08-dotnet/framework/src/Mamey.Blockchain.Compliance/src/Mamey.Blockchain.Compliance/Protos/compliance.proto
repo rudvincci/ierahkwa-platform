@@ -1,0 +1,345 @@
+syntax = "proto3";
+
+package mamey.compliance;
+
+// Compliance service for MameyNode blockchain
+service ComplianceService {
+    // AML/CFT operations
+    rpc CheckAML(CheckAMLRequest) returns (CheckAMLResponse);
+    rpc FlagAML(FlagAMLRequest) returns (FlagAMLResponse);
+    rpc GetAMLFlags(GetAMLFlagsRequest) returns (GetAMLFlagsResponse);
+    
+    // KYC operations
+    rpc VerifyKYC(VerifyKYCRequest) returns (VerifyKYCResponse);
+    rpc UpdateKYCStatus(UpdateKYCStatusRequest) returns (UpdateKYCStatusResponse);
+    rpc GetKYCStatus(GetKYCStatusRequest) returns (GetKYCStatusResponse);
+    
+    // Fraud detection
+    rpc DetectFraud(DetectFraudRequest) returns (DetectFraudResponse);
+    rpc ReportFraud(ReportFraudRequest) returns (ReportFraudResponse);
+    rpc GetFraudReports(GetFraudReportsRequest) returns (GetFraudReportsResponse);
+    
+    // Audit trail
+    rpc CreateAuditEntry(CreateAuditEntryRequest) returns (CreateAuditEntryResponse);
+    rpc GetAuditTrail(GetAuditTrailRequest) returns (GetAuditTrailResponse);
+    
+    // Red flag operations
+    rpc CreateRedFlag(CreateRedFlagRequest) returns (CreateRedFlagResponse);
+    rpc BroadcastRedFlag(BroadcastRedFlagRequest) returns (BroadcastRedFlagResponse);
+    rpc GetRedFlags(GetRedFlagsRequest) returns (GetRedFlagsResponse);
+    
+    // Zero-knowledge compliance
+    rpc GenerateZKProof(GenerateZKProofRequest) returns (GenerateZKProofResponse);
+    rpc VerifyZKProof(VerifyZKProofRequest) returns (VerifyZKProofResponse);
+}
+
+// Check AML request
+message CheckAMLRequest {
+    string account_id = 1;
+    string transaction_id = 2;
+    string amount = 3;
+    string currency = 4;
+}
+
+// Check AML response
+message CheckAMLResponse {
+    bool flagged = 1;
+    string risk_level = 2;  // "low", "medium", "high", "critical"
+    repeated string risk_factors = 3;
+    bool success = 4;
+    string error_message = 5;
+}
+
+// Flag AML request
+message FlagAMLRequest {
+    string account_id = 1;
+    string transaction_id = 2;
+    string reason = 3;
+    string risk_level = 4;
+}
+
+// Flag AML response
+message FlagAMLResponse {
+    string flag_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get AML flags request
+message GetAMLFlagsRequest {
+    string account_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// Get AML flags response
+message GetAMLFlagsResponse {
+    repeated AMLFlag flags = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// AML flag
+message AMLFlag {
+    string flag_id = 1;
+    string account_id = 2;
+    string transaction_id = 3;
+    string reason = 4;
+    string risk_level = 5;
+    uint64 created_at = 6;
+    FlagStatus status = 7;
+}
+
+// Verify KYC request
+message VerifyKYCRequest {
+    string account_id = 1;
+    string verification_type = 2;
+    map<string, string> verification_data = 3;
+}
+
+// Verify KYC response
+message VerifyKYCResponse {
+    bool verified = 1;
+    string kyc_level = 2;  // "basic", "standard", "enhanced"
+    repeated string verified_attributes = 3;
+    bool success = 4;
+    string error_message = 5;
+}
+
+// Update KYC status request
+message UpdateKYCStatusRequest {
+    string account_id = 1;
+    string kyc_level = 2;
+    string status = 3;
+}
+
+// Update KYC status response
+message UpdateKYCStatusResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Get KYC status request
+message GetKYCStatusRequest {
+    string account_id = 1;
+}
+
+// Get KYC status response
+message GetKYCStatusResponse {
+    string kyc_level = 1;
+    string status = 2;
+    uint64 verified_at = 3;
+    uint64 expires_at = 4;
+    bool success = 5;
+    string error_message = 6;
+}
+
+// Detect fraud request
+message DetectFraudRequest {
+    string account_id = 1;
+    string transaction_id = 2;
+    string transaction_data = 3;
+}
+
+// Detect fraud response
+message DetectFraudResponse {
+    bool fraud_detected = 1;
+    double fraud_score = 2;
+    repeated string fraud_indicators = 3;
+    bool success = 4;
+    string error_message = 5;
+}
+
+// Report fraud request
+message ReportFraudRequest {
+    string account_id = 1;
+    string transaction_id = 2;
+    string fraud_type = 3;
+    string description = 4;
+    map<string, string> evidence = 5;
+}
+
+// Report fraud response
+message ReportFraudResponse {
+    string fraud_report_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get fraud reports request
+message GetFraudReportsRequest {
+    string account_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// Get fraud reports response
+message GetFraudReportsResponse {
+    repeated FraudReport reports = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Fraud report
+message FraudReport {
+    string fraud_report_id = 1;
+    string account_id = 2;
+    string transaction_id = 3;
+    string fraud_type = 4;
+    string description = 5;
+    uint64 reported_at = 6;
+    FraudReportStatus status = 7;
+}
+
+// Create audit entry request
+message CreateAuditEntryRequest {
+    string entity_type = 1;  // "account", "transaction", "loan", etc.
+    string entity_id = 2;
+    string action = 3;
+    string actor = 4;
+    map<string, string> details = 5;
+}
+
+// Create audit entry response
+message CreateAuditEntryResponse {
+    string audit_entry_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get audit trail request
+message GetAuditTrailRequest {
+    string entity_type = 1;
+    string entity_id = 2;
+    uint32 limit = 3;
+    uint32 offset = 4;
+}
+
+// Get audit trail response
+message GetAuditTrailResponse {
+    repeated AuditEntry entries = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Audit entry
+message AuditEntry {
+    string audit_entry_id = 1;
+    string entity_type = 2;
+    string entity_id = 3;
+    string action = 4;
+    string actor = 5;
+    uint64 timestamp = 6;
+    map<string, string> details = 7;
+}
+
+// Create red flag request
+message CreateRedFlagRequest {
+    string account_id = 1;
+    string flag_type = 2;
+    string severity = 3;  // "low", "medium", "high", "critical"
+    string description = 4;
+    map<string, string> metadata = 5;
+}
+
+// Create red flag response
+message CreateRedFlagResponse {
+    string red_flag_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Broadcast red flag request
+message BroadcastRedFlagRequest {
+    string red_flag_id = 1;
+}
+
+// Broadcast red flag response
+message BroadcastRedFlagResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Get red flags request
+message GetRedFlagsRequest {
+    string account_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// Get red flags response
+message GetRedFlagsResponse {
+    repeated RedFlag flags = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Red flag
+message RedFlag {
+    string red_flag_id = 1;
+    string account_id = 2;
+    string flag_type = 3;
+    string severity = 4;
+    string description = 5;
+    uint64 created_at = 6;
+    RedFlagStatus status = 7;
+}
+
+// Generate ZK proof request
+message GenerateZKProofRequest {
+    string compliance_type = 1;
+    string compliance_data = 2;
+    string public_data = 3;
+}
+
+// Generate ZK proof response
+message GenerateZKProofResponse {
+    bytes proof = 1;
+    string public_input = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Verify ZK proof request
+message VerifyZKProofRequest {
+    bytes proof = 1;
+    string public_input = 2;
+    string compliance_type = 3;
+}
+
+// Verify ZK proof response
+message VerifyZKProofResponse {
+    bool verified = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Flag status enum
+enum FlagStatus {
+    FLAG_STATUS_ACTIVE = 0;
+    FLAG_STATUS_RESOLVED = 1;
+    FLAG_STATUS_DISMISSED = 2;
+}
+
+// Fraud report status enum
+enum FraudReportStatus {
+    FRAUD_REPORT_STATUS_PENDING = 0;
+    FRAUD_REPORT_STATUS_UNDER_REVIEW = 1;
+    FRAUD_REPORT_STATUS_CONFIRMED = 2;
+    FRAUD_REPORT_STATUS_DISMISSED = 3;
+}
+
+// Red flag status enum
+enum RedFlagStatus {
+    RED_FLAG_STATUS_ACTIVE = 0;
+    RED_FLAG_STATUS_RESOLVED = 1;
+    RED_FLAG_STATUS_DISMISSED = 2;
+}
+
+
+
+

@@ -1,0 +1,52 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:60000']
+
+  - job_name: 'foundation-services'
+    static_configs:
+      - targets:
+        - 'users:60001'
+        - 'gles:60002'
+        - 'curricula:60003'
+        - 'lessons:60004'
+        - 'assessments:60005'
+        - 'progress:60006'
+        - 'rewards:60007'
+        - 'notifications:60008'
+        - 'parents:60009'
+        - 'analytics:60010'
+
+  - job_name: 'ai-services'
+    static_configs:
+      - targets:
+        - 'ai-tutors:60101'
+        - 'ai-assessments:60102'
+        - 'ai-content:60103'
+        - 'ai-speech:60104'
+        - 'ai-adaptive:60105'
+        - 'ai-behavior:60106'
+        - 'ai-safety:60107'
+        - 'ai-recommendations:60108'
+        - 'ai-translation:60109'
+        - 'ai-vision:60110'
+
+  - job_name: 'support-services'
+    static_configs:
+      - targets:
+        - 'educators:60022'
+        - 'fundraising:60023'
+        - 'bookstore:60024'
+        - 'aftercare:60025'
+        - 'accessibility:60026'
+        - 'compliance:60027'
+        - 'ministries:60028'
+        - 'operations:60029'

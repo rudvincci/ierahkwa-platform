@@ -1,0 +1,324 @@
+{
+  "meta": {
+    "name": "IERAHKWA Futurehead - Services Port Configuration",
+    "version": "2.0.0",
+    "description": "Cada servicio tiene su puerto dedicado - NO REPETIR",
+    "updated": "2026-01-23"
+  },
+  "platform_servers": {
+    "bdet_bank": { "name": "BDET Bank Server", "port": 4001, "script": "RuddieSolution/servers/bdet-bank-server.js" },
+    "tradex": { "name": "TradeX Server", "port": 4002, "script": "RuddieSolution/servers/tradex-server.js" },
+    "siis_settlement": { "name": "SIIS Settlement Server", "port": 4003, "script": "RuddieSolution/servers/siis-settlement-server.js" },
+    "clearing_house": { "name": "Clearing House Server", "port": 4004, "script": "RuddieSolution/servers/clearing-house-server.js" },
+    "aguila_bank": { "name": "Banco Águila (Norte)", "port": 4100, "script": "RuddieSolution/servers/central-bank-server.js" },
+    "quetzal_bank": { "name": "Banco Quetzal (Centro)", "port": 4200, "script": "RuddieSolution/servers/central-bank-server.js" },
+    "condor_bank": { "name": "Banco Cóndor (Sur)", "port": 4300, "script": "RuddieSolution/servers/central-bank-server.js" },
+    "caribe_bank": { "name": "Banco Caribe (Taínos)", "port": 4400, "script": "RuddieSolution/servers/central-bank-server.js" },
+    "ai_hub": { "name": "AI Hub / ATABEY Server", "port": 4500, "script": "RuddieSolution/servers/ai-hub-server.js" },
+    "government_portal": { "name": "Government Portal Server", "port": 4600, "script": "RuddieSolution/servers/government-portal-server.js" }
+  },
+  "core_services": {
+    "node_mamey": {
+      "name": "Ierahkwa Futurehead Mamey Node",
+      "port": 8545,
+      "script": "RuddieSolution/node/server.js",
+      "health": "/health",
+      "description": "Blockchain principal"
+    },
+    "banking_bridge": {
+      "name": "Banking Bridge API",
+      "port": 3001,
+      "script": "RuddieSolution/node/banking-bridge.js",
+      "health": "/api/health",
+      "description": "API bancaria unificada"
+    },
+    "banking_dotnet": {
+      "name": "Banking API .NET",
+      "port": 5000,
+      "script": "RuddieSolution/IerahkwaBanking.NET10/src/Banking.API",
+      "health": "/health",
+      "description": "Core Banking .NET"
+    },
+    "platform_static": {
+      "name": "Platform Frontend",
+      "port": 8080,
+      "script": "RuddieSolution/platform/server.js",
+      "health": "/health",
+      "description": "Frontend estático"
+    }
+  },
+  "trading_services": {
+    "tradex": {
+      "name": "TradeX Exchange",
+      "port": 5054,
+      "script": "TradeX/TradeX.API",
+      "health": "/health",
+      "description": "Exchange trading"
+    },
+    "net10": {
+      "name": "NET10 DeFi",
+      "port": 5071,
+      "script": "NET10/NET10.API",
+      "health": "/health",
+      "description": "DeFi platform"
+    },
+    "farmfactory": {
+      "name": "FarmFactory",
+      "port": 5061,
+      "script": "FarmFactory/FarmFactory.API",
+      "health": "/health",
+      "description": "Yield farming"
+    },
+    "idofactory": {
+      "name": "IDOFactory",
+      "port": 5097,
+      "script": "IDOFactory/IDOFactory.API",
+      "health": "/health",
+      "description": "Token launches"
+    },
+    "forex_trading": {
+      "name": "Forex Trading Server",
+      "port": 5200,
+      "script": "forex-trading-server/server.js",
+      "health": "/health",
+      "description": "Forex trading"
+    }
+  },
+  "banking_hierarchy": {
+    "siis_settlement": {
+      "name": "SIIS - International Settlement",
+      "port": 6000,
+      "health": "/api/health",
+      "description": "Ierahkwa Futurehead International Settlement"
+    },
+    "clearing_house": {
+      "name": "Clearing House",
+      "port": 6001,
+      "health": "/api/health",
+      "description": "Ierahkwa Futurehead Clearing House"
+    },
+    "global_services": {
+      "name": "Global Services",
+      "port": 6002,
+      "health": "/api/health",
+      "description": "Ierahkwa Futurehead Global Services"
+    },
+    "receiver_bank": {
+      "name": "Receiver Bank",
+      "port": 6003,
+      "health": "/api/health",
+      "description": "Ierahkwa Futurehead Receiver"
+    },
+    "bdet_master": {
+      "name": "BDET Master Bank",
+      "port": 6010,
+      "health": "/api/health",
+      "description": "BDET Master Controller"
+    },
+    "aguila_central": {
+      "name": "Águila Central Bank (Norte)",
+      "port": 6100,
+      "health": "/api/health",
+      "description": "Banco Central Norte América"
+    },
+    "quetzal_central": {
+      "name": "Quetzal Central Bank (Centro)",
+      "port": 6200,
+      "health": "/api/health",
+      "description": "Banco Central Centro América"
+    },
+    "condor_central": {
+      "name": "Cóndor Central Bank (Sur)",
+      "port": 6300,
+      "health": "/api/health",
+      "description": "Banco Central Sur América"
+    },
+    "caribe_central": {
+      "name": "Caribe Central Bank (Caribe)",
+      "port": 6400,
+      "health": "/api/health",
+      "description": "Banco Central Caribe/Taínos"
+    }
+  },
+  "office_services": {
+    "rnbcal": {
+      "name": "RnBCal Calendar",
+      "port": 5055,
+      "script": "RnBCal/RnBCal.API",
+      "health": "/health"
+    },
+    "spike_office": {
+      "name": "SpikeOffice",
+      "port": 5056,
+      "script": "SpikeOffice/SpikeOffice.API",
+      "health": "/health"
+    },
+    "app_builder": {
+      "name": "AppBuilder",
+      "port": 5060,
+      "script": "AppBuilder/AppBuilder.API",
+      "health": "/health"
+    },
+    "project_hub": {
+      "name": "ProjectHub",
+      "port": 7070,
+      "script": "ProjectHub/ProjectHub.API",
+      "health": "/health"
+    },
+    "meeting_hub": {
+      "name": "MeetingHub",
+      "port": 7071,
+      "script": "MeetingHub/MeetingHub.API",
+      "health": "/health"
+    }
+  },
+  "government_services": {
+    "citizen_crm": {
+      "name": "CitizenCRM",
+      "port": 5090,
+      "script": "CitizenCRM/CitizenCRM.API",
+      "health": "/health"
+    },
+    "tax_authority": {
+      "name": "TaxAuthority",
+      "port": 5091,
+      "script": "TaxAuthority/TaxAuthority.API",
+      "health": "/health"
+    },
+    "voting_system": {
+      "name": "VotingSystem",
+      "port": 5092,
+      "script": "VotingSystem/VotingSystem.API",
+      "health": "/health"
+    },
+    "service_desk": {
+      "name": "ServiceDesk",
+      "port": 5093,
+      "script": "ServiceDesk/ServiceDesk.API",
+      "health": "/health"
+    },
+    "license_authority": {
+      "name": "License Authority",
+      "port": 5094,
+      "script": "RuddieSolution/node/modules/license-authority.js",
+      "health": "/health"
+    }
+  },
+  "document_services": {
+    "document_flow": {
+      "name": "DocumentFlow",
+      "port": 5080,
+      "script": "DocumentFlow/DocumentFlow.API",
+      "health": "/health"
+    },
+    "esignature": {
+      "name": "ESignature",
+      "port": 5081,
+      "script": "ESignature/ESignature.API",
+      "health": "/health"
+    },
+    "outlook_extractor": {
+      "name": "OutlookExtractor",
+      "port": 5082,
+      "script": "OutlookExtractor/OutlookExtractor.API",
+      "health": "/health"
+    }
+  },
+  "security_services": {
+    "biometrics": {
+      "name": "BioMetrics",
+      "port": 5120,
+      "script": "BioMetrics/BioMetrics.API",
+      "health": "/health"
+    },
+    "digital_vault": {
+      "name": "DigitalVault",
+      "port": 5121,
+      "script": "DigitalVault/DigitalVault.API",
+      "health": "/health"
+    },
+    "ai_fraud": {
+      "name": "AI Fraud Detection",
+      "port": 5144,
+      "script": "AIFraudDetection/FraudDetection.API",
+      "health": "/health"
+    }
+  },
+  "blockchain_services": {
+    "defi_soberano": {
+      "name": "DeFi Soberano",
+      "port": 5140,
+      "script": "DeFiSoberano/DeFi.API",
+      "health": "/health"
+    },
+    "nft_certificates": {
+      "name": "NFT Certificates",
+      "port": 5141,
+      "script": "NFTCertificates/NFT.API",
+      "health": "/health"
+    },
+    "governance_dao": {
+      "name": "Governance DAO",
+      "port": 5142,
+      "script": "GovernanceDAO/DAO.API",
+      "health": "/health"
+    },
+    "multichain_bridge": {
+      "name": "Multichain Bridge",
+      "port": 5143,
+      "script": "MultichainBridge/Bridge.API",
+      "health": "/health"
+    }
+  },
+  "ai_services": {
+    "ai_hub": {
+      "name": "AI Hub / ATABEY",
+      "port": 5300,
+      "script": "RuddieSolution/node/ai-hub/index.js",
+      "health": "/health"
+    },
+    "ai_banker": {
+      "name": "AI Banker BDET",
+      "port": 5301,
+      "script": "RuddieSolution/node/ai/ai-banker-bdet.js",
+      "health": "/health"
+    },
+    "ai_trader": {
+      "name": "AI Trader",
+      "port": 5302,
+      "script": "RuddieSolution/node/ai/ai-trader.js",
+      "health": "/health"
+    }
+  },
+  "multilang_services": {
+    "rust_swift": {
+      "name": "Rust SWIFT Service",
+      "port": 8590,
+      "health": "/health"
+    },
+    "go_queue": {
+      "name": "Go Queue Service",
+      "port": 8591,
+      "health": "/health"
+    },
+    "python_ml": {
+      "name": "Python ML Service",
+      "port": 8592,
+      "health": "/health"
+    }
+  },
+  "database_services": {
+    "postgres": {
+      "name": "PostgreSQL",
+      "port": 5432
+    },
+    "redis": {
+      "name": "Redis Cache",
+      "port": 6379
+    },
+    "mongodb": {
+      "name": "MongoDB",
+      "port": 27017
+    }
+  }
+}

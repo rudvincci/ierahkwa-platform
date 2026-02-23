@@ -1,0 +1,40 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname', 'severity']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: 'default-receiver'
+  routes:
+    - match:
+        severity: critical
+      receiver: 'critical-receiver'
+    - match:
+        severity: warning
+      receiver: 'warning-receiver'
+
+receivers:
+  - name: 'default-receiver'
+    # Configure webhook, email, Slack, etc.
+    # webhook_configs:
+    #   - url: 'http://alerthandler:8080/alerts'
+
+  - name: 'critical-receiver'
+    # Critical alerts - pager, immediate notification
+    # pagerduty_configs:
+    #   - service_key: '<service-key>'
+
+  - name: 'warning-receiver'
+    # Warning alerts - Slack, email
+    # slack_configs:
+    #   - api_url: '<slack-webhook-url>'
+    #     channel: '#pupitre-alerts'
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'job']

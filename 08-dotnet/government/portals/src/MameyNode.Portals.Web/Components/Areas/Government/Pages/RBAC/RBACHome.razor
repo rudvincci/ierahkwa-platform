@@ -1,0 +1,93 @@
+@page "/rbac"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<RBACHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Role-Based Access Control" Icon="fas fa-user-lock" Subtitle="RBAC management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Roles" Value="@_roles.Count.ToString()" Icon="fas fa-users-cog" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Permissions" Value="@_permissions.Count.ToString()" Icon="fas fa-key" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active Roles" Value="@_activeRoles.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Hierarchies" Value="@_hierarchies.Count.ToString()" Icon="fas fa-sitemap" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Role Management" Elevation="2">
+                <MudText Typo="Typo.body2">Manage roles and their permissions</MudText>
+                <MudButton Href="/rbac/roles" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Manage Roles
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Permission Management" Elevation="2">
+                <MudText Typo="Typo.body2">Manage permissions and access rights</MudText>
+                <MudButton Href="/rbac/permissions" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Manage Permissions
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Role Hierarchy" Elevation="2">
+                <MudText Typo="Typo.body2">Configure role hierarchies</MudText>
+                <MudButton Href="/rbac/hierarchy" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Hierarchy
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private List<RoleInfo> _roles = new();
+    private List<PermissionInfo> _permissions = new();
+    private List<RoleHierarchyInfo> _hierarchies = new();
+    private int _activeRoles;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _roles = await GovernmentClient.GetRolesAsync();
+            _permissions = await GovernmentClient.GetPermissionsAsync();
+            _hierarchies = await GovernmentClient.GetRoleHierarchiesAsync();
+            _activeRoles = _roles.Count(r => r.IsActive);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading RBAC data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

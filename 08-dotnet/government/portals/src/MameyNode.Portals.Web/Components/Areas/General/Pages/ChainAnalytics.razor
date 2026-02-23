@@ -1,0 +1,123 @@
+@page "/explorer/analytics"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IInfrastructureClient InfrastructureClient
+@inject ILogger<ChainAnalytics> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Chain Analytics" Icon="fas fa-chart-bar" Subtitle="Blockchain analytics and insights">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshAnalytics" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    @if (_ledgerStats != null)
+    {
+        <MudGrid Spacing="3" Class="mt-4">
+            <MudItem xs="12" md="4">
+                <MetricCard Title="Total Blocks" Value="@_ledgerStats.TotalBlocks.ToString("N0")" Icon="fas fa-cubes" Color="#3B82F6" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MetricCard Title="Total Accounts" Value="@_ledgerStats.TotalAccounts.ToString("N0")" Icon="fas fa-users" Color="#10B981" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MetricCard Title="Total Supply" Value="@_ledgerStats.TotalSupply" Icon="fas fa-coins" Color="#F59E0B" />
+            </MudItem>
+        </MudGrid>
+    }
+
+    @if (_metrics.Any())
+    {
+        <CardContainer Title="Metrics" Class="mt-4">
+            <MudTable T="MetricDataInfo" Items="@_metrics" Hover="true" Dense="false" Striped="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>Metric Name</MudTh>
+                    <MudTh>Value</MudTh>
+                    <MudTh>Type</MudTh>
+                    <MudTh>Timestamp</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.MetricName</MudTd>
+                    <MudTd>@context.Value.ToString("F2")</MudTd>
+                    <MudTd>
+                        <MudChip Size="Size.Small" Color="Color.Info">
+                            @context.MetricType
+                        </MudChip>
+                    </MudTd>
+                    <MudTd>@context.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </CardContainer>
+    }
+
+    @if (_representatives.Any())
+    {
+        <CardContainer Title="Representatives" Class="mt-4">
+            <MudTable T="RepresentativeInfo" Items="@_representatives" Hover="true" Dense="false" Striped="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>Account</MudTh>
+                    <MudTh>Weight</MudTh>
+                    <MudTh>Delegators</MudTh>
+                    <MudTh>Status</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <MudText Typo="Typo.body2" Class="text-truncate" Style="max-width: 200px;">
+                            @context.Account
+                        </MudText>
+                    </MudTd>
+                    <MudTd>@context.Weight</MudTd>
+                    <MudTd>@context.DelegatorsCount</MudTd>
+                    <MudTd>
+                        <MudChip T="string" Size="Size.Small" Color="@(context.IsOnline ? Color.Success : Color.Default)">
+                            @(context.IsOnline ? "Online" : "Offline")
+                        </MudChip>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </CardContainer>
+    }
+</PageContainer>
+
+@code {
+    private LedgerStatsInfo? _ledgerStats;
+    private List<MetricDataInfo> _metrics = new();
+    private List<RepresentativeInfo> _representatives = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAnalyticsAsync();
+    }
+
+    private async Task LoadAnalyticsAsync()
+    {
+        try
+        {
+            _ledgerStats = await InfrastructureClient.GetLedgerStatsAsync();
+            _metrics = await InfrastructureClient.GetMetricsAsync();
+            _representatives = await InfrastructureClient.GetRepresentativesAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading chain analytics");
+        }
+    }
+
+    private async Task RefreshAnalytics()
+    {
+        await LoadAnalyticsAsync();
+        StateHasChanged();
+    }
+}
+
+

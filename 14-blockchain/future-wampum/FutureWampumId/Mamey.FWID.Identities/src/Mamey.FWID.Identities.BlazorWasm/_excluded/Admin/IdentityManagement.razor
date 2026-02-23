@@ -1,0 +1,308 @@
+@* This file is excluded and should not be compiled. Route disabled. *@
+@* @page "/identity/admin" - REMOVED to prevent duplicate route *@
+@attribute [Authorize(Roles = "Admin,IdentityAdmin")]
+@inject IIdentityService IdentityService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<PageTitle>Identity Management - Admin - FutureWampumID</PageTitle>
+
+<MudGrid>
+    <MudItem xs="12">
+        <div class="d-flex align-center mb-4">
+            <MudText Typo="Typo.h4">Identity Management</MudText>
+            <MudSpacer />
+            <MudButton Color="Color.Primary" 
+                       Variant="Variant.Filled" 
+                       StartIcon="@Icons.Material.Filled.PersonAdd"
+                       OnClick="@OpenCreateDialog">
+                Create Identity
+            </MudButton>
+        </div>
+    </MudItem>
+</MudGrid>
+
+<!-- Stats Cards -->
+<MudGrid Class="mb-4">
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2" Class="pa-4">
+            <div class="d-flex align-center">
+                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" Color="Color.Primary" />
+                <MudSpacer />
+                <div class="text-right">
+                    <MudText Typo="Typo.h4">@_identities.Count</MudText>
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary">Total Identities</MudText>
+                </div>
+            </div>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2" Class="pa-4">
+            <div class="d-flex align-center">
+                <MudIcon Icon="@Icons.Material.Filled.VerifiedUser" Size="Size.Large" Color="Color.Success" />
+                <MudSpacer />
+                <div class="text-right">
+                    <MudText Typo="Typo.h4">@_identities.Count(i => i.DID != null)</MudText>
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary">DID Linked</MudText>
+                </div>
+            </div>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2" Class="pa-4">
+            <div class="d-flex align-center">
+                <MudIcon Icon="@Icons.Material.Filled.Fingerprint" Size="Size.Large" Color="Color.Info" />
+                <MudSpacer />
+                <div class="text-right">
+                    <MudText Typo="Typo.h4">@_pendingBiometrics</MudText>
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary">Pending Biometrics</MudText>
+                </div>
+            </div>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2" Class="pa-4">
+            <div class="d-flex align-center">
+                <MudIcon Icon="@Icons.Material.Filled.HourglassEmpty" Size="Size.Large" Color="Color.Warning" />
+                <MudSpacer />
+                <div class="text-right">
+                    <MudText Typo="Typo.h4">@_pendingVerifications</MudText>
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary">Pending Verification</MudText>
+                </div>
+            </div>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<!-- Search and Filters -->
+<MudCard Elevation="2" Class="mb-4 pa-4">
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <MudTextField @bind-Value="_searchString" 
+                          Placeholder="Search identities..." 
+                          Adornment="Adornment.Start" 
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Variant="Variant.Outlined"
+                          Immediate="true"
+                          DebounceInterval="300" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudSelect @bind-Value="_statusFilter" Label="Status" Variant="Variant.Outlined">
+                <MudSelectItem Value="@("all")">All</MudSelectItem>
+                <MudSelectItem Value="@("verified")">Verified</MudSelectItem>
+                <MudSelectItem Value="@("pending")">Pending</MudSelectItem>
+                <MudSelectItem Value="@("unverified")">Unverified</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudSelect @bind-Value="_didFilter" Label="DID Status" Variant="Variant.Outlined">
+                <MudSelectItem Value="@("all")">All</MudSelectItem>
+                <MudSelectItem Value="@("linked")">DID Linked</MudSelectItem>
+                <MudSelectItem Value="@("unlinked")">No DID</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="2">
+            <MudButton Variant="Variant.Outlined" 
+                       Color="Color.Primary" 
+                       FullWidth="true"
+                       OnClick="@RefreshData"
+                       Style="height: 56px;">
+                <MudIcon Icon="@Icons.Material.Filled.Refresh" Class="mr-1" />
+                Refresh
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+</MudCard>
+
+@if (_isLoading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mb-4" />
+}
+
+<!-- Data Grid -->
+<MudDataGrid T="IdentityDto" 
+             Items="@GetFilteredIdentities()" 
+             Filterable="false"
+             SortMode="SortMode.Multiple"
+             Groupable="false"
+             Dense="true"
+             Hover="true"
+             Striped="true"
+             Bordered="true"
+             Class="mb-4">
+    <Columns>
+        <PropertyColumn Property="x => x.Id" Title="ID" Hidden="true" />
+        <TemplateColumn Title="Name" SortBy="@(x => x.LastName)">
+            <CellTemplate>
+                <div class="d-flex align-center">
+                    <MudAvatar Size="Size.Small" Color="Color.Primary" Class="mr-2">
+                        @GetInitials(context.Item)
+                    </MudAvatar>
+                    <div>
+                        <MudText Typo="Typo.body2">@context.Item.FirstName @context.Item.LastName</MudText>
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">@context.Item.Email</MudText>
+                    </div>
+                </div>
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="DID Status">
+            <CellTemplate>
+                @if (context.Item.DID != null)
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.Key">Linked</MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Default">No DID</MudChip>
+                }
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Verification">
+            <CellTemplate>
+                <MudChip T="string" Size="Size.Small" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Verified</MudChip>
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.CreatedAt" Title="Created" Format="yyyy-MM-dd" />
+        <TemplateColumn Title="Actions" CellStyle="width: 150px;">
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                               Size="Size.Small" 
+                               Color="Color.Primary"
+                               OnClick="@(() => ViewDetails(context.Item))"
+                               Title="View Details" />
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                               Size="Size.Small" 
+                               Color="Color.Secondary"
+                               OnClick="@(() => EditIdentity(context.Item))"
+                               Title="Edit" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                               Size="Size.Small" 
+                               Color="Color.Error"
+                               OnClick="@(() => DeleteIdentity(context.Item))"
+                               Title="Delete" />
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="IdentityDto" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    private bool _isLoading = true;
+    private List<IdentityDto> _identities = new();
+    private string _searchString = string.Empty;
+    private string _statusFilter = "all";
+    private string _didFilter = "all";
+    private int _pendingBiometrics = 5; // Mock
+    private int _pendingVerifications = 12; // Mock
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadIdentitiesAsync();
+    }
+
+    private async Task LoadIdentitiesAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            _identities = await IdentityService.GetIdentitiesAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading identities: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private IEnumerable<IdentityDto> GetFilteredIdentities()
+    {
+        var filtered = _identities.AsEnumerable();
+
+        // Search filter
+        if (!string.IsNullOrWhiteSpace(_searchString))
+        {
+            var search = _searchString.ToLower();
+            filtered = filtered.Where(i => 
+                (i.FirstName?.ToLower().Contains(search) ?? false) ||
+                (i.LastName?.ToLower().Contains(search) ?? false) ||
+                (i.Email?.ToLower().Contains(search) ?? false) ||
+                (i.DID?.ToLower().Contains(search) ?? false));
+        }
+
+        // DID filter
+        if (_didFilter == "linked")
+            filtered = filtered.Where(i => i.DID != null);
+        else if (_didFilter == "unlinked")
+            filtered = filtered.Where(i => i.DID == null);
+
+        return filtered;
+    }
+
+    private string GetInitials(IdentityDto identity)
+    {
+        var first = !string.IsNullOrEmpty(identity.FirstName) ? identity.FirstName[0] : '?';
+        var last = !string.IsNullOrEmpty(identity.LastName) ? identity.LastName[0] : '?';
+        return $"{first}{last}".ToUpper();
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadIdentitiesAsync();
+        Snackbar.Add("Data refreshed", Severity.Info);
+    }
+
+    private void OpenCreateDialog()
+    {
+        Navigation.NavigateTo("/identity/admin/create");
+    }
+
+    private void ViewDetails(IdentityDto identity)
+    {
+        Navigation.NavigateTo($"/identity/admin/{identity.Id}");
+    }
+
+    private void EditIdentity(IdentityDto identity)
+    {
+        Navigation.NavigateTo($"/identity/admin/{identity.Id}/edit");
+    }
+
+    private async Task DeleteIdentity(IdentityDto identity)
+    {
+        var parameters = new DialogParameters
+        {
+            ["ContentText"] = $"Are you sure you want to delete the identity for {identity.FirstName} {identity.LastName}? This action cannot be undone.",
+            ["ButtonText"] = "Delete",
+            ["ButtonColor"] = Color.Error
+        };
+
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Delete Identity", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            try
+            {
+                var success = await IdentityService.DeleteIdentityAsync(identity.Id);
+                if (success)
+                {
+                    Snackbar.Add("Identity deleted successfully", Severity.Success);
+                    await LoadIdentitiesAsync();
+                }
+                else
+                {
+                    Snackbar.Add("Failed to delete identity", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error deleting identity: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+}

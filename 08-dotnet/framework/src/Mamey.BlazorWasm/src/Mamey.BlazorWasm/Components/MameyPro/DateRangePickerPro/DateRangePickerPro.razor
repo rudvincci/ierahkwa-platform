@@ -1,0 +1,76 @@
+@using Mamey.BlazorWasm.Components.Foundation
+
+<MudStack Spacing="2" Class="@Class" Style="@Style">
+    <MudDatePicker T="DateTime?"
+                   Label="@StartLabel"
+                   Placeholder="@StartPlaceholder"
+                   Date="@_startDate"
+                   DateChanged="@OnStartDateChanged"
+                   Required="@Required"
+                   Disabled="@Disabled"
+                   Variant="@Variant"
+                   MaxDate="@_endDate"
+                   Class="@Class" />
+    
+    <MudDatePicker T="DateTime?"
+                   Label="@EndLabel"
+                   Placeholder="@EndPlaceholder"
+                   Date="@_endDate"
+                   DateChanged="@OnEndDateChanged"
+                   Required="@Required"
+                   Disabled="@Disabled"
+                   Variant="@Variant"
+                   MinDate="@_startDate" />
+</MudStack>
+<FieldMessages HelperText="@HelperText" />
+
+@code {
+    [Parameter] public string Label { get; set; } = "Date Range";
+    [Parameter] public string HelperText { get; set; } = "Select start and end dates";
+    [Parameter] public string StartLabel { get; set; } = "Start Date";
+    [Parameter] public string StartPlaceholder { get; set; } = "Select start date";
+    [Parameter] public string EndLabel { get; set; } = "End Date";
+    [Parameter] public string EndPlaceholder { get; set; } = "Select end date";
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public DateTime? StartDate { get; set; }
+    [Parameter] public EventCallback<DateTime?> StartDateChanged { get; set; }
+    [Parameter] public DateTime? EndDate { get; set; }
+    [Parameter] public EventCallback<DateTime?> EndDateChanged { get; set; }
+
+    private DateTime? _startDate;
+    private DateTime? _endDate;
+
+    protected override void OnParametersSet()
+    {
+        _startDate = StartDate;
+        _endDate = EndDate;
+    }
+
+    private async Task OnStartDateChanged(DateTime? date)
+    {
+        _startDate = date;
+        if (date.HasValue && _endDate.HasValue && date.Value > _endDate.Value)
+        {
+            _endDate = null;
+            await EndDateChanged.InvokeAsync(null);
+        }
+        await StartDateChanged.InvokeAsync(date);
+        StateHasChanged();
+    }
+
+    private async Task OnEndDateChanged(DateTime? date)
+    {
+        _endDate = date;
+        await EndDateChanged.InvokeAsync(date);
+        StateHasChanged();
+    }
+}
+
+
+
+

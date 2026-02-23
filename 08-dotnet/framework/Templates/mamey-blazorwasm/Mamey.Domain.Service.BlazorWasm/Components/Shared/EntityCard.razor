@@ -1,0 +1,32 @@
+@using Mamey.Domain.Service.Contracts
+
+<MudCard>
+    <MudCardContent>
+        <MudText Typo="Typo.h6">@Entity.Name</MudText>
+        <MudText Typo="Typo.body2" Class="mt-2">ID: @Entity.Id</MudText>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Variant.Text" 
+                  Color="Color.Primary"
+                  Size="Size.Small"
+                  OnClick="@(() => OnClick?.Invoke(Entity))">
+            View Details
+        </MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter] public EntitySummaryDto Entity { get; set; } = new();
+    [Parameter] public EventCallback<EntitySummaryDto> OnClick { get; set; }
+}
+
+
+
+
+
+
+
+
+
+
+

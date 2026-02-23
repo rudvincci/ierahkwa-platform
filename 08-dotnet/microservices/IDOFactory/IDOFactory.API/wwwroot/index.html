@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ierahkwa IDO Factory | Sovereign Token Launchpad</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --gold-dark: #B8860B;
+            --neon-green: #00FF41;
+            --neon-cyan: #00FFFF;
+            --neon-magenta: #FF00FF;
+            --neon-pink: #FF1493;
+            --neon-orange: #FF6B35;
+            --neon-purple: #9D4EDD;
+            --neon-red: #FF1744;
+            --bg-dark: #0a0e17;
+            --bg-card: #0d1a2d;
+            --bg-hover: #142238;
+            --border: #1e3a5f;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, #0a0e17 0%, #0d1a2d 50%, #1a0a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 65, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.03) 0%, transparent 70%);
+        }
+        
+        .container { position: relative; z-index: 1; }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, rgba(10, 14, 23, 0.98) 0%, rgba(13, 26, 45, 0.95) 100%);
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, var(--gold), var(--neon-green), var(--neon-cyan), var(--gold)) 1;
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+            to { box-shadow: 0 0 35px rgba(255, 215, 0, 0.8), 0 0 50px rgba(255, 215, 0, 0.4); }
+        }
+        
+        .logo-text h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6em;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--gold), var(--neon-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo-text p {
+            color: var(--neon-cyan);
+            font-size: 0.85em;
+            letter-spacing: 2px;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav a {
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1em;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav a:hover, .nav a.active {
+            color: var(--gold);
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.95em;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 0 20px var(--gold);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+        
+        .btn-outline:hover {
+            background: var(--neon-cyan);
+            color: #000;
+        }
+        
+        .btn-green {
+            background: linear-gradient(135deg, var(--neon-green), #00cc33);
+            color: #000;
+        }
+        
+        .btn-green:hover {
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+        
+        /* Main */
+        .main {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 25px 30px;
+        }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8em;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.85em;
+            color: #888;
+        }
+        
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4em;
+            color: var(--gold);
+        }
+        
+        .section-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .tab:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+            border-color: var(--gold);
+        }
+        
+        /* Pool Cards Grid */
+        .pools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .pool-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .pool-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.15);
+        }
+        
+        .pool-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .pool-logo {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .pool-info h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        
+        .pool-symbol {
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .pool-status {
+            margin-left: auto;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .status-live {
+            background: rgba(0, 255, 65, 0.2);
+            color: var(--neon-green);
+        }
+        
+        .status-upcoming {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--gold);
+        }
+        
+        .status-ended {
+            background: rgba(136, 136, 136, 0.2);
+            color: #888;
+        }
+        
+        .status-claiming {
+            background: rgba(0, 255, 255, 0.2);
+            color: var(--neon-cyan);
+        }
+        
+        .pool-body {
+            padding: 20px;
+        }
+        
+        .pool-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .pool-stat {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            border-radius: 10px;
+        }
+        
+        .pool-stat-label {
+            font-size: 0.8em;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        
+        .pool-stat-value {
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 15px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--neon-green));
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+        
+        .pool-footer {
+            display: flex;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .pool-footer .btn {
+            flex: 1;
+        }
+        
+        /* Locker Cards */
+        .locker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        .locker-card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .locker-card:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.1);
+        }
+        
+        .locker-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .locker-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .locker-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1em;
+            color: #fff;
+        }
+        
+        .locker-type {
+            margin-left: auto;
+            padding: 4px 10px;
+            background: rgba(157, 78, 221, 0.2);
+            color: var(--neon-purple);
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+        
+        .locker-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .locker-stat {
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        
+        .locker-stat-value {
+            font-weight: 700;
+            color: var(--neon-cyan);
+            font-size: 1.1em;
+        }
+        
+        .locker-stat-label {
+            font-size: 0.75em;
+            color: #888;
+        }
+        
+        /* Views */
+        .view { display: none; }
+        .view.active { display: block; }
+        
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.open {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--bg-card);
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            padding: 30px;
+            min-width: 450px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 6px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1em;
+            font-family: 'Exo 2', sans-serif;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+        
+        /* Connect Wallet Modal */
+        .wallet-options {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .wallet-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .wallet-option:hover {
+            border-color: var(--gold);
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .wallet-option img {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .wallet-option span {
+            font-weight: 600;
+        }
+        
+        /* Node Status */
+        .node-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--neon-green);
+            border-radius: 12px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 50;
+        }
+        
+        .node-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .node-info {
+            font-size: 0.85em;
+        }
+        
+        .node-name {
+            color: var(--gold);
+            font-weight: 700;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .pools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .main {
+                padding: 15px;
+            }
+            
+            .modal {
+                min-width: auto;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🚀</div>
+                <div class="logo-text">
+                    <h1>IERAHKWA IDO FACTORY</h1>
+                    <p>SOVEREIGN TOKEN LAUNCHPAD</p>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <a href="#" class="active" data-view="pools">IDO Pools</a>
+                <a href="#" data-view="lockers">Token Locker</a>
+                <a href="#" data-view="create">Create IDO</a>
+                <a href="#" data-view="lock">Lock Tokens</a>
+                <a href="#" data-view="admin">Admin</a>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="btn btn-outline" id="btnConnectWallet">
+                    <i class="bi bi-wallet2"></i> Connect Wallet
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <main class="main container">
+        <!-- Stats Bar -->
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotalPools">0</div>
+                <div class="stat-label">Total IDO Pools</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statActivePools">0</div>
+                <div class="stat-label">Active Pools</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statFundsRaised">$0</div>
+                <div class="stat-label">Total Funds Raised</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statParticipants">0</div>
+                <div class="stat-label">Total Participants</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statTotalLocks">0</div>
+                <div class="stat-label">Token Locks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statTVL">$0</div>
+                <div class="stat-label">Total Value Locked</div>
+            </div>
+        </div>
+        
+        <!-- IDO Pools View -->
+        <div class="view active" id="viewPools">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon">🚀</div>
+                    <h2>IDO Pools</h2>
+                </div>
+            </div>
+            
+            <div class="tabs" id="poolTabs">
+                <div class="tab active" data-status="all">All Pools</div>
+                <div class="tab" data-status="Live">Live</div>
+                <div class="tab" data-status="Upcoming">Upcoming</div>
+                <div class="tab" data-status="Claiming">Claiming</div>
+                <div class="tab" data-status="Ended">Ended</div>
+            </div>
+            
+            <div class="pools-grid" id="poolsGrid">
+                <!-- Pools will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Token Locker View -->
+        <div class="view" id="viewLockers">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon" style="background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));">🔒</div>
+                    <h2 style="color: var(--neon-cyan);">Token Locker</h2>
+                </div>
+            </div>
+            
+            <div class="locker-grid" id="lockerGrid">
+                <!-- Lockers will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Create IDO View -->
+        <div class="view" id="viewCreate">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon" style="background: linear-gradient(135deg, var(--neon-green), #00cc33);">➕</div>
+                    <h2 style="color: var(--neon-green);">Create IDO Pool</h2>
+                </div>
+            </div>
+            
+            <div style="background: var(--bg-card); border-radius: 16px; padding: 30px; border: 1px solid var(--border);">
+                <form id="createPoolForm">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div class="form-group">
+                            <label class="form-label">Pool Name *</label>
+                            <input type="text" class="form-input" id="poolName" placeholder="e.g. My Token Launch" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Token Address *</label>
+                            <input type="text" class="form-input" id="poolTokenAddress" placeholder="0x..." required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Token Symbol *</label>
+                            <input type="text" class="form-input" id="poolTokenSymbol" placeholder="e.g. TKN" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Token Name *</label>
+                            <input type="text" class="form-input" id="poolTokenName" placeholder="e.g. My Token" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Token Price (USDT) *</label>
+                            <input type="number" step="0.000001" class="form-input" id="poolTokenPrice" placeholder="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Soft Cap (USDT) *</label>
+                            <input type="number" class="form-input" id="poolSoftCap" placeholder="10000" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Hard Cap (USDT) *</label>
+                            <input type="number" class="form-input" id="poolHardCap" placeholder="50000" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Min Contribution (USDT) *</label>
+                            <input type="number" class="form-input" id="poolMinContribution" placeholder="50" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Max Contribution (USDT) *</label>
+                            <input type="number" class="form-input" id="poolMaxContribution" placeholder="2000" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Total Tokens for Sale *</label>
+                            <input type="number" class="form-input" id="poolTotalTokens" placeholder="1000000" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sale Start *</label>
+                            <input type="datetime-local" class="form-input" id="poolSaleStart" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sale End *</label>
+                            <input type="datetime-local" class="form-input" id="poolSaleEnd" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-input" id="poolDescription" rows="4" placeholder="Describe your project..."></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+                        <div class="form-group">
+                            <label class="form-label">Website</label>
+                            <input type="url" class="form-input" id="poolWebsite" placeholder="https://">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Twitter</label>
+                            <input type="url" class="form-input" id="poolTwitter" placeholder="https://twitter.com/...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Telegram</label>
+                            <input type="url" class="form-input" id="poolTelegram" placeholder="https://t.me/...">
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; margin-top: 25px;">
+                        <button type="submit" class="btn btn-green" style="flex: 1; padding: 15px;">
+                            <i class="bi bi-rocket-takeoff"></i> Create IDO Pool
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Lock Tokens View -->
+        <div class="view" id="viewLock">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon" style="background: linear-gradient(135deg, var(--neon-purple), #6b21a8);">🔐</div>
+                    <h2 style="color: var(--neon-purple);">Lock Tokens</h2>
+                </div>
+            </div>
+            
+            <div style="background: var(--bg-card); border-radius: 16px; padding: 30px; border: 1px solid var(--border);">
+                <form id="createLockForm">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div class="form-group">
+                            <label class="form-label">Lock Name *</label>
+                            <input type="text" class="form-input" id="lockName" placeholder="e.g. Team Tokens Lock" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Token Address *</label>
+                            <input type="text" class="form-input" id="lockTokenAddress" placeholder="0x..." required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Token Symbol *</label>
+                            <input type="text" class="form-input" id="lockTokenSymbol" placeholder="e.g. TKN" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Amount to Lock *</label>
+                            <input type="number" class="form-input" id="lockAmount" placeholder="1000000" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Unlock Date *</label>
+                            <input type="datetime-local" class="form-input" id="lockUnlockDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Lock Type *</label>
+                            <select class="form-input" id="lockType">
+                                <option value="Team">Team</option>
+                                <option value="Liquidity">Liquidity</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Development">Development</option>
+                                <option value="Advisor">Advisor</option>
+                                <option value="Presale">Presale</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="lockLinearVesting"> Enable Linear Vesting
+                            </label>
+                        </div>
+                        <div class="form-group" id="vestingPeriodGroup" style="display: none;">
+                            <label class="form-label">Vesting Period (days)</label>
+                            <input type="number" class="form-input" id="lockVestingPeriod" placeholder="365">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-input" id="lockDescription" rows="3" placeholder="Purpose of this lock..."></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; margin-top: 25px;">
+                        <button type="submit" class="btn" style="flex: 1; padding: 15px; background: linear-gradient(135deg, var(--neon-purple), #6b21a8); color: #fff;">
+                            <i class="bi bi-lock"></i> Lock Tokens
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Admin View -->
+        <div class="view" id="viewAdmin">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon" style="background: linear-gradient(135deg, var(--neon-orange), #cc4400);">⚙️</div>
+                    <h2 style="color: var(--neon-orange);">Admin Panel</h2>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                <!-- Branding -->
+                <div style="background: var(--bg-card); border-radius: 16px; padding: 25px; border: 1px solid var(--border);">
+                    <h3 style="color: var(--gold); margin-bottom: 20px; font-family: 'Orbitron', sans-serif;">
+                        <i class="bi bi-palette"></i> Branding
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">Platform Name</label>
+                        <input type="text" class="form-input" id="adminPlatformName" value="Ierahkwa Futurehead Launchpad">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Logo URL</label>
+                        <input type="text" class="form-input" id="adminLogoUrl" placeholder="/assets/logo.png">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Primary Color</label>
+                        <input type="color" class="form-input" id="adminPrimaryColor" value="#FFD700" style="height: 45px;">
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 10px;">Save Branding</button>
+                </div>
+                
+                <!-- Social Links -->
+                <div style="background: var(--bg-card); border-radius: 16px; padding: 25px; border: 1px solid var(--border);">
+                    <h3 style="color: var(--neon-cyan); margin-bottom: 20px; font-family: 'Orbitron', sans-serif;">
+                        <i class="bi bi-link-45deg"></i> Social Links
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">Website</label>
+                        <input type="url" class="form-input" id="adminWebsite" value="https://launchpad.ierahkwa.gov">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Twitter</label>
+                        <input type="url" class="form-input" id="adminTwitter" value="https://twitter.com/ierahkwa">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Telegram</label>
+                        <input type="url" class="form-input" id="adminTelegram" value="https://t.me/ierahkwa">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Discord</label>
+                        <input type="url" class="form-input" id="adminDiscord" value="https://discord.gg/ierahkwa">
+                    </div>
+                    <button class="btn btn-outline" style="width: 100%; margin-top: 10px;">Save Links</button>
+                </div>
+                
+                <!-- Fees -->
+                <div style="background: var(--bg-card); border-radius: 16px; padding: 25px; border: 1px solid var(--border);">
+                    <h3 style="color: var(--neon-green); margin-bottom: 20px; font-family: 'Orbitron', sans-serif;">
+                        <i class="bi bi-cash-coin"></i> Fee Configuration
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">Pool Creation Fee (native token)</label>
+                        <input type="number" step="0.01" class="form-input" id="adminPoolFee" value="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Platform Fee (%)</label>
+                        <input type="number" step="0.1" class="form-input" id="adminPlatformFee" value="3.0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Token Lock Fee (native token)</label>
+                        <input type="number" step="0.01" class="form-input" id="adminLockFee" value="0.05">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Fee Receiver Address</label>
+                        <input type="text" class="form-input" id="adminFeeReceiver" placeholder="0x...">
+                    </div>
+                    <button class="btn btn-green" style="width: 100%; margin-top: 10px;">Save Fees</button>
+                </div>
+                
+                <!-- Admin Addresses -->
+                <div style="background: var(--bg-card); border-radius: 16px; padding: 25px; border: 1px solid var(--border);">
+                    <h3 style="color: var(--neon-magenta); margin-bottom: 20px; font-family: 'Orbitron', sans-serif;">
+                        <i class="bi bi-shield-check"></i> Admin Addresses
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">Add Admin Address</label>
+                        <input type="text" class="form-input" id="newAdminAddress" placeholder="0x...">
+                    </div>
+                    <button class="btn" style="width: 100%; background: linear-gradient(135deg, var(--neon-magenta), #cc00cc); color: #fff;">
+                        Add Admin
+                    </button>
+                    <div style="margin-top: 15px;">
+                        <p style="color: #888; font-size: 0.85em; margin-bottom: 10px;">Current Admins:</p>
+                        <div id="adminList" style="font-family: monospace; font-size: 0.85em; color: var(--neon-cyan);">
+                            IERAHKWA_ADMIN_ADDRESS
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Connect Wallet Modal -->
+    <div class="modal-overlay" id="modalConnect">
+        <div class="modal">
+            <h3>Connect Wallet</h3>
+            <p style="color: #888; margin-bottom: 20px;">Connect your wallet to participate in IDOs and manage locks.</p>
+            <div class="wallet-options">
+                <div class="wallet-option" onclick="connectWallet('MetaMask')">
+                    <span style="font-size: 24px;">🦊</span>
+                    <span>MetaMask</span>
+                </div>
+                <div class="wallet-option" onclick="connectWallet('WalletConnect')">
+                    <span style="font-size: 24px;">📱</span>
+                    <span>WalletConnect</span>
+                </div>
+                <div class="wallet-option" onclick="connectWallet('Coinbase')">
+                    <span style="font-size: 24px;">💰</span>
+                    <span>Coinbase Wallet</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('modalConnect')">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pool Detail Modal -->
+    <div class="modal-overlay" id="modalPoolDetail">
+        <div class="modal" style="min-width: 500px;">
+            <h3 id="modalPoolName">Pool Details</h3>
+            <div id="modalPoolContent">
+                <!-- Pool details loaded dynamically -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('modalPoolDetail')">Close</button>
+                <button class="btn btn-green" id="btnContribute">Contribute</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Node Status -->
+    <div class="node-status">
+        <div class="node-dot"></div>
+        <div class="node-info">
+            <div class="node-name">Ierahkwa Futurehead Mamey Node</div>
+            <div style="color: #888; font-size: 0.8em;">Chain ID: 777777 | ISB Network</div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = '/api';
+        let currentView = 'pools';
+        let currentPoolFilter = 'all';
+        let connectedWallet = null;
+        
+        // ----- Navigation -----
+        document.querySelectorAll('.nav a').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const view = a.getAttribute('data-view');
+                switchView(view);
+            });
+        });
+        
+        function switchView(view) {
+            currentView = view;
+            document.querySelectorAll('.nav a').forEach(a => a.classList.toggle('active', a.getAttribute('data-view') === view));
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view' + view.charAt(0).toUpperCase() + view.slice(1))?.classList.add('active');
+        }
+        
+        // ----- Pool Tabs -----
+        document.querySelectorAll('#poolTabs .tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('#poolTabs .tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentPoolFilter = tab.getAttribute('data-status');
+                loadPools();
+            });
+        });
+        
+        // ----- Modals -----
+        document.getElementById('btnConnectWallet').addEventListener('click', () => {
+            document.getElementById('modalConnect').classList.add('open');
+        });
+        
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+        
+        function connectWallet(name) {
+            connectedWallet = name;
+            closeModal('modalConnect');
+            document.getElementById('btnConnectWallet').innerHTML = '<i class="bi bi-wallet-fill"></i> ' + name;
+            document.getElementById('btnConnectWallet').classList.remove('btn-outline');
+            document.getElementById('btnConnectWallet').classList.add('btn-primary');
+        }
+        
+        // ----- API Calls -----
+        async function loadStatistics() {
+            try {
+                const [idoStats, lockerStats] = await Promise.all([
+                    fetch(API_BASE + '/ido/statistics').then(r => r.json()),
+                    fetch(API_BASE + '/locker/statistics').then(r => r.json())
+                ]);
+                
+                document.getElementById('statTotalPools').textContent = idoStats.totalPools || 0;
+                document.getElementById('statActivePools').textContent = idoStats.activePools || 0;
+                document.getElementById('statFundsRaised').textContent = '$' + (idoStats.totalFundsRaised || 0).toLocaleString();
+                document.getElementById('statParticipants').textContent = idoStats.totalParticipants || 0;
+                document.getElementById('statTotalLocks').textContent = lockerStats.totalLocks || 0;
+                document.getElementById('statTVL').textContent = '$' + (lockerStats.totalValueLocked || 0).toLocaleString();
+            } catch (err) {
+                console.error('Error loading statistics:', err);
+            }
+        }
+        
+        async function loadPools() {
+            try {
+                let url = API_BASE + '/ido/pools';
+                if (currentPoolFilter !== 'all') {
+                    url = API_BASE + '/ido/pools/status/' + currentPoolFilter;
+                }
+                
+                const pools = await fetch(url).then(r => r.json());
+                renderPools(pools);
+            } catch (err) {
+                console.error('Error loading pools:', err);
+            }
+        }
+        
+        function renderPools(pools) {
+            const grid = document.getElementById('poolsGrid');
+            
+            if (!pools || pools.length === 0) {
+                grid.innerHTML = '<div style="text-align: center; color: #888; padding: 40px;">No pools found</div>';
+                return;
+            }
+            
+            grid.innerHTML = pools.map(pool => {
+                const progress = pool.hardCap > 0 ? (pool.fundsRaised / pool.hardCap) * 100 : 0;
+                const statusClass = getStatusClass(pool.status);
+                
+                return `
+                    <div class="pool-card" onclick="openPoolDetail('${pool.id}')">
+                        <div class="pool-header">
+                            <div class="pool-logo">${pool.tokenSymbol?.substring(0, 2) || '??'}</div>
+                            <div class="pool-info">
+                                <h3>${pool.name || 'Unnamed Pool'}</h3>
+                                <div class="pool-symbol">${pool.tokenSymbol || 'TKN'}</div>
+                            </div>
+                            <div class="pool-status ${statusClass}">${getStatusLabel(pool.status)}</div>
+                        </div>
+                        <div class="pool-body">
+                            <div class="pool-stats">
+                                <div class="pool-stat">
+                                    <div class="pool-stat-label">Token Price</div>
+                                    <div class="pool-stat-value">$${pool.tokenPrice || 0}</div>
+                                </div>
+                                <div class="pool-stat">
+                                    <div class="pool-stat-label">Hard Cap</div>
+                                    <div class="pool-stat-value">$${(pool.hardCap || 0).toLocaleString()}</div>
+                                </div>
+                                <div class="pool-stat">
+                                    <div class="pool-stat-label">Participants</div>
+                                    <div class="pool-stat-value">${pool.participantsCount || 0}</div>
+                                </div>
+                                <div class="pool-stat">
+                                    <div class="pool-stat-label">Network</div>
+                                    <div class="pool-stat-value">${pool.network || 'ISB'}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-container">
+                                <div class="progress-header">
+                                    <span>Progress</span>
+                                    <span>${progress.toFixed(1)}%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${Math.min(progress, 100)}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85em; color: #888;">
+                                <span>Raised: $${(pool.fundsRaised || 0).toLocaleString()}</span>
+                                <span>Soft Cap: $${(pool.softCap || 0).toLocaleString()}</span>
+                            </div>
+                            
+                            <div class="pool-footer">
+                                <button class="btn btn-primary">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function getStatusClass(status) {
+            const map = {
+                0: 'status-upcoming', // Draft
+                1: 'status-upcoming', // Upcoming
+                2: 'status-upcoming', // Registration
+                3: 'status-live',     // Live
+                4: 'status-live',     // Filled
+                5: 'status-ended',    // Ended
+                6: 'status-ended',    // Cancelled
+                7: 'status-ended',    // Finalized
+                8: 'status-claiming', // Claiming
+                'Draft': 'status-upcoming',
+                'Upcoming': 'status-upcoming',
+                'Registration': 'status-upcoming',
+                'Live': 'status-live',
+                'Filled': 'status-live',
+                'Ended': 'status-ended',
+                'Cancelled': 'status-ended',
+                'Finalized': 'status-ended',
+                'Claiming': 'status-claiming'
+            };
+            return map[status] || 'status-upcoming';
+        }
+        
+        function getStatusLabel(status) {
+            const map = {
+                0: 'Draft', 1: 'Upcoming', 2: 'Registration', 3: 'Live',
+                4: 'Filled', 5: 'Ended', 6: 'Cancelled', 7: 'Finalized', 8: 'Claiming',
+                'Draft': 'Draft', 'Upcoming': 'Upcoming', 'Registration': 'Registration',
+                'Live': 'Live', 'Filled': 'Filled', 'Ended': 'Ended',
+                'Cancelled': 'Cancelled', 'Finalized': 'Finalized', 'Claiming': 'Claiming'
+            };
+            return map[status] || status;
+        }
+        
+        async function openPoolDetail(poolId) {
+            try {
+                const pool = await fetch(API_BASE + '/ido/pools/' + poolId).then(r => r.json());
+                
+                document.getElementById('modalPoolName').textContent = pool.name;
+                document.getElementById('modalPoolContent').innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+                        <div>
+                            <div style="color: #888; font-size: 0.85em;">Token</div>
+                            <div style="font-weight: 700;">${pool.tokenSymbol} (${pool.tokenName})</div>
+                        </div>
+                        <div>
+                            <div style="color: #888; font-size: 0.85em;">Price</div>
+                            <div style="font-weight: 700; color: var(--gold);">$${pool.tokenPrice}</div>
+                        </div>
+                        <div>
+                            <div style="color: #888; font-size: 0.85em;">Soft Cap</div>
+                            <div style="font-weight: 700;">$${pool.softCap.toLocaleString()}</div>
+                        </div>
+                        <div>
+                            <div style="color: #888; font-size: 0.85em;">Hard Cap</div>
+                            <div style="font-weight: 700;">$${pool.hardCap.toLocaleString()}</div>
+                        </div>
+                        <div>
+                            <div style="color: #888; font-size: 0.85em;">Min Contribution</div>
+                            <div style="font-weight: 700;">$${pool.minContribution}</div>
+                        </div>
+                        <div>
+                            <div style="color: #888; font-size: 0.85em;">Max Contribution</div>
+                            <div style="font-weight: 700;">$${pool.maxContribution}</div>
+                        </div>
+                        <div>
+                            <div style="color: #888; font-size: 0.85em;">Funds Raised</div>
+                            <div style="font-weight: 700; color: var(--neon-green);">$${pool.fundsRaised.toLocaleString()}</div>
+                        </div>
+                        <div>
+                            <div style="color: #888; font-size: 0.85em;">Participants</div>
+                            <div style="font-weight: 700;">${pool.participantsCount}</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <div style="color: #888; font-size: 0.85em; margin-bottom: 5px;">Description</div>
+                        <div>${pool.description || 'No description provided.'}</div>
+                    </div>
+                    ${pool.website ? `<a href="${pool.website}" target="_blank" style="color: var(--neon-cyan); margin-right: 15px;">🌐 Website</a>` : ''}
+                    ${pool.twitter ? `<a href="${pool.twitter}" target="_blank" style="color: var(--neon-cyan); margin-right: 15px;">🐦 Twitter</a>` : ''}
+                    ${pool.telegram ? `<a href="${pool.telegram}" target="_blank" style="color: var(--neon-cyan);">📱 Telegram</a>` : ''}
+                    
+                    <div style="margin-top: 20px;">
+                        <label class="form-label">Contribution Amount (USDT)</label>
+                        <input type="number" class="form-input" id="contributeAmount" placeholder="Enter amount" min="${pool.minContribution}" max="${pool.maxContribution}">
+                    </div>
+                `;
+                
+                document.getElementById('btnContribute').onclick = () => contribute(poolId);
+                document.getElementById('modalPoolDetail').classList.add('open');
+            } catch (err) {
+                console.error('Error loading pool:', err);
+                alert('Error loading pool details');
+            }
+        }
+        
+        async function contribute(poolId) {
+            if (!connectedWallet) {
+                alert('Please connect your wallet first');
+                document.getElementById('modalConnect').classList.add('open');
+                return;
+            }
+            
+            const amount = parseFloat(document.getElementById('contributeAmount').value);
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            try {
+                const response = await fetch(API_BASE + '/ido/pools/' + poolId + '/contribute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userAddress: connectedWallet, amount: amount })
+                });
+                
+                if (response.ok) {
+                    alert('Contribution successful!');
+                    closeModal('modalPoolDetail');
+                    loadPools();
+                    loadStatistics();
+                } else {
+                    const err = await response.json();
+                    alert('Error: ' + (err.error || 'Contribution failed'));
+                }
+            } catch (err) {
+                console.error('Contribution error:', err);
+                alert('Error processing contribution');
+            }
+        }
+        
+        async function loadLockers() {
+            try {
+                const lockers = await fetch(API_BASE + '/locker').then(r => r.json());
+                renderLockers(lockers);
+            } catch (err) {
+                console.error('Error loading lockers:', err);
+            }
+        }
+        
+        function renderLockers(lockers) {
+            const grid = document.getElementById('lockerGrid');
+            
+            if (!lockers || lockers.length === 0) {
+                grid.innerHTML = '<div style="text-align: center; color: #888; padding: 40px;">No token locks found</div>';
+                return;
+            }
+            
+            grid.innerHTML = lockers.map(locker => {
+                const remaining = locker.amount - locker.amountUnlocked;
+                const progress = locker.amount > 0 ? (locker.amountUnlocked / locker.amount) * 100 : 0;
+                
+                return `
+                    <div class="locker-card">
+                        <div class="locker-header">
+                            <div class="locker-icon">🔒</div>
+                            <div class="locker-title">${locker.name}</div>
+                            <div class="locker-type">${getLockTypeLabel(locker.lockType)}</div>
+                        </div>
+                        
+                        <div class="locker-stats">
+                            <div class="locker-stat">
+                                <div class="locker-stat-value">${locker.tokenSymbol}</div>
+                                <div class="locker-stat-label">Token</div>
+                            </div>
+                            <div class="locker-stat">
+                                <div class="locker-stat-value">${remaining.toLocaleString()}</div>
+                                <div class="locker-stat-label">Locked</div>
+                            </div>
+                            <div class="locker-stat">
+                                <div class="locker-stat-value">${locker.amountUnlocked.toLocaleString()}</div>
+                                <div class="locker-stat-label">Unlocked</div>
+                            </div>
+                            <div class="locker-stat">
+                                <div class="locker-stat-value">${new Date(locker.unlockDate).toLocaleDateString()}</div>
+                                <div class="locker-stat-label">Unlock Date</div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-container">
+                            <div class="progress-header">
+                                <span>Vested</span>
+                                <span>${progress.toFixed(1)}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="font-size: 0.85em; color: #888;">
+                            ${locker.isLinearVesting ? '📊 Linear Vesting' : '🔐 Cliff Lock'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function getLockTypeLabel(type) {
+            const map = { 0: 'Team', 1: 'Liquidity', 2: 'Marketing', 3: 'Development', 4: 'Advisor', 5: 'Presale', 6: 'Private', 7: 'Other',
+                'Team': 'Team', 'Liquidity': 'Liquidity', 'Marketing': 'Marketing', 'Development': 'Development',
+                'Advisor': 'Advisor', 'Presale': 'Presale', 'Private': 'Private', 'Other': 'Other' };
+            return map[type] || type;
+        }
+        
+        // ----- Forms -----
+        document.getElementById('lockLinearVesting')?.addEventListener('change', (e) => {
+            document.getElementById('vestingPeriodGroup').style.display = e.target.checked ? 'block' : 'none';
+        });
+        
+        document.getElementById('createPoolForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const pool = {
+                name: document.getElementById('poolName').value,
+                tokenAddress: document.getElementById('poolTokenAddress').value,
+                tokenSymbol: document.getElementById('poolTokenSymbol').value,
+                tokenName: document.getElementById('poolTokenName').value,
+                tokenPrice: parseFloat(document.getElementById('poolTokenPrice').value),
+                softCap: parseFloat(document.getElementById('poolSoftCap').value),
+                hardCap: parseFloat(document.getElementById('poolHardCap').value),
+                minContribution: parseFloat(document.getElementById('poolMinContribution').value),
+                maxContribution: parseFloat(document.getElementById('poolMaxContribution').value),
+                totalTokensForSale: parseFloat(document.getElementById('poolTotalTokens').value),
+                saleStart: new Date(document.getElementById('poolSaleStart').value).toISOString(),
+                saleEnd: new Date(document.getElementById('poolSaleEnd').value).toISOString(),
+                description: document.getElementById('poolDescription').value,
+                website: document.getElementById('poolWebsite').value,
+                twitter: document.getElementById('poolTwitter').value,
+                telegram: document.getElementById('poolTelegram').value,
+                creatorAddress: connectedWallet || 'anonymous'
+            };
+            
+            try {
+                const response = await fetch(API_BASE + '/ido/pools', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pool)
+                });
+                
+                if (response.ok) {
+                    alert('IDO Pool created successfully!');
+                    e.target.reset();
+                    switchView('pools');
+                    loadPools();
+                } else {
+                    const err = await response.json();
+                    alert('Error: ' + (err.error || 'Failed to create pool'));
+                }
+            } catch (err) {
+                console.error('Create pool error:', err);
+                alert('Error creating pool');
+            }
+        });
+        
+        document.getElementById('createLockForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const lock = {
+                name: document.getElementById('lockName').value,
+                tokenAddress: document.getElementById('lockTokenAddress').value,
+                tokenSymbol: document.getElementById('lockTokenSymbol').value,
+                tokenName: document.getElementById('lockTokenSymbol').value,
+                tokenDecimals: 18,
+                logoUrl: '',
+                amount: parseFloat(document.getElementById('lockAmount').value),
+                unlockDate: new Date(document.getElementById('lockUnlockDate').value).toISOString(),
+                isLinearVesting: document.getElementById('lockLinearVesting').checked,
+                vestingPeriodDays: parseInt(document.getElementById('lockVestingPeriod').value) || 0,
+                lockType: document.getElementById('lockType').value,
+                ownerAddress: connectedWallet || 'anonymous',
+                beneficiaryAddress: null,
+                chainId: 777777,
+                network: 'ierahkwa-mainnet',
+                relatedPoolId: null
+            };
+            
+            try {
+                const response = await fetch(API_BASE + '/locker', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(lock)
+                });
+                
+                if (response.ok) {
+                    alert('Token lock created successfully!');
+                    e.target.reset();
+                    switchView('lockers');
+                    loadLockers();
+                } else {
+                    const err = await response.json();
+                    alert('Error: ' + (err.error || 'Failed to create lock'));
+                }
+            } catch (err) {
+                console.error('Create lock error:', err);
+                alert('Error creating lock');
+            }
+        });
+        
+        // ----- Initialize -----
+        loadStatistics();
+        loadPools();
+        loadLockers();
+        
+        // Refresh data periodically
+        setInterval(() => {
+            loadStatistics();
+            if (currentView === 'pools') loadPools();
+            if (currentView === 'lockers') loadLockers();
+        }, 30000);
+    </script>
+</body>
+</html>

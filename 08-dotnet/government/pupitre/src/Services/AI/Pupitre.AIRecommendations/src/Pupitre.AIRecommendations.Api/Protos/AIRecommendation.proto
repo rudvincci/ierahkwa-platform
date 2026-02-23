@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.AIRecommendations.Api.Protos";
+
+package Pupitre.AIRecommendations;
+
+// gRPC service for AIRecommendation operations
+service AIRecommendationService {
+    // Get a single AIRecommendation by ID
+    rpc GetAIRecommendation (GetAIRecommendationRequest) returns (AIRecommendationResponse) {};
+    
+    // List all AIRecommendations with pagination
+    rpc ListAIRecommendations (ListAIRecommendationsRequest) returns (ListAIRecommendationsResponse) {};
+    
+    // Stream AIRecommendation updates
+    rpc StreamAIRecommendationUpdates (StreamAIRecommendationUpdatesRequest) returns (stream AIRecommendationResponse) {};
+}
+
+message GetAIRecommendationRequest {
+    string id = 1;
+}
+
+message ListAIRecommendationsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListAIRecommendationsResponse {
+    repeated AIRecommendationResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message AIRecommendationResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamAIRecommendationUpdatesRequest {
+    string filter = 1;
+}

@@ -1,0 +1,98 @@
+@page "/admin/payment-plans"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<PaymentPlans> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Payment Plans" Icon="fas fa-calendar-check" Subtitle="Payment plan management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Plans" Value="@_plans.Count.ToString()" Icon="fas fa-calendar-check" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Amount" Value="@_totalAmount.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Completed" Value="@_completedCount.ToString()" Icon="fas fa-check-double" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Payment Plans" Class="mt-4">
+        <MudTable T="PaymentPlanInfo" Items="@_plans" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Plan ID</MudTh>
+                <MudTh>Citizen ID</MudTh>
+                <MudTh>Plan Type</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Frequency</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Start Date</MudTh>
+                <MudTh>End Date</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.PlanId</MudTd>
+                <MudTd>@context.CitizenId</MudTd>
+                <MudTd>@context.PlanType</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>@context.Frequency</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : context.Status == "Completed" ? Color.Info : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.StartDate.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@(context.EndDate?.ToString("yyyy-MM-dd") ?? "-")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<PaymentPlanInfo> _plans = new();
+    private int _activeCount;
+    private decimal _totalAmount;
+    private int _completedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _plans = await GovernmentClient.GetPaymentPlansAsync();
+            _activeCount = _plans.Count(p => p.Status == "Active");
+            _totalAmount = _plans.Sum(p => decimal.Parse(p.Amount));
+            _completedCount = _plans.Count(p => p.Status == "Completed");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading payment plans");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

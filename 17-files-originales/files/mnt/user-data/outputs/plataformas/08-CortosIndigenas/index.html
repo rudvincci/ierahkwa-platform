@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CortosIndígenas — Videos Cortos Soberanos | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800;900&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--bg2:#0a0a0f;--bg3:#141420;--gold:#d4a853;--tq:#2dd4a8;--wp:#9b6dff;--red:#ff4d6a;--pink:#ff6bb5;--txt:#fff;--txt2:#aaa;--txt3:#666;--brd:#222}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden}
+
+.app{display:flex;height:100vh}
+
+/* LEFT NAV */
+.lnav{width:72px;background:var(--bg2);border-right:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;flex-shrink:0}
+.lnav-brand{font-size:24px;margin-bottom:16px;cursor:pointer}
+.ln{width:48px;height:48px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:all 0.15s;font-size:18px;color:var(--txt2);position:relative}
+.ln span{font-size:9px}
+.ln:hover{background:var(--bg3);color:var(--txt)}
+.ln.a{color:var(--red)}
+.ln .dot{position:absolute;top:6px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--red)}
+.ln-bottom{margin-top:auto;display:flex;flex-direction:column;gap:4px;align-items:center}
+.ln-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--tq));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer}
+
+/* VIDEO FEED (CENTER) */
+.feed{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.video-container{width:400px;height:100%;max-height:100vh;position:relative}
+.video-card{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;border-radius:0}
+.vc-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:120px}
+.vc-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(0,0,0,0.7))}
+
+/* Video Overlay Info */
+.vc-info{position:absolute;bottom:80px;left:16px;right:70px;z-index:5}
+.vc-author{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.vc-author .av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid #fff}
+.vc-author .name{font-weight:700;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,0.5)}
+.vc-author .follow{padding:3px 10px;border-radius:4px;background:var(--red);border:none;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.vc-desc{font-size:13px;line-height:1.4;text-shadow:0 1px 4px rgba(0,0,0,0.5);margin-bottom:8px}
+.vc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.vc-tag{font-size:11px;color:var(--tq);font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.5)}
+.vc-music{font-size:11px;color:var(--txt2);display:flex;align-items:center;gap:6px}
+.vc-music .disc{display:inline-block;animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Side Actions */
+.vc-actions{position:absolute;right:12px;bottom:100px;display:flex;flex-direction:column;gap:16px;z-index:5}
+.vc-act{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.vc-act .icon{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:20px;transition:all 0.2s}
+.vc-act .icon:hover{background:rgba(255,255,255,0.2);transform:scale(1.1)}
+.vc-act .cnt{font-size:11px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.5)}
+.vc-act.liked .icon{background:rgba(255,77,106,0.3);color:var(--red)}
+
+/* Progress Bar */
+.progress{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.2);z-index:10}
+.progress .bar{height:100%;background:var(--gold);width:45%;transition:width 0.3s}
+
+/* Nav Arrows */
+.nav-arrow{position:absolute;right:420px;z-index:10;width:40px;height:40px;border-radius:50%;background:var(--bg3);border:1px solid var(--brd);color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.15s}
+.nav-arrow:hover{background:var(--bg);color:var(--txt)}
+.nav-up{top:40%}.nav-down{bottom:40%}
+
+/* RIGHT SIDEBAR */
+.rsb{width:340px;background:var(--bg2);border-left:1px solid var(--brd);padding:16px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--brd) transparent;flex-shrink:0}
+.rsb-title{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.suggested{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.sug{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;transition:background 0.15s}
+.sug:hover{background:var(--bg3)}
+.sug .av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.sug .s-info{flex:1}
+.sug .s-name{font-size:13px;font-weight:600}
+.sug .s-handle{font-size:11px;color:var(--txt3)}
+.sug .s-views{font-size:10px;color:var(--txt3)}
+.s-follow{padding:5px 14px;border-radius:4px;background:var(--red);border:none;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.s-follow:hover{filter:brightness(1.2)}
+
+.trending{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.trend{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;transition:background 0.15s}
+.trend:hover{background:var(--bg3)}
+.trend .t-thumb{width:56px;height:72px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.trend .t-info .t-title{font-size:12px;font-weight:600;margin-bottom:2px}
+.trend .t-info .t-stats{font-size:10px;color:var(--txt3)}
+
+.rsb-widget{background:var(--bg3);border:1px solid var(--brd);border-radius:10px;padding:14px;margin-bottom:14px}
+.rsb-widget .w-title{font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.bdet-earn{display:flex;align-items:center;gap:10px}
+.bdet-earn .earn-amt{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)}
+.bdet-earn .earn-label{font-size:10px;color:var(--txt3)}
+
+@media(max-width:900px){.rsb{display:none}}
+@media(max-width:600px){.lnav{width:56px}.video-container{width:100%}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- LEFT NAV -->
+<div class="lnav">
+  <div class="lnav-brand">📱</div>
+  <div class="ln a"><div>🏠</div><span>Inicio</span></div>
+  <div class="ln"><div>🔍</div><span>Buscar</span></div>
+  <div class="ln"><div>➕</div><span>Crear</span></div>
+  <div class="ln"><div>📥</div><span>Inbox</span><div class="dot"></div></div>
+  <div class="ln"><div>💎</div><span>BDET</span></div>
+  <div class="ln"><div>🔴</div><span>Live</span></div>
+  <div class="ln-bottom">
+    <div class="ln"><div>⚙</div><span>Config</span></div>
+    <div class="ln-av">CA</div>
+  </div>
+</div>
+
+<!-- VIDEO FEED -->
+<div class="feed">
+  <button class="nav-arrow nav-up">▲</button>
+  <button class="nav-arrow nav-down">▼</button>
+
+  <div class="video-container">
+    <div class="video-card">
+      <div class="vc-bg" style="background:linear-gradient(135deg,#1a0a20,#0a201a,#200a0a)">🏺✨</div>
+
+      <div class="vc-info">
+        <div class="vc-author">
+          <div class="av" style="background:linear-gradient(135deg,#ff6b6b,var(--wp))">AL</div>
+          <span class="name">@analenca</span>
+          <button class="follow">Seguir</button>
+        </div>
+        <div class="vc-desc">Miren cómo transformo un pedazo de barro en arte ancestral Lenca 🏺 Cada pieza cuenta 3,000 años de historia. Todo disponible en ArtesaníaSoberana 💎</div>
+        <div class="vc-tags">
+          <span class="vc-tag">#ArteLenca</span>
+          <span class="vc-tag">#Cerámica</span>
+          <span class="vc-tag">#HechoAMano</span>
+          <span class="vc-tag">#SoberanoMarket</span>
+        </div>
+        <div class="vc-music"><span class="disc">💿</span> Cantos de la Tierra — Colectivo Maya</div>
+      </div>
+
+      <div class="vc-actions">
+        <div class="vc-act liked" onclick="this.classList.toggle('liked')">
+          <div class="icon">❤️</div>
+          <div class="cnt">124K</div>
+        </div>
+        <div class="vc-act">
+          <div class="icon">💬</div>
+          <div class="cnt">8,291</div>
+        </div>
+        <div class="vc-act">
+          <div class="icon">🔖</div>
+          <div class="cnt">34K</div>
+        </div>
+        <div class="vc-act">
+          <div class="icon">↗️</div>
+          <div class="cnt">12K</div>
+        </div>
+        <div class="vc-act">
+          <div class="icon" onclick="this.textContent='✓';this.style.background='rgba(212,168,83,0.3)'">💎</div>
+          <div class="cnt">Ⓦ Tip</div>
+        </div>
+        <div class="vc-act">
+          <div class="icon" style="border-radius:50%;border:2px solid #fff;width:36px;height:36px">
+            <span class="disc" style="font-size:22px">💿</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress"><div class="bar"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT SIDEBAR -->
+<div class="rsb">
+
+  <div class="rsb-widget" style="background:linear-gradient(135deg,rgba(212,168,83,0.08),rgba(45,212,168,0.05));border-color:rgba(212,168,83,0.2)">
+    <div class="w-title">💎 Tu Monetización BDET</div>
+    <div class="bdet-earn">
+      <div><div class="earn-amt">Ⓦ 847</div><div class="earn-label">Ganado este mes</div></div>
+    </div>
+    <div style="font-size:10px;color:var(--txt3);margin-top:6px">92% para creadores · 0% ads · Blockchain verificado</div>
+  </div>
+
+  <div class="rsb-title">🔥 Trending Ahora</div>
+  <div class="trending">
+    <div class="trend">
+      <div class="t-thumb" style="background:linear-gradient(135deg,#200a15,#0a2015)">🌿</div>
+      <div class="t-info"><div class="t-title">Receta ancestral: Tamales de ceniza 🫓</div><div class="t-stats">2.1M vistas · @cocinaindigena</div></div>
+    </div>
+    <div class="trend">
+      <div class="t-thumb" style="background:linear-gradient(135deg,#0a1520,#15200a)">⛓</div>
+      <div class="t-info"><div class="t-title">MameyNode en 60 segundos 💻</div><div class="t-stats">1.8M vistas · @rtaino</div></div>
+    </div>
+    <div class="trend">
+      <div class="t-thumb" style="background:linear-gradient(135deg,#1a1a0a,#0a1a1a)">🪶</div>
+      <div class="t-info"><div class="t-title">Pow Wow 2026 Highlights 🦅</div><div class="t-stats">3.4M vistas · @ncaidigital</div></div>
+    </div>
+    <div class="trend">
+      <div class="t-thumb" style="background:linear-gradient(135deg,#200a0a,#0a0a20)">🎵</div>
+      <div class="t-info"><div class="t-title">Beatbox + Tambor Garifuna 🥁</div><div class="t-stats">987K vistas · @garifunabeats</div></div>
+    </div>
+  </div>
+
+  <div class="rsb-title">👥 Creadores Sugeridos</div>
+  <div class="suggested">
+    <div class="sug">
+      <div class="av" style="background:linear-gradient(135deg,var(--gold),var(--tq))">CS</div>
+      <div class="s-info"><div class="s-name">Cacike Soberano <span style="color:var(--tq)">✓</span></div><div class="s-handle">@cacike · 48.2K seguidores</div></div>
+      <button class="s-follow">Seguir</button>
+    </div>
+    <div class="sug">
+      <div class="av" style="background:linear-gradient(135deg,var(--wp),var(--red))">MC</div>
+      <div class="s-info"><div class="s-name">María Canaima <span style="color:var(--tq)">✓</span></div><div class="s-handle">@mcanaima · 23.1K</div></div>
+      <button class="s-follow">Seguir</button>
+    </div>
+    <div class="sug">
+      <div class="av" style="background:linear-gradient(135deg,#34d399,var(--gold))">CI</div>
+      <div class="s-info"><div class="s-name">Cocina Indígena <span style="color:var(--tq)">✓</span></div><div class="s-handle">@cocinaindigena · 89K</div></div>
+      <button class="s-follow">Seguir</button>
+    </div>
+    <div class="sug">
+      <div class="av" style="background:linear-gradient(135deg,var(--tq),#4da6ff)">RT</div>
+      <div class="s-info"><div class="s-name">Roberto Taíno <span style="color:var(--tq)">✓</span></div><div class="s-handle">@rtaino · 34K</div></div>
+      <button class="s-follow">Seguir</button>
+    </div>
+  </div>
+
+  <div class="rsb-widget">
+    <div class="w-title">📊 CortosIndígenas · Stats</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px">
+      <div><span style="font-family:'IBM Plex Mono',monospace;color:var(--gold);font-weight:700">847K</span><br><span style="color:var(--txt3)">Videos subidos</span></div>
+      <div><span style="font-family:'IBM Plex Mono',monospace;color:var(--red);font-weight:700">12M</span><br><span style="color:var(--txt3)">Vistas diarias</span></div>
+      <div><span style="font-family:'IBM Plex Mono',monospace;color:var(--tq);font-weight:700">14</span><br><span style="color:var(--txt3)">Idiomas</span></div>
+      <div><span style="font-family:'IBM Plex Mono',monospace;color:var(--wp);font-weight:700">92%</span><br><span style="color:var(--txt3)">Para creadores</span></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:12px;font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace">
+    🔒 Sin tracking · Sin ads<br>🌐 Atabey subtítulos · MameyNode
+  </div>
+</div>
+
+</div>
+</body>
+</html>

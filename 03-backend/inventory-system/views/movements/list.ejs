@@ -1,0 +1,114 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clock-history"></i> Stock Movement History</h2>
+        <div>
+            <a href="/movements/stock-in" class="btn btn-success me-2"><i class="bi bi-box-arrow-in-down"></i> Stock In</a>
+            <a href="/movements/stock-out" class="btn btn-danger"><i class="bi bi-box-arrow-up"></i> Stock Out</a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-2">
+                    <label class="form-label">Type</label>
+                    <select name="type" class="form-select">
+                        <option value="">All Types</option>
+                        <option value="purchase" <%= filters.type === 'purchase' ? 'selected' : '' %>>Purchase</option>
+                        <option value="sale" <%= filters.type === 'sale' ? 'selected' : '' %>>Sale</option>
+                        <option value="adjustment" <%= filters.type === 'adjustment' ? 'selected' : '' %>>Adjustment</option>
+                        <option value="return" <%= filters.type === 'return' ? 'selected' : '' %>>Return</option>
+                        <option value="initial" <%= filters.type === 'initial' ? 'selected' : '' %>>Initial</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">From Date</label>
+                    <input type="date" name="start_date" class="form-control" value="<%= filters.start_date || '' %>">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">To Date</label>
+                    <input type="date" name="end_date" class="form-control" value="<%= filters.end_date || '' %>">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Product</label>
+                    <select name="product_id" class="form-select">
+                        <option value="">All Products</option>
+                        <% products.forEach(p => { %>
+                        <option value="<%= p.id %>" <%= filters.product_id == p.id ? 'selected' : '' %>><%= p.code %> - <%= p.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2"><i class="bi bi-funnel"></i> Filter</button>
+                    <a href="/movements" class="btn btn-outline-secondary"><i class="bi bi-x-circle"></i> Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Movements Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="movementsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Document</th>
+                            <th>Date</th>
+                            <th>Product</th>
+                            <th>Type</th>
+                            <th class="text-end">Qty</th>
+                            <th class="text-end">Before</th>
+                            <th class="text-end">After</th>
+                            <th class="text-end">Price</th>
+                            <th class="text-end">Total</th>
+                            <th>User</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% movements.forEach(m => { %>
+                        <tr>
+                            <td><small><%= m.document_number || '-' %></small></td>
+                            <td><%= new Date(m.created_at).toLocaleString() %></td>
+                            <td>
+                                <a href="/products/<%= m.product_id %>"><%= m.product_name %></a>
+                                <small class="text-muted d-block"><%= m.product_code %></small>
+                            </td>
+                            <td>
+                                <span class="badge bg-<%= m.type === 'purchase' || m.type === 'return' ? 'success' : m.type === 'sale' || m.type === 'damage' ? 'danger' : 'warning' %>">
+                                    <%= m.type %>
+                                </span>
+                            </td>
+                            <td class="text-end <%= m.quantity > 0 ? 'text-success' : 'text-danger' %>">
+                                <%= m.type === 'sale' || m.type === 'damage' ? '-' : '+' %><%= Math.abs(m.quantity) %>
+                            </td>
+                            <td class="text-end"><%= m.previous_stock %></td>
+                            <td class="text-end"><%= m.new_stock %></td>
+                            <td class="text-end">$<%= m.unit_price.toFixed(2) %></td>
+                            <td class="text-end">$<%= m.total_value.toFixed(2) %></td>
+                            <td><small><%= m.user_name %></small></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            Total movements: <%= movements.length %>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#movementsTable').DataTable({
+        pageLength: 50,
+        order: [[1, 'desc']]
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

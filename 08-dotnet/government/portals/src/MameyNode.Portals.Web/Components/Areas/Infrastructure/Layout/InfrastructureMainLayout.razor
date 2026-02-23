@@ -1,0 +1,49 @@
+@* InfrastructureMainLayout.razor *@
+@using MameyNode.Portals.Web.Components.Areas.Infrastructure.Layout
+@using MudBlazor
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_theme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudText Typo="Typo.h6" Class="ml-3">Infrastructure</MudText>
+        <MudSpacer />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Infrastructure</MudText>
+        </MudDrawerHeader>
+        <InfrastructureNavLayout DrawerOpen="_drawerOpen" />
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private MudTheme _theme = new MudTheme
+    {
+        PaletteDark = new PaletteDark
+        {
+            Primary = "#6B7280", // Gray - for infrastructure theme
+            AppbarBackground = "#1F2937",
+            Background = "#111827",
+            Surface = "#1F2937",
+            DrawerBackground = "#111827",
+            DrawerText = "#F9FAFB"
+        }
+    };
+}

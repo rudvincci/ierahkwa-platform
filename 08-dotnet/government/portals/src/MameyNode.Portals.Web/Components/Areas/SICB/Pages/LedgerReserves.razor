@@ -1,0 +1,95 @@
+@page "/sicb/ledger-reserves"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject ISICBClient SICBClient
+@inject ILogger<LedgerReserves> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Ledger & Reserves" Icon="fas fa-book" Subtitle="Reserve management and monitoring">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Reserves" Value="@_totalReserves.ToString("C")" Icon="fas fa-vault" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Required Reserves" Value="@_requiredReserves.ToString("C")" Icon="fas fa-exclamation-circle" Color="#EF4444" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Reserve Ratio" Value="@_avgReserveRatio.ToString("P2")" Icon="fas fa-percentage" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Ledger Reserves" Class="mt-4">
+        <MudTable T="LedgerReserveInfo" Items="@_reserves" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Reserve ID</MudTh>
+                <MudTh>Currency</MudTh>
+                <MudTh>Total Reserves</MudTh>
+                <MudTh>Required</MudTh>
+                <MudTh>Ratio</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Backing</MudTh>
+                <MudTh>Updated</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.ReserveId</MudTd>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd>@decimal.Parse(context.TotalReserves).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.RequiredReserves).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.ReserveRatio).ToString("F2")%</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == ReserveStatus.Adequate ? Color.Success : context.Status == ReserveStatus.Low ? Color.Warning : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.BackingAssets</MudTd>
+                <MudTd>@context.LastUpdated.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<LedgerReserveInfo> _reserves = new();
+    private decimal _totalReserves;
+    private decimal _requiredReserves;
+    private decimal _avgReserveRatio;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _reserves = await SICBClient.GetLedgerReservesAsync();
+            _totalReserves = _reserves.Sum(r => decimal.Parse(r.TotalReserves));
+            _requiredReserves = _reserves.Sum(r => decimal.Parse(r.RequiredReserves));
+            _avgReserveRatio = _reserves.Any() ? _reserves.Average(r => decimal.Parse(r.ReserveRatio)) : 0;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading ledger reserves");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

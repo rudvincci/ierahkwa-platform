@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Accessibility.Api.Protos";
+
+package Pupitre.Accessibility;
+
+// gRPC service for AccessProfile operations
+service AccessProfileService {
+    // Get a single AccessProfile by ID
+    rpc GetAccessProfile (GetAccessProfileRequest) returns (AccessProfileResponse) {};
+    
+    // List all AccessProfiles with pagination
+    rpc ListAccessProfiles (ListAccessProfilesRequest) returns (ListAccessProfilesResponse) {};
+    
+    // Stream AccessProfile updates
+    rpc StreamAccessProfileUpdates (StreamAccessProfileUpdatesRequest) returns (stream AccessProfileResponse) {};
+}
+
+message GetAccessProfileRequest {
+    string id = 1;
+}
+
+message ListAccessProfilesRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListAccessProfilesResponse {
+    repeated AccessProfileResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message AccessProfileResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamAccessProfileUpdatesRequest {
+    string filter = 1;
+}

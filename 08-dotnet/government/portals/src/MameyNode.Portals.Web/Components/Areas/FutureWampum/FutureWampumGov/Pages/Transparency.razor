@@ -1,0 +1,82 @@
+@page "/futurewampum/gov/transparency"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumGovClient FutureWampumGovClient
+@inject ILogger<Transparency> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Transparency Dashboard" Icon="fas fa-chart-bar" Subtitle="Government transparency and accountability">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Budget" Value="@_totalBudget.ToString("C")" Icon="fas fa-dollar-sign" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Disbursed" Value="@_totalDisbursed.ToString("C")" Icon="fas fa-paper-plane" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Programs" Value="@_totalPrograms.ToString()" Icon="fas fa-folder" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active Programs" Value="@_activePrograms.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Ministry Budgets" Class="mt-4">
+        <MudTable Items="@_ministryBudgets" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Ministry</MudTh>
+                <MudTh>Budget</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Key</MudTd>
+                <MudTd>@decimal.Parse(context.Value).ToString("C")</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private decimal _totalBudget;
+    private decimal _totalDisbursed;
+    private int _totalPrograms;
+    private int _activePrograms;
+    private Dictionary<string, string> _ministryBudgets = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            var dashboard = await FutureWampumGovClient.GetTransparencyDashboardAsync();
+            _totalBudget = decimal.Parse(dashboard.TotalBudget);
+            _totalDisbursed = decimal.Parse(dashboard.TotalDisbursed);
+            _totalPrograms = int.Parse(dashboard.TotalPrograms);
+            _activePrograms = int.Parse(dashboard.ActivePrograms);
+            _ministryBudgets = dashboard.MinistryBudgets;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading transparency dashboard");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

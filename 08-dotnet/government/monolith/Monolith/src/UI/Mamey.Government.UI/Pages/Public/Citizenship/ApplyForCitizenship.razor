@@ -1,0 +1,95 @@
+@page "/apply-citizenship/{applicationNumber}"
+@using Mamey.Government.UI.ViewModels.Citizenship
+@using Mamey.Government.UI.Services
+@using Mamey.Government.UI.Models
+@using MudBlazor
+@inject IApplicationsService ApplicationsService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@layout MainLayout
+<PageTitle>Apply for Citizenship</PageTitle>
+<MudContainer MaxWidth="MaxWidth.Large" Class="py-4">
+    @* <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" /> *@
+
+    <PageHeader Title="Apply for Citizenship"
+                Subtitle="@_subtitle"
+    />
+    
+    @if (_isLoading)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
+        <MudText Typo="Typo.h6" Class="text-center">Loading your application...</MudText>
+    }
+    else if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Class="my-4">
+            @_errorMessage
+        </MudAlert>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="NavigateToInvalid">
+            Go to Error Page
+        </MudButton>
+    }
+    else
+    {
+        <CitizenshipApplicationPacket ViewModel="_citizenshipViewModel"/>
+    }
+    
+</MudContainer>
+@code {
+    [Parameter] public string ApplicationNumber { get; set; } = string.Empty;
+    
+    // Citizenship application ViewModel
+    private readonly BecomeCitizenViewModel _citizenshipViewModel = new();
+    private bool _isLoading = true;
+    private string? _errorMessage;
+    private string? _subtitle;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrWhiteSpace(ApplicationNumber))
+        {
+            _errorMessage = "Application number is required.";
+            _isLoading = false;
+            return;
+        }
+
+        _subtitle = $"Complete your citizenship application (Application Number: {ApplicationNumber})";
+        // Retrieve JWT from localStorage
+        var jwtToken = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "applicant_jwt_token");
+
+        if (string.IsNullOrWhiteSpace(jwtToken))
+        {
+            _errorMessage = "Your session has expired. Please use the link from your email to resume your application.";
+            _isLoading = false;
+            return;
+        }
+
+        try
+        {
+            // Get application by number
+            var application = await ApplicationsService.GetByNumberAsync(ApplicationNumber);
+
+            if (application == null)
+            {
+                _errorMessage = "Application not found. Please check your application number or contact support.";
+                _isLoading = false;
+                return;
+            }
+
+            // Load application data into view model
+            _citizenshipViewModel.LoadFromApplication(application);
+            _isLoading = false;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = "An error occurred while loading your application. Please try again or contact support.";
+            _isLoading = false;
+            Console.Error.WriteLine($"Error loading application: {ex.Message}");
+        }
+    }
+
+    private void NavigateToInvalid()
+    {
+        NavigationManager.NavigateTo("/apply-citizenship/invalid");
+    }
+}

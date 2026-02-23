@@ -1,0 +1,109 @@
+@page "/accounts/profile"
+@using Mamey.ApplicationName.BlazorWasm.Services
+@using Mamey.ApplicationName.BlazorWasm.Services.Auth
+@inject NavigationManager Navigation
+@inject AuthenticationService _AuthenticationService
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="m-auto p-6">
+    <!-- Profile Header -->
+    <MudPaper Class="d-flex align-items-center p-4" Elevation="3">
+        <!-- Profile Picture and User Info -->
+        <MudAvatar Size="Size.Large" ImageUrl="https://cdn.dribbble.com/users/1884282/screenshots/9911935/4-2-20-_2__4x.png" />
+        <div class="ml-4">
+            <MudText Typo="Typo.h4">John Doe</MudText>
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">Software Engineer</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">johndoe@example.com</MudText>
+        </div>
+        <MudSpacer />
+        <!-- Navigation Links -->
+        <MudList T="string" Class="p-2">
+            <MudListItem StartIcon="@Icons.Material.Filled.Person" OnClick="NavigateToProfile">
+                Profile
+            </MudListItem>
+            <MudListItem StartIcon="@Icons.Material.Filled.Settings" OnClick="NavigateToSettings">
+                Settings
+            </MudListItem>
+            <MudListItem StartIcon="@Icons.Material.Filled.ExitToApp" OnClick="Logout">
+                Logout
+            </MudListItem>
+        </MudList>
+    </MudPaper>
+
+    <MudDivider Class="my-4" />
+
+    <!-- Statistics Section -->
+    <MudGrid Spacing="3" Class="mb-4">
+        <MudItem xs="4">
+            <MudPaper Class="p-4 text-center" Elevation="2">
+                <MudIcon Icon="@Icons.Material.Filled.PostAdd" Size="Size.Large" />
+                <MudText Typo="Typo.h5">120</MudText>
+                <MudText Typo="Typo.subtitle2">Posts</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="4">
+            <MudPaper Class="p-4 text-center" Elevation="2">
+                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
+                <MudText Typo="Typo.h5">350</MudText>
+                <MudText Typo="Typo.subtitle2">Followers</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="4">
+            <MudPaper Class="p-4 text-center" Elevation="2">
+                <MudIcon Icon="@Icons.Material.Filled.PersonAdd" Size="Size.Large" />
+                <MudText Typo="Typo.h5">180</MudText>
+                <MudText Typo="Typo.subtitle2">Following</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Tabs for Additional Content -->
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6 mb-4">
+        <!-- Overview Tab -->
+        <MudTabPanel Text="Overview" Icon="@Icons.Material.Filled.Info">
+            <MudText Typo="Typo.body1">Welcome to your profile, John Doe! Here you can view and edit your information.</MudText>
+        </MudTabPanel>
+
+        <!-- Activity Tab -->
+        <MudTabPanel Text="Activity" Icon="@Icons.Material.Filled.History">
+            <MudTimeline>
+                <MudTimelineItem Icon="@Icons.Material.Filled.Event" IconColor="Color.Primary" Title="Joined">
+                    <MudText>Joined on: March 25, 2023</MudText>
+                </MudTimelineItem>
+                <MudTimelineItem Icon="@Icons.Material.Filled.PostAdd" IconColor="Color.Success" Title="First Post">
+                    <MudText>Published first post on: April 10, 2023</MudText>
+                </MudTimelineItem>
+                <MudTimelineItem Icon="@Icons.Material.Filled.Star" IconColor="Color.Warning" Title="Milestone">
+                    <MudText>Reached 100 followers milestone!</MudText>
+                </MudTimelineItem>
+            </MudTimeline>
+        </MudTabPanel>
+
+        <!-- Settings Tab -->
+        <MudTabPanel Text="Settings" Icon="@Icons.Material.Filled.Settings">
+            <MudForm>
+                <AntiforgeryToken />
+                <MudTextField T="string" InputType="InputType.Text" Label="Change Username" Placeholder="New username" />
+                <MudTextField T="string" InputType="InputType.Email" Label="Change Email" Placeholder="New email" />
+                <MudTextField T="string" InputType="InputType.Password" Label="Password" Placeholder="••••••••" />
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-3">Save Changes</MudButton>
+            </MudForm>
+        </MudTabPanel>
+
+        <!-- Disabled Tab -->
+        <MudTabPanel Text="Disabled" Disabled="true" Icon="@Icons.Material.Filled.Lock">
+            <MudText Typo="Typo.body2">This content is disabled.</MudText>
+        </MudTabPanel>
+    </MudTabs>
+</MudContainer>
+
+@code {
+    private void NavigateToProfile() => Navigation.NavigateTo("/profile");
+    private void NavigateToSettings() => Navigation.NavigateTo("/profile-settings");
+
+    private async Task Logout()
+    {
+        await _AuthenticationService.LogoutAsync();
+// Implement your logout logic here
+        Navigation.NavigateTo("/login");
+    }
+}

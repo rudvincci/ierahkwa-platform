@@ -1,0 +1,100 @@
+@page "/biis/transparency"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IBIISClient BIISClient
+@inject ILogger<Transparency> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Blockchain Transparency" Icon="fas fa-eye" Subtitle="View transparent blockchain transaction records">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Transactions" Value="@_transactions.Count.ToString()" Icon="fas fa-list" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Confirmed" Value="@_confirmedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Block Height" Value="@_maxBlockHeight.ToString("N0")" Icon="fas fa-cube" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Blockchain Transactions" Class="mt-4">
+        <MudTable T="BlockchainTransparencyInfo" Items="@_transactions" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Transaction ID</MudTh>
+                <MudTh>From</MudTh>
+                <MudTh>To</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Currency</MudTh>
+                <MudTh>Block Hash</MudTh>
+                <MudTh>Height</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Timestamp</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.TransactionId</MudTd>
+                <MudTd>@context.FromAccount</MudTd>
+                <MudTd>@context.ToAccount</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd><MudText Typo="Typo.caption">@context.BlockHash.Substring(0, 16)...</MudText></MudTd>
+                <MudTd>@context.BlockHeight.ToString("N0")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.IsConfirmed ? Color.Success : Color.Warning)">
+                        @(context.IsConfirmed ? "Confirmed" : "Pending")
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.Timestamp.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<BlockchainTransparencyInfo> _transactions = new();
+    private decimal _totalVolume;
+    private int _confirmedCount;
+    private ulong _maxBlockHeight;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _transactions = await BIISClient.GetBlockchainTransactionsAsync(100);
+            _totalVolume = _transactions.Sum(t => decimal.Parse(t.Amount));
+            _confirmedCount = _transactions.Count(t => t.IsConfirmed);
+            _maxBlockHeight = _transactions.Any() ? _transactions.Max(t => t.BlockHeight) : 0;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading blockchain transactions");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

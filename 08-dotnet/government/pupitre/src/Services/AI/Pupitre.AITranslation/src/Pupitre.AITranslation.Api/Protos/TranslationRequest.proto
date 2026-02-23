@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.AITranslation.Api.Protos";
+
+package Pupitre.AITranslation;
+
+// gRPC service for TranslationRequest operations
+service TranslationRequestService {
+    // Get a single TranslationRequest by ID
+    rpc GetTranslationRequest (GetTranslationRequestRequest) returns (TranslationRequestResponse) {};
+    
+    // List all TranslationRequests with pagination
+    rpc ListTranslationRequests (ListTranslationRequestsRequest) returns (ListTranslationRequestsResponse) {};
+    
+    // Stream TranslationRequest updates
+    rpc StreamTranslationRequestUpdates (StreamTranslationRequestUpdatesRequest) returns (stream TranslationRequestResponse) {};
+}
+
+message GetTranslationRequestRequest {
+    string id = 1;
+}
+
+message ListTranslationRequestsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListTranslationRequestsResponse {
+    repeated TranslationRequestResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message TranslationRequestResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamTranslationRequestUpdatesRequest {
+    string filter = 1;
+}

@@ -1,0 +1,61 @@
+@page "/accounts/support"
+
+@using Mamey.ApplicationName.BlazorWasm.Services.Support
+@using Mamey.ApplicationName.BlazorWasm.ViewModels.Support
+@using Mamey.ApplicationName.BlazorWasm.Models.Support
+
+@inject SupportService SupportService
+@attribute [Authorize]
+<MudContainer MaxWidth="MaxWidth.Large" Class="m-auto p-6">
+    <!-- Search Bar for FAQ -->
+    <MudTextField Label="Search FAQs" Variant="Variant.Outlined" FullWidth="true" @bind-Value="ViewModel.SearchQuery" Immediate="true" />
+    <FAQSection SearchQuery="ViewModel.SearchQuery" FAQs="ViewModel.FAQs" />
+
+    <!-- Create Support Ticket Section -->
+    <MudPaper Class="p-4 mb-4" Elevation="3">
+        <MudText Typo="Typo.h4">Need More Help?</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"  >Create Support Ticket</MudButton>
+    </MudPaper>
+
+    <!-- Support Ticket List -->
+    <SupportTicketList Tickets="ViewModel.Tickets" />
+
+    <!-- Live Chat Support -->
+    <LiveChatWidget />
+
+    <!-- Knowledge Base Section -->
+    <MudPaper Class="p-4 mt-4">
+        <MudText Typo="Typo.h4">Knowledge Base</MudText>
+        <MudGrid Spacing="3">
+            @foreach (var article in ViewModel.KnowledgeBaseArticles)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <KnowledgeBaseCard Article="article" />
+                </MudItem>
+            }
+        </MudGrid>
+    </MudPaper>
+</MudContainer>
+<CreateSupportTicketDialog @ref="createTicketDialog" OnTicketCreated="AddTicket" />
+@code {
+    private SupportViewModel ViewModel;
+    private CreateSupportTicketDialog createTicketDialog;
+    private SupportTicket _newTicket = new();
+    protected override async Task OnInitializedAsync()
+    {
+        // Pass the injected UserService to the ProfileViewModel
+        ViewModel = new SupportViewModel(SupportService);
+        await Task.CompletedTask;
+    }
+    private void AddTicket(SupportTicket ticket)
+    {
+        ViewModel.AddTicket(ticket);
+    }
+    // private async Task CloseDialog() => await createTicketDialog.();
+
+    public async Task OpenDialog()
+    {
+        _newTicket = new SupportTicket();
+        await createTicketDialog.OpenDialog();
+    }
+}

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ierahkwa Futurehead Platform | Unified Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root { --bg-dark: #0a0f1a; --bg-card: #111827; --bg-hover: #1f2937; --border: #374151; --text: #f9fafb; --text-muted: #9ca3af; --gold: #ffd700; --green: #10b981; --blue: #3b82f6; --purple: #8b5cf6; --red: #ef4444; --cyan: #06b6d4; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-dark); color: var(--text); margin: 0; min-height: 100vh; }
+    .hero { background: linear-gradient(135deg, #1e3a5f 0%, #0a0f1a 50%, #1a1a2e 100%); padding: 3rem 0; text-align: center; border-bottom: 1px solid var(--border); }
+    .hero h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, var(--gold), #fff, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { color: var(--text-muted); font-size: 1.1rem; }
+    .stats-bar { background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 1rem 0; }
+    .stat-item { text-align: center; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--gold); }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+    .section-title { font-size: 1.25rem; font-weight: 600; color: var(--text); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .section-title i { color: var(--gold); }
+    .module-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+    .module-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; text-align: center; cursor: pointer; transition: all 0.2s; text-decoration: none; color: var(--text); }
+    .module-card:hover { background: var(--bg-hover); border-color: var(--gold); transform: translateY(-2px); color: var(--text); }
+    .module-card.active { border-color: var(--green); }
+    .module-card.coming { opacity: 0.6; }
+    .module-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; font-size: 1.5rem; }
+    .module-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; }
+    .module-symbol { font-size: 0.7rem; color: var(--text-muted); font-family: monospace; }
+    .module-status { font-size: 0.65rem; margin-top: 0.5rem; }
+    .badge-active { background: var(--green); }
+    .badge-coming { background: var(--blue); }
+    .dept-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; transition: all 0.2s; }
+    .dept-card:hover { background: var(--bg-hover); border-color: var(--purple); }
+    .dept-icon { width: 36px; height: 36px; border-radius: 8px; background: rgba(139,92,246,0.2); display: flex; align-items: center; justify-content: center; color: var(--purple); }
+    .dept-info { flex: 1; min-width: 0; }
+    .dept-name { font-size: 0.8rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dept-symbol { font-size: 0.65rem; color: var(--text-muted); font-family: monospace; }
+    .quick-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .quick-link { padding: 0.5rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; color: var(--text); text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
+    .quick-link:hover { background: var(--bg-hover); border-color: var(--gold); color: var(--gold); }
+    .search-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; color: var(--text); width: 100%; max-width: 400px; }
+    .search-box:focus { outline: none; border-color: var(--gold); }
+    .category-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .category-tab { padding: 0.5rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+    .category-tab:hover, .category-tab.active { background: var(--gold); color: var(--bg-dark); border-color: var(--gold); }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="container">
+      <h1><i class="bi bi-globe2 me-2"></i>Ierahkwa Futurehead Platform</h1>
+      <p>Sovereign Government of Ierahkwa Ne Kanienke • Office of the Prime Minister</p>
+      <p class="small text-muted">Ierahkwa Sovereign Blockchain (ISB) • Ierahkwa Futurehead Mamey Node • Ierahkwa Futurehead BDET Bank</p>
+      <div class="mt-3">
+        <input type="text" class="search-box" placeholder="Search modules, services, departments..." id="searchInput" onkeyup="filterModules()">
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="container">
+      <div class="row">
+        <div class="col"><div class="stat-item"><div class="stat-value">101</div><div class="stat-label">Total Modules</div></div></div>
+        <div class="col"><div class="stat-item"><div class="stat-value">40</div><div class="stat-label">Government Depts</div></div></div>
+        <div class="col"><div class="stat-item"><div class="stat-value">12</div><div class="stat-label">Finance Tokens</div></div></div>
+        <div class="col"><div class="stat-item"><div class="stat-value">49</div><div class="stat-label">Services</div></div></div>
+        <div class="col"><div class="stat-item"><div class="stat-value" id="activeCount">0</div><div class="stat-label">Active Now</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container py-4">
+    <!-- Quick Links -->
+    <div class="mb-4">
+      <div class="quick-links">
+        <a href="/" class="quick-link"><i class="bi bi-shop"></i>Shop</a>
+        <a href="/pos" class="quick-link"><i class="bi bi-calculator"></i>POS</a>
+        <a href="/trading" class="quick-link"><i class="bi bi-graph-up"></i>Trading</a>
+        <a href="/global-banking" class="quick-link"><i class="bi bi-bank"></i>Banking</a>
+        <a href="/node" class="quick-link"><i class="bi bi-hdd-network"></i>Node</a>
+        <a href="/monetary" class="quick-link"><i class="bi bi-stack"></i>Monetary</a>
+        <a href="/inventory" class="quick-link"><i class="bi bi-boxes"></i>Inventory</a>
+        <a href="/backup" class="quick-link"><i class="bi bi-cloud-download"></i>Backup</a>
+        <a href="/admin" class="quick-link"><i class="bi bi-gear"></i>Admin</a>
+        <a href="/chat" class="quick-link"><i class="bi bi-chat"></i>Chat</a>
+      </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="category-tabs">
+      <div class="category-tab active" onclick="showCategory('all')">All Modules</div>
+      <div class="category-tab" onclick="showCategory('government')">Government (40)</div>
+      <div class="category-tab" onclick="showCategory('finance')">Finance (12)</div>
+      <div class="category-tab" onclick="showCategory('services')">Services (49)</div>
+      <div class="category-tab" onclick="showCategory('active')">Active Only</div>
+    </div>
+
+    <!-- Government Departments -->
+    <section class="mb-5" id="section-government">
+      <h3 class="section-title"><i class="bi bi-building"></i>Government Departments (01-40)</h3>
+      <div class="row g-2" id="governmentDepts"></div>
+    </section>
+
+    <!-- Finance & Currency -->
+    <section class="mb-5" id="section-finance">
+      <h3 class="section-title"><i class="bi bi-currency-exchange"></i>Currency & Finance (41-52)</h3>
+      <div class="module-grid" id="financeModules"></div>
+    </section>
+
+    <!-- Futurehead Services -->
+    <section class="mb-5" id="section-services">
+      <h3 class="section-title"><i class="bi bi-grid-3x3-gap"></i>Ierahkwa Futurehead Services (53-101)</h3>
+      <div class="module-grid" id="serviceModules"></div>
+    </section>
+  </div>
+
+  <footer class="py-4 text-center" style="background:var(--bg-card);border-top:1px solid var(--border)">
+    <small class="text-muted">Ierahkwa Futurehead Platform v2.0 • Powered by Ierahkwa Sovereign Blockchain</small>
+  </footer>
+
+  <script>
+    const GOVERNMENT_DEPTS = [
+      { id: '01', symbol: 'IGT-PM', name: 'Office of the Prime Minister', icon: 'star', active: true },
+      { id: '02', symbol: 'IGT-MFA', name: 'Ministry of Foreign Affairs', icon: 'globe2', active: true },
+      { id: '03', symbol: 'IGT-MFT', name: 'Ministry of Finance & Treasury', icon: 'cash-stack', active: true },
+      { id: '04', symbol: 'IGT-MJ', name: 'Ministry of Justice', icon: 'balance-scale', active: true },
+      { id: '05', symbol: 'IGT-MI', name: 'Ministry of Interior', icon: 'house', active: true },
+      { id: '06', symbol: 'IGT-MD', name: 'Ministry of Defense', icon: 'shield', active: true },
+      { id: '07', symbol: 'IGT-BDET', name: 'BDET Central Bank', icon: 'bank', active: true },
+      { id: '08', symbol: 'IGT-NT', name: 'National Treasury', icon: 'safe', active: true },
+      { id: '09', symbol: 'IGT-AG', name: 'Attorney General', icon: 'briefcase', active: true },
+      { id: '10', symbol: 'IGT-SC', name: 'Supreme Court', icon: 'hammer', active: true },
+      { id: '11', symbol: 'IGT-MH', name: 'Ministry of Health', icon: 'heart-pulse', active: true },
+      { id: '12', symbol: 'IGT-ME', name: 'Ministry of Education', icon: 'mortarboard', active: true },
+      { id: '13', symbol: 'IGT-MLE', name: 'Ministry of Labor', icon: 'people', active: true },
+      { id: '14', symbol: 'IGT-MSD', name: 'Ministry of Social Dev', icon: 'people-fill', active: true },
+      { id: '15', symbol: 'IGT-MHO', name: 'Ministry of Housing', icon: 'buildings', active: true },
+      { id: '16', symbol: 'IGT-MCH', name: 'Ministry of Culture', icon: 'palette', active: true },
+      { id: '17', symbol: 'IGT-MSR', name: 'Ministry of Sports', icon: 'trophy', active: true },
+      { id: '18', symbol: 'IGT-MFC', name: 'Ministry of Family', icon: 'heart', active: true },
+      { id: '19', symbol: 'IGT-SSA', name: 'Social Security Admin', icon: 'shield-check', active: true },
+      { id: '20', symbol: 'IGT-PHS', name: 'Public Health Service', icon: 'hospital', active: true },
+      { id: '21', symbol: 'IGT-MA', name: 'Ministry of Agriculture', icon: 'tree', active: true },
+      { id: '22', symbol: 'IGT-MEN', name: 'Ministry of Environment', icon: 'flower1', active: true },
+      { id: '23', symbol: 'IGT-MEG', name: 'Ministry of Energy', icon: 'lightning', active: true },
+      { id: '24', symbol: 'IGT-MMR', name: 'Ministry of Mining', icon: 'gem', active: true },
+      { id: '25', symbol: 'IGT-MCT', name: 'Ministry of Commerce', icon: 'shop', active: true },
+      { id: '26', symbol: 'IGT-MIN', name: 'Ministry of Industry', icon: 'building', active: true },
+      { id: '27', symbol: 'IGT-MT', name: 'Ministry of Tourism', icon: 'airplane', active: true },
+      { id: '28', symbol: 'IGT-MTR', name: 'Ministry of Transport', icon: 'truck', active: true },
+      { id: '29', symbol: 'IGT-MST', name: 'Ministry of Science', icon: 'cpu', active: true },
+      { id: '30', symbol: 'IGT-MC', name: 'Ministry of Communications', icon: 'broadcast', active: true },
+      { id: '31', symbol: 'IGT-NPS', name: 'National Police Service', icon: 'shield-shaded', active: true },
+      { id: '32', symbol: 'IGT-AFI', name: 'Armed Forces', icon: 'flag', active: true },
+      { id: '33', symbol: 'IGT-NIS', name: 'National Intelligence', icon: 'eye', active: true },
+      { id: '34', symbol: 'IGT-CBP', name: 'Customs & Border', icon: 'sign-stop', active: true },
+      { id: '35', symbol: 'IGT-CRO', name: 'Civil Registry', icon: 'person-badge', active: true },
+      { id: '36', symbol: 'IGT-EC', name: 'Electoral Commission', icon: 'check2-square', active: true },
+      { id: '37', symbol: 'IGT-OCG', name: 'Comptroller General', icon: 'clipboard-check', active: true },
+      { id: '38', symbol: 'IGT-OO', name: 'Ombudsman Office', icon: 'megaphone', active: true },
+      { id: '39', symbol: 'IGT-NA', name: 'National Archives', icon: 'archive', active: true },
+      { id: '40', symbol: 'IGT-PSI', name: 'Postal Service', icon: 'envelope', active: true }
+    ];
+
+    const FINANCE_MODULES = [
+      { id: '41', symbol: 'IGT-MAIN', name: 'Ierahkwa Currency', icon: 'currency-dollar', color: '#ffd700', active: true },
+      { id: '42', symbol: 'IGT-STABLE', name: 'Stablecoin', icon: 'coin', color: '#10b981', active: true },
+      { id: '43', symbol: 'IGT-GOV', name: 'Governance Token', icon: 'diagram-3', color: '#8b5cf6', active: true },
+      { id: '44', symbol: 'IGT-STAKE', name: 'Staking', icon: 'layers', color: '#3b82f6', active: true },
+      { id: '45', symbol: 'IGT-LIQ', name: 'Liquidity', icon: 'droplet', color: '#06b6d4', active: true },
+      { id: '46', symbol: 'IGT-REWARD', name: 'Rewards', icon: 'gift', color: '#f59e0b', active: true },
+      { id: '47', symbol: 'IGT-FEE', name: 'Fee Management', icon: 'percent', color: '#ef4444', active: true },
+      { id: '48', symbol: 'IGT-BRIDGE', name: 'Cross-Chain Bridge', icon: 'diagram-2', color: '#ec4899', active: true },
+      { id: '49', symbol: 'IGT-RESERVE', name: 'Reserve Fund', icon: 'safe2', color: '#14b8a6', active: true },
+      { id: '50', symbol: 'IGT-TRADE', name: 'Trade Token', icon: 'arrow-left-right', color: '#f97316', active: true },
+      { id: '51', symbol: 'IGT-DEFI', name: 'DeFi Module', icon: 'infinity', color: '#a855f7', active: true },
+      { id: '52', symbol: 'IGT-ASSET', name: 'Asset Token', icon: 'box', color: '#84cc16', active: true }
+    ];
+
+    const SERVICES = [
+      { id: '53', symbol: 'IGT-EXCHANGE', name: 'Exchange', icon: 'arrow-repeat', url: '/trading', active: true },
+      { id: '54', symbol: 'IGT-TRADING', name: 'Trading Deck', icon: 'graph-up-arrow', url: '/trading', active: true },
+      { id: '55', symbol: 'IGT-CASINO', name: 'Casino', icon: 'dice-5', url: '#', active: false },
+      { id: '56', symbol: 'IGT-SOCIAL', name: 'Social Network', icon: 'people', url: '#', active: false },
+      { id: '57', symbol: 'IGT-LOTTO', name: 'Lottery', icon: 'ticket', url: '#', active: false },
+      { id: '58', symbol: 'IGT-GLOBAL', name: 'Global Services', icon: 'globe', url: '/global-banking', active: true },
+      { id: '59', symbol: 'IGT-NET', name: 'Futurehead Network', icon: 'hdd-network', url: '/node', active: true },
+      { id: '60', symbol: 'IGT-SWIFT', name: 'SWIFT Gateway', icon: 'send', url: '/global-banking', active: true },
+      { id: '61', symbol: 'IGT-CLEAR', name: 'Clearinghouse', icon: 'building-check', url: '/global-banking', active: true },
+      { id: '62', symbol: 'IGT-PAY', name: 'Payment Gateway', icon: 'credit-card', url: '/pos', active: true },
+      { id: '63', symbol: 'IGT-WALLET', name: 'Digital Wallet', icon: 'wallet2', url: '#', active: false },
+      { id: '64', symbol: 'IGT-INSURANCE', name: 'Insurance', icon: 'umbrella', url: '#', active: false },
+      { id: '65', symbol: 'IGT-LOANS', name: 'Loans', icon: 'cash', url: '#', active: false },
+      { id: '66', symbol: 'IGT-MARKET', name: 'Marketplace', icon: 'shop-window', url: '/', active: true },
+      { id: '67', symbol: 'IGT-HEALTH', name: 'Health Services', icon: 'heart-pulse', url: '#', active: false },
+      { id: '68', symbol: 'IGT-EDU', name: 'Education', icon: 'book', url: '#', active: false },
+      { id: '69', symbol: 'IGT-TRAVEL', name: 'Travel', icon: 'luggage', url: '#', active: false },
+      { id: '70', symbol: 'IGT-SHIP', name: 'Shipping', icon: 'box-seam', url: '#', active: false },
+      { id: '71', symbol: 'IGT-CLOUD', name: 'Cloud Services', icon: 'cloud', url: '#', active: false },
+      { id: '72', symbol: 'IGT-AI', name: 'AI Services', icon: 'robot', url: '#', active: false },
+      { id: '73', symbol: 'IGT-VPN', name: 'VPN', icon: 'shield-lock', url: '#', active: false },
+      { id: '74', symbol: 'IGT-STREAM', name: 'Streaming', icon: 'play-circle', url: '#', active: false },
+      { id: '75', symbol: 'IGT-GAMING', name: 'Gaming', icon: 'controller', url: '#', active: false },
+      { id: '76', symbol: 'IGT-MUSIC', name: 'Music', icon: 'music-note-beamed', url: '#', active: false },
+      { id: '77', symbol: 'IGT-NEWS', name: 'News', icon: 'newspaper', url: '#', active: false },
+      { id: '78', symbol: 'IGT-SPORTS', name: 'Sports', icon: 'trophy', url: '#', active: false },
+      { id: '79', symbol: 'IGT-REALTY', name: 'Real Estate', icon: 'house-door', url: '#', active: false },
+      { id: '80', symbol: 'IGT-AUTO', name: 'Auto', icon: 'car-front', url: '#', active: false },
+      { id: '81', symbol: 'IGT-ENERGY', name: 'Energy', icon: 'lightning-charge', url: '#', active: false },
+      { id: '82', symbol: 'IGT-TELECOM', name: 'Telecom', icon: 'phone', url: '#', active: false },
+      { id: '83', symbol: 'IGT-MAIL', name: 'Mail', icon: 'envelope', url: '#', active: false },
+      { id: '84', symbol: 'IGT-FOOD', name: 'Food Delivery', icon: 'basket', url: '#', active: false },
+      { id: '85', symbol: 'IGT-RIDE', name: 'Ride Sharing', icon: 'taxi-front', url: '#', active: false },
+      { id: '86', symbol: 'IGT-JOBS', name: 'Jobs', icon: 'briefcase', url: '#', active: false },
+      { id: '87', symbol: 'IGT-DATING', name: 'Dating', icon: 'heart', url: '#', active: false },
+      { id: '88', symbol: 'IGT-HOTEL', name: 'Hotels', icon: 'building', url: '#', active: false },
+      { id: '89', symbol: 'IGT-FLIGHTS', name: 'Flights', icon: 'airplane', url: '#', active: false },
+      { id: '90', symbol: 'IGT-LEGAL', name: 'Legal Services', icon: 'balance-scale', url: '#', active: false },
+      { id: '91', symbol: 'IGT-ID', name: 'Digital ID', icon: 'person-badge', url: '#', active: false },
+      { id: '92', symbol: 'IGT-VOTE', name: 'Voting', icon: 'check2-square', url: '#', active: false },
+      { id: '93', symbol: 'IGT-CHARITY', name: 'Charity', icon: 'heart-fill', url: '/monetary', active: true },
+      { id: '94', symbol: 'IGT-CROWDFUND', name: 'Crowdfunding', icon: 'people-fill', url: '#', active: false },
+      { id: '95', symbol: 'IGT-METAVERSE', name: 'Metaverse', icon: 'headset-vr', url: '#', active: false },
+      { id: '96', symbol: 'IGT-NFT', name: 'NFT Marketplace', icon: 'image', url: '#', active: false },
+      { id: '97', symbol: 'IGT-LAUNCHPAD', name: 'Launchpad', icon: 'rocket', url: '#', active: false },
+      { id: '98', symbol: 'IGT-DAO', name: 'DAO', icon: 'diagram-3', url: '#', active: false },
+      { id: '99', symbol: 'IGT-ORACLE', name: 'Oracle', icon: 'eye', url: '#', active: false },
+      { id: '100', symbol: 'IGT-SOVEREIGN', name: 'Sovereign Token', icon: 'award', url: '#', active: true },
+      { id: '101', symbol: 'IGT-IISB', name: 'Settlement Bank', icon: 'bank2', url: '/global-banking', active: true }
+    ];
+
+    let currentCategory = 'all';
+
+    function renderModules() {
+      // Government
+      document.getElementById('governmentDepts').innerHTML = GOVERNMENT_DEPTS.map(d => `
+        <div class="col-md-3 col-sm-4 col-6 dept-item" data-name="${d.name.toLowerCase()}" data-symbol="${d.symbol.toLowerCase()}">
+          <div class="dept-card" onclick="openModule('${d.symbol}')">
+            <div class="dept-icon"><i class="bi bi-${d.icon}"></i></div>
+            <div class="dept-info">
+              <div class="dept-name">${d.name}</div>
+              <div class="dept-symbol">${d.symbol}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Finance
+      document.getElementById('financeModules').innerHTML = FINANCE_MODULES.map(m => `
+        <div class="module-card module-item ${m.active ? 'active' : 'coming'}" data-name="${m.name.toLowerCase()}" data-symbol="${m.symbol.toLowerCase()}" onclick="openModule('${m.symbol}')">
+          <div class="module-icon" style="background:${m.color}20;color:${m.color}">
+            <i class="bi bi-${m.icon}"></i>
+          </div>
+          <div class="module-name">${m.name}</div>
+          <div class="module-symbol">${m.symbol}</div>
+          <div class="module-status">
+            <span class="badge ${m.active ? 'badge-active' : 'badge-coming'}">${m.active ? 'Active' : 'Coming'}</span>
+          </div>
+        </div>
+      `).join('');
+
+      // Services
+      document.getElementById('serviceModules').innerHTML = SERVICES.map(s => `
+        <a href="${s.active ? s.url : '#'}" class="module-card module-item ${s.active ? 'active' : 'coming'}" data-name="${s.name.toLowerCase()}" data-symbol="${s.symbol.toLowerCase()}">
+          <div class="module-icon" style="background:${s.active ? '#10b981' : '#6b7280'}20;color:${s.active ? '#10b981' : '#6b7280'}">
+            <i class="bi bi-${s.icon}"></i>
+          </div>
+          <div class="module-name">${s.name}</div>
+          <div class="module-symbol">${s.symbol}</div>
+          <div class="module-status">
+            <span class="badge ${s.active ? 'badge-active' : 'badge-coming'}">${s.active ? 'Active' : 'Coming'}</span>
+          </div>
+        </a>
+      `).join('');
+
+      // Count active
+      const activeCount = GOVERNMENT_DEPTS.filter(d => d.active).length + 
+                          FINANCE_MODULES.filter(m => m.active).length + 
+                          SERVICES.filter(s => s.active).length;
+      document.getElementById('activeCount').textContent = activeCount;
+    }
+
+    function showCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const govSection = document.getElementById('section-government');
+      const finSection = document.getElementById('section-finance');
+      const srvSection = document.getElementById('section-services');
+
+      govSection.style.display = (cat === 'all' || cat === 'government') ? 'block' : 'none';
+      finSection.style.display = (cat === 'all' || cat === 'finance') ? 'block' : 'none';
+      srvSection.style.display = (cat === 'all' || cat === 'services') ? 'block' : 'none';
+
+      if (cat === 'active') {
+        govSection.style.display = 'block';
+        finSection.style.display = 'block';
+        srvSection.style.display = 'block';
+        document.querySelectorAll('.module-item.coming, .dept-item').forEach(el => {
+          const isActive = el.classList.contains('active') || el.querySelector('.active');
+          el.style.display = (cat === 'active' && !isActive) ? 'none' : '';
+        });
+      } else {
+        document.querySelectorAll('.module-item, .dept-item').forEach(el => el.style.display = '');
+      }
+    }
+
+    function filterModules() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      document.querySelectorAll('.module-item, .dept-item').forEach(el => {
+        const name = el.dataset.name || '';
+        const symbol = el.dataset.symbol || '';
+        el.style.display = (name.includes(query) || symbol.includes(query)) ? '' : 'none';
+      });
+    }
+
+    function openModule(symbol) {
+      // For now just show alert, can be extended
+      console.log('Opening module:', symbol);
+    }
+
+    renderModules();
+  </script>
+</body>
+</html>

@@ -1,0 +1,425 @@
+@page "/general/did"
+@inject IDIDClient DidClient
+@inject MameyWalletClient WalletClient
+@inject IMetadataService MetadataService
+@inject ILogger<Did> Logger
+
+<PageTitle>DID Tools - MameyNode UI</PageTitle>
+
+<h1>DID Tools</h1>
+
+<ErrorDisplay HasError="@hasError" ErrorMessage="@errorMessage" ErrorDetails="@errorDetails" OnDismiss="ClearError" />
+
+<div class="row mt-3">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Issue DID (controller)</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Controller</label>
+                    <input class="form-control" @bind="_controller" placeholder="my_controller" />
+                </div>
+                <button class="btn btn-primary" @onclick="IssueAsync" disabled="@isIssuing">
+                    @if (isIssuing)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Issuing...</text>
+                    }
+                    else
+                    {
+                        <text>Issue DID</text>
+                    }
+                </button>
+
+                @if (!string.IsNullOrWhiteSpace(_issuedDid))
+                {
+                    <div class="alert alert-success mt-3 mb-0">
+                        Issued: <code>@_issuedDid</code>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Resolve DID</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">DID</label>
+                    <input class="form-control" @bind="_did" placeholder="did:futurewampum:..." />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Version (0 = latest)</label>
+                    <input class="form-control" type="number" @bind="_didVersion" />
+                </div>
+                <button class="btn btn-primary" @onclick="ResolveAsync" disabled="@isResolving">
+                    @if (isResolving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Resolving...</text>
+                    }
+                    else
+                    {
+                        <text>Resolve</text>
+                    }
+                </button>
+
+                @if (!string.IsNullOrWhiteSpace(_didDocumentJson))
+                {
+                    <div class="mt-3">
+                        <strong>DID Document (JSON)</strong>
+                        <pre class="mb-0" style="max-height: 40vh; overflow: auto;">@_didDocumentJson</pre>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mt-3 mt-lg-0">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Verify DID Ownership (challenge-response)</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">DID</label>
+                    <input class="form-control" @bind="_verifyDid" placeholder="did:futurewampum:..." />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Wallet Key ID (to sign challenge)</label>
+                    <input class="form-control" @bind="_walletKeyId" placeholder="key_..." />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Wallet Password (optional)</label>
+                    <input class="form-control" type="password" @bind="_walletPassword" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Challenge</label>
+                    <textarea class="form-control" rows="3" @bind="_challenge"></textarea>
+                    <div class="form-text">If empty, a random challenge is generated.</div>
+                </div>
+                <button class="btn btn-primary" @onclick="VerifyOwnershipAsync" disabled="@isVerifying">
+                    @if (isVerifying)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Verifying...</text>
+                    }
+                    else
+                    {
+                        <text>Sign + Verify</text>
+                    }
+                </button>
+
+                @if (_ownershipVerified.HasValue)
+                {
+                    <div class="alert @(_ownershipVerified.Value ? "alert-success" : "alert-danger") mt-3 mb-0">
+                        Ownership verified: <strong>@(_ownershipVerified.Value ? "yes" : "no")</strong>
+                        @if (!string.IsNullOrWhiteSpace(_verificationMethodUsed))
+                        {
+                            <div class="small text-muted">method: @_verificationMethodUsed</div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">DID History</h5>
+            </div>
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">DID</span>
+                    <input class="form-control" @bind="_historyDid" placeholder="did:futurewampum:..." />
+                    <button class="btn btn-outline-secondary" @onclick="LoadHistoryAsync" disabled="@isLoadingHistory">Load</button>
+                </div>
+
+                @if (historyEntries == null && !isLoadingHistory)
+                {
+                    <p class="text-muted mb-0">Enter a DID and click Load.</p>
+                }
+                else if (isLoadingHistory)
+                {
+                    <p class="text-muted mb-0">Loading history...</p>
+                }
+                else if (historyEntries != null)
+                {
+                    @if (historyEntries.Count == 0)
+                    {
+                        <div class="alert alert-info mb-0">No history entries returned.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th>Version</th>
+                                    <th>Action</th>
+                                    <th>Actor</th>
+                                    <th>Time (UTC)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var e in historyEntries)
+                                {
+                                    <tr>
+                                        <td>@e.Version</td>
+                                        <td>@e.Action</td>
+                                        <td><code>@e.Actor</code></td>
+                                        <td>@(e.Timestamp == default ? "-" : e.Timestamp.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<MetadataDisplay />
+
+@code {
+    private bool hasError;
+    private string? errorMessage;
+    private string? errorDetails;
+
+    private bool isIssuing;
+    private bool isResolving;
+    private bool isVerifying;
+    private bool isLoadingHistory;
+
+    private string _controller = "example_controller";
+    private string? _issuedDid;
+
+    private string? _did;
+    private ulong _didVersion;
+    private string? _didDocumentJson;
+
+    private string? _verifyDid;
+    private string? _walletKeyId;
+    private string? _walletPassword;
+    private string? _challenge;
+    private bool? _ownershipVerified;
+    private string? _verificationMethodUsed;
+
+    private string? _historyDid;
+    private List<Mamey.Blockchain.DID.DIDHistoryEntry>? historyEntries;
+
+    private async Task IssueAsync()
+    {
+        isIssuing = true;
+        ClearError();
+        _issuedDid = null;
+        StateHasChanged();
+
+        try
+        {
+            var result = await DidClient.IssueDIDAsync(_controller.Trim());
+            if (!result.Success || string.IsNullOrWhiteSpace(result.DID))
+            {
+                hasError = true;
+                errorMessage = "IssueDID failed.";
+                errorDetails = result.ErrorMessage;
+                return;
+            }
+
+            _issuedDid = result.DID;
+            _did = result.DID;
+            _verifyDid = result.DID;
+            _historyDid = result.DID;
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to issue DID.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to issue DID");
+        }
+        finally
+        {
+            isIssuing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResolveAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_did))
+        {
+            hasError = true;
+            errorMessage = "DID is required.";
+            return;
+        }
+
+        isResolving = true;
+        ClearError();
+        _didDocumentJson = null;
+        StateHasChanged();
+
+        try
+        {
+            var result = await DidClient.ResolveDIDAsync(_did.Trim(), _didVersion);
+            if (!result.Success)
+            {
+                hasError = true;
+                errorMessage = "ResolveDID failed.";
+                errorDetails = result.ErrorMessage;
+                return;
+            }
+
+            _didDocumentJson = result.DIDDocument;
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to resolve DID.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to resolve DID");
+        }
+        finally
+        {
+            isResolving = false;
+            StateHasChanged();
+        }
+    }
+
+    private Grpc.Core.CallOptions CreateCallOptions()
+    {
+        var correlationId = MetadataService.GetCorrelationId();
+        var metadata = MetadataService.GetMetadata(correlationId);
+        return new Grpc.Core.CallOptions(metadata, deadline: DateTime.UtcNow.AddSeconds(30));
+    }
+
+    private async Task VerifyOwnershipAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_verifyDid))
+        {
+            hasError = true;
+            errorMessage = "DID is required.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(_walletKeyId))
+        {
+            hasError = true;
+            errorMessage = "Wallet Key ID is required to sign the challenge.";
+            return;
+        }
+
+        isVerifying = true;
+        ClearError();
+        _ownershipVerified = null;
+        _verificationMethodUsed = null;
+        StateHasChanged();
+
+        try
+        {
+            var challenge = string.IsNullOrWhiteSpace(_challenge)
+                ? $"{_verifyDid}:{Guid.NewGuid()}:{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}"
+                : _challenge!;
+
+            var sign = await WalletClient.Client.SignMessageAsync(new SignMessageRequest
+            {
+                KeyId = _walletKeyId,
+                Message = Google.Protobuf.ByteString.CopyFromUtf8(challenge),
+                Password = _walletPassword ?? string.Empty
+            }, CreateCallOptions());
+
+            if (!sign.Success)
+            {
+                hasError = true;
+                errorMessage = "SignMessage failed.";
+                errorDetails = sign.ErrorMessage;
+                return;
+            }
+
+            var sigBytes = sign.Signature.ToByteArray();
+            if (sigBytes.Length == 0)
+            {
+                hasError = true;
+                errorMessage = "SignMessage returned an empty signature.";
+                return;
+            }
+
+            var sigHex = Convert.ToHexString(sigBytes).ToLowerInvariant();
+            var verify = await DidClient.VerifyDIDOwnershipAsync(_verifyDid.Trim(), challenge, sigHex);
+            _ownershipVerified = verify.Success && verify.Verified;
+            _verificationMethodUsed = verify.VerificationMethodUsed;
+
+            if (!_ownershipVerified.Value)
+            {
+                hasError = true;
+                errorMessage = "Ownership verification failed.";
+                errorDetails = verify.ErrorMessage;
+            }
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to verify DID ownership.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to verify DID ownership");
+        }
+        finally
+        {
+            isVerifying = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadHistoryAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_historyDid))
+        {
+            hasError = true;
+            errorMessage = "DID is required for history.";
+            return;
+        }
+
+        isLoadingHistory = true;
+        ClearError();
+        historyEntries = null;
+        StateHasChanged();
+
+        try
+        {
+            var result = await DidClient.GetDIDHistoryAsync(_historyDid.Trim(), limit: 25, offset: 0);
+            if (!result.Success)
+            {
+                hasError = true;
+                errorMessage = "GetDIDHistory failed.";
+                errorDetails = result.ErrorMessage;
+                historyEntries = new List<Mamey.Blockchain.DID.DIDHistoryEntry>();
+                return;
+            }
+
+            historyEntries = result.Entries.ToList();
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to load DID history.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to load DID history");
+        }
+        finally
+        {
+            isLoadingHistory = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearError()
+    {
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+    }
+}
+

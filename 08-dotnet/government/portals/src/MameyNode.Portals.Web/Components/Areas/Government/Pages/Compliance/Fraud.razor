@@ -1,0 +1,94 @@
+@page "/compliance/fraud"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<Fraud> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Fraud Detection" Icon="fas fa-user-secret" Subtitle="Fraud detection and prevention">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Reports" Value="@_fraudReports.Count.ToString()" Icon="fas fa-user-secret" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Open" Value="@_openCount.ToString()" Icon="fas fa-folder-open" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Under Investigation" Value="@_investigatingCount.ToString()" Icon="fas fa-search" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Resolved" Value="@_resolvedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Fraud Reports" Class="mt-4">
+        <MudTable T="FraudReportInfo" Items="@_fraudReports" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Report ID</MudTh>
+                <MudTh>Account</MudTh>
+                <MudTh>Transaction</MudTh>
+                <MudTh>Fraud Type</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Reported</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.FraudReportId</MudTd>
+                <MudTd>@context.AccountId</MudTd>
+                <MudTd>@context.TransactionId</MudTd>
+                <MudTd>@context.FraudType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == FraudReportStatus.Confirmed ? Color.Success : context.Status == FraudReportStatus.UnderReview ? Color.Warning : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.ReportedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<FraudReportInfo> _fraudReports = new();
+    private int _openCount;
+    private int _investigatingCount;
+    private int _resolvedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _fraudReports = await GovernmentClient.GetFraudReportsAsync();
+            _openCount = _fraudReports.Count(f => f.Status == FraudReportStatus.Pending);
+            _investigatingCount = _fraudReports.Count(f => f.Status == FraudReportStatus.UnderReview);
+            _resolvedCount = _fraudReports.Count(f => f.Status == FraudReportStatus.Confirmed || f.Status == FraudReportStatus.Dismissed);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading fraud reports");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

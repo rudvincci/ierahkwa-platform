@@ -1,0 +1,54 @@
+@using Mamey.BlazorWasm.Components.Foundation
+
+<MudPaper Elevation="@Elevation" Class="@CardClass" Style="@Style">
+    @if (ShowHeader && !string.IsNullOrWhiteSpace(HeaderText))
+    {
+        <MudStack Row="true" AlignItems="AlignItems.Center" Class="pa-3">
+            <MudText Typo="@HeaderTypo">@HeaderText</MudText>
+            <MudSpacer />
+            @HeaderActions
+        </MudStack>
+        <MudDivider />
+    }
+    else if (Header is not null)
+    {
+        <div class="pa-3">
+            @Header
+        </div>
+        <MudDivider />
+    }
+
+    <div class="@ContentClass">
+        @ChildContent
+    </div>
+
+    @if (ShowActions && Actions is not null)
+    {
+        <MudDivider />
+        <div class="pa-3">
+            @Actions
+        </div>
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public RenderFragment? Header { get; set; }
+    [Parameter] public RenderFragment? HeaderActions { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
+
+    [Parameter] public string? HeaderText { get; set; }
+    [Parameter] public Typo HeaderTypo { get; set; } = Typo.h6;
+    [Parameter] public bool ShowHeader { get; set; } = true;
+    [Parameter] public bool ShowActions { get; set; } = true;
+    [Parameter] public int Elevation { get; set; } = 1;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+    [Parameter] public string ContentClass { get; set; } = "pa-3";
+
+    private string CardClass => $"mamey-card-pro {Class}";
+}
+
+
+
+

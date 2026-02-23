@@ -1,0 +1,112 @@
+@page "/faq"
+
+<PageTitle>FAQ - Mamey Government Portal</PageTitle>
+
+<MudPaper Elevation="0" Class="pa-6">
+    <MudStack Spacing="4">
+        <MudText Typo="Typo.h4" Color="Color.Primary">Frequently Asked Questions</MudText>
+        
+        <MudText Typo="Typo.body1">
+            Find answers to common questions about citizenship, documents, and government services.
+        </MudText>
+
+        <MudDivider Class="my-4" />
+
+        <MudTextField @bind-Value="_searchQuery" Label="Search FAQ" Variant="Variant.Outlined"
+                      Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                      Placeholder="Search for answers..." />
+
+        <MudExpansionPanels MultiExpansion="true">
+            <MudExpansionPanel Text="How do I apply for citizenship?">
+                <MudText Typo="Typo.body2">
+                    To apply for citizenship, navigate to "Become a Citizen" in the main menu. You'll need to:
+                </MudText>
+                <MudList T="string" Dense="true">
+                    <MudListItem>1. Meet the eligibility requirements</MudListItem>
+                    <MudListItem>2. Provide personal information</MudListItem>
+                    <MudListItem>3. Submit required documents</MudListItem>
+                    <MudListItem>4. Pay the application fee</MudListItem>
+                </MudList>
+            </MudExpansionPanel>
+
+            <MudExpansionPanel Text="How long does the application process take?">
+                <MudText Typo="Typo.body2">
+                    The typical processing time is 4-6 weeks for standard applications. Expedited processing 
+                    is available for an additional fee and typically takes 1-2 weeks.
+                </MudText>
+            </MudExpansionPanel>
+
+            <MudExpansionPanel Text="What documents do I need for my application?">
+                <MudText Typo="Typo.body2">
+                    You will need the following documents:
+                </MudText>
+                <MudList T="string" Dense="true">
+                    <MudListItem>• Valid government-issued ID (passport, driver's license)</MudListItem>
+                    <MudListItem>• Proof of residence (utility bill, bank statement)</MudListItem>
+                    <MudListItem>• Passport-style photograph</MudListItem>
+                    <MudListItem>• Any additional documents specific to your application type</MudListItem>
+                </MudList>
+            </MudExpansionPanel>
+
+            <MudExpansionPanel Text="How do I renew my passport or travel ID?">
+                <MudText Typo="Typo.body2">
+                    You can renew your documents through the Citizen Portal. Log in to your account,
+                    navigate to "Request Renewal" and follow the instructions. You'll need to upload
+                    a new photo and pay the renewal fee.
+                </MudText>
+            </MudExpansionPanel>
+
+            <MudExpansionPanel Text="How can I check my application status?">
+                <MudText Typo="Typo.body2">
+                    If you have an account, log in to the Citizen Portal and check your dashboard.
+                    Your application status will be displayed there. You can also use the 
+                    "Check Application Status" link with your application number.
+                </MudText>
+            </MudExpansionPanel>
+
+            <MudExpansionPanel Text="What are the different citizenship levels?">
+                <MudText Typo="Typo.body2">
+                    There are three citizenship levels:
+                </MudText>
+                <MudList T="string" Dense="true">
+                    <MudListItem><strong>Applicant</strong> - Initial application stage with limited access</MudListItem>
+                    <MudListItem><strong>Resident</strong> - Full residency rights and access to services</MudListItem>
+                    <MudListItem><strong>Citizen</strong> - Full citizenship with voting rights and all privileges</MudListItem>
+                </MudList>
+            </MudExpansionPanel>
+
+            <MudExpansionPanel Text="How do I contact support?">
+                <MudText Typo="Typo.body2">
+                    You can contact us through:
+                </MudText>
+                <MudList T="string" Dense="true">
+                    <MudListItem>• Email: support@mamey.gov</MudListItem>
+                    <MudListItem>• Phone: +1 (555) 123-4567</MudListItem>
+                    <MudListItem>• Live Chat: Available in the Citizen Portal</MudListItem>
+                </MudList>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+
+        <MudDivider Class="my-4" />
+
+        <MudCard Elevation="2">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="4">
+                    <MudIcon Icon="@Icons.Material.Filled.HelpCenter" Size="Size.Large" Color="Color.Primary" />
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.h6">Still have questions?</MudText>
+                        <MudText Typo="Typo.body2">Contact our support team for personalized assistance.</MudText>
+                    </MudStack>
+                    <MudSpacer />
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="mailto:support@mamey.gov">
+                        Contact Support
+                    </MudButton>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudStack>
+</MudPaper>
+
+@code {
+    private string _searchQuery = "";
+}

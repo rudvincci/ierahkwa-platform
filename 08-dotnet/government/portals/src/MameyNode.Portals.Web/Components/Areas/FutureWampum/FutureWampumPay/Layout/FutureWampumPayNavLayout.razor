@@ -1,0 +1,30 @@
+@* FutureWampumPayNavLayout.razor *@
+@using Mamey.BlazorWasm.Components
+@using Mamey.BlazorWasm.Routing
+@using MudBlazor
+@inject NavigationManager Navigation
+
+<MudNavMenu Margin="Margin.Dense" Rounded="false" Color="Color.Primary">
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">
+        @(DrawerOpen ? "Home" : "")
+    </MudNavLink>
+</MudNavMenu>
+
+<BaseNav Routes="_routes" DrawerOpen="DrawerOpen" DrawerMiniEnabled="true" />
+
+@code {
+    private List<Route> _routes = new();
+    [Parameter] public bool DrawerOpen { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var allRoutes = await RouteLoader.GetRoutesAsync(menu: true);
+        // Include payments, smart contracts, account abstraction, programmable, channels, pathfinding
+        _routes = allRoutes.Where(r => r.Page?.StartsWith("/payments") == true ||
+                                       r.Page?.StartsWith("/smart-contracts") == true ||
+                                       r.Page?.StartsWith("/account-abstraction") == true ||
+                                       r.Page?.StartsWith("/programmable") == true ||
+                                       r.Page?.StartsWith("/channels") == true ||
+                                       r.Page?.StartsWith("/pathfinding") == true).ToList();
+    }
+}

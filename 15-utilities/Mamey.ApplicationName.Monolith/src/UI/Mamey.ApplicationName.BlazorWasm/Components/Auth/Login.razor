@@ -1,0 +1,94 @@
+@page "/login"
+<section id="login-section" class="section align-center justify-center">
+    <input type="text" style="position: absolute; opacity: 0; height: 0; width: 0;" tabindex="-1" @ref="hiddenInput" />
+    <EditForm Model="@authViewModel.LoginModel" OnValidSubmit="SubmitForm" FormName="loginForm">
+        <DataAnnotationsValidator/>
+        @* <MudContainer MaxWidth="MaxWidth.Large" Class="d-flex align-center justify-center min-vh-100"> *@
+            @* <MudPaper Class="pa-6" Elevation="12" Style="border-radius: 12px;"> *@
+            <MudGrid>
+                <MudItem xs="12" sm="7">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudTextField T="string" Label="Email" Class="mt-3" InputType="InputType.Email"
+                                          @bind-Value="authViewModel.LoginModel.Email" For="@(() => authViewModel.LoginModel.Email)"/>
+                            <MudTextField T="string" Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                          @bind-Value="authViewModel.LoginModel.Password" For="@(() => authViewModel.LoginModel.Password)" InputType="InputType.Password"/>
+
+                            <MudCheckBox T="bool" @bind-Checked="_rememberMe" Label="Remember Me" Class="my-3"/>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+            @* </MudPaper> *@
+        @* </MudContainer> *@
+    </EditForm>
+</section>
+@* *@
+@* <MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="d-flex align-center justify-center min-vh-100"> *@
+@*     <MudPaper Class="pa-6" Elevation="12" Style="border-radius: 12px;"> *@
+@*         <MudCard> *@
+@*             <MudCardHeader> *@
+@*                 <MudText Typo="Typo.h5" Align="Align.Center">Welcome Back</MudText> *@
+@*                 <MudText Typo="Typo.body2" Align="Align.Center" Color="Color.Secondary">Please sign in to continue</MudText> *@
+@*             </MudCardHeader> *@
+@* *@
+@*             <MudCardContent> *@
+                 
+@*                  *@
+@*                 <MudForm @ref="form"> *@
+@* *@
+@*                     <MudTextField @bind-Value="loginModel.Email" *@
+@*                                   Label="Email" *@
+@*                                   Variant="Variant.Filled" *@
+@*                                   FullWidth="true" *@
+@*                                   Immediate="true" *@
+@*                                   Required="true" *@
+@*                                   RequiredError="Email is required!" *@
+@*                                   Error="@(!string.IsNullOrEmpty(emailError) && hasTriedSubmitting)" *@
+@*                                   ErrorText="@emailError"/> *@
+@* *@
+@*                     <MudTextField @bind-Value="loginModel.Password" *@
+@*                                   Label="Password" *@
+@*                                   Variant="Variant.Filled" *@
+@*                                   InputType="InputType.Password" *@
+@*                                   FullWidth="true" *@
+@*                                   Immediate="true" *@
+@*                                   Required="true" *@
+@*                                   RequiredError="Password is required!" *@
+@*                                   Error="@(!string.IsNullOrEmpty(passwordError) && hasTriedSubmitting)" *@
+@*                                   ErrorText="@passwordError" *@
+@*                                   HelperText="Use a strong password"/> *@
+@* *@
+@*                     <MudCheckBox T="bool" @bind-Checked="_rememberMe" Label="Remember Me" Class="my-3"/> *@
+@* *@
+@*                     <MudText Color="Color.Error" Dense="true">@message</MudText> *@
+@*                 </MudForm> *@
+@*             </MudCardContent> *@
+@* *@
+@*             <MudCardActions Class="d-flex justify-end"> *@
+@*                 <MudButton OnClick="SubmitForm" *@
+@*                            Variant="Variant.Filled" *@
+@*                            Color="Color.Primary" *@
+@*                            FullWidth="true"> *@
+@*                     @if (isSubmitting) *@
+@*                     { *@
+@*                     <MudProgressCircular Indeterminate="true" Size="Size.Medium" Class="mr-2" /> *@
+@*                     } *@
+@*                     Login *@
+@*                 </MudButton> *@
+@*             </MudCardActions> *@
+@*         </MudCard> *@
+@*     </MudPaper> *@
+@* </MudContainer> *@
+@* *@
+@* *@
+@* @code { *@
+@* } *@
+<!-- Hidden input to capture initial focus and prevent immediate validation -->
+
+@code {
+   
+}

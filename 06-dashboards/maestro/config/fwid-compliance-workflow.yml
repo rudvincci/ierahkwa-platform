@@ -1,0 +1,344 @@
+name: FutureWampumId TDD Compliance & Mamey.Blockchain Integration
+description: Comprehensive workflow to ensure all FutureWampumId microservices comply with TDD specifications and integrate with Mamey.Blockchain libraries for MameyNode
+
+metadata:
+  project: FutureWampumId
+  domain: FutureWampum
+  tdd_document: .designs/TDD/FutureWampum/FutureWampumID TDD.md
+  plans_directory: .cursor/plans/FutureWampum/FutureWampumId/
+  services_directory: /Volumes/Barracuda/mamey-io/code-final/FutureWampum/FutureWampumId/
+  mamey_blockchain_path: Mamey/src/Mamey.Blockchain.*
+  mamey_node_path: MameyNode/
+
+agents:
+  - name: architect
+    role: Analyzes TDD and plans, identifies gaps
+  - name: backend
+    role: Implements domain, application, infrastructure layers
+  - name: integration
+    role: Ensures Mamey.Blockchain integration and MameyNode connectivity
+
+steps:
+  # Phase 1: Analysis and Gap Identification
+  - name: analyze_tdd_and_plans
+    agent: architect
+    type: parallel
+    tasks:
+      - name: read_tdd_document
+        command: |
+          Read and analyze the TDD document at .designs/TDD/FutureWampum/FutureWampumID TDD.md
+          Extract:
+          - All aggregates and microservices (Section 1)
+          - Domain entities (Section 2)
+          - Commands (Section 3)
+          - Queries (Section 4)
+          - Events (Section 5)
+          - Integration points
+          - Mamey.Blockchain requirements
+        output: tdd_analysis.json
+        
+      - name: read_plan_files
+        command: |
+          Read all plan files from .cursor/plans/FutureWampum/FutureWampumId/:
+          - Identity.plan.md
+          - DID.plan.md
+          - ZKP.plan.md
+          - AccessControl.plan.md
+          - Credential.plan.md
+          - API.plan.md
+          Extract implementation requirements for each service
+        output: plans_analysis.json
+        
+      - name: inventory_existing_services
+        command: |
+          List all existing microservices in /Volumes/Barracuda/mamey-io/code-final/FutureWampum/FutureWampumId/:
+          - Mamey.FWID.Identities
+          - Mamey.FWID.DIDs
+          - Mamey.FWID.ZKPs
+          - Mamey.FWID.AccessControls
+          - Mamey.FWID.Credentials
+          - Mamey.FWID.ApiGateway
+          - Mamey.FWID.Notifications
+          - Mamey.FWID.Operations
+          - Mamey.FWID.Sagas
+          Map service names (pluralized vs singular) to TDD/Plan names
+        output: services_inventory.json
+        
+      - name: check_blockchain_references
+        command: |
+          Search for Mamey.Blockchain.* references in all FutureWampumId microservices at /Volumes/Barracuda/mamey-io/code-final/FutureWampum/FutureWampumId/
+          Identify which services already have blockchain integration
+          List available Mamey.Blockchain.* libraries in Mamey/src/
+        output: blockchain_references.json
+
+  # Phase 2: Service-by-Service Compliance Check
+  - name: check_service_compliance
+    agent: backend
+    type: parallel
+    depends_on: analyze_tdd_and_plans
+    tasks:
+      - name: check_identities_compliance
+        command: |
+          For Mamey.FWID.Identities service:
+          1. Verify domain layer matches TDD Lines 354-477 and Identity.plan.md
+          2. Check all commands from TDD Section 3 (Identity-related)
+          3. Check all queries from TDD Section 4 (Identity-related)
+          4. Check all events from TDD Section 5 (Identity-related)
+          5. Verify API endpoints match TDD Lines 940-962
+          6. Check Mamey.Blockchain.* integration for MameyNode connectivity
+          7. Verify all layers: Domain, Application, Infrastructure, Contracts, API
+        output: identities_compliance.json
+        
+      - name: check_dids_compliance
+        command: |
+          For Mamey.FWID.DIDs service:
+          1. Verify domain layer matches TDD Lines 2218-2247 and DID.plan.md
+          2. Check all commands from TDD Section 3 (DID-related)
+          3. Check all queries from TDD Section 4 (DID-related)
+          4. Check all events from TDD Section 5 (DID-related)
+          5. Verify API endpoints match TDD Lines 2310-2314
+          6. Check Mamey.Blockchain.* integration for DID anchoring
+          7. Verify all layers: Domain, Application, Infrastructure, Contracts, API
+        output: dids_compliance.json
+        
+      - name: check_zkps_compliance
+        command: |
+          For Mamey.FWID.ZKPs service:
+          1. Verify domain layer matches TDD Lines 2941-2998 and ZKP.plan.md
+          2. Check all commands from TDD Section 3 (ZKP-related)
+          3. Check all queries from TDD Section 4 (ZKP-related)
+          4. Check all events from TDD Section 5 (ZKP-related)
+          5. Verify API endpoints match TDD Lines 3051-3054
+          6. Check Mamey.Blockchain.* integration for proof verification
+          7. Verify all layers: Domain, Application, Infrastructure, Contracts, API
+        output: zkps_compliance.json
+        
+      - name: check_accesscontrols_compliance
+        command: |
+          For Mamey.FWID.AccessControls service:
+          1. Verify domain layer matches TDD Lines 3612-3645 and AccessControl.plan.md
+          2. Check all commands from TDD Section 3 (AccessControl-related)
+          3. Check all queries from TDD Section 4 (AccessControl-related)
+          4. Check all events from TDD Section 5 (AccessControl-related)
+          5. Verify API endpoints match TDD Lines 3721-3725
+          6. Check Mamey.Blockchain.* integration for zone policy enforcement
+          7. Verify all layers: Domain, Application, Infrastructure, Contracts, API
+        output: accesscontrols_compliance.json
+        
+      - name: check_credentials_compliance
+        command: |
+          For Mamey.FWID.Credentials service:
+          1. Verify domain layer matches TDD Lines 4230-4282 and Credential.plan.md
+          2. Check all commands from TDD Section 3 (Credential-related)
+          3. Check all queries from TDD Section 4 (Credential-related)
+          4. Check all events from TDD Section 5 (Credential-related)
+          5. Verify API endpoints match TDD Lines 4353-4358
+          6. Check Mamey.Blockchain.* integration for credential anchoring
+          7. Verify all layers: Domain, Application, Infrastructure, Contracts, API
+        output: credentials_compliance.json
+        
+      - name: check_apigateway_compliance
+        command: |
+          For Mamey.FWID.ApiGateway service:
+          1. Verify matches API.plan.md requirements
+          2. Check routing to all microservices
+          3. Check authentication/authorization
+          4. Check Mamey.Blockchain.* integration for API security
+          5. Verify all endpoints are properly exposed
+        output: apigateway_compliance.json
+
+  # Phase 3: Mamey.Blockchain Integration Analysis
+  - name: analyze_blockchain_integration
+    agent: integration
+    type: sequential
+    depends_on: check_service_compliance
+    tasks:
+      - name: identify_required_blockchain_libraries
+        command: |
+          Based on TDD and service requirements, identify which Mamey.Blockchain.* libraries are needed:
+          - Mamey.Blockchain.Node (for MameyNode connectivity)
+          - Mamey.Blockchain.Crypto (for cryptographic operations)
+          - Mamey.Blockchain.LedgerIntegration (for ledger operations)
+          - Mamey.Blockchain.Compliance (for compliance checks)
+          - Mamey.Blockchain.UniversalProtocolGateway (for protocol gateway)
+          - Others as needed per service
+        output: required_blockchain_libraries.json
+        
+      - name: check_mameynode_integration_points
+        command: |
+          Analyze MameyNode/ structure to identify:
+          - gRPC endpoints for blockchain operations
+          - Protocol buffers (.proto files)
+          - Integration patterns
+          - Required authentication/authorization
+          Map to FutureWampumId service needs
+        output: mameynode_integration_points.json
+        
+      - name: verify_blockchain_references_in_services
+        command: |
+          For each FutureWampumId microservice:
+          1. Check .csproj files for Mamey.Blockchain.* references
+          2. Check code for actual usage of blockchain libraries
+          3. Identify missing references
+          4. Identify missing implementations
+        output: blockchain_verification.json
+
+  # Phase 4: Generate Compliance Report
+  - name: generate_compliance_report
+    agent: architect
+    type: sequential
+    depends_on: analyze_blockchain_integration
+    tasks:
+      - name: compile_compliance_findings
+        command: |
+          Compile all compliance findings into a comprehensive report:
+          - Services that are compliant
+          - Services with gaps
+          - Missing layers per service
+          - Missing Mamey.Blockchain.* integrations
+          - Naming discrepancies (pluralized vs singular)
+          - Missing TDD requirements
+        output: compliance_report.md
+        
+      - name: generate_remediation_plan
+        command: |
+          Generate a prioritized remediation plan:
+          1. Critical gaps (blocking functionality)
+          2. High priority (missing core features)
+          3. Medium priority (missing integrations)
+          4. Low priority (naming, documentation)
+          Include specific file paths and line references from TDD
+        output: remediation_plan.md
+
+  # Phase 5: Implementation Tasks (Can be run separately)
+  - name: implement_missing_layers
+    agent: backend
+    type: parallel
+    depends_on: generate_compliance_report
+    condition: "{{remediation_plan.missing_layers.length > 0}}"
+    tasks:
+      - name: implement_domain_layer_gaps
+        command: |
+          For each service with missing domain layer components:
+          1. Create missing aggregate roots per TDD
+          2. Create missing value objects per TDD
+          3. Implement domain methods per TDD
+          4. Add domain events per TDD
+        for_each: "{{remediation_plan.missing_domain_components}}"
+        
+      - name: implement_application_layer_gaps
+        command: |
+          For each service with missing application layer components:
+          1. Create missing commands per TDD
+          2. Create missing command handlers per TDD
+          3. Create missing queries per TDD
+          4. Create missing query handlers per TDD
+          5. Create missing event handlers per TDD
+          6. Create missing services per TDD
+        for_each: "{{remediation_plan.missing_application_components}}"
+        
+      - name: implement_infrastructure_layer_gaps
+        command: |
+          For each service with missing infrastructure layer components:
+          1. Create missing repositories per TDD
+          2. Create missing external service integrations
+          3. Configure Mamey.Blockchain.* libraries
+          4. Set up MameyNode connectivity
+        for_each: "{{remediation_plan.missing_infrastructure_components}}"
+        
+      - name: implement_api_layer_gaps
+        command: |
+          For each service with missing API layer components:
+          1. Create missing API endpoints per TDD
+          2. Add missing route handlers
+          3. Add missing validation
+          4. Add missing authentication/authorization
+        for_each: "{{remediation_plan.missing_api_components}}"
+
+  # Phase 6: Mamey.Blockchain Integration Implementation
+  - name: implement_blockchain_integration
+    agent: integration
+    type: sequential
+    depends_on: implement_missing_layers
+    tasks:
+      - name: add_blockchain_references
+        command: |
+          For each FutureWampumId microservice:
+          1. Add required Mamey.Blockchain.* project references to .csproj files
+          2. Ensure proper version alignment
+          3. Verify build compatibility
+        for_each: "{{remediation_plan.services_needing_blockchain}}"
+        
+      - name: implement_blockchain_services
+        command: |
+          For each service:
+          1. Create blockchain service interfaces
+          2. Implement blockchain service clients
+          3. Integrate with MameyNode via gRPC
+          4. Add error handling and retry logic
+        for_each: "{{remediation_plan.services_needing_blockchain}}"
+        
+      - name: configure_mameynode_connectivity
+        command: |
+          For each service:
+          1. Add MameyNode connection configuration
+          2. Configure gRPC clients
+          3. Add authentication tokens
+          4. Test connectivity
+        for_each: "{{remediation_plan.services_needing_blockchain}}"
+
+  # Phase 7: Verification and Testing
+  - name: verify_compliance
+    agent: backend
+    type: sequential
+    depends_on: implement_blockchain_integration
+    tasks:
+      - name: run_build_verification
+        command: |
+          For each FutureWampumId microservice:
+          1. Run dotnet build
+          2. Verify no compilation errors
+          3. Check for missing references
+        for_each: "{{services_inventory.services}}"
+        
+      - name: verify_tdd_compliance
+        command: |
+          Re-run compliance checks to verify all gaps are filled:
+          1. Domain layer compliance
+          2. Application layer compliance
+          3. Infrastructure layer compliance
+          4. API layer compliance
+        output: final_compliance_report.json
+        
+      - name: verify_blockchain_integration
+        command: |
+          Verify Mamey.Blockchain.* integration:
+          1. All required libraries referenced
+          2. Services properly instantiated
+          3. MameyNode connectivity tested
+          4. Integration tests passing
+        output: blockchain_integration_verification.json
+
+  # Phase 8: Documentation Update
+  - name: update_documentation
+    agent: architect
+    type: sequential
+    depends_on: verify_compliance
+    tasks:
+      - name: update_service_readmes
+        command: |
+          Update README.md for each service with:
+          1. TDD compliance status
+          2. Mamey.Blockchain.* integration details
+          3. MameyNode connectivity information
+          4. Architecture diagrams
+        for_each: "{{services_inventory.services}}"
+        
+      - name: create_integration_guide
+        command: |
+          Create comprehensive integration guide:
+          1. Mamey.Blockchain.* library usage
+          2. MameyNode integration patterns
+          3. Service-to-service communication
+          4. Testing strategies
+        output: MAMEYNODE_INTEGRATION_GUIDE.md

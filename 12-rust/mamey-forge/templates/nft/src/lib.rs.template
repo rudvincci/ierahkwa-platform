@@ -1,0 +1,391 @@
+//! {{project_name}} — Non-Fungible Token Contract
+//!
+//! ERC-721-like NFT for MameyFutureNode with minting, burning, transfers,
+//! approvals, and metadata support. Built on mamey-contracts-base and
+//! mamey-contracts-shared.
+
+use wasm_bindgen::prelude::*;
+use mamey_contracts_shared::{host_functions, storage, math, validation};
+
+// ─── Storage Keys ───────────────────────────────────────────────────────────
+
+const KEY_NAME: &str = "nft:name";
+const KEY_SYMBOL: &str = "nft:symbol";
+const KEY_BASE_URI: &str = "nft:base_uri";
+const KEY_TOTAL_SUPPLY: &str = "nft:total_supply";
+const KEY_NEXT_TOKEN_ID: &str = "nft:next_token_id";
+const KEY_OWNER: &str = "nft:owner";
+const KEY_MINTER: &str = "nft:minter";
+const KEY_PAUSED: &str = "nft:paused";
+const KEY_INITIALIZED: &str = "nft:initialized";
+
+fn token_owner_key(token_id: u64) -> String {
+    format!("nft:tok:{}:owner", token_id)
+}
+
+fn token_uri_key(token_id: u64) -> String {
+    format!("nft:tok:{}:uri", token_id)
+}
+
+fn token_approval_key(token_id: u64) -> String {
+    format!("nft:tok:{}:approved", token_id)
+}
+
+fn balance_key(account: &str) -> String {
+    format!("nft:bal:{}", account)
+}
+
+fn operator_approval_key(owner: &str, operator: &str) -> String {
+    format!("nft:op:{}:{}", owner, operator)
+}
+
+// ─── Initialization ─────────────────────────────────────────────────────────
+
+/// Initialize the NFT collection.
+#[wasm_bindgen]
+pub fn init(name: String, symbol: String) -> Result<String, String> {
+    if storage::get_bool(KEY_INITIALIZED) {
+        return Err("NFT collection already initialized".to_string());
+    }
+
+    validation::validate_string_length(&name, 1, 100)
+        .map_err(|e| e.to_string())?;
+    validation::validate_string_length(&symbol, 1, 20)
+        .map_err(|e| e.to_string())?;
+
+    let caller = host_functions::get_caller();
+
+    storage::set_string(KEY_NAME, &name).map_err(|e| e.to_string())?;
+    storage::set_string(KEY_SYMBOL, &symbol).map_err(|e| e.to_string())?;
+    storage::set_u64(KEY_TOTAL_SUPPLY, 0).map_err(|e| e.to_string())?;
+    storage::set_u64(KEY_NEXT_TOKEN_ID, 1).map_err(|e| e.to_string())?;
+    storage::set_string(KEY_OWNER, &caller).map_err(|e| e.to_string())?;
+    storage::set_string(KEY_MINTER, &caller).map_err(|e| e.to_string())?;
+    storage::set_bool(KEY_PAUSED, false).map_err(|e| e.to_string())?;
+    storage::set_bool(KEY_INITIALIZED, true).map_err(|e| e.to_string())?;
+
+    host_functions::emit_event("NftInitialized", &serde_json::json!({
+        "name": name,
+        "symbol": symbol,
+        "owner": caller,
+    }));
+
+    Ok("NFT collection initialized".to_string())
+}
+
+// ─── Query Functions ────────────────────────────────────────────────────────
+
+#[wasm_bindgen]
+pub fn name() -> String {
+    storage::get_string(KEY_NAME).unwrap_or_default()
+}
+
+#[wasm_bindgen]
+pub fn symbol() -> String {
+    storage::get_string(KEY_SYMBOL).unwrap_or_default()
+}
+
+#[wasm_bindgen]
+pub fn total_supply() -> u64 {
+    storage::get_u64(KEY_TOTAL_SUPPLY).unwrap_or(0)
+}
+
+#[wasm_bindgen]
+pub fn balance_of(owner: String) -> u64 {
+    storage::get_u64(&balance_key(&owner)).unwrap_or(0)
+}
+
+#[wasm_bindgen]
+pub fn owner_of(token_id: u64) -> Option<String> {
+    storage::get_string(&token_owner_key(token_id))
+}
+
+#[wasm_bindgen]
+pub fn token_uri(token_id: u64) -> Option<String> {
+    // Try per-token URI first, then base_uri + token_id
+    storage::get_string(&token_uri_key(token_id)).or_else(|| {
+        storage::get_string(KEY_BASE_URI).map(|base| format!("{}{}", base, token_id))
+    })
+}
+
+#[wasm_bindgen]
+pub fn get_approved(token_id: u64) -> Option<String> {
+    storage::get_string(&token_approval_key(token_id))
+}
+
+#[wasm_bindgen]
+pub fn is_approved_for_all(owner: String, operator: String) -> bool {
+    storage::get_bool(&operator_approval_key(&owner, &operator))
+}
+
+// ─── Mint / Burn ────────────────────────────────────────────────────────────
+
+/// Mint a new NFT. Auto-assigns the next token ID.
+#[wasm_bindgen]
+pub fn mint(to: String, uri: Option<String>) -> Result<String, String> {
+    require_not_paused()?;
+    require_minter()?;
+    validation::validate_address(&to).map_err(|e| e.to_string())?;
+
+    let token_id = storage::get_u64(KEY_NEXT_TOKEN_ID).unwrap_or(1);
+
+    storage::set_string(&token_owner_key(token_id), &to).map_err(|e| e.to_string())?;
+
+    if let Some(ref u) = uri {
+        storage::set_string(&token_uri_key(token_id), u).map_err(|e| e.to_string())?;
+    }
+
+    // Increment counters
+    let bal = storage::get_u64(&balance_key(&to)).unwrap_or(0);
+    storage::set_u64(&balance_key(&to), math::safe_add(bal, 1).map_err(|e| e.to_string())?)
+        .map_err(|e| e.to_string())?;
+    let supply = storage::get_u64(KEY_TOTAL_SUPPLY).unwrap_or(0);
+    storage::set_u64(KEY_TOTAL_SUPPLY, math::safe_add(supply, 1).map_err(|e| e.to_string())?)
+        .map_err(|e| e.to_string())?;
+    storage::set_u64(KEY_NEXT_TOKEN_ID, math::safe_add(token_id, 1).map_err(|e| e.to_string())?)
+        .map_err(|e| e.to_string())?;
+
+    host_functions::emit_event("Transfer", &serde_json::json!({
+        "from": "",
+        "to": to,
+        "token_id": token_id,
+    }));
+
+    Ok(format!("Minted token #{}", token_id))
+}
+
+/// Burn an NFT (owner or minter only).
+#[wasm_bindgen]
+pub fn burn(token_id: u64) -> Result<String, String> {
+    require_not_paused()?;
+
+    let token_owner = storage::get_string(&token_owner_key(token_id))
+        .ok_or("Token does not exist".to_string())?;
+
+    let caller = host_functions::get_caller();
+    let minter = storage::get_string(KEY_MINTER).unwrap_or_default();
+    if caller != token_owner && caller != minter {
+        return Err("Unauthorized: not token owner or minter".to_string());
+    }
+
+    // Clear ownership & approval
+    host_functions::storage_del(&token_owner_key(token_id)).map_err(|e| e)?;
+    let _ = host_functions::storage_del(&token_approval_key(token_id));
+    let _ = host_functions::storage_del(&token_uri_key(token_id));
+
+    // Decrement counters
+    let bal = storage::get_u64(&balance_key(&token_owner)).unwrap_or(0);
+    if bal > 0 {
+        storage::set_u64(&balance_key(&token_owner), math::safe_sub(bal, 1).map_err(|e| e.to_string())?)
+            .map_err(|e| e.to_string())?;
+    }
+    let supply = storage::get_u64(KEY_TOTAL_SUPPLY).unwrap_or(0);
+    if supply > 0 {
+        storage::set_u64(KEY_TOTAL_SUPPLY, math::safe_sub(supply, 1).map_err(|e| e.to_string())?)
+            .map_err(|e| e.to_string())?;
+    }
+
+    host_functions::emit_event("Transfer", &serde_json::json!({
+        "from": token_owner,
+        "to": "",
+        "token_id": token_id,
+    }));
+
+    Ok(format!("Burned token #{}", token_id))
+}
+
+// ─── Transfer ───────────────────────────────────────────────────────────────
+
+/// Transfer an NFT.
+#[wasm_bindgen]
+pub fn transfer(from: String, to: String, token_id: u64) -> Result<String, String> {
+    require_not_paused()?;
+    validation::validate_address(&from).map_err(|e| e.to_string())?;
+    validation::validate_address(&to).map_err(|e| e.to_string())?;
+    validation::validate_different_addresses(&from, &to).map_err(|e| e.to_string())?;
+
+    let token_owner = storage::get_string(&token_owner_key(token_id))
+        .ok_or("Token does not exist".to_string())?;
+
+    if token_owner != from {
+        return Err("From address does not own this token".to_string());
+    }
+
+    let caller = host_functions::get_caller();
+    let approved = storage::get_string(&token_approval_key(token_id));
+    let is_operator = storage::get_bool(&operator_approval_key(&from, &caller));
+    if caller != from && approved.as_deref() != Some(&caller) && !is_operator {
+        return Err("Unauthorized: not owner, approved, or operator".to_string());
+    }
+
+    // Update ownership
+    storage::set_string(&token_owner_key(token_id), &to).map_err(|e| e.to_string())?;
+
+    // Clear single-token approval
+    let _ = host_functions::storage_del(&token_approval_key(token_id));
+
+    // Update balances
+    let from_bal = storage::get_u64(&balance_key(&from)).unwrap_or(0);
+    if from_bal > 0 {
+        storage::set_u64(&balance_key(&from), math::safe_sub(from_bal, 1).map_err(|e| e.to_string())?)
+            .map_err(|e| e.to_string())?;
+    }
+    let to_bal = storage::get_u64(&balance_key(&to)).unwrap_or(0);
+    storage::set_u64(&balance_key(&to), math::safe_add(to_bal, 1).map_err(|e| e.to_string())?)
+        .map_err(|e| e.to_string())?;
+
+    host_functions::emit_event("Transfer", &serde_json::json!({
+        "from": from,
+        "to": to,
+        "token_id": token_id,
+    }));
+
+    Ok("Transfer successful".to_string())
+}
+
+// ─── Approvals ──────────────────────────────────────────────────────────────
+
+/// Approve a single address to transfer a specific token.
+#[wasm_bindgen]
+pub fn approve(approved: String, token_id: u64) -> Result<String, String> {
+    require_not_paused()?;
+    validation::validate_address(&approved).map_err(|e| e.to_string())?;
+
+    let token_owner = storage::get_string(&token_owner_key(token_id))
+        .ok_or("Token does not exist".to_string())?;
+    let caller = host_functions::get_caller();
+    if caller != token_owner {
+        return Err("Only the token owner can approve".to_string());
+    }
+
+    storage::set_string(&token_approval_key(token_id), &approved).map_err(|e| e.to_string())?;
+
+    host_functions::emit_event("Approval", &serde_json::json!({
+        "owner": token_owner,
+        "approved": approved,
+        "token_id": token_id,
+    }));
+
+    Ok("Approval set".to_string())
+}
+
+/// Approve or revoke an operator for all tokens of the caller.
+#[wasm_bindgen]
+pub fn set_approval_for_all(operator: String, approved: bool) -> Result<String, String> {
+    require_not_paused()?;
+    validation::validate_address(&operator).map_err(|e| e.to_string())?;
+
+    let owner = host_functions::get_caller();
+    validation::validate_different_addresses(&owner, &operator).map_err(|e| e.to_string())?;
+
+    storage::set_bool(&operator_approval_key(&owner, &operator), approved)
+        .map_err(|e| e.to_string())?;
+
+    host_functions::emit_event("ApprovalForAll", &serde_json::json!({
+        "owner": owner,
+        "operator": operator,
+        "approved": approved,
+    }));
+
+    Ok("Approval for all updated".to_string())
+}
+
+// ─── Metadata ───────────────────────────────────────────────────────────────
+
+/// Set a base URI for all tokens (owner only).
+#[wasm_bindgen]
+pub fn set_base_uri(uri: String) -> Result<String, String> {
+    require_owner()?;
+    storage::set_string(KEY_BASE_URI, &uri).map_err(|e| e.to_string())?;
+    Ok("Base URI set".to_string())
+}
+
+/// Set a specific token URI (owner only).
+#[wasm_bindgen]
+pub fn set_token_uri(token_id: u64, uri: String) -> Result<String, String> {
+    require_owner()?;
+    if storage::get_string(&token_owner_key(token_id)).is_none() {
+        return Err("Token does not exist".to_string());
+    }
+    storage::set_string(&token_uri_key(token_id), &uri).map_err(|e| e.to_string())?;
+    Ok("Token URI set".to_string())
+}
+
+// ─── Governance ─────────────────────────────────────────────────────────────
+
+#[wasm_bindgen]
+pub fn pause() -> Result<String, String> {
+    require_owner()?;
+    storage::set_bool(KEY_PAUSED, true).map_err(|e| e.to_string())?;
+    host_functions::emit_event("Paused", &serde_json::json!({}));
+    Ok("NFT paused".to_string())
+}
+
+#[wasm_bindgen]
+pub fn unpause() -> Result<String, String> {
+    require_owner()?;
+    storage::set_bool(KEY_PAUSED, false).map_err(|e| e.to_string())?;
+    host_functions::emit_event("Unpaused", &serde_json::json!({}));
+    Ok("NFT unpaused".to_string())
+}
+
+#[wasm_bindgen]
+pub fn set_minter(minter: String) -> Result<String, String> {
+    require_owner()?;
+    validation::validate_address(&minter).map_err(|e| e.to_string())?;
+    storage::set_string(KEY_MINTER, &minter).map_err(|e| e.to_string())?;
+    host_functions::emit_event("MinterChanged", &serde_json::json!({ "minter": minter }));
+    Ok("Minter updated".to_string())
+}
+
+// ─── Internal Helpers ───────────────────────────────────────────────────────
+
+fn require_not_paused() -> Result<(), String> {
+    if storage::get_bool(KEY_PAUSED) {
+        return Err("Contract is paused".to_string());
+    }
+    Ok(())
+}
+
+fn require_owner() -> Result<(), String> {
+    let caller = host_functions::get_caller();
+    let owner = storage::get_string(KEY_OWNER)
+        .ok_or_else(|| "No owner set".to_string())?;
+    if caller != owner {
+        return Err("Unauthorized: caller is not the owner".to_string());
+    }
+    Ok(())
+}
+
+fn require_minter() -> Result<(), String> {
+    let caller = host_functions::get_caller();
+    let minter = storage::get_string(KEY_MINTER)
+        .ok_or_else(|| "No minter set".to_string())?;
+    if caller != minter {
+        return Err("Unauthorized: caller is not the minter".to_string());
+    }
+    Ok(())
+}
+
+// ─── Tests ──────────────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_init_nft() {
+        let result = init("Test NFTs".into(), "TNFT".into());
+        assert!(result.is_ok());
+        assert_eq!(name(), "Test NFTs");
+        assert_eq!(symbol(), "TNFT");
+        assert_eq!(total_supply(), 0);
+    }
+
+    #[test]
+    fn test_double_init_rejected() {
+        let _ = init("NFTs".into(), "NFT".into());
+        let result = init("NFTs2".into(), "NF2".into());
+        assert!(result.is_err());
+    }
+}

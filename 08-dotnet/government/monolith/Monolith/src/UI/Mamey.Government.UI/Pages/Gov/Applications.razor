@@ -1,0 +1,415 @@
+@page "/gov/applications"
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+@inject IApplicationsService ApplicationsService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<PageTitle>Applications - Government Portal</PageTitle>
+
+<MudPaper Elevation="0" Class="pa-6">
+    <MudStack Spacing="4">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h4" Color="Color.Primary">Citizenship Applications</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Refresh" 
+                       OnClick="RefreshData" Disabled="@_loading">
+                Refresh
+            </MudButton>
+        </MudStack>
+
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Elevation="2" Class="@GetCardClass("Submitted")" @onclick="@(() => SetStatusFilter("Submitted"))">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.body2" Color="Color.Primary">Submitted</MudText>
+                                <MudText Typo="Typo.h4">@_submittedCount</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.HourglassEmpty" Size="Size.Large" Color="Color.Primary" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Elevation="2" Class="@GetCardClass("ReviewPending")" @onclick="@(() => SetStatusFilter("ReviewPending"))">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.body2" Color="Color.Warning">In Review</MudText>
+                                <MudText Typo="Typo.h4">@_inReviewCount</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.RateReview" Size="Size.Large" Color="Color.Warning" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Elevation="2" Class="@GetCardClass("Approved")" @onclick="@(() => SetStatusFilter("Approved"))">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.body2" Color="Color.Success">Approved</MudText>
+                                <MudText Typo="Typo.h4">@_approvedCount</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Large" Color="Color.Success" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard Elevation="2" Class="@GetCardClass("Rejected")" @onclick="@(() => SetStatusFilter("Rejected"))">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <div>
+                                <MudText Typo="Typo.body2" Color="Color.Error">Rejected</MudText>
+                                <MudText Typo="Typo.h4">@_rejectedCount</MudText>
+                            </div>
+                            <MudIcon Icon="@Icons.Material.Filled.Cancel" Size="Size.Large" Color="Color.Error" />
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-4" />
+
+        <MudStack Row="true" Spacing="2">
+            <MudTextField @bind-Value="_searchQuery" Label="Search" Variant="Variant.Outlined"
+                          Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                          Placeholder="Search by name or application number..." Class="flex-grow-1"
+                          Immediate="true" DebounceInterval="300" OnDebounceIntervalElapsed="SearchChanged" />
+            <MudSelect @bind-Value="_statusFilter" Label="Status" Variant="Variant.Outlined" Style="width: 200px;">
+                <MudSelectItem Value="@("All")">All</MudSelectItem>
+                <MudSelectItem Value="@("Submitted")">Submitted</MudSelectItem>
+                <MudSelectItem Value="@("ReviewPending")">In Review</MudSelectItem>
+                <MudSelectItem Value="@("Approved")">Approved</MudSelectItem>
+                <MudSelectItem Value="@("Rejected")">Rejected</MudSelectItem>
+            </MudSelect>
+            @if (_statusFilter != "All")
+            {
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="ClearFilter">
+                    Clear Filter
+                </MudButton>
+            }
+        </MudStack>
+
+        <MudTable ServerData="@ServerReload" @ref="_table" Hover="true" Striped="true" Elevation="2"
+                  Loading="@_loading" LoadingProgressColor="Color.Primary">
+            <HeaderContent>
+                <MudTh>Application #</MudTh>
+                <MudTh>Applicant</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Step</MudTh>
+                <MudTh>Submitted</MudTh>
+                <MudTh>Updated</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Application #">
+                    <MudLink Href="@($"/gov/applications/{context.ApplicationNumber}")" Color="Color.Primary">
+                        @context.ApplicationNumber
+                    </MudLink>
+                </MudTd>
+                <MudTd DataLabel="Applicant">
+                    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                        <MudAvatar Size="Size.Small" Color="Color.Primary">@context.ApplicantName[0]</MudAvatar>
+                        <MudText>@context.ApplicantName</MudText>
+                    </MudStack>
+                </MudTd>
+                <MudTd DataLabel="Email">@(context.Email ?? "-")</MudTd>
+                <MudTd DataLabel="Step">
+                    <MudChip T="string" Color="Color.Info" Size="Size.Small">
+                        @GetStepDisplayName(context.Step)
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="Submitted">@context.SubmittedAt?.ToString("MMM dd, yyyy")</MudTd>
+                <MudTd DataLabel="Updated">@(context.UpdatedAt.HasValue ? context.UpdatedAt.Value.ToString("MMM dd, yyyy") : "")</MudTd>
+                <MudTd DataLabel="Status">
+                    <MudChip T="string" Color="@GetStatusColor(context.Status)" Size="Size.Small">
+                        @GetStatusDisplayName(context.Status)
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
+                        <MudButton Color="Color.Primary" Href="@($"/gov/applications/{context.ApplicationNumber}")">
+                            <MudIcon Icon="@Icons.Material.Filled.Visibility" Size="Size.Small" Class="mr-1" />
+                            View
+                        </MudButton>
+                        @if (context.Status is "Submitted" or "ReviewPending" or "KycPending" or "Validating")
+                        {
+                            <MudButton Color="Color.Success" OnClick="@(() => ApproveApplication(context))" Disabled="@_processing">
+                                <MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" Class="mr-1" />
+                                Approve
+                            </MudButton>
+                            <MudButton Color="Color.Error" OnClick="@(() => OpenRejectDialog(context))" Disabled="@_processing">
+                                <MudIcon Icon="@Icons.Material.Filled.Close" Size="Size.Small" Class="mr-1" />
+                                Reject
+                            </MudButton>
+                        }
+                    </MudButtonGroup>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Align="Align.Center" Class="pa-8">
+                    <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Default" Class="mb-2" />
+                    <br />
+                    No applications found matching your criteria.
+                </MudText>
+            </NoRecordsContent>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+            </PagerContent>
+        </MudTable>
+    </MudStack>
+</MudPaper>
+
+@* Reject Dialog *@
+<MudDialog @bind-Visible="_rejectDialogVisible">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Error" Class="mr-2" />
+            Reject Application
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-4">
+            Are you sure you want to reject application <strong>@_applicationToReject?.ApplicationNumber</strong>?
+        </MudText>
+        <MudTextField @bind-Value="_rejectReason" Label="Reason for Rejection" Variant="Variant.Outlined"
+                      Lines="3" Required="true" RequiredError="Please provide a reason" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _rejectDialogVisible = false)">Cancel</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="RejectApplication" Disabled="@_processing">
+            @if (_processing)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            Reject
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private MudTable<ApplicationSummaryModel>? _table;
+    private string _searchQuery = "";
+    private string _statusFilter = "All";
+    private bool _loading = false;
+    private bool _processing = false;
+    private bool _rejectDialogVisible = false;
+    private string _rejectReason = "";
+    private ApplicationSummaryModel? _applicationToReject;
+    
+    private int _submittedCount = 0;
+    private int _inReviewCount = 0;
+    private int _approvedCount = 0;
+    private int _rejectedCount = 0;
+    
+    // TODO: Get from user context or tenant service
+    private Guid _tenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStatusCountsAsync();
+    }
+
+    private async Task LoadStatusCountsAsync()
+    {
+        try
+        {
+            var submitted = await ApplicationsService.BrowseAsync(_tenantId, "Submitted", null, null, null, 1, 1);
+            _submittedCount = (int)submitted.TotalResults;
+            
+            var inReview = await ApplicationsService.BrowseAsync(_tenantId, "ReviewPending", null, null, null, 1, 1);
+            _inReviewCount = (int)inReview.TotalResults;
+            
+            var approved = await ApplicationsService.BrowseAsync(_tenantId, "Approved", null, null, null, 1, 1);
+            _approvedCount = (int)approved.TotalResults;
+            
+            var rejected = await ApplicationsService.BrowseAsync(_tenantId, "Rejected", null, null, null, 1, 1);
+            _rejectedCount = (int)rejected.TotalResults;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading status counts: {ex.Message}");
+        }
+    }
+
+    private async Task<TableData<ApplicationSummaryModel>> ServerReload(TableState state, CancellationToken cancellationToken)
+    {
+        _loading = true;
+        StateHasChanged();
+        
+        try
+        {
+            var status = _statusFilter == "All" ? null : _statusFilter;
+            var result = await ApplicationsService.BrowseAsync(
+                _tenantId,
+                status,
+                string.IsNullOrWhiteSpace(_searchQuery) ? null : _searchQuery,
+                null,
+                null,
+                state.Page + 1,
+                state.PageSize,
+                cancellationToken);
+
+            return new TableData<ApplicationSummaryModel>
+            {
+                Items = result.Items,
+                TotalItems = (int)result.TotalResults
+            };
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading applications: {ex.Message}", Severity.Error);
+            return new TableData<ApplicationSummaryModel>
+            {
+                Items = Array.Empty<ApplicationSummaryModel>(),
+                TotalItems = 0
+            };
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SetStatusFilter(string status)
+    {
+        _statusFilter = status;
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+    }
+
+    private async Task ClearFilter()
+    {
+        _statusFilter = "All";
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+    }
+
+    private async Task SearchChanged(string value)
+    {
+        _searchQuery = value;
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadStatusCountsAsync();
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+        Snackbar.Add("Data refreshed", Severity.Success);
+    }
+
+    private async Task ApproveApplication(ApplicationSummaryModel application)
+    {
+        _processing = true;
+        try
+        {
+            var success = await ApplicationsService.ApproveAsync(application.Id);
+            if (success)
+            {
+                Snackbar.Add($"Application {application.ApplicationNumber} approved", Severity.Success);
+                await RefreshData();
+            }
+            else
+            {
+                Snackbar.Add("Failed to approve application", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _processing = false;
+        }
+    }
+
+    private void OpenRejectDialog(ApplicationSummaryModel application)
+    {
+        _applicationToReject = application;
+        _rejectReason = "";
+        _rejectDialogVisible = true;
+    }
+
+    private async Task RejectApplication()
+    {
+        if (string.IsNullOrWhiteSpace(_rejectReason))
+        {
+            Snackbar.Add("Please provide a reason for rejection", Severity.Warning);
+            return;
+        }
+
+        if (_applicationToReject == null) return;
+
+        _processing = true;
+        try
+        {
+            var success = await ApplicationsService.RejectAsync(_applicationToReject.Id, _rejectReason);
+            if (success)
+            {
+                Snackbar.Add($"Application {_applicationToReject.ApplicationNumber} rejected", Severity.Info);
+                _rejectDialogVisible = false;
+                await RefreshData();
+            }
+            else
+            {
+                Snackbar.Add("Failed to reject application", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _processing = false;
+            _applicationToReject = null;
+            _rejectReason = "";
+        }
+    }
+
+    private string GetStatusDisplayName(string status) => status switch
+    {
+        "ReviewPending" => "In Review",
+        "KycPending" => "KYC Pending",
+        _ => status
+    };
+
+    private string GetStepDisplayName(string step) => step switch
+    {
+        "Initial" => "Initial",
+        "PersonalDetailsComplete" => "Personal Details",
+        "ContactInformationComplete" => "Contact Info",
+        "PassportAndIdentificationComplete" => "Identification",
+        "ResidencyAndImmigrationComplete" => "Residency",
+        "EmploymentAndEducationComplete" => "Employment",
+        _ => step
+    };
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Submitted" => Color.Primary,
+        "ReviewPending" or "KycPending" or "Validating" => Color.Warning,
+        "Approved" => Color.Success,
+        "Rejected" => Color.Error,
+        _ => Color.Default
+    };
+
+    private string GetCardClass(string status) => 
+        _statusFilter == status ? "cursor-pointer border-2 border-primary" : "cursor-pointer";
+}

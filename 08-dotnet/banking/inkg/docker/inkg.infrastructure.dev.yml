@@ -1,0 +1,308 @@
+version: '3.8'
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  mamey:
+    name: mamey
+    external: true
+  # futureheadgroup:
+  #   name: futureheadgroup
+    # external: true
+  # futurebdet:
+  #   name: futurebdet
+  #   external: true
+
+x-minio-common: &minio-common
+  image: quay.io/minio/minio:latest
+  command: server --console-address ":9091" $HOME/minio
+  # container_name: minio
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+    interval: 30s
+    timeout: 20s
+    retries: 3
+
+services:
+  barcode:
+    build:
+      context: ../../MameyBarcode
+      # dockerfile: MameyBarcode/Dockerfile
+    container_name: barcode
+    restart: unless-stopped
+    ports:
+      - "18648:5000"
+    environment:
+      FLASK_ENV: production
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+  mamey-image-bg:
+    build: ../../Mamey.Image.BackgroundRemoval
+    ports:
+      - "60000:5000"
+    environment:
+      - MAMEY_IMAGE_BG_HOST=0.0.0.0
+      - MAMEY_IMAGE_BG_PORT=60000
+      - MAMEY_IMAGE_BG_DEBUG=false
+      - MAMEY_IMAGE_BG_MODEL_NAME=u2net
+      - MAMEY_IMAGE_BG_LOG_LEVEL=INFO
+    volumes:
+      - ./images:/app/images
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:60000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - mamey
+
+  consul:
+    image: hashicorp/consul:latest
+    container_name: consul
+    restart: unless-stopped
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+    ports:
+      - 8500:8500
+  fabio:
+    image: fabiolb/fabio
+    container_name: fabio
+    restart: unless-stopped
+    environment:
+    - FABIO_REGISTRY_CONSUL_ADDR=consul:8500
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+    ports:
+    - 9998:9998
+    - 9999:9999
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+    ports:
+      - 3000:3000
+
+  jaeger:
+    image: jaegertracing/all-in-one
+    container_name: jaeger
+    restart: unless-stopped
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+    ports:
+      - 5775:5775/udp
+      - 5778:5778
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 9411:9411
+      - 14268:14268
+      - 16686:16686
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    restart: unless-stopped
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+    ports:
+      - 1025:1025
+      - 8025:8025
+      
+  
+  minio1:
+    <<: *minio-common
+    hostname: minio1
+    container_name: minio
+    volumes: 
+      - type: bind
+        source: $HOME/minio/
+        target: /mnt/data
+      - type: bind
+        source: ./minio/minio.config
+        target: /etc/config.env
+    ports:
+      - "9000:9000"
+      - "9091:9091"
+    networks:
+      - mamey
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: unless-stopped
+    # environment:
+      # - MONGO_INITDB_ROOT_USERNAME=root
+      # - MONGO_INITDB_ROOT_PASSWORD=secret
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+    ports:
+      - 27017:27017
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootsecret
+      MYSQL_DATABASE: fbdetb
+      MYSQL_USER: fhg-user
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3307:3306"
+    # volumes:
+    #   - mysql_data:/var/lib/mysql
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+    volumes:
+      - mysql_data:/var/run/mysqld
+      
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: unless-stopped
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      # This environment variable is required for you to use the PostgreSQL image. 
+      # It must not be empty or undefined. This environment variable sets the superuser 
+      # password for PostgreSQL. The default superuser is defined by the POSTGRES_USER 
+      # environment variable.
+      POSTGRES_PASSWORD: secret
+      # This optional environment variable is used in conjunction with POSTGRES_PASSWORD 
+      # to set a user and its password. This variable will create the specified user with 
+      # superuser power and a database with the same name. If it is not specified, then 
+      # the default user of postgres will be used.
+      POSTGRES_USER: admin
+      # This optional environment variable can be used to define a 
+      # different name for the default database that is created when 
+      # the image is first started. If it is not specified, then the 
+      # value of POSTGRES_USER will be used.
+      POSTGRES_DB: postgres
+
+      # This optional environment variable can be used to send arguments to postgres initdb. 
+      # The value is a space separated string of arguments as postgres initdb would expect them. 
+      # This is useful for adding functionality like data page checksums: -e POSTGRES_INITDB_ARGS="--data-checksums".
+      # POSTGRES_INITDB_ARGS: 
+      
+      # This optional environment variable can be used to define another location for the 
+      # Postgres transaction log. By default the transaction log is stored in a subdirectory 
+      # of the main Postgres data folder (PGDATA)
+      # POSTGRES_INITDB_WALDIR: 
+
+      # This optional variable can be used to control the auth-method for host connections for all databases, 
+      # all users, and all addresses. If unspecified then scram-sha-256 password authentication⁠ is used (in 14+; md5 in older releases)
+      # POSTGRES_HOST_AUTH_METHOD: 
+
+      # This optional variable can be used to define another location - like a subdirectory - for the database files. 
+      # The default is /var/lib/postgresql/data
+      # PGDATA:
+    ports:
+      - 5432:5432 
+    networks:
+      - mamey
+
+      
+  prometheus:
+    build: ./prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+    ports:
+      - 9090:9090
+
+  rabbitmq:
+    build: ./rabbitmq
+    container_name: rabbitmq
+    restart: unless-stopped
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 15692:15692
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+    ports:
+      - 6379:6379
+ 
+  seq:
+    image: datalust/seq 
+    container_name: seq
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+    ports:
+      - 5341:80
+
+  vault:
+    image: hashicorp/vault:latest
+    container_name: vault
+    restart: unless-stopped
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+      - VAULT_DEV_ROOT_TOKEN_ID=secret
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - mamey
+      # - futureheadgroup
+      # - futurebdet
+      # - fba
+    ports:
+      - 8200:8200
+

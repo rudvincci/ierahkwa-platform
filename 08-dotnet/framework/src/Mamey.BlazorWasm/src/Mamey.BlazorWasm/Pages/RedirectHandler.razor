@@ -1,0 +1,29 @@
+@*@using System.Web
+@using System.IdentityModel.Tokens.Jwt
+@page "/redirect-handler"
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Handling Claims...");
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (uri.Query.Contains("id_token"))
+        {
+            var idToken = HttpUtility.ParseQueryString(uri.Query).Get("id_token");
+            // Decode and process the token
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(idToken) as JwtSecurityToken;
+
+            // Extract claims and process them
+            var claims = jsonToken.Claims;
+            foreach (var claim in claims)
+            {
+                Console.WriteLine($"{claim.Type}: {claim.Value}");
+            }
+
+            // Redirect to home or another page after processing
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}*@

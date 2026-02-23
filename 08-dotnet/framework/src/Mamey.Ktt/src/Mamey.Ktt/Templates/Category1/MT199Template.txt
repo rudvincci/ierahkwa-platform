@@ -1,0 +1,73 @@
+TELEX MT199 FROM {{SenderBankName}}
+
+FROM     : {{SenderBankName}}
+SUBJECT  : {{TransactionSubject}}
+DATE     : {{TransactionDateUtc}}
+UTC INTERNATIONAL TELEX ACKS  : {{TransactionDateUtc}}		
+CUSTOMER’S COPY			
+--------------------------------------------------------------------------------
+NETWORK: TELEX SESSION HOLDER: {{SenderBankName}}
+DELIVERY STATUS: NETWORK ACK
+------------------------ Instance Type and Transmission ------------------------
+ORIGINAL PRIORITY DELIVERY : {{Priority}}
+MESSAGE INPUT REFERENCE    : {{InputReference}}
+MESSAGE OUTPUT REFERENCE   : {{OutputReference}}
+--------------------------------------Message Header----------------------------		
+TELEX Input        : MT199 PRE ADVICE		
+SENDER BANK	       : {{SenderBankName}}
+SENDER BANK ADDRESS: {{SenderBankAddress1}}
+                   : {{SenderBankAddress2}}
+ACCOUNT NAME       : {{SenderAccountName}}
+ACCOUNT NUMBER     : {{SenderAccountNumber}}
+TELEX CODE (KTT)   : {{SenderTelexCode}}
+--------------------------------------------------------------------------------
+RECEIVER
+CORRESPONDENT BANK : {{ReceiverBankName}}
+BENFICIARY BANK    : {{BeneficiaryBankName}}
+BENEFICIARY CLIENT : {{BeneficiaryClientName}}
+ACCOUNT NUMBER	   : {{BeneficiaryAccountNumber}}
+TELEX CODE (KTT)   : {{ReceiverTelexCode}}
+INTERMEDIATION     : {{Intermediary}}
+ATTENTION		   : {{ReceiverAttention}}
+BENEFICIARY ACCOUNT FINAL DESTINY: {{BeneficiaryAccountFinalDestiny}}
+--------------------------------------Message Text------------------------------			
+F20        : TRANSACTION REFERENCE NUMBER : {{TransactionReference}}			
+F79        : NARRATIVE
+WE {{SenderBankName}} LOCATED AT	
+{{SenderBankAddress1}}
+{{SenderBankAddress2}}
+HEREBY CONFIRM OUR READINESS, WILLINGNESS, AND ABILITY (RWA) TO ISSUE FUNDS ON
+BEHALF OF OUR CLIENT
+{{SenderAccountName}},
+FOR THE BENEFIT OF M/S {{BeneficiaryClientName}} (BANK DETAILS BELOW), FOR THE
+PURPOSE OF INVESTMENT RENEWABLE ENERGY PROJECTS.
+
+THE TOTAL COMMITED SUM IS {{Amount}} ({{AmountWords}}), TO BE RELEASED IN TRANCHES
+TO BE MUTUALLY AGREED UPON BY THE PARTIES.
+
+FUND TRANSFERS WILL BE EXECUTED VIA SWIFT KTT TO THE FOLLOWING ACCOUNT DETAILS:
+
+BENEFICIARY NAME: {{BeneficiaryClientName}}
+ACCOUNT NUMBER : {{BeneficiaryAccountNumber}}
+BENEFICIARY BANK : {{BeneficiaryBankName}}
+SWIFT CODE: {{BeneficiaryBankSwift}}
+CORRESPONDENT BANK: {{ReceiverBankName}}
+IBAN: {{IBAN}} (TELEX NO. {{ReceiverTelexCode}}
+
+THE ABOVE CONFIRMATION IS MADE ON BEHALF OF OUR CLIENT, UNDER THE SUPERVISION AND
+INTERMEDIATION OF {{Intermediary}}.
+
+THIS MESSAGE IS FOR INFORMATION PURPOSES ONLY AND DOES NOT CONSTITUTE A FINANCIAL
+COMMENT UNTIL A FORMAL AGREEMENT IS SIGNED.
+
+AUTHORIZED SIGNATORY
+
+ON BEHALF OF {{SenderBankName}},
+
+
+{{BankOfficerName}}
+{{BankOfficerPosition}}
+{{SenderBankName}}
+			
+===========================MESSAGE TRAILER==========================
+END TELEX MESSAGE	

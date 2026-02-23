@@ -1,0 +1,46 @@
+@using Mamey.BlazorWasm.Components.Foundation
+
+<MudTimePicker T="TimeSpan?"
+               Label="@Label"
+               Placeholder="@Placeholder"
+               Time="@_time"
+               TimeChanged="@OnTimeChanged"
+               Required="@Required"
+               Disabled="@Disabled"
+               Variant="@Variant"
+               HelperText="@HelperText"
+               Class="@Class"
+               Style="@Style" />
+<FieldMessages HelperText="@HelperText" />
+
+@code {
+    [Parameter] public string Label { get; set; } = "Time";
+    [Parameter] public string HelperText { get; set; } = "Select a time";
+    [Parameter] public string Placeholder { get; set; } = "Select time";
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public TimeSpan? Value { get; set; }
+    [Parameter] public EventCallback<TimeSpan?> ValueChanged { get; set; }
+
+    private TimeSpan? _time;
+
+    protected override void OnParametersSet()
+    {
+        _time = Value;
+    }
+
+    private async Task OnTimeChanged(TimeSpan? time)
+    {
+        _time = time;
+        await ValueChanged.InvokeAsync(time);
+        StateHasChanged();
+    }
+}
+
+
+
+

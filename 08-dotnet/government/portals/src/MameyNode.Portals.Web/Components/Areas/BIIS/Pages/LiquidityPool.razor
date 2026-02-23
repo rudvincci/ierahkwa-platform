@@ -1,0 +1,93 @@
+@page "/biis/liquidity-pool"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IBIISClient BIISClient
+@inject ILogger<LiquidityPool> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Treaty Liquidity Pool" Icon="fas fa-swimming-pool" Subtitle="Manage treaty-based liquidity pools">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Pools" Value="@_totalPools.ToString()" Icon="fas fa-database" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Liquidity" Value="@_totalLiquidity.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Active Pools" Value="@_activePools.ToString()" Icon="fas fa-check-circle" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Liquidity Pools" Class="mt-4">
+        <MudTable T="LiquidityPoolInfo" Items="@_pools" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Pool ID</MudTh>
+                <MudTh>Treaty ID</MudTh>
+                <MudTh>Currency</MudTh>
+                <MudTh>Total Liquidity</MudTh>
+                <MudTh>Available</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.PoolId</MudTd>
+                <MudTd>@context.TreatyId</MudTd>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd>@decimal.Parse(context.TotalLiquidity).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.AvailableLiquidity).ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="PoolStatus" Size="Size.Small" Color="@(context.Status == PoolStatus.Active ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<LiquidityPoolInfo> _pools = new();
+    private int _totalPools;
+    private decimal _totalLiquidity;
+    private int _activePools;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _pools = await BIISClient.GetLiquidityPoolsAsync();
+            _totalPools = _pools.Count;
+            _totalLiquidity = _pools.Sum(p => decimal.Parse(p.TotalLiquidity));
+            _activePools = _pools.Count(p => p.Status == PoolStatus.Active);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading liquidity pools");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

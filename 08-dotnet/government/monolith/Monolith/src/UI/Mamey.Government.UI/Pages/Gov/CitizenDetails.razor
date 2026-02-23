@@ -1,0 +1,644 @@
+@page "/gov/citizens/{CitizenId}"
+@page "/gov/citizens/{CitizenId}/documents"
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+
+<PageTitle>Citizen @CitizenId - Government Portal</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+}
+else if (_citizen is null)
+{
+    <MudPaper Elevation="0" Class="pa-6">
+        <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="py-16">
+            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" Color="Color.Warning" />
+            <MudText Typo="Typo.h5" Class="mt-4">Citizen Not Found</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                The citizen with ID @CitizenId could not be found.
+            </MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/gov/citizens" Class="mt-4">
+                Back to Citizens
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+}
+else
+{
+    <MudPaper Elevation="0" Class="pa-6">
+        <MudStack Spacing="4">
+            @* Header *@
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                <MudStack>
+                    <MudBreadcrumbs Items="_breadcrumbs" />
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudAvatar Size="Size.Large" Color="Color.Primary">@_citizen.Name[0]</MudAvatar>
+                        <MudStack Spacing="0">
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                <MudText Typo="Typo.h4">@_citizen.Name</MudText>
+                                <MudChip T="string" Color="@GetStatusColor(_citizen.Status)" Size="Size.Medium">
+                                    @_citizen.Status
+                                </MudChip>
+                            </MudStack>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                @_citizen.CitizenId • Registered @_citizen.RegisteredDate.ToString("MMMM dd, yyyy")
+                            </MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudStack>
+                <MudStack Row="true" Spacing="2">
+                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Edit">
+                        Edit
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Print">
+                        Print
+                    </MudButton>
+                    <MudMenu Label="Actions" Variant="Variant.Filled" Color="Color.Primary"
+                             EndIcon="@Icons.Material.Filled.ArrowDropDown">
+                        <MudMenuItem Icon="@Icons.Material.Filled.CreditCard">Issue ID Card</MudMenuItem>
+                        <MudMenuItem Icon="@Icons.Material.Filled.Book">Issue Passport</MudMenuItem>
+                        <MudMenuItem Icon="@Icons.Material.Filled.CardMembership">Issue Certificate</MudMenuItem>
+                        <MudDivider />
+                        @if (_citizen.Status == "Active")
+                        {
+                            <MudMenuItem Icon="@Icons.Material.Filled.Block" IconColor="Color.Error"
+                                         OnClick="@(() => _suspendDialogVisible = true)">Suspend Citizen</MudMenuItem>
+                        }
+                        else if (_citizen.Status == "Suspended")
+                        {
+                            <MudMenuItem Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Success"
+                                         OnClick="ReactivateCitizen">Reactivate Citizen</MudMenuItem>
+                        }
+                    </MudMenu>
+                </MudStack>
+            </MudStack>
+
+            <MudDivider />
+
+            @* Tabs *@
+            <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" @bind-ActivePanelIndex="_activeTab">
+                <MudTabPanel Text="Overview" Icon="@Icons.Material.Filled.Person">
+                    <MudGrid Spacing="4" Class="mt-4">
+                        @* Personal Information *@
+                        <MudItem xs="12" md="6">
+                            <MudCard Elevation="2">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                            <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Primary" />
+                                            <MudText Typo="Typo.h6">Personal Information</MudText>
+                                        </MudStack>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudStack Spacing="3">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Full Name</MudText>
+                                            <MudText Typo="Typo.body1"><strong>@_citizen.Name</strong></MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Date of Birth</MudText>
+                                            <MudText Typo="Typo.body1">@_citizen.DateOfBirth.ToString("MMMM dd, yyyy") (@GetAge(_citizen.DateOfBirth) years old)</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Gender</MudText>
+                                            <MudText Typo="Typo.body1">@_citizen.Gender</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Place of Birth</MudText>
+                                            <MudText Typo="Typo.body1">@_citizen.PlaceOfBirth</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Nationality</MudText>
+                                            <MudText Typo="Typo.body1">@_citizen.Nationality</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+
+                        @* Contact Information *@
+                        <MudItem xs="12" md="6">
+                            <MudCard Elevation="2">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                            <MudIcon Icon="@Icons.Material.Filled.ContactPhone" Color="Color.Primary" />
+                                            <MudText Typo="Typo.h6">Contact Information</MudText>
+                                        </MudStack>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudStack Spacing="3">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Email Address</MudText>
+                                            <MudText Typo="Typo.body1">@_citizen.Email</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Phone Number</MudText>
+                                            <MudText Typo="Typo.body1">@_citizen.Phone</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Address</MudText>
+                                            <MudText Typo="Typo.body1">@_citizen.Address</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">City / State</MudText>
+                                            <MudText Typo="Typo.body1">@_citizen.City, @_citizen.State @_citizen.PostalCode</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+
+                        @* Issued Documents Summary *@
+                        <MudItem xs="12">
+                            <MudCard Elevation="2">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                            <MudIcon Icon="@Icons.Material.Filled.Badge" Color="Color.Primary" />
+                                            <MudText Typo="Typo.h6">Issued Documents</MudText>
+                                        </MudStack>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudGrid>
+                                        @foreach (var doc in _issuedDocuments)
+                                        {
+                                            <MudItem xs="12" sm="6" md="4">
+                                                <MudCard Elevation="1" Outlined="true">
+                                                    <MudCardContent>
+                                                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                                                            <MudStack Spacing="1">
+                                                                <MudText Typo="Typo.subtitle2">@doc.Type</MudText>
+                                                                <MudText Typo="Typo.body2" Color="Color.Secondary">@doc.Number</MudText>
+                                                                <MudText Typo="Typo.caption">Expires: @doc.ExpiryDate.ToString("MMM dd, yyyy")</MudText>
+                                                            </MudStack>
+                                                            <MudChip T="string" Color="@GetDocumentStatusColor(doc.Status)" Size="Size.Small">
+                                                                @doc.Status
+                                                            </MudChip>
+                                                        </MudStack>
+                                                    </MudCardContent>
+                                                    <MudCardActions>
+                                                        <MudButton Size="Size.Small" Color="Color.Primary">View</MudButton>
+                                                        <MudButton Size="Size.Small">Download</MudButton>
+                                                    </MudCardActions>
+                                                </MudCard>
+                                            </MudItem>
+                                        }
+                                    </MudGrid>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    </MudGrid>
+                </MudTabPanel>
+
+                <MudTabPanel Text="Documents" Icon="@Icons.Material.Filled.Folder">
+                    <MudCard Elevation="2" Class="mt-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Supporting Documents</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                                           StartIcon="@Icons.Material.Filled.Upload">
+                                    Upload Document
+                                </MudButton>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent Class="pa-0">
+                            <MudTable Items="@_supportingDocuments" Hover="true" Dense="true" Elevation="0">
+                                <HeaderContent>
+                                    <MudTh>Document</MudTh>
+                                    <MudTh>Type</MudTh>
+                                    <MudTh>Uploaded</MudTh>
+                                    <MudTh>Status</MudTh>
+                                    <MudTh>Actions</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Document">
+                                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                            <MudIcon Icon="@GetDocumentIcon(context.Type)" Size="Size.Small" />
+                                            <MudText>@context.Name</MudText>
+                                        </MudStack>
+                                    </MudTd>
+                                    <MudTd DataLabel="Type">@context.Type</MudTd>
+                                    <MudTd DataLabel="Uploaded">@context.UploadedDate.ToString("MMM dd, yyyy")</MudTd>
+                                    <MudTd DataLabel="Status">
+                                        <MudChip T="string" Color="@GetDocumentStatusColor(context.Status)" Size="Size.Small">
+                                            @context.Status
+                                        </MudChip>
+                                    </MudTd>
+                                    <MudTd DataLabel="Actions">
+                                        <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" Size="Size.Small" />
+                                            <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Default" Size="Size.Small" />
+                                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" />
+                                        </MudButtonGroup>
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudTabPanel>
+
+                <MudTabPanel Text="Activity" Icon="@Icons.Material.Filled.Timeline">
+                    <MudCard Elevation="2" Class="mt-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Activity History</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudTimeline TimelinePosition="TimelinePosition.Start">
+                                @foreach (var activity in _activities)
+                                {
+                                    <MudTimelineItem Color="@GetActivityColor(activity.Type)" Size="Size.Small">
+                                        <ItemContent>
+                                            <MudStack>
+                                                <MudText Typo="Typo.body2"><strong>@activity.Title</strong></MudText>
+                                                <MudText Typo="Typo.body2">@activity.Description</MudText>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                                    @activity.Timestamp.ToString("MMM dd, yyyy 'at' h:mm tt") • @activity.User
+                                                </MudText>
+                                            </MudStack>
+                                        </ItemContent>
+                                    </MudTimelineItem>
+                                }
+                            </MudTimeline>
+                        </MudCardContent>
+                    </MudCard>
+                </MudTabPanel>
+
+                <MudTabPanel Text="Notes" Icon="@Icons.Material.Filled.Note">
+                    <MudCard Elevation="2" Class="mt-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Notes</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                                           StartIcon="@Icons.Material.Filled.Add">
+                                    Add Note
+                                </MudButton>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Spacing="3">
+                                @foreach (var note in _notes)
+                                {
+                                    <MudCard Elevation="1" Outlined="true">
+                                        <MudCardContent>
+                                            <MudText Typo="Typo.body2">@note.Content</MudText>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mt-2">
+                                                @note.Author • @note.CreatedAt.ToString("MMM dd, yyyy 'at' h:mm tt")
+                                            </MudText>
+                                        </MudCardContent>
+                                    </MudCard>
+                                }
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudTabPanel>
+            </MudTabs>
+        </MudStack>
+    </MudPaper>
+}
+
+@* Suspend Dialog *@
+<MudDialog @bind-Visible="_suspendDialogVisible">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Class="mr-2" />
+            Suspend Citizen
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-4">
+            Are you sure you want to suspend <strong>@_citizen?.Name</strong> (@CitizenId)?
+            This will revoke all active documents.
+        </MudText>
+        <MudTextField @bind-Value="_suspendReason" Label="Reason for Suspension" Variant="Variant.Outlined"
+                      Lines="3" Required="true" RequiredError="Please provide a reason" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _suspendDialogVisible = false)">Cancel</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="SuspendCitizen">Suspend</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject Mamey.Government.UI.Services.ICitizensService CitizensService
+@inject Mamey.Government.UI.Services.IPassportsService PassportsService
+@inject Mamey.Government.UI.Services.ITravelIdentitiesService TravelIdentitiesService
+@inject Mamey.Government.UI.Services.ICertificatesService CertificatesService
+
+@code {
+    [Parameter]
+    public string CitizenId { get; set; } = "";
+
+    // Default tenant ID - in production, get from user claims
+    private static readonly Guid TenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    private bool _loading = true;
+    private int _activeTab = 0;
+    private bool _suspendDialogVisible = false;
+    private string _suspendReason = "";
+
+    private CitizenDetailsData? _citizen;
+    private List<IssuedDocument> _issuedDocuments = new();
+    private List<SupportingDocument> _supportingDocuments = new();
+    private List<Activity> _activities = new();
+    private List<Note> _notes = new();
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    private record CitizenDetailsData(
+        Guid Id,
+        string CitizenId,
+        string Name,
+        string Email,
+        string Phone,
+        string Status,
+        DateTime RegisteredDate,
+        DateTime DateOfBirth,
+        string Gender,
+        string PlaceOfBirth,
+        string Nationality,
+        string Address,
+        string City,
+        string State,
+        string PostalCode);
+
+    private record IssuedDocument(
+        string Type,
+        string Number,
+        DateTime IssueDate,
+        DateTime ExpiryDate,
+        string Status);
+
+    private record SupportingDocument(
+        Guid Id,
+        string Name,
+        string Type,
+        DateTime UploadedDate,
+        string Status);
+
+    private record Activity(
+        DateTime Timestamp,
+        string Type,
+        string Title,
+        string Description,
+        string User);
+
+    private record Note(
+        Guid Id,
+        string Content,
+        string Author,
+        DateTime CreatedAt);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _breadcrumbs = new List<BreadcrumbItem>
+        {
+            new("Home", href: "/"),
+            new("Citizens", href: "/gov/citizens"),
+            new(CitizenId, href: null, disabled: true)
+        };
+
+        // Check if we're on the documents route
+        if (Navigation.Uri.Contains("/documents"))
+        {
+            _activeTab = 1;
+        }
+
+        await LoadCitizenData();
+    }
+
+    private async Task LoadCitizenData()
+    {
+        _loading = true;
+        StateHasChanged();
+
+        try
+        {
+            // Try to parse CitizenId as Guid for API lookup
+            if (!Guid.TryParse(CitizenId, out var citizenGuid))
+            {
+                LoadMockData();
+                _loading = false;
+                return;
+            }
+            var citizenData = await CitizensService.GetByIdAsync(citizenGuid);
+            
+            if (citizenData is not null)
+            {
+                _citizen = new CitizenDetailsData(
+                    citizenData.Id,
+                    citizenData.CitizenNumber ?? CitizenId,
+                    citizenData.FullName ?? $"{citizenData.FirstName} {citizenData.LastName}",
+                    citizenData.Email ?? "",
+                    citizenData.Phone ?? "",
+                    citizenData.Status ?? "Active",
+                    citizenData.CreatedAt,
+                    citizenData.DateOfBirth ?? DateTime.MinValue,
+                    citizenData.Gender ?? "Unknown",
+                    citizenData.PlaceOfBirth ?? "",
+                    "Citizen",
+                    citizenData.Address ?? "",
+                    citizenData.City ?? "",
+                    citizenData.State ?? "",
+                    citizenData.PostalCode ?? "");
+
+                // Load passports
+                var passports = await PassportsService.GetByCitizenAsync(citizenData.Id);
+                var passportDocs = passports?.Select(p => new IssuedDocument(
+                    "Passport",
+                    p.PassportNumber,
+                    p.IssueDate,
+                    p.ExpiryDate,
+                    p.Status)).ToList() ?? new();
+
+                // Load travel IDs
+                var travelIds = await TravelIdentitiesService.GetByCitizenAsync(citizenData.Id);
+                var travelIdDocs = travelIds?.Select(t => new IssuedDocument(
+                    "National ID Card",
+                    t.IdNumber,
+                    t.IssueDate,
+                    t.ExpiryDate,
+                    t.Status)).ToList() ?? new();
+
+                // Load certificates
+                var certificates = await CertificatesService.GetByCitizenAsync(citizenData.Id);
+                var certDocs = certificates?.Select(c => new IssuedDocument(
+                    c.Type,
+                    c.CertificateNumber,
+                    c.IssueDate,
+                    DateTime.MaxValue,
+                    c.Status)).ToList() ?? new();
+
+                _issuedDocuments = passportDocs.Concat(travelIdDocs).Concat(certDocs).ToList();
+
+                // Supporting documents and activities - still mock for now
+                _supportingDocuments = new List<SupportingDocument>
+                {
+                    new(Guid.NewGuid(), "Government-issued ID", "Identity", citizenData.CreatedAt, "Verified"),
+                    new(Guid.NewGuid(), "Proof of Residence", "Address", citizenData.CreatedAt, "Verified"),
+                    new(Guid.NewGuid(), "Birth Certificate", "Identity", citizenData.CreatedAt, "Verified")
+                };
+
+                _activities = new List<Activity>
+                {
+                    new(citizenData.CreatedAt, "Registration", "Citizen Registered", "Citizenship application approved and citizen registered.", "System")
+                };
+
+                _notes = new List<Note>();
+            }
+            else
+            {
+                // Fallback to mock data if not found
+                LoadMockData();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading citizen data: {ex.Message}");
+            LoadMockData();
+        }
+
+        _loading = false;
+    }
+
+    private void LoadMockData()
+    {
+        _citizen = new CitizenDetailsData(
+            Guid.NewGuid(),
+            CitizenId,
+            "John Smith",
+            "john.smith@email.com",
+            "+1 (555) 010-2045",
+            "Active",
+            DateTime.Now.AddMonths(-6),
+            new DateTime(1985, 6, 15),
+            "Male",
+            "Springfield, Illinois",
+            "United States Citizen",
+            "742 Evergreen Terrace",
+            "Springfield",
+            "IL",
+            "62701");
+
+        _issuedDocuments = new List<IssuedDocument>
+        {
+            new("National ID Card", "ID-2024-00001", DateTime.Now.AddMonths(-6), DateTime.Now.AddYears(10), "Active"),
+            new("Passport", "P-2024-00001", DateTime.Now.AddMonths(-5), DateTime.Now.AddYears(10), "Active"),
+            new("Birth Certificate", "BC-1985-12345", new DateTime(1985, 6, 20), DateTime.MaxValue, "Active")
+        };
+
+        _supportingDocuments = new List<SupportingDocument>
+        {
+            new(Guid.NewGuid(), "Government-issued ID", "Identity", DateTime.Now.AddMonths(-6), "Verified"),
+            new(Guid.NewGuid(), "Proof of Residence", "Address", DateTime.Now.AddMonths(-6), "Verified"),
+            new(Guid.NewGuid(), "Birth Certificate", "Identity", DateTime.Now.AddMonths(-6), "Verified"),
+            new(Guid.NewGuid(), "Passport Photo", "Photo", DateTime.Now.AddMonths(-6), "Verified")
+        };
+
+        _activities = new List<Activity>
+        {
+            new(DateTime.Now.AddDays(-5), "Document", "Passport Issued", "Passport P-2024-00001 issued.", "Agent Amelia Grant"),
+            new(DateTime.Now.AddMonths(-1), "Document", "ID Card Issued", "National ID Card ID-2024-00001 issued.", "Agent Amelia Grant"),
+            new(DateTime.Now.AddMonths(-6), "Registration", "Citizen Registered", "Citizenship application approved and citizen registered.", "Agent Rafael Ortega"),
+            new(DateTime.Now.AddMonths(-6).AddDays(-10), "Application", "Application Approved", "Citizenship application approved after review.", "Agent Rafael Ortega")
+        };
+
+        _notes = new List<Note>
+        {
+            new(Guid.NewGuid(), "Citizen requested expedited passport processing. Request approved due to upcoming travel.", "Agent Amelia Grant", DateTime.Now.AddDays(-5)),
+            new(Guid.NewGuid(), "All required documents verified. Citizenship approved.", "Agent Rafael Ortega", DateTime.Now.AddMonths(-6))
+        };
+    }
+
+    private async Task SuspendCitizen()
+    {
+        if (string.IsNullOrWhiteSpace(_suspendReason))
+        {
+            Snackbar.Add("Please provide a reason for suspension", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            if (_citizen is not null)
+            {
+                await CitizensService.SuspendAsync(_citizen.Id, _suspendReason);
+                Snackbar.Add($"Citizen {CitizenId} suspended", Severity.Info);
+                _suspendDialogVisible = false;
+                Navigation.NavigateTo("/gov/citizens");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to suspend citizen: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task ReactivateCitizen()
+    {
+        try
+        {
+            if (_citizen is not null)
+            {
+                await CitizensService.ReactivateAsync(_citizen.Id);
+                Snackbar.Add($"Citizen {CitizenId} reactivated", Severity.Success);
+                await LoadCitizenData();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to reactivate citizen: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private int GetAge(DateTime dateOfBirth)
+    {
+        var today = DateTime.Today;
+        var age = today.Year - dateOfBirth.Year;
+        if (dateOfBirth.Date > today.AddYears(-age)) age--;
+        return age;
+    }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Active" => Color.Success,
+        "Inactive" => Color.Warning,
+        "Suspended" => Color.Error,
+        _ => Color.Default
+    };
+
+    private Color GetDocumentStatusColor(string status) => status switch
+    {
+        "Active" or "Verified" => Color.Success,
+        "Pending" => Color.Warning,
+        "Expired" or "Revoked" => Color.Error,
+        _ => Color.Default
+    };
+
+    private Color GetActivityColor(string type) => type switch
+    {
+        "Registration" => Color.Primary,
+        "Document" => Color.Info,
+        "Application" => Color.Success,
+        "Note" => Color.Default,
+        "Suspension" => Color.Error,
+        _ => Color.Default
+    };
+
+    private string GetDocumentIcon(string type) => type switch
+    {
+        "Identity" => Icons.Material.Filled.Badge,
+        "Address" => Icons.Material.Filled.Home,
+        "Photo" => Icons.Material.Filled.Photo,
+        _ => Icons.Material.Filled.Description
+    };
+}

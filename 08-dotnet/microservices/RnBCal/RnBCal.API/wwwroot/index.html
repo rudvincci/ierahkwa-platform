@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IERAHKWA RnBCal | Rental & Booking Calendar Sync</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --gold-dark: #B8860B;
+            --neon-green: #00FF41;
+            --neon-cyan: #00FFFF;
+            --neon-magenta: #FF00FF;
+            --bg-dark: #0a0e17;
+            --bg-card: #0d1a2d;
+            --bg-hover: #142238;
+            --border: #1e3a5f;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, #0a0e17 0%, #0d1a2d 50%, #1a0a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 65, 0.05) 0%, transparent 50%);
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(0, 255, 65, 0.05) 100%);
+            border: 2px solid var(--gold);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.2);
+        }
+        
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .header .subtitle {
+            font-size: 1.3em;
+            color: var(--neon-green);
+            margin-bottom: 20px;
+        }
+        
+        .header .description {
+            color: #aaa;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: var(--gold);
+            text-decoration: none;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        
+        .back-link:hover {
+            color: var(--neon-green);
+            transform: translateX(-5px);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, rgba(13, 26, 45, 0.8) 0%, rgba(10, 14, 23, 0.9) 100%);
+            border: 2px solid var(--border);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
+        }
+        
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .card h3 {
+            color: var(--gold);
+            margin-bottom: 15px;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .card p {
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .card ul li {
+            color: #888;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        .card ul li i {
+            color: var(--neon-green);
+            margin-right: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+            border: 2px solid;
+        }
+        
+        .btn-primary {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+        }
+        
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .api-section {
+            background: rgba(13, 26, 45, 0.6);
+            border: 2px solid var(--border);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .api-section h2 {
+            color: var(--gold);
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 20px;
+        }
+        
+        .api-endpoint {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid var(--neon-green);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .api-endpoint .method {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .method.post { background: #00FF41; color: #000; }
+        .method.get { background: #00FFFF; color: #000; }
+        .method.put { background: #FF6B35; color: #fff; }
+        .method.delete { background: #FF1744; color: #fff; }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            border-top: 2px solid var(--border);
+            margin-top: 50px;
+        }
+        
+        .footer .logo {
+            color: var(--gold);
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .calendar-providers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .provider-badge {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid var(--gold);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <div class="container">
+        <a href="#" class="back-link" onclick="if(history.length>1)history.back();else window.location='http://localhost:8545/platform';return false"><i class="bi bi-arrow-left"></i> Back to IERAHKWA Platform</a>
+        
+        <div class="header">
+            <h1><i class="bi bi-calendar-check"></i> IERAHKWA RnBCAL</h1>
+            <div class="subtitle">Rental & Booking Calendar Sync System</div>
+            <p class="description">
+                Seamlessly sync your rental and booking orders across multiple calendar platforms. 
+                Support for car rentals, bike rentals, yacht rentals, Airbnb properties, hotels, 
+                and more. Generate ICS files, send calendar invitations via email, and enable 
+                direct calendar links for Google, Yahoo, Outlook, Office365, Apple, and AOL.
+            </p>
+            <span class="version-badge">v1.0.4 - October 2025</span>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">📅</div>
+                <h3>Multi-Provider Support</h3>
+                <p>Sync bookings across all major calendar platforms:</p>
+                <div class="calendar-providers">
+                    <span class="provider-badge"><i class="bi bi-google"></i> Google</span>
+                    <span class="provider-badge"><i class="bi bi-apple"></i> Apple</span>
+                    <span class="provider-badge"><i class="bi bi-microsoft"></i> Outlook</span>
+                    <span class="provider-badge"><i class="bi bi-building"></i> Office 365</span>
+                    <span class="provider-badge">Yahoo!</span>
+                    <span class="provider-badge">AOL</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">🚗</div>
+                <h3>Rental Types Supported</h3>
+                <ul>
+                    <li><i class="bi bi-check-circle"></i> Car Rentals</li>
+                    <li><i class="bi bi-check-circle"></i> Bike Rentals</li>
+                    <li><i class="bi bi-check-circle"></i> Yacht Rentals</li>
+                    <li><i class="bi bi-check-circle"></i> Hotel Rooms</li>
+                    <li><i class="bi bi-check-circle"></i> Airbnb Properties</li>
+                    <li><i class="bi bi-check-circle"></i> Equipment Rentals</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">✨</div>
+                <h3>Key Features</h3>
+                <ul>
+                    <li><i class="bi bi-check-circle"></i> ICS File Generation (RFC 5545)</li>
+                    <li><i class="bi bi-check-circle"></i> Direct Calendar Links</li>
+                    <li><i class="bi bi-check-circle"></i> Email Integration</li>
+                    <li><i class="bi bi-check-circle"></i> Google Calendar Auto-Sync</li>
+                    <li><i class="bi bi-check-circle"></i> Booking Management API</li>
+                    <li><i class="bi bi-check-circle"></i> IGT Token Integration</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="api-section">
+            <h2><i class="bi bi-code-square"></i> API Endpoints</h2>
+            
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                <span>/api/calendar/generate-ics</span>
+                <p style="color: #888; margin-top: 10px;">Generate ICS calendar file for a booking</p>
+            </div>
+            
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                <span>/api/calendar/calendar-links</span>
+                <p style="color: #888; margin-top: 10px;">Get direct calendar links for all providers</p>
+            </div>
+            
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                <span>/api/calendar/sync</span>
+                <p style="color: #888; margin-top: 10px;">Full calendar sync with ICS and links generation</p>
+            </div>
+            
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                <span>/api/calendar/send-confirmation</span>
+                <p style="color: #888; margin-top: 10px;">Send booking confirmation email with calendar attachment</p>
+            </div>
+            
+            <div class="api-endpoint">
+                <span class="method get">GET</span>
+                <span>/api/calendar/google/oauth-url</span>
+                <p style="color: #888; margin-top: 10px;">Get Google Calendar OAuth authorization URL</p>
+            </div>
+            
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                <span>/api/bookings</span>
+                <p style="color: #888; margin-top: 10px;">Create a new booking</p>
+            </div>
+            
+            <div class="api-endpoint">
+                <span class="method get">GET</span>
+                <span>/api/bookings</span>
+                <p style="color: #888; margin-top: 10px;">Get all bookings</p>
+            </div>
+            
+            <div class="api-endpoint">
+                <span class="method get">GET</span>
+                <span>/api/bookings/{id}</span>
+                <p style="color: #888; margin-top: 10px;">Get specific booking by ID</p>
+            </div>
+            
+            <div class="api-endpoint">
+                <span class="method get">GET</span>
+                <span>/api/bookings/stats</span>
+                <p style="color: #888; margin-top: 10px;">Get booking statistics and analytics</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="/swagger" class="btn btn-primary">
+                <i class="bi bi-file-code"></i> View API Documentation (Swagger)
+            </a>
+            <a href="/health" class="btn btn-secondary">
+                <i class="bi bi-heart-pulse"></i> Health Check
+            </a>
+        </div>
+        
+        <div class="footer">
+            <div class="logo">🏛️ Sovereign Government of Ierahkwa Ne Kanienke</div>
+            <p>IERAHKWA RnBCal v1.0.4 • .NET 10 • Integrated with IERAHKWA Platform</p>
+            <p>Rental & Booking Calendar Sync System • © 2026 All Rights Reserved</p>
+        </div>
+    </div>
+    
+    <script>
+        // Simple console greeting
+        console.log('%c🏛️ IERAHKWA RnBCal v1.0.4', 'color: #FFD700; font-size: 20px; font-weight: bold;');
+        console.log('%cRental & Booking Calendar Sync System', 'color: #00FF41; font-size: 14px;');
+        console.log('%cPowered by IERAHKWA Futurehead Platform', 'color: #00FFFF; font-size: 12px;');
+    </script>
+</body>
+</html>

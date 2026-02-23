@@ -1,0 +1,28 @@
+@page "/upg/multi-rail"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MudBlazor
+@inject IUPGClient UPGClient
+@inject ILogger<MultiRail> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Multi-Rail Routing" Icon="fas fa-route" Subtitle="Configure routing options">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <CardContainer Title="Route Options" Class="mt-4">
+        <MudText Typo="Typo.body1">Multi-rail routing allows transactions to be routed through multiple payment rails for optimal cost and speed.</MudText>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private async Task RefreshData()
+    {
+        StateHasChanged();
+    }
+}
+

@@ -1,0 +1,296 @@
+---
+# Foundation Services Kubernetes Deployments
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pupitre-users
+  namespace: pupitre-foundation
+  labels:
+    app: pupitre-users
+    tier: foundation
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pupitre-users
+  template:
+    metadata:
+      labels:
+        app: pupitre-users
+        tier: foundation
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "60001"
+    spec:
+      containers:
+        - name: pupitre-users
+          image: ghcr.io/pupitre/pupitre-users:latest
+          ports:
+            - containerPort: 60001
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: ASPNETCORE_URLS
+              value: "http://+:60001"
+          envFrom:
+            - configMapRef:
+                name: pupitre-common-config
+            - secretRef:
+                name: pupitre-secrets
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 60001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 60001
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pupitre-users
+  namespace: pupitre-foundation
+spec:
+  selector:
+    app: pupitre-users
+  ports:
+    - port: 60001
+      targetPort: 60001
+  type: ClusterIP
+---
+# GLEs Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pupitre-gles
+  namespace: pupitre-foundation
+  labels:
+    app: pupitre-gles
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pupitre-gles
+  template:
+    metadata:
+      labels:
+        app: pupitre-gles
+    spec:
+      containers:
+        - name: pupitre-gles
+          image: ghcr.io/pupitre/pupitre-gles:latest
+          ports:
+            - containerPort: 60002
+          envFrom:
+            - configMapRef:
+                name: pupitre-common-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pupitre-gles
+  namespace: pupitre-foundation
+spec:
+  selector:
+    app: pupitre-gles
+  ports:
+    - port: 60002
+      targetPort: 60002
+---
+# Curricula Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pupitre-curricula
+  namespace: pupitre-foundation
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pupitre-curricula
+  template:
+    metadata:
+      labels:
+        app: pupitre-curricula
+    spec:
+      containers:
+        - name: pupitre-curricula
+          image: ghcr.io/pupitre/pupitre-curricula:latest
+          ports:
+            - containerPort: 60003
+          envFrom:
+            - configMapRef:
+                name: pupitre-common-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pupitre-curricula
+  namespace: pupitre-foundation
+spec:
+  selector:
+    app: pupitre-curricula
+  ports:
+    - port: 60003
+      targetPort: 60003
+---
+# Lessons Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pupitre-lessons
+  namespace: pupitre-foundation
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pupitre-lessons
+  template:
+    metadata:
+      labels:
+        app: pupitre-lessons
+    spec:
+      containers:
+        - name: pupitre-lessons
+          image: ghcr.io/pupitre/pupitre-lessons:latest
+          ports:
+            - containerPort: 60004
+          envFrom:
+            - configMapRef:
+                name: pupitre-common-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pupitre-lessons
+  namespace: pupitre-foundation
+spec:
+  selector:
+    app: pupitre-lessons
+  ports:
+    - port: 60004
+      targetPort: 60004
+---
+# Assessments Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pupitre-assessments
+  namespace: pupitre-foundation
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pupitre-assessments
+  template:
+    metadata:
+      labels:
+        app: pupitre-assessments
+    spec:
+      containers:
+        - name: pupitre-assessments
+          image: ghcr.io/pupitre/pupitre-assessments:latest
+          ports:
+            - containerPort: 60005
+          envFrom:
+            - configMapRef:
+                name: pupitre-common-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pupitre-assessments
+  namespace: pupitre-foundation
+spec:
+  selector:
+    app: pupitre-assessments
+  ports:
+    - port: 60005
+      targetPort: 60005
+---
+# Progress Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pupitre-progress
+  namespace: pupitre-foundation
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pupitre-progress
+  template:
+    metadata:
+      labels:
+        app: pupitre-progress
+    spec:
+      containers:
+        - name: pupitre-progress
+          image: ghcr.io/pupitre/pupitre-progress:latest
+          ports:
+            - containerPort: 60006
+          envFrom:
+            - configMapRef:
+                name: pupitre-common-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pupitre-progress
+  namespace: pupitre-foundation
+spec:
+  selector:
+    app: pupitre-progress
+  ports:
+    - port: 60006
+      targetPort: 60006
+---
+# Rewards, Notifications, Parents, Analytics follow same pattern
+# (abbreviated for space - use Helm for full deployment)

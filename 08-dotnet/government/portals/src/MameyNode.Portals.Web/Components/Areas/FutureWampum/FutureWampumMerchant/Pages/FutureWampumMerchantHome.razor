@@ -1,0 +1,93 @@
+@page "/merchant"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumMerchantClient FutureWampumMerchantClient
+@inject ILogger<FutureWampumMerchantHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="FutureWampumMerchant" Icon="fas fa-store" Subtitle="Merchant services and management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Merchants" Value="@_onboardings.Count.ToString()" Icon="fas fa-store" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Payments" Value="@_payments.Count.ToString()" Icon="fas fa-credit-card" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Settlements" Value="@_settlements.Count.ToString()" Icon="fas fa-handshake" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Revenue" Value="@_totalRevenue.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Merchant Onboarding" Elevation="2">
+                <MudText Typo="Typo.body2">Manage merchant onboarding</MudText>
+                <MudButton Href="/merchant/onboarding" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Onboarding
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Merchant Payments" Elevation="2">
+                <MudText Typo="Typo.body2">View merchant payments</MudText>
+                <MudButton Href="/merchant/payments" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Payments
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Settlements" Elevation="2">
+                <MudText Typo="Typo.body2">Merchant settlement management</MudText>
+                <MudButton Href="/merchant/settlements" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Settlements
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private List<MerchantOnboardingInfo> _onboardings = new();
+    private List<MerchantSettlementPaymentInfo> _payments = new();
+    private List<SettlementInfo> _settlements = new();
+    private decimal _totalRevenue;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _onboardings = await FutureWampumMerchantClient.GetMerchantOnboardingsAsync();
+            _payments = await FutureWampumMerchantClient.GetMerchantPaymentsAsync();
+            _settlements = await FutureWampumMerchantClient.GetSettlementsAsync();
+            _totalRevenue = _payments.Where(p => p.Status == PaymentStatus.Completed).Sum(p => decimal.Parse(p.Amount));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading merchant data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

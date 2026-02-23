@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VozSoberana — Microblog Soberano | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060609;--bg2:#0d0d14;--bg3:#15151e;--bg4:#1d1d28;--gold:#d4a853;--tq:#2dd4a8;--wp:#9b6dff;--red:#ff4d6a;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#222230}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.app{display:grid;grid-template-columns:260px minmax(500px,620px) 320px;max-width:1200px;margin:0 auto;min-height:100vh}
+
+/* LEFT */
+.left{padding:12px;border-right:1px solid var(--brd);position:sticky;top:0;height:100vh}
+.logo{display:flex;align-items:center;gap:8px;padding:12px;margin-bottom:8px}.logo span{font-size:22px}.logo h1{font-size:17px;font-weight:700;color:var(--gold)}
+.ni{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:24px;cursor:pointer;font-size:14px;color:var(--txt2);transition:all 0.15s;font-weight:500}
+.ni:hover{background:var(--bg3);color:var(--txt)}.ni.a{color:var(--txt);font-weight:700}
+.ni .ic{font-size:18px;width:22px;text-align:center}
+.ni .badge{margin-left:auto;background:var(--gold);color:#060609;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+.post-btn{width:90%;padding:12px;border-radius:24px;background:var(--gold);border:none;color:#060609;font-weight:700;font-size:14px;cursor:pointer;margin:12px auto;display:block;font-family:'DM Sans',sans-serif;transition:filter 0.15s}
+.post-btn:hover{filter:brightness(1.15)}
+.profile-mini{display:flex;align-items:center;gap:10px;padding:10px;border-radius:24px;cursor:pointer;transition:background 0.15s;margin-top:auto;position:absolute;bottom:16px;left:12px;right:12px}
+.profile-mini:hover{background:var(--bg3)}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+
+/* CENTER */
+.center{border-right:1px solid var(--brd)}
+.center-header{position:sticky;top:0;z-index:10;background:rgba(6,6,9,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:12px 16px}
+.center-header h2{font-size:18px;font-weight:700}
+.tabs{display:flex;margin-top:8px}
+.tab{flex:1;text-align:center;padding:10px;font-size:13px;font-weight:600;color:var(--txt3);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s}
+.tab:hover{background:var(--bg3);color:var(--txt2)}.tab.a{color:var(--txt);border-color:var(--gold)}
+
+.compose{padding:14px 16px;border-bottom:1px solid var(--brd);display:flex;gap:10px}
+.compose textarea{flex:1;background:none;border:none;color:var(--txt);font-size:15px;resize:none;outline:none;height:60px;font-family:'DM Sans',sans-serif;line-height:1.5}
+.compose-actions{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid var(--brd)}
+.ca-tools{display:flex;gap:4px}
+.ca-tool{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;background:none;color:var(--tq);font-size:14px;transition:background 0.15s}
+.ca-tool:hover{background:var(--bg3)}
+.ca-post{padding:7px 18px;border-radius:18px;background:var(--gold);border:none;color:#060609;font-weight:700;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* TWEET */
+.tweet{padding:14px 16px;border-bottom:1px solid var(--brd);display:flex;gap:10px;transition:background 0.15s;cursor:pointer}
+.tweet:hover{background:var(--bg2)}
+.tw-body{flex:1;min-width:0}
+.tw-top{display:flex;align-items:center;gap:4px;margin-bottom:2px;flex-wrap:wrap}
+.tw-name{font-weight:700;font-size:14px}.tw-ver{color:var(--tq);font-size:11px}.tw-handle{font-size:13px;color:var(--txt3)}.tw-time{font-size:13px;color:var(--txt3)}
+.tw-text{font-size:14px;line-height:1.5;margin-bottom:8px;word-wrap:break-word}
+.tw-text .hashtag{color:var(--tq)}.tw-text .mention{color:var(--gold)}
+.tw-media{width:100%;border-radius:12px;overflow:hidden;margin-bottom:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;font-size:40px}
+.tw-actions{display:flex;gap:24px}
+.tw-act{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt3);cursor:pointer;transition:color 0.15s}
+.tw-act:hover{color:var(--txt2)}
+.tw-act.liked{color:var(--red)}.tw-act.rt{color:var(--tq)}
+
+/* BDET inline */
+.tw-bdet{background:linear-gradient(135deg,rgba(212,168,83,0.06),rgba(155,109,255,0.04));border:1px solid rgba(212,168,83,0.15);border-radius:10px;padding:10px;margin-bottom:8px}
+.tw-bdet .bdet-label{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--wp);letter-spacing:0.8px}
+.tw-bdet .bdet-amt{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)}
+.tw-bdet .bdet-desc{font-size:11px;color:var(--txt3)}
+
+/* RIGHT */
+.right{padding:12px;position:sticky;top:0;height:100vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--brd) transparent}
+.widget{background:var(--bg2);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:14px}
+.w-title{font-size:17px;font-weight:700;margin-bottom:10px}
+.trend{padding:8px 0;cursor:pointer}.trend:hover .t-topic{color:var(--txt)}
+.t-cat{font-size:10px;color:var(--txt3)}.t-topic{font-size:14px;font-weight:700;color:var(--txt2);transition:color 0.15s}.t-posts{font-size:11px;color:var(--txt3)}
+.sug{display:flex;align-items:center;gap:10px;padding:8px 0}
+.sug-info{flex:1}.sug-name{font-size:13px;font-weight:600}.sug-handle{font-size:11px;color:var(--txt3)}
+.fol-btn{padding:5px 14px;border-radius:16px;font-size:11px;font-weight:700;border:1px solid var(--txt);background:var(--txt);color:var(--bg);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.fol-btn:hover{filter:brightness(0.9)}
+
+@media(max-width:1024px){.right{display:none}.app{grid-template-columns:72px 1fr}.ni span:not(.ic){display:none}.post-btn{width:48px;height:48px;border-radius:50%;padding:0;font-size:18px}.profile-mini .pm-info{display:none}}
+@media(max-width:640px){.left{display:none}.app{grid-template-columns:1fr}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- LEFT -->
+<div class="left">
+  <div class="logo"><span>📢</span><h1>VozSoberana</h1></div>
+  <div class="ni a"><span class="ic">🏠</span><span>Inicio</span></div>
+  <div class="ni"><span class="ic">🔍</span><span>Explorar</span></div>
+  <div class="ni"><span class="ic">🔔</span><span>Notificaciones</span><span class="badge">5</span></div>
+  <div class="ni"><span class="ic">✉️</span><span>Mensajes</span><span class="badge">3</span></div>
+  <div class="ni"><span class="ic">🔖</span><span>Guardados</span></div>
+  <div class="ni"><span class="ic">👥</span><span>Comunidades</span></div>
+  <div class="ni"><span class="ic">💎</span><span>BDET Wallet</span></div>
+  <div class="ni"><span class="ic">✓</span><span>Verificación</span></div>
+  <div class="ni"><span class="ic">👤</span><span>Perfil</span></div>
+  <button class="post-btn">Publicar</button>
+  <div class="profile-mini">
+    <div class="av" style="width:38px;height:38px;font-size:14px;background:linear-gradient(135deg,var(--gold),var(--tq))">CA</div>
+    <div class="pm-info"><div style="font-weight:700;font-size:13px">Cacike Soberano</div><div style="font-size:11px;color:var(--txt3)">@cacike</div></div>
+  </div>
+</div>
+
+<!-- CENTER -->
+<div class="center">
+  <div class="center-header">
+    <h2>Inicio</h2>
+    <div class="tabs"><div class="tab a">Para ti</div><div class="tab">Siguiendo</div><div class="tab">Soberano</div></div>
+  </div>
+
+  <div class="compose">
+    <div class="av" style="width:42px;height:42px;font-size:15px;background:linear-gradient(135deg,var(--gold),var(--tq))">CA</div>
+    <textarea placeholder="¿Qué está pasando en la Red Soberana?"></textarea>
+  </div>
+  <div class="compose-actions">
+    <div class="ca-tools"><button class="ca-tool">📷</button><button class="ca-tool">📊</button><button class="ca-tool">😀</button><button class="ca-tool">📅</button><button class="ca-tool">💎</button><button class="ca-tool">🌐</button></div>
+    <button class="ca-post">Publicar</button>
+  </div>
+
+  <!-- TWEETS -->
+  <div class="tweet">
+    <div class="av" style="width:42px;height:42px;font-size:15px;background:linear-gradient(135deg,var(--gold),var(--tq))">CA</div>
+    <div class="tw-body">
+      <div class="tw-top"><span class="tw-name">Cacike Soberano</span><span class="tw-ver">✓</span><span class="tw-handle">@cacike</span><span class="tw-time">· 2h</span></div>
+      <div class="tw-text">🦅 <strong>BREAKING:</strong> NCAI responde oficialmente. 574 naciones tribales explorando integración con la Red Soberana.<br><br>Esto es lo que se siente la soberanía digital en movimiento. 72 millones de voces, una infraestructura. <span class="hashtag">#SoberaníaDigital</span> <span class="hashtag">#574Naciones</span></div>
+      <div class="tw-actions">
+        <div class="tw-act">💬 342</div>
+        <div class="tw-act rt">🔄 1,204</div>
+        <div class="tw-act liked">❤️ 2,847</div>
+        <div class="tw-act">💎 Ⓦ 142</div>
+        <div class="tw-act">📤</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tweet">
+    <div class="av" style="width:42px;height:42px;font-size:15px;background:linear-gradient(135deg,#ff6b6b,var(--wp))">MC</div>
+    <div class="tw-body">
+      <div class="tw-top"><span class="tw-name">María Canaima</span><span class="tw-ver">✓</span><span class="tw-handle">@mcanaima</span><span class="tw-time">· 4h</span></div>
+      <div class="tw-text">SoberanoMarket en enero: <strong>Ⓦ 423,100</strong> procesados. 4,291 vendedores indígenas recibiendo 88% directo. En Amazon te quitan 45%. En Etsy 30%+. Aquí, TU arte, TU dinero. <span class="hashtag">#SoberanoMarket</span></div>
+      <div class="tw-bdet"><div class="bdet-label">💎 Revenue SoberanoMarket</div><div class="bdet-amt">Ⓦ 423,100</div><div class="bdet-desc">Enero 2026 · 88% para artesanos · Verificado en MameyNode</div></div>
+      <div class="tw-actions">
+        <div class="tw-act">💬 187</div>
+        <div class="tw-act rt">🔄 892</div>
+        <div class="tw-act liked">❤️ 1,523</div>
+        <div class="tw-act">💎 Ⓦ 87</div>
+        <div class="tw-act">📤</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tweet">
+    <div class="av" style="width:42px;height:42px;font-size:15px;background:linear-gradient(135deg,var(--tq),#4da6ff)">RT</div>
+    <div class="tw-body">
+      <div class="tw-top"><span class="tw-name">Roberto Taíno</span><span class="tw-ver">✓</span><span class="tw-handle">@rtaino</span><span class="tw-time">· 6h</span></div>
+      <div class="tw-text">⛓ MameyNode v4.2 live. 12 new smart contracts. Gas fees down 34%. Zero downtime.<br><br><code style="background:var(--bg3);padding:2px 6px;border-radius:3px;color:var(--tq);font-family:'IBM Plex Mono',monospace;font-size:12px">npm install @mameynode/<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bac9ded1fa8e9488948a">[email&#160;protected]</a></code><br><br>Docs in 3 languages. Build sovereign. <span class="hashtag">#MameyNode</span> <span class="hashtag">#Blockchain</span></div>
+      <div class="tw-actions">
+        <div class="tw-act">💬 92</div>
+        <div class="tw-act rt">🔄 234</div>
+        <div class="tw-act">❤️ 847</div>
+        <div class="tw-act">💎 Ⓦ 45</div>
+        <div class="tw-act">📤</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tweet">
+    <div class="av" style="width:42px;height:42px;font-size:15px;background:linear-gradient(135deg,#34d399,var(--tq))">FI</div>
+    <div class="tw-body">
+      <div class="tw-top"><span class="tw-name">FILAC Oficial</span><span class="tw-ver">✓</span><span class="tw-handle">@filac</span><span class="tw-time">· 8h</span></div>
+      <div class="tw-text">📅 Confirmado: I Cumbre de Soberanía Digital Indígena. 15 de Marzo. 19 países. Transmisión en JuntaSoberana. Traducción en 14 idiomas via <span class="mention">@atabey</span>.<br><br>El futuro digital de los pueblos indígenas se decide ahora. <span class="hashtag">#CumbreSoberana</span> <span class="hashtag">#FILAC</span></div>
+      <div class="tw-media" style="background:linear-gradient(135deg,#0a2010,#1a1020)">🌎📡🦅</div>
+      <div class="tw-actions">
+        <div class="tw-act">💬 521</div>
+        <div class="tw-act rt">🔄 2,104</div>
+        <div class="tw-act liked">❤️ 3,412</div>
+        <div class="tw-act">💎 Ⓦ 234</div>
+        <div class="tw-act">📤</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tweet">
+    <div class="av" style="width:42px;height:42px;font-size:15px;background:linear-gradient(135deg,var(--wp),var(--red))">AL</div>
+    <div class="tw-body">
+      <div class="tw-top"><span class="tw-name">Ana Lenca</span><span class="tw-ver">✓</span><span class="tw-handle">@analenca</span><span class="tw-time">· 12h</span></div>
+      <div class="tw-text">Mi primer mes en ArtesaníaSoberana: <strong>Ⓦ 3,200</strong> vendiendo cerámica. 88% para mí. Mis abuelas estarían orgullosas de ver nuestra tradición Lenca llegar al mundo entero sin intermediarios. 🏺❤️ <span class="hashtag">#ArteLenca</span></div>
+      <div class="tw-actions">
+        <div class="tw-act">💬 312</div>
+        <div class="tw-act rt">🔄 876</div>
+        <div class="tw-act liked">❤️ 2,103</div>
+        <div class="tw-act">💎 Ⓦ 156</div>
+        <div class="tw-act">📤</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+  <div class="widget" style="background:linear-gradient(135deg,rgba(212,168,83,0.06),rgba(45,212,168,0.04));border-color:rgba(212,168,83,0.15)">
+    <div style="text-align:center;padding:4px"><div style="font-size:10px;font-weight:700;color:var(--tq);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Red Soberana · En Vivo</div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt3)">24,847 activos · 72M+ alcance · 42 AI · 🔒 E2E</div></div>
+  </div>
+  <div class="widget">
+    <div class="w-title">🔥 Tendencias</div>
+    <div class="trend"><div class="t-cat">Soberanía · Trending</div><div class="t-topic">#CumbreSoberana</div><div class="t-posts">12,847 publicaciones</div></div>
+    <div class="trend"><div class="t-cat">Tecnología · Trending</div><div class="t-topic">#MameyNode</div><div class="t-posts">3,847 publicaciones</div></div>
+    <div class="trend"><div class="t-cat">Cultura · Trending</div><div class="t-topic">#ArteLenca</div><div class="t-posts">4,523 publicaciones</div></div>
+    <div class="trend"><div class="t-cat">Finanzas · Trending</div><div class="t-topic">#WampumToTheMoon</div><div class="t-posts">2,912 publicaciones</div></div>
+    <div class="trend"><div class="t-cat">Comunidad · Trending</div><div class="t-topic">#574Naciones</div><div class="t-posts">8,291 publicaciones</div></div>
+  </div>
+  <div class="widget">
+    <div class="w-title">👥 A Quién Seguir</div>
+    <div class="sug"><div class="av" style="width:38px;height:38px;font-size:13px;background:linear-gradient(135deg,var(--gold),var(--red))">SW</div><div class="sug-info"><div class="sug-name">Dr. Whitehawk <span style="color:var(--tq);font-size:11px">✓</span></div><div class="sug-handle">@whitehawk · NCAI</div></div><button class="fol-btn">Seguir</button></div>
+    <div class="sug"><div class="av" style="width:38px;height:38px;font-size:13px;background:linear-gradient(135deg,#34d399,var(--gold))">JQ</div><div class="sug-info"><div class="sug-name">Juan Quispe</div><div class="sug-handle">@jquispe · Quechua</div></div><button class="fol-btn">Seguir</button></div>
+    <div class="sug"><div class="av" style="width:38px;height:38px;font-size:13px;background:linear-gradient(135deg,var(--tq),var(--wp))">CO</div><div class="sug-info"><div class="sug-name">COICA <span style="color:var(--tq);font-size:11px">✓</span></div><div class="sug-handle">@coic

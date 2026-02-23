@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>Mamey.Security</Description>
+    <Authors>Mamey.io</Authors>
+    <LangVersion>Latest</LangVersion>
+    <AssemblyName>Mamey.Security</AssemblyName>
+    <Title>Mamey.Security</Title>
+    <PackageId>Mamey.Security</PackageId>
+    <PackageTags>Mamey.Security</PackageTags>
+    <Version>2.0.5</Version>
+    <PackageLicenseExpression>Proprietary</PackageLicenseExpression>
+    <Copyright>Copyright (c) 2025 Mamey.io</Copyright>
+    <Company>Mamey.io</Company>
+    <PackageProjectUrl>https://github.com/Mamey-io/Mamey</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Mamey-io/Mamey</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Mamey Framework 2.0 release</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Mamey.WebApi.Security" />
+    <None Remove="Mamey.Security" />
+    <None Remove="Internals\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey\Mamey.csproj" />
+    <ProjectReference Include="..\..\..\Mamey.Auth.Jwt\src\Mamey.Auth.Jwt\Mamey.Auth.Jwt.csproj" />
+    <ProjectReference Include="..\..\..\Mamey.Secrets.Vault\src\Mamey.Secrets.Vault\Mamey.Secrets.Vault.csproj" />
+    <ProjectReference Include="..\..\..\Mamey.WebApi.Security\src\Mamey.WebApi.Security/Mamey.WebApi.Security.csproj" />
+    <ProjectReference Include="..\..\..\Mamey.Security.PostQuantum\src\Mamey.Security.PostQuantum\Mamey.Security.PostQuantum.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="9.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Mamey.Security.Tests.Unit</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Mamey.Security.Tests.Integration</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Mamey.Security.Tests.Performance</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Mamey.Security.Tests.Shared</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Mamey.FWID.Identities.Tests.Integration</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>DynamicProxyGenAssembly2, PublicKey=0024000004800000940000000602000000240000525341310004000001000100c547cac37abd99c8db225ef2f6c8a3602f3b3606cc9891605d02baa56104f4cfc0734aa39b93bf7852f7d9266654753cc297e7d2edfe0bac1cdcf9f717241550e0a7b191195b7667bb4f64bcb8e2121380fd1d9d46ad2d92d2d15605093924cceaf74c4861eff62abf69b9291ed0a340e113be11e6a7d3113e92484cf7045cc7</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Internals\" />
+  </ItemGroup>
+  <ItemGroup>
+<!--    <ProjectReference Include="..\..\..\Mamey.Algorithms\src\Mamey.Algorithms\Mamey.Algorithms.csproj" />-->
+  </ItemGroup>
+</Project>

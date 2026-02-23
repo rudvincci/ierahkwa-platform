@@ -1,0 +1,52 @@
+@page "/compliance"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<ComplianceHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Compliance" Icon="fas fa-shield-alt" Subtitle="Compliance monitoring and enforcement">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="KYC" Elevation="2">
+                <MudText Typo="Typo.body2">Know Your Customer compliance</MudText>
+                <MudButton Href="/compliance/kyc" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to KYC
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="AML/CFT" Elevation="2">
+                <MudText Typo="Typo.body2">Anti-Money Laundering and Counter Financing of Terrorism</MudText>
+                <MudButton Href="/compliance/aml" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to AML
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Fraud Detection" Elevation="2">
+                <MudText Typo="Typo.body2">Fraud detection and prevention</MudText>
+                <MudButton Href="/compliance/fraud" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Fraud
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private async Task RefreshData()
+    {
+        StateHasChanged();
+    }
+}
+

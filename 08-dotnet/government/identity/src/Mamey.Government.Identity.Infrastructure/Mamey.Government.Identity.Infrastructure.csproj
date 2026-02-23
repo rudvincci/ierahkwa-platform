@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Mongo\Repositories\" />
+    <None Remove="Mongo\Queries\" />
+    <None Remove="Exceptions\" />
+    <None Remove="Services\" />
+    <None Remove="DAL\" />
+    <None Remove="DAL\Configuration\" />
+    <None Remove="DAL\Repositories\" />
+    <None Remove="Entities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Mongo\Repositories\" />
+    <Folder Include="Mongo\Queries\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mamey.Government.Identity.Application\Mamey.Government.Identity.Application.csproj" />
+  </ItemGroup>
+  
+  <!-- Conditional references: Project reference in Debug, Package reference in Release -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Microservice.Infrastructure\src\Mamey.Microservice.Infrastructure\Mamey.Microservice.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.Persistence.PostgreSQL\src\Mamey.Persistence.PostgreSQL\Mamey.Persistence.PostgreSQL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Mamey.Microservice.Infrastructure" Version="2.0.*" />
+    <PackageReference Include="Mamey.Persistence.PostgreSQL" Version="2.0.*" />
+  </ItemGroup>
+</Project>

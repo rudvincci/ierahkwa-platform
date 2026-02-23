@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏢 NAGADAN ERP | Accounting & Business Management | NET10</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --neon-green: #00FF41;
+            --neon-cyan: #00FFFF;
+            --neon-purple: #9D4EDD;
+            --neon-blue: #0066FF;
+            --neon-red: #FF3366;
+            --neon-orange: #FF6B35;
+            --bg-dark: #0a0e17;
+            --bg-card: #0d1a2d;
+            --bg-input: #142238;
+            --border: #1e3a5f;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: var(--bg-dark); color: #fff; min-height: 100vh; }
+        
+        .header { background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header-brand { display: flex; align-items: center; gap: 15px; }
+        .brand-icon { width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8em; }
+        .brand-text h1 { font-family: 'Orbitron', sans-serif; font-size: 1.4em; }
+        .brand-text span { font-size: 0.8em; opacity: 0.9; }
+        .header-stats { display: flex; gap: 20px; }
+        .stat-pill { background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-weight: 600; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .btn-white { background: #fff; color: var(--neon-blue); }
+        .btn-dark { background: rgba(0,0,0,0.3); color: #fff; }
+        .btn:hover { transform: translateY(-2px); }
+        
+        .main-layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 70px); }
+        
+        .sidebar { background: var(--bg-card); border-right: 2px solid var(--neon-blue); padding: 20px 0; }
+        .sidebar-section { margin-bottom: 20px; }
+        .sidebar-title { font-size: 0.7em; color: #666; text-transform: uppercase; letter-spacing: 1px; padding: 0 20px 10px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; transition: all 0.3s; border-left: 3px solid transparent; color: #ccc; }
+        .nav-item:hover { background: rgba(0, 102, 255, 0.1); color: var(--neon-blue); }
+        .nav-item.active { background: rgba(0, 102, 255, 0.1); border-left-color: var(--neon-blue); color: var(--neon-blue); }
+        .nav-item i { font-size: 1.1em; width: 24px; }
+        .nav-badge { margin-left: auto; background: var(--neon-red); padding: 2px 8px; border-radius: 10px; font-size: 0.7em; }
+        
+        .content { padding: 25px; overflow-y: auto; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .page-title { font-family: 'Orbitron', sans-serif; font-size: 1.5em; color: var(--neon-blue); }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--bg-card); border: 2px solid var(--border); border-radius: 15px; padding: 20px; transition: all 0.3s; }
+        .stat-card:hover { border-color: var(--neon-blue); transform: translateY(-3px); }
+        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; margin-bottom: 15px; }
+        .stat-icon.blue { background: rgba(0, 102, 255, 0.2); }
+        .stat-icon.green { background: rgba(0, 255, 65, 0.2); }
+        .stat-icon.gold { background: rgba(255, 215, 0, 0.2); }
+        .stat-icon.red { background: rgba(255, 51, 102, 0.2); }
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 1.8em; color: var(--neon-cyan); }
+        .stat-label { font-size: 0.85em; color: #888; margin-top: 5px; }
+        .stat-change { font-size: 0.75em; margin-top: 8px; }
+        .stat-change.up { color: var(--neon-green); }
+        .stat-change.down { color: var(--neon-red); }
+        
+        .card { background: var(--bg-card); border: 2px solid var(--border); border-radius: 15px; overflow: hidden; margin-bottom: 20px; }
+        .card-header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-family: 'Orbitron', sans-serif; color: var(--gold); }
+        .card-body { padding: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { background: var(--bg-input); padding: 12px 15px; text-align: left; font-size: 0.85em; color: #888; }
+        td { padding: 15px; border-bottom: 1px solid var(--border); }
+        tr:hover { background: rgba(0, 102, 255, 0.05); }
+        
+        .status-badge { padding: 4px 12px; border-radius: 15px; font-size: 0.8em; font-weight: 600; }
+        .status-paid { background: rgba(0, 255, 65, 0.2); color: var(--neon-green); }
+        .status-pending { background: rgba(255, 215, 0, 0.2); color: var(--gold); }
+        .status-overdue { background: rgba(255, 51, 102, 0.2); color: var(--neon-red); }
+        
+        .amount { font-family: 'Orbitron', sans-serif; color: var(--neon-cyan); }
+        
+        .panel { display: none; }
+        .panel.active { display: block; }
+        
+        .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+        .quick-action { background: var(--bg-card); border: 2px solid var(--border); border-radius: 15px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .quick-action:hover { border-color: var(--neon-blue); transform: translateY(-3px); }
+        .quick-action i { font-size: 2em; color: var(--neon-cyan); margin-bottom: 10px; display: block; }
+        .quick-action h4 { margin-bottom: 5px; }
+        .quick-action p { font-size: 0.8em; color: #888; }
+        
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.85em; color: #888; margin-bottom: 8px; }
+        .form-input { width: 100%; padding: 12px 15px; background: var(--bg-input); border: 2px solid var(--border); border-radius: 10px; color: #fff; font-size: 0.95em; }
+        .form-input:focus { border-color: var(--neon-blue); outline: none; }
+        
+        .btn-primary { background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); color: #fff; }
+        .btn-secondary { background: var(--bg-input); color: #fff; border: 1px solid var(--border); }
+        .btn-success { background: linear-gradient(135deg, var(--neon-green), #00cc33); color: #000; }
+        
+        .toast { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); padding: 15px 25px; border-radius: 12px; display: none; z-index: 1000; }
+        .toast.show { display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        
+        .chart-container { height: 200px; background: var(--bg-input); border-radius: 12px; display: flex; align-items: flex-end; padding: 20px; gap: 10px; }
+        .chart-bar { flex: 1; background: linear-gradient(180deg, var(--neon-cyan), var(--neon-blue)); border-radius: 5px 5px 0 0; transition: all 0.3s; }
+        .chart-bar:hover { background: linear-gradient(180deg, var(--gold), var(--neon-orange)); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-brand">
+            <div class="brand-icon">🏢</div>
+            <div class="brand-text">
+                <h1>NAGADAN ERP</h1>
+                <span>Accounting & Business Management</span>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="stat-pill">💰 $245,780 Revenue</div>
+            <div class="stat-pill">📦 1,247 Products</div>
+            <div class="stat-pill">👥 386 Customers</div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-dark" onclick="window.location.href='../../platform/index.html'">
+                <i class="bi bi-house"></i> Plataforma
+            </button>
+            <button class="btn btn-white" onclick="showNewInvoice()">
+                <i class="bi bi-plus-lg"></i> Nueva Factura
+            </button>
+        </div>
+    </div>
+    
+    <div class="main-layout">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Principal</div>
+                <div class="nav-item active" onclick="showPanel('dashboard')">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Ventas</div>
+                <div class="nav-item" onclick="showPanel('invoices')">
+                    <i class="bi bi-receipt"></i> Facturas
+                    <span class="nav-badge">24</span>
+                </div>
+                <div class="nav-item" onclick="showPanel('customers')">
+                    <i class="bi bi-people"></i> Clientes
+                </div>
+                <div class="nav-item" onclick="showPanel('payments')">
+                    <i class="bi bi-credit-card"></i> Pagos
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Inventario</div>
+                <div class="nav-item" onclick="showPanel('products')">
+                    <i class="bi bi-box-seam"></i> Productos
+                </div>
+                <div class="nav-item" onclick="showPanel('inventory')">
+                    <i class="bi bi-boxes"></i> Stock
+                    <span class="nav-badge" style="background: var(--gold);">5</span>
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Compras</div>
+                <div class="nav-item" onclick="showPanel('suppliers')">
+                    <i class="bi bi-truck"></i> Proveedores
+                </div>
+                <div class="nav-item" onclick="showPanel('purchases')">
+                    <i class="bi bi-cart"></i> Órdenes
+                </div>
+                <div class="nav-item" onclick="showPanel('bills')">
+                    <i class="bi bi-file-text"></i> Facturas Compra
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Contabilidad</div>
+                <div class="nav-item" onclick="showPanel('accounts')">
+                    <i class="bi bi-journal-text"></i> Plan de Cuentas
+                </div>
+                <div class="nav-item" onclick="showPanel('journal')">
+                    <i class="bi bi-book"></i> Diario
+                </div>
+                <div class="nav-item" onclick="showPanel('taxes')">
+                    <i class="bi bi-percent"></i> Impuestos/GST
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Reportes</div>
+                <div class="nav-item" onclick="showPanel('reports')">
+                    <i class="bi bi-bar-chart"></i> Reportes
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Sistema</div>
+                <div class="nav-item" onclick="showPanel('companies')">
+                    <i class="bi bi-building"></i> Empresas
+                </div>
+                <div class="nav-item" onclick="showPanel('settings')">
+                    <i class="bi bi-gear"></i> Configuración
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Dashboard Panel -->
+            <div class="panel active" id="dashboardPanel">
+                <div class="page-header">
+                    <h1 class="page-title">📊 Dashboard</h1>
+                    <select class="form-input" style="width: 150px;">
+                        <option>Este Mes</option>
+                        <option>Este Año</option>
+                        <option>Todo</option>
+                    </select>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">💰</div>
+                        <div class="stat-value">$245,780</div>
+                        <div class="stat-label">Ingresos Totales</div>
+                        <div class="stat-change up">↑ 12.5% vs mes anterior</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">📄</div>
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">Facturas Emitidas</div>
+                        <div class="stat-change up">↑ 8 esta semana</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon gold">⏳</div>
+                        <div class="stat-value">$42,350</div>
+                        <div class="stat-label">Por Cobrar</div>
+                        <div class="stat-change down">12 facturas pendientes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red">📦</div>
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Stock Bajo</div>
+                        <div class="stat-change down">Requiere atención</div>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <div class="quick-action" onclick="showNewInvoice()">
+                        <i class="bi bi-receipt"></i>
+                        <h4>Nueva Factura</h4>
+                        <p>Crear factura de venta</p>
+                    </div>
+                    <div class="quick-action" onclick="showPanel('customers')">
+                        <i class="bi bi-person-plus"></i>
+                        <h4>Nuevo Cliente</h4>
+                        <p>Registrar cliente</p>
+                    </div>
+                    <div class="quick-action" onclick="showPanel('products')">
+                        <i class="bi bi-box"></i>
+                        <h4>Nuevo Producto</h4>
+                        <p>Agregar al inventario</p>
+                    </div>
+                    <div class="quick-action" onclick="showPanel('reports')">
+                        <i class="bi bi-file-earmark-bar-graph"></i>
+                        <h4>Reportes</h4>
+                        <p>Ver estados financieros</p>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">📈 Ventas Mensuales</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container" id="salesChart"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">⏳ Facturas Recientes</span>
+                        </div>
+                        <div class="card-body" id="recentInvoices"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Invoices Panel -->
+            <div class="panel" id="invoicesPanel">
+                <div class="page-header">
+                    <h1 class="page-title">📄 Facturas</h1>
+                    <button class="btn btn-primary" onclick="showNewInvoice()">
+                        <i class="bi bi-plus-lg"></i> Nueva Factura
+                    </button>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-secondary">Todas</button>
+                            <button class="btn btn-secondary">Pagadas</button>
+                            <button class="btn btn-secondary">Pendientes</button>
+                            <button class="btn btn-secondary">Vencidas</button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr><th>Factura</th><th>Cliente</th><th>Fecha</th><th>Vencimiento</th><th>Monto</th><th>Estado</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody id="invoicesTable"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Customers Panel -->
+            <div class="panel" id="customersPanel">
+                <div class="page-header">
+                    <h1 class="page-title">👥 Clientes</h1>
+                    <button class="btn btn-primary"><i class="bi bi-person-plus"></i> Nuevo Cliente</button>
+                </div>
+                <div class="card">
+                    <table>
+                        <thead>
+                            <tr><th>Código</th><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Balance</th><th>Estado</th></tr>
+                        </thead>
+                        <tbody id="customersTable"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Products Panel -->
+            <div class="panel" id="productsPanel">
+                <div class="page-header">
+                    <h1 class="page-title">📦 Productos</h1>
+                    <button class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nuevo Producto</button>
+                </div>
+                <div class="card">
+                    <table>
+                        <thead>
+                            <tr><th>SKU</th><th>Nombre</th><th>Categoría</th><th>Costo</th><th>Precio</th><th>Stock</th><th>Estado</th></tr>
+                        </thead>
+                        <tbody id="productsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Accounts Panel -->
+            <div class="panel" id="accountsPanel">
+                <div class="page-header">
+                    <h1 class="page-title">📒 Plan de Cuentas</h1>
+                    <button class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva Cuenta</button>
+                </div>
+                <div class="card">
+                    <table>
+                        <thead>
+                            <tr><th>Código</th><th>Nombre</th><th>Tipo</th><th>Categoría</th><th>Balance</th></tr>
+                        </thead>
+                        <tbody id="accountsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Taxes Panel -->
+            <div class="panel" id="taxesPanel">
+                <div class="page-header">
+                    <h1 class="page-title">💹 Impuestos / GST / VAT</h1>
+                    <button class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nuevo Impuesto</button>
+                </div>
+                <div class="card">
+                    <table>
+                        <thead>
+                            <tr><th>Código</th><th>Nombre</th><th>Tasa</th><th>Tipo</th><th>Estado</th></tr>
+                        </thead>
+                        <tbody id="taxesTable"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Reports Panel -->
+            <div class="panel" id="reportsPanel">
+                <div class="page-header">
+                    <h1 class="page-title">📊 Reportes Financieros</h1>
+                </div>
+                <div class="quick-actions">
+                    <div class="quick-action" onclick="generateReport('pl')">
+                        <i class="bi bi-graph-up"></i>
+                        <h4>Estado de Resultados</h4>
+                        <p>Profit & Loss</p>
+                    </div>
+                    <div class="quick-action" onclick="generateReport('bs')">
+                        <i class="bi bi-building"></i>
+                        <h4>Balance General</h4>
+                        <p>Balance Sheet</p>
+                    </div>
+                    <div class="quick-action" onclick="generateReport('tb')">
+                        <i class="bi bi-calculator"></i>
+                        <h4>Balance de Comprobación</h4>
+                        <p>Trial Balance</p>
+                    </div>
+                    <div class="quick-action" onclick="generateReport('ar')">
+                        <i class="bi bi-cash-stack"></i>
+                        <h4>Cuentas por Cobrar</h4>
+                        <p>Aging Report</p>
+                    </div>
+                    <div class="quick-action" onclick="generateReport('sales')">
+                        <i class="bi bi-cart-check"></i>
+                        <h4>Ventas por Período</h4>
+                        <p>Sales Report</p>
+                    </div>
+                    <div class="quick-action" onclick="generateReport('tax')">
+                        <i class="bi bi-percent"></i>
+                        <h4>Resumen de Impuestos</h4>
+                        <p>Tax Summary</p>
+                    </div>
+                    <div class="quick-action" onclick="generateReport('inventory')">
+                        <i class="bi bi-boxes"></i>
+                        <h4>Valuación Inventario</h4>
+                        <p>Inventory Valuation</p>
+                    </div>
+                    <div class="quick-action" onclick="generateReport('customer')">
+                        <i class="bi bi-people"></i>
+                        <h4>Estado de Cuenta</h4>
+                        <p>Customer Statement</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Companies Panel -->
+            <div class="panel" id="companiesPanel">
+                <div class="page-header">
+                    <h1 class="page-title">🏢 Multi-Empresa</h1>
+                    <button class="btn btn-primary"><i class="bi bi-building-add"></i> Nueva Empresa</button>
+                </div>
+                <div class="quick-actions">
+                    <div class="quick-action" style="border-color: var(--neon-blue);">
+                        <i class="bi bi-building" style="color: var(--neon-blue);"></i>
+                        <h4>IERAHKWA Corp</h4>
+                        <p>Empresa Principal • Activa</p>
+                    </div>
+                    <div class="quick-action">
+                        <i class="bi bi-globe"></i>
+                        <h4>NET10 DeFi</h4>
+                        <p>Subsidiaria • Activa</p>
+                    </div>
+                    <div class="quick-action">
+                        <i class="bi bi-bank"></i>
+                        <h4>BDET Bank</h4>
+                        <p>Subsidiaria • Activa</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Panel -->
+            <div class="panel" id="settingsPanel">
+                <div class="page-header">
+                    <h1 class="page-title">⚙️ Configuración</h1>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="card">
+                        <div class="card-header"><span class="card-title">🗄️ Base de Datos</span></div>
+                        <div class="card-body">
+                            <button class="btn btn-success" onclick="backupDB()"><i class="bi bi-cloud-upload"></i> Backup</button>
+                            <button class="btn btn-secondary" onclick="restoreDB()" style="margin-left: 10px;"><i class="bi bi-cloud-download"></i> Restaurar</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><span class="card-title">🔢 Numeración</span></div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">Prefijo Factura</label>
+                                <input type="text" class="form-input" value="INV-">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Siguiente Número</label>
+                                <input type="number" class="form-input" value="1025">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"><i class="bi bi-check-circle"></i><span id="toastMsg"></span></div>
+    
+    <script>
+        // Sample Data
+        const invoices = [
+            { id: 'INV-001024', customer: 'Tech Solutions Inc.', date: '2026-01-20', due: '2026-02-20', amount: 5800, status: 'paid' },
+            { id: 'INV-001023', customer: 'Global Marketing Ltd', date: '2026-01-19', due: '2026-02-19', amount: 3200, status: 'pending' },
+            { id: 'INV-001022', customer: 'Innovate Labs', date: '2026-01-18', due: '2026-01-25', amount: 1500, status: 'overdue' },
+            { id: 'INV-001021', customer: 'Digital Ventures SA', date: '2026-01-17', due: '2026-02-17', amount: 8750, status: 'paid' },
+            { id: 'INV-001020', customer: 'CloudNet Services', date: '2026-01-15', due: '2026-02-15', amount: 4200, status: 'pending' },
+        ];
+        
+        const customers = [
+            { code: 'CUST-001', name: 'Tech Solutions Inc.', email: 'billing@tech.com', phone: '+1 555-0101', balance: 5250, status: 'Active' },
+            { code: 'CUST-002', name: 'Global Marketing Ltd', email: 'accounts@global.com', phone: '+1 555-0102', balance: 0, status: 'Active' },
+            { code: 'CUST-003', name: 'Innovate Labs', email: 'finance@innovate.io', phone: '+1 555-0103', balance: 1500, status: 'Active' },
+        ];
+        
+        const products = [
+            { sku: 'PROD-001', name: 'Consultoría Técnica', category: 'Servicios', cost: 80, price: 150, stock: 999, status: 'Active' },
+            { sku: 'PROD-002', name: 'Desarrollo Web', category: 'Servicios', cost: 1500, price: 2500, stock: 999, status: 'Active' },
+            { sku: 'PROD-003', name: 'Licencia Software', category: 'Licencias', cost: 150, price: 299, stock: 50, status: 'Active' },
+            { sku: 'PROD-004', name: 'Hosting Anual', category: 'Servicios', cost: 600, price: 1200, stock: 100, status: 'Active' },
+        ];
+        
+        const accounts = [
+            { code: '1000', name: 'Caja', type: 'Asset', category: 'Cash', balance: 15000 },
+            { code: '1100', name: 'Bancos', type: 'Asset', category: 'Bank', balance: 245780 },
+            { code: '1200', name: 'Cuentas por Cobrar', type: 'Asset', category: 'Receivable', balance: 42350 },
+            { code: '2000', name: 'Cuentas por Pagar', type: 'Liability', category: 'Payable', balance: 18500 },
+            { code: '3000', name: 'Capital', type: 'Equity', category: 'Equity', balance: 200000 },
+            { code: '4000', name: 'Ventas', type: 'Revenue', category: 'Sales', balance: 245780 },
+            { code: '5000', name: 'Costo de Ventas', type: 'Expense', category: 'COGS', balance: 98000 },
+        ];
+        
+        const taxes = [
+            { code: 'IVA', name: 'IVA 16%', rate: 16, type: 'GST', status: 'Active' },
+            { code: 'ISR', name: 'ISR Retención', rate: 10, type: 'Withholding', status: 'Active' },
+            { code: 'IEPS', name: 'IEPS', rate: 8, type: 'Excise', status: 'Inactive' },
+        ];
+        
+        function showPanel(panelId) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(panelId + 'Panel').classList.add('active');
+            event.target.closest('.nav-item').classList.add('active');
+            
+            if (panelId === 'invoices') renderInvoices();
+            if (panelId === 'customers') renderCustomers();
+            if (panelId === 'products') renderProducts();
+            if (panelId === 'accounts') renderAccounts();
+            if (panelId === 'taxes') renderTaxes();
+        }
+        
+        function renderInvoices() {
+            document.getElementById('invoicesTable').innerHTML = invoices.map(i => `
+                <tr>
+                    <td style="font-family: 'Orbitron'; color: var(--neon-blue);">${i.id}</td>
+                    <td>${i.customer}</td>
+                    <td>${i.date}</td>
+                    <td>${i.due}</td>
+                    <td class="amount">$${i.amount.toLocaleString()}</td>
+                    <td><span class="status-badge status-${i.status}">${i.status}</span></td>
+                    <td><button class="btn btn-secondary" style="padding: 5px 10px;"><i class="bi bi-eye"></i></button></td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderCustomers() {
+            document.getElementById('customersTable').innerHTML = customers.map(c => `
+                <tr>
+                    <td style="font-family: 'Orbitron';">${c.code}</td>
+                    <td>${c.name}</td>
+                    <td>${c.email}</td>
+                    <td>${c.phone}</td>
+                    <td class="amount">$${c.balance.toLocaleString()}</td>
+                    <td><span class="status-badge status-paid">${c.status}</span></td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderProducts() {
+            document.getElementById('productsTable').innerHTML = products.map(p => `
+                <tr>
+                    <td style="font-family: 'Orbitron';">${p.sku}</td>
+                    <td>${p.name}</td>
+                    <td>${p.category}</td>
+                    <td class="amount">$${p.cost}</td>
+                    <td class="amount">$${p.price}</td>
+                    <td>${p.stock}</td>
+                    <td><span class="status-badge status-paid">${p.status}</span></td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderAccounts() {
+            document.getElementById('accountsTable').innerHTML = accounts.map(a => `
+                <tr>
+                    <td style="font-family: 'Orbitron';">${a.code}</td>
+                    <td>${a.name}</td>
+                    <td>${a.type}</td>
+                    <td>${a.category}</td>
+                    <td class="amount">$${a.balance.toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderTaxes() {
+            document.getElementById('taxesTable').innerHTML = taxes.map(t => `
+                <tr>
+                    <td style="font-family: 'Orbitron';">${t.code}</td>
+                    <td>${t.name}</td>
+                    <td class="amount">${t.rate}%</td>
+                    <td>${t.type}</td>
+                    <td><span class="status-badge ${t.status === 'Active' ? 'status-paid' : 'status-pending'}">${t.status}</span></td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderChart() {
+            const months = [65, 80, 45, 90, 70, 85, 95, 75, 88, 92, 78, 100];
+            document.getElementById('salesChart').innerHTML = months.map(h => 
+                `<div class="chart-bar" style="height: ${h}%;" title="$${(h * 2500).toLocaleString()}"></div>`
+            ).join('');
+        }
+        
+        function renderRecentInvoices() {
+            document.getElementById('recentInvoices').innerHTML = invoices.slice(0, 4).map(i => `
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                    <div>
+                        <div style="font-weight: 600;">${i.customer}</div>
+                        <div style="font-size: 0.8em; color: #888;">${i.id}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="amount">$${i.amount.toLocaleString()}</div>
+                        <span class="status-badge status-${i.status}" style="font-size: 0.7em;">${i.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function showNewInvoice() { showToast('📄 Abriendo formulario de factura...'); }
+        function generateReport(type) { showToast(`📊 Generando reporte ${type.toUpperCase()}...`); }
+        function backupDB() { showToast('☁️ Backup iniciado...'); }
+        function restoreDB() { showToast('🔄 Selecciona archivo de backup'); }
+        
+        function showToast(msg) {
+            document.getElementById('toastMsg').textContent = msg;
+            document.getElementById('toast').classList.add('show');
+            setTimeout(() => document.getElementById('toast').classList.remove('show'), 3000);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderChart();
+            renderRecentInvoices();
+            showToast('🏢 NAGADAN ERP cargado');
+        });
+    </script>
+</body>
+</html>

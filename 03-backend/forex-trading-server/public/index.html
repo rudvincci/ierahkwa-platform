@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ierahkwa Futurehead - Forex Investment Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #0f1628;
+            --bg-card: linear-gradient(145deg, #121a2e 0%, #0d1220 100%);
+            --gold: #FFD700;
+            --gold-light: #FFEC8B;
+            --gold-dark: #B8860B;
+            --neon-green: #00FF88;
+            --neon-cyan: #00FFFF;
+            --neon-magenta: #FF00FF;
+            --neon-orange: #FF6B00;
+            --neon-pink: #FF1493;
+            --neon-purple: #9D00FF;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0AEC0;
+            --border-color: rgba(255, 215, 0, 0.2);
+            --shadow-gold: 0 0 30px rgba(255, 215, 0, 0.3);
+            --shadow-green: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at 20% 30%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0e1a 0%, #060812 100%);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(0, 255, 136, 0.1) 100%);
+            border-bottom: 2px solid var(--gold);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: #000;
+            box-shadow: var(--shadow-gold);
+        }
+
+        .logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--gold) 0%, var(--neon-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--gold);
+            color: #000;
+            box-shadow: var(--shadow-gold);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: #000;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            gap: 1rem;
+            padding: 1rem;
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--neon-green), var(--gold));
+        }
+
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Market Watch */
+        .market-watch {
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+        }
+
+        .instrument-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .instrument-item:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid var(--gold);
+        }
+
+        .instrument-symbol {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .instrument-price {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .price-up { color: var(--neon-green); }
+        .price-down { color: var(--neon-pink); }
+
+        .instrument-change {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
+        }
+
+        .change-positive {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--neon-green);
+        }
+
+        .change-negative {
+            background: rgba(255, 20, 147, 0.2);
+            color: var(--neon-pink);
+        }
+
+        /* Trading Panel */
+        .trading-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .price-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .price-box {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .price-box.bid {
+            border-color: var(--neon-pink);
+        }
+
+        .price-box.ask {
+            border-color: var(--neon-green);
+        }
+
+        .price-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .price-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .price-box.bid .price-value { color: var(--neon-pink); }
+        .price-box.ask .price-value { color: var(--neon-green); }
+
+        /* Trade Buttons */
+        .trade-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .trade-btn {
+            padding: 1.5rem;
+            border: none;
+            border-radius: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .trade-btn.sell {
+            background: linear-gradient(135deg, var(--neon-pink) 0%, #C71585 100%);
+            color: white;
+        }
+
+        .trade-btn.buy {
+            background: linear-gradient(135deg, var(--neon-green) 0%, #00AA55 100%);
+            color: white;
+        }
+
+        .trade-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-green);
+        }
+
+        /* Investment Plans */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .plan-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .plan-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .plan-card.trending::before {
+            content: 'TRENDING';
+            position: absolute;
+            top: 15px;
+            right: -35px;
+            background: linear-gradient(90deg, var(--neon-orange), var(--neon-magenta));
+            color: white;
+            padding: 0.3rem 3rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            transform: rotate(45deg);
+        }
+
+        .plan-type {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: linear-gradient(90deg, var(--gold), var(--gold-dark));
+            color: #000;
+            font-weight: 700;
+            font-size: 0.75rem;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+        }
+
+        .plan-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .plan-roi {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 15px;
+            margin-bottom: 1rem;
+        }
+
+        .roi-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--neon-green);
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        .roi-label {
+            color: var(--neon-green);
+            font-size: 1rem;
+        }
+
+        .plan-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.75rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            font-weight: 700;
+            color: var(--gold-light);
+        }
+
+        .plan-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .plan-btn:hover {
+            box-shadow: var(--shadow-gold);
+            transform: scale(1.02);
+        }
+
+        /* Signal Providers */
+        .provider-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .provider-header {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .provider-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .provider-info {
+            flex: 1;
+        }
+
+        .provider-name {
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .provider-style {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .verified-badge {
+            background: var(--neon-green);
+            color: #000;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .provider-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--neon-green);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .subscribe-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .subscribe-btn:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Account Summary */
+        .account-summary {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(0, 255, 136, 0.1) 100%);
+        }
+
+        .balance-display {
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .balance-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .balance-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--gold);
+            text-shadow: var(--shadow-gold);
+        }
+
+        .account-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .account-stat {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.75rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .account-stat-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .account-stat-value.profit { color: var(--neon-green); }
+        .account-stat-value.loss { color: var(--neon-pink); }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab-btn.active {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+        }
+
+        .tab-btn:hover:not(.active) {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .plans-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 4px;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .live-indicator {
+            width: 10px;
+            height: 10px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 2rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title::before {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold));
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">IF</div>
+            <div>
+                <div class="logo-text">IERAHKWA FUTUREHEAD</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">Forex Investment Platform</div>
+            </div>
+        </div>
+        <nav class="header-nav">
+            <button class="nav-btn active" onclick="showSection('dashboard')">Dashboard</button>
+            <button class="nav-btn" onclick="showSection('trading')">Trading</button>
+            <button class="nav-btn" onclick="showSection('investments')">Investments</button>
+            <button class="nav-btn" onclick="showSection('signals')">Signals</button>
+            <button class="nav-btn" onclick="showSection('accounts')">Accounts</button>
+        </nav>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="live-indicator"></div>
+            <span style="color: var(--neon-green); font-weight: 600;">LIVE</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Left Sidebar - Market Watch -->
+        <aside class="sidebar">
+            <div class="card market-watch">
+                <h3 class="card-title">
+                    <span>📊</span> Market Watch
+                </h3>
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="filterMarket('forex')">Forex</button>
+                    <button class="tab-btn" onclick="filterMarket('indices')">Indices</button>
+                    <button class="tab-btn" onclick="filterMarket('commodities')">Commodities</button>
+                    <button class="tab-btn" onclick="filterMarket('crypto')">Crypto</button>
+                </div>
+                <div id="market-list"></div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="trading-panel">
+            <!-- Price Display -->
+            <div class="card">
+                <h3 class="card-title">
+                    <span id="selected-symbol">EURUSD</span>
+                    <span style="margin-left: auto; font-size: 0.8rem; color: var(--text-secondary);">
+                        Spread: <span id="spread-value">0.5</span> pips
+                    </span>
+                </h3>
+                <div class="price-display">
+                    <div class="price-box bid">
+                        <div class="price-label">BID (SELL)</div>
+                        <div class="price-value" id="bid-price">1.08500</div>
+                    </div>
+                    <div class="price-box ask">
+                        <div class="price-label">ASK (BUY)</div>
+                        <div class="price-value" id="ask-price">1.08505</div>
+                    </div>
+                </div>
+                <div class="trade-buttons">
+                    <button class="trade-btn sell" onclick="executeTrade('sell')">
+                        SELL
+                    </button>
+                    <button class="trade-btn buy" onclick="executeTrade('buy')">
+                        BUY
+                    </button>
+                </div>
+            </div>
+
+            <!-- Investment Plans Section -->
+            <h2 class="section-title">Investment Plans</h2>
+            <div class="plans-grid" id="plans-grid"></div>
+
+            <!-- Signal Providers Section -->
+            <h2 class="section-title">Signal Providers</h2>
+            <div class="plans-grid" id="providers-grid"></div>
+        </main>
+
+        <!-- Right Sidebar - Account & Signals -->
+        <aside class="sidebar">
+            <!-- Account Summary -->
+            <div class="card account-summary">
+                <h3 class="card-title">
+                    <span>💰</span> Account Summary
+                </h3>
+                <div class="balance-display">
+                    <div class="balance-label">Total Balance</div>
+                    <div class="balance-value">$125,430.50</div>
+                </div>
+                <div class="account-stats">
+                    <div class="account-stat">
+                        <div class="account-stat-value profit">+$12,350</div>
+                        <div class="stat-label">Today's P/L</div>
+                    </div>
+                    <div class="account-stat">
+                        <div class="account-stat-value">15.2%</div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                    <div class="account-stat">
+                        <div class="account-stat-value profit">85%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="account-stat">
+                        <div class="account-stat-value">12</div>
+                        <div class="stat-label">Active</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Investments -->
+            <div class="card">
+                <h3 class="card-title">
+                    <span>📈</span> Active Investments
+                </h3>
+                <div id="active-investments">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+
+            <!-- Recent Signals -->
+            <div class="card">
+                <h3 class="card-title">
+                    <span>⚡</span> Live Signals
+                </h3>
+                <div id="live-signals">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // ====================================================================
+        // IERAHKWA FUTUREHEAD - FOREX INVESTMENT PLATFORM
+        // Client-side JavaScript
+        // ====================================================================
+
+        const socket = io('http://localhost:3500');
+        let selectedSymbol = 'EURUSD';
+        let marketData = new Map();
+
+        // Socket connection
+        socket.on('connect', () => {
+            console.log('Connected to Ierahkwa Forex Server');
+            socket.emit('market:subscribe', ['all']);
+        });
+
+        socket.on('market:init', (data) => {
+            data.forEach(item => marketData.set(item.symbol, item));
+            renderMarketWatch();
+            updateSelectedPrice();
+        });
+
+        socket.on('market:update', (data) => {
+            data.forEach(item => marketData.set(item.symbol, item));
+            updateMarketPrices();
+            updateSelectedPrice();
+        });
+
+        socket.on('signal:new', (signal) => {
+            addLiveSignal(signal);
+        });
+
+        // Render market watch list
+        function renderMarketWatch() {
+            const container = document.getElementById('market-list');
+            container.innerHTML = '';
+
+            marketData.forEach((data, symbol) => {
+                const item = document.createElement('div');
+                item.className = 'instrument-item';
+                item.onclick = () => selectSymbol(symbol);
+                item.innerHTML = `
+                    <div>
+                        <div class="instrument-symbol">${symbol}</div>
+                    </div>
+                    <div class="instrument-price ${data.changePercent >= 0 ? 'price-up' : 'price-down'}" id="price-${symbol}">
+                        ${data.bid.toFixed(data.bid > 100 ? 2 : 5)}
+                    </div>
+                    <div class="instrument-change ${data.changePercent >= 0 ? 'change-positive' : 'change-negative'}" id="change-${symbol}">
+                        ${data.changePercent >= 0 ? '+' : ''}${data.changePercent.toFixed(2)}%
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Update market prices
+        function updateMarketPrices() {
+            marketData.forEach((data, symbol) => {
+                const priceEl = document.getElementById(`price-${symbol}`);
+                const changeEl = document.getElementById(`change-${symbol}`);
+                if (priceEl && changeEl) {
+                    priceEl.textContent = data.bid.toFixed(data.bid > 100 ? 2 : 5);
+                    priceEl.className = `instrument-price ${data.changePercent >= 0 ? 'price-up' : 'price-down'}`;
+                    changeEl.textContent = `${data.changePercent >= 0 ? '+' : ''}${data.changePercent.toFixed(2)}%`;
+                    changeEl.className = `instrument-change ${data.changePercent >= 0 ? 'change-positive' : 'change-negative'}`;
+                }
+            });
+        }
+
+        // Select symbol
+        function selectSymbol(symbol) {
+            selectedSymbol = symbol;
+            document.getElementById('selected-symbol').textContent = symbol;
+            updateSelectedPrice();
+        }
+
+        // Update selected price display
+        function updateSelectedPrice() {
+            const data = marketData.get(selectedSymbol);
+            if (data) {
+                document.getElementById('bid-price').textContent = data.bid.toFixed(data.bid > 100 ? 2 : 5);
+                document.getElementById('ask-price').textContent = data.ask.toFixed(data.ask > 100 ? 2 : 5);
+                const spread = ((data.ask - data.bid) / (data.bid > 100 ? 1 : 0.0001)).toFixed(1);
+                document.getElementById('spread-value').textContent = spread;
+            }
+        }
+
+        // Execute trade
+        function executeTrade(type) {
+            const data = marketData.get(selectedSymbol);
+            alert(`${type.toUpperCase()} ${selectedSymbol} @ ${type === 'buy' ? data.ask : data.bid}`);
+        }
+
+        // Load investment plans
+        async function loadPlans() {
+            try {
+                const response = await fetch('http://localhost:3500/api/plans');
+                const plans = await response.json();
+                renderPlans(plans);
+            } catch (error) {
+                console.error('Error loading plans:', error);
+            }
+        }
+
+        // Render investment plans
+        function renderPlans(plans) {
+            const container = document.getElementById('plans-grid');
+            container.innerHTML = plans.map(plan => `
+                <div class="plan-card ${plan.isTrending ? 'trending' : ''}">
+                    <span class="plan-type">${plan.type}</span>
+                    <h3 class="plan-name">${plan.name}</h3>
+                    <p class="plan-description">${plan.description}</p>
+                    <div class="plan-roi">
+                        <span class="roi-value">${plan.minROI}-${plan.maxROI}%</span>
+                        <span class="roi-label">ROI</span>
+                    </div>
+                    <div class="plan-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Min Amount</div>
+                            <div class="detail-value">$${plan.minAmount.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Max Amount</div>
+                            <div class="detail-value">$${plan.maxAmount.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Risk Level</div>
+                            <div class="detail-value">${plan.riskLevel}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Durations</div>
+                            <div class="detail-value">${plan.durations.length} options</div>
+                        </div>
+                    </div>
+                    <button class="plan-btn" onclick="investInPlan('${plan.id}')">
+                        INVEST NOW
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Load signal providers
+        async function loadProviders() {
+            try {
+                const response = await fetch('http://localhost:3500/api/signals/providers');
+                const providers = await response.json();
+                renderProviders(providers);
+            } catch (error) {
+                console.error('Error loading providers:', error);
+            }
+        }
+
+        // Render signal providers
+        function renderProviders(providers) {
+            const container = document.getElementById('providers-grid');
+            container.innerHTML = providers.map(provider => `
+                <div class="provider-card">
+                    <div class="provider-header">
+                        <div class="provider-avatar">${provider.name.charAt(0)}</div>
+                        <div class="provider-info">
+                            <div class="provider-name">${provider.name}</div>
+                            <div class="provider-style">${provider.tradingStyle} Trading</div>
+                        </div>
+                        ${provider.isVerified ? '<span class="verified-badge">VERIFIED</span>' : ''}
+                    </div>
+                    <div class="provider-stats">
+                        <div class="stat-box">
+                            <div class="stat-value">${provider.winRate}%</div>
+                            <div class="stat-label">Win Rate</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">$${(provider.totalProfit / 1000).toFixed(1)}K</div>
+                            <div class="stat-label">Profit</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">${provider.totalTrades}</div>
+                            <div class="stat-label">Trades</div>
+                        </div>
+                    </div>
+                    <button class="subscribe-btn" onclick="subscribeToProvider('${provider.id}')">
+                        Subscribe - $${provider.monthlyFee}/month
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Add live signal
+        function addLiveSignal(signal) {
+            const container = document.getElementById('live-signals');
+            const signalEl = document.createElement('div');
+            signalEl.className = 'provider-card';
+            signalEl.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong style="color: ${signal.action === 'Buy' ? 'var(--neon-green)' : 'var(--neon-pink)'}">
+                        ${signal.action} ${signal.symbol}
+                    </strong>
+                    <span style="font-size: 0.8rem; color: var(--text-secondary);">
+                        ${new Date(signal.createdAt).toLocaleTimeString()}
+                    </span>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.9rem;">
+                    Entry: ${signal.entryPrice} | SL: ${signal.stopLoss} | TP: ${signal.takeProfit1}
+                </div>
+            `;
+            container.prepend(signalEl);
+            if (container.children.length > 5) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        // Render active investments
+        function renderActiveInvestments() {
+            const container = document.getElementById('active-investments');
+            const investments = [
+                { plan: 'Growth Plan', amount: 5000, progress: 65, profit: 325 },
+                { plan: 'Premium Plan', amount: 15000, progress: 40, profit: 1200 },
+                { plan: 'VIP Elite', amount: 50000, progress: 25, profit: 3750 }
+            ];
+
+            container.innerHTML = investments.map(inv => `
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; margin-bottom: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: var(--gold);">${inv.plan}</span>
+                        <span style="color: var(--neon-green);">+$${inv.profit}</span>
+                    </div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                        $${inv.amount.toLocaleString()} invested
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; margin-top: 0.5rem;">
+                        <div style="background: var(--neon-green); height: 100%; width: ${inv.progress}%; border-radius: 3px;"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPlans();
+            loadProviders();
+            renderActiveInvestments();
+        });
+
+        function investInPlan(planId) {
+            alert(`Opening investment dialog for plan: ${planId}`);
+        }
+
+        function subscribeToProvider(providerId) {
+            alert(`Subscribing to provider: ${providerId}`);
+        }
+
+        function showSection(section) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            console.log('Showing section:', section);
+        }
+
+        function filterMarket(type) {
+            document.querySelectorAll('.tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            console.log('Filtering market:', type);
+        }
+    </script>
+</body>
+</html>

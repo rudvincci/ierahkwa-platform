@@ -1,0 +1,19 @@
+@* @using MudBlazor
+ <MudGrid>
+    <MudItem xs="4">
+        <MudSelect T="string" Label="Country Code" Value="@_selectedCountryCode" ValueChanged="OnCountryCodeChanged" Strict="true">
+            @foreach (var country in _countries)
+            {
+                <MudSelectItem Value="@country.Value.CountryCode">@country.Value.ISOShortName (@country.Value.CountryCode)</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+    <MudItem xs="8">
+        <MudTextField T="string" Label="Phone Number" Value="@_phone" ValueChanged="OnPhoneNumberChanged" />
+    </MudItem>
+</MudGrid> 
+
+@code {
+
+}
+ *@

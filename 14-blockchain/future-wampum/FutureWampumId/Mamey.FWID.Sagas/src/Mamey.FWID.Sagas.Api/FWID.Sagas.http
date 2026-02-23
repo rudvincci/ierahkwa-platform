@@ -1,0 +1,107 @@
+### Mamey FutureWampumID Sagas API Routes
+### Base URL: http://localhost:5006
+
+@baseUrl = http://localhost:5006
+@contentType = application/json
+@identityId = 123e4567-e89b-12d3-a456-426614174000
+@zoneId = 423e4567-e89b-12d3-a456-426614174000
+
+### ============================================
+### HEALTH & INFO
+### ============================================
+
+### Root Endpoint (Server Status)
+GET {{baseUrl}}/
+
+### Health Check
+GET {{baseUrl}}/health
+
+### ============================================
+### SAGA ROUTES
+### ============================================
+
+### Start Identity Registration Saga
+POST {{baseUrl}}/api/sagas/identity-registration
+Content-Type: {{contentType}}
+
+{
+  "identityId": "{{identityId}}",
+  "name": {
+    "firstName": "John",
+    "middleName": "Michael",
+    "lastName": "Doe",
+    "suffix": "Jr."
+  },
+  "personalDetails": {
+    "dateOfBirth": "1990-01-15T00:00:00Z",
+    "placeOfBirth": "Springfield, IL",
+    "gender": "Male",
+    "nationality": "USA"
+  },
+  "contactInformation": {
+    "email": "john.doe@example.com",
+    "phone": {
+      "number": "555-1234",
+      "type": "Mobile"
+    },
+    "address": {
+      "street": "123 Main St",
+      "city": "Springfield",
+      "state": "IL",
+      "zipCode": "62701",
+      "country": "USA",
+      "type": "Residential"
+    }
+  },
+  "biometricData": {
+    "type": "Fingerprint",
+    "data": "base64encodedfingerprintdata",
+    "storageLocation": "minio://biometrics/fingerprints/{{identityId}}"
+  },
+  "zone": "zone-001"
+}
+
+### Start Credential Issuance Saga
+POST {{baseUrl}}/api/sagas/credential-issuance
+Content-Type: {{contentType}}
+
+{
+  "identityId": "{{identityId}}",
+  "credentialType": "Passport",
+  "claims": {
+    "passportNumber": "US123456789",
+    "givenNames": "John Michael",
+    "surname": "Doe",
+    "dateOfBirth": "1990-01-15",
+    "placeOfBirth": "Springfield, IL",
+    "nationality": "USA",
+    "sex": "M",
+    "dateOfIssue": "2024-01-01",
+    "dateOfExpiry": "2034-01-01",
+    "issuingAuthority": "US Department of State"
+  },
+  "issuerId": "issuer-001"
+}
+
+### Start Access Control Granting Saga
+POST {{baseUrl}}/api/sagas/access-control-granting
+Content-Type: {{contentType}}
+
+{
+  "identityId": "{{identityId}}",
+  "zoneId": "{{zoneId}}",
+  "permission": "Write",
+  "grantedBy": "admin-user-id",
+  "expiresAt": "2025-12-31T23:59:59Z"
+}
+
+### ============================================
+### TESTING NOTES
+### ============================================
+
+# Replace the GUIDs in the examples with actual GUIDs from your system
+# Adjust the baseUrl to match your API endpoint
+# Sagas orchestrate complex workflows across multiple FWID services
+# Each saga coordinates multiple steps and handles failures/compensations
+
+

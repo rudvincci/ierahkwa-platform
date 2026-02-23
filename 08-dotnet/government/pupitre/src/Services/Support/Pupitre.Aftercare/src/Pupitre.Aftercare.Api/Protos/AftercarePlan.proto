@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Aftercare.Api.Protos";
+
+package Pupitre.Aftercare;
+
+// gRPC service for AftercarePlan operations
+service AftercarePlanService {
+    // Get a single AftercarePlan by ID
+    rpc GetAftercarePlan (GetAftercarePlanRequest) returns (AftercarePlanResponse) {};
+    
+    // List all AftercarePlans with pagination
+    rpc ListAftercarePlans (ListAftercarePlansRequest) returns (ListAftercarePlansResponse) {};
+    
+    // Stream AftercarePlan updates
+    rpc StreamAftercarePlanUpdates (StreamAftercarePlanUpdatesRequest) returns (stream AftercarePlanResponse) {};
+}
+
+message GetAftercarePlanRequest {
+    string id = 1;
+}
+
+message ListAftercarePlansRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListAftercarePlansResponse {
+    repeated AftercarePlanResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message AftercarePlanResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamAftercarePlanUpdatesRequest {
+    string filter = 1;
+}

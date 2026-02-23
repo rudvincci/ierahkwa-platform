@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Services\" />
+    <None Remove="Events\Rejected\" />
+    <None Remove="Events\Handlers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="Events\Rejected\" />
+    <Folder Include="Events\Handlers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mamey.Government.Identity.Domain\Mamey.Government.Identity.Domain.csproj" />
+    <ProjectReference Include="..\Mamey.Government.Identity.Contracts\Mamey.Government.Identity.Contracts.csproj" />
+  </ItemGroup>
+  
+  <!-- Conditional references: Project reference in Debug, Package reference in Release -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey.CQRS.Commands\src\Mamey.CQRS.Commands\Mamey.CQRS.Commands.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Mamey.CQRS.Commands" Version="2.0.*" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Mamey.Auth.Jwt" Version="2.0.*" />
+    <PackageReference Include="Mamey.Security" Version="2.0.*" />
+  </ItemGroup>
+</Project>

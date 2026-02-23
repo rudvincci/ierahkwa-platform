@@ -1,0 +1,125 @@
+@page "/banking"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFBDETBClient FBDETBClient
+@inject ILogger<FBDETBHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Future BDET Bank" Icon="fas fa-university" Subtitle="Banking Services">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <!-- Dashboard Metrics -->
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Total Accounts" Value="@_totalAccounts.ToString()" Icon="fas fa-wallet" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Total Wallets" Value="@_totalWallets.ToString()" Icon="fas fa-credit-card" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Active Cards" Value="@_activeCards.ToString()" Icon="fas fa-id-card" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Active Loans" Value="@_activeLoans.ToString()" Icon="fas fa-hand-holding-usd" Color="#8B5CF6" />
+        </MudItem>
+    </MudGrid>
+
+    <!-- Navigation Cards -->
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Accounts" Elevation="2">
+                <MudText Typo="Typo.body2">Account management</MudText>
+                <MudButton Href="/banking/accounts" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Accounts
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Identity & Access" Elevation="2">
+                <MudText Typo="Typo.body2">Identity and access management</MudText>
+                <MudButton Href="/banking/identity" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Identity
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Cards" Elevation="2">
+                <MudText Typo="Typo.body2">Card services management</MudText>
+                <MudButton Href="/banking/cards" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Cards
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Payments" Elevation="2">
+                <MudText Typo="Typo.body2">Payment and settlement services</MudText>
+                <MudButton Href="/banking/p2p" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Payments
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Lending" Elevation="2">
+                <MudText Typo="Typo.body2">Lending and credit services</MudText>
+                <MudButton Href="/banking/loans" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Lending
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Compliance" Elevation="2">
+                <MudText Typo="Typo.body2">Compliance and security</MudText>
+                <MudButton Href="/banking/compliance" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Compliance
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private int _totalAccounts;
+    private int _totalWallets;
+    private int _activeCards;
+    private int _activeLoans;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            var accounts = await FBDETBClient.GetAccountsAsync();
+            _totalAccounts = accounts.Count;
+
+            var wallets = await FBDETBClient.GetWalletsAsync();
+            _totalWallets = wallets.Count;
+
+            var cards = await FBDETBClient.GetCardsAsync();
+            _activeCards = cards.Count(c => c.IsActive);
+
+            var loans = await FBDETBClient.GetLoansAsync();
+            _activeLoans = loans.Count(l => l.Status.ToString() == "Active" || l.Status.ToString() == "Open");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading FBDETB dashboard data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,62 @@
+@page "/profile-settings"
+
+@using Mamey.ApplicationName.BlazorWasm.Services.Profile
+@using Mamey.ApplicationName.BlazorWasm.ViewModels.Profile
+
+@inject UserService UserService
+@attribute [Authorize]
+<MudContainer MaxWidth="MaxWidth.Large" Class="m-auto p-6">
+    <MudTabs Rounded="true" Class="mb-4" @bind-ActivePanelIndex="activeTabIndex">
+        @if (ViewModel != null)
+        {
+            <MudTabPanel Text="Personal Information">
+                <MudPaper Class="p-4 mb-4" Elevation="3">
+                    <MudText Typo="Typo.h4">Personal Information</MudText>
+                    <MudTextField T="string" Label="Full Name" @bind-Value="ViewModel.User.FullName" Variant="Variant.Outlined" 
+                                  FullWidth="true" InputType="InputType.Text" />
+                    <MudTextField T="string" Label="Email" @bind-Value="ViewModel.User.Email" Variant="Variant.Outlined" 
+                                  FullWidth="true" InputType="InputType.Email" />
+                    <MudTextField T="string" Label="Phone Number" @bind-Value="ViewModel.User.PhoneNumber" Variant="Variant.Outlined" 
+                                  FullWidth="true" InputType="InputType.Telephone" />
+                    <MudTextField T="string" Label="Address" @bind-Value="ViewModel.User.Address" Variant="Variant.Outlined" 
+                                  FullWidth="true" InputType="InputType.Text" />
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ViewModel.SaveProfile">Save Changes</MudButton>
+                </MudPaper>
+            </MudTabPanel>
+
+            <MudTabPanel Text="Security Settings">
+                <MudPaper Class="p-4 mb-4" Elevation="3">
+                    <ChangePasswordDialog />
+                    <TwoFactorAuthSetup />
+                    <DeviceManagement Devices="ViewModel.UserDevices" />
+                </MudPaper>
+            </MudTabPanel>
+
+            <MudTabPanel Text="Linked Accounts">
+                <LinkedAccounts Accounts="ViewModel.LinkedAccounts" />
+            </MudTabPanel>
+
+            <MudTabPanel Text="Notification Preferences">
+                <NotificationPreferences Preferences="ViewModel.UserPreferences" />
+            </MudTabPanel>
+
+            <MudTabPanel Text="Privacy Settings">
+                <MudSwitch T="bool" Label="Share activity data with partners" @bind-Checked="ViewModel.User.ShareDataWithPartners" />
+                <MudSwitch T="bool" Label="Enable personalized ads" @bind-Checked="ViewModel.User.EnablePersonalizedAds" />
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ViewModel.SavePrivacySettings">Save Privacy Settings</MudButton>
+            </MudTabPanel>
+        }
+    </MudTabs>
+</MudContainer>
+
+@code {
+    private ProfileViewModel ViewModel;
+    private int activeTabIndex = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Pass the injected UserService to the ProfileViewModel
+        ViewModel = new ProfileViewModel(UserService);
+        await Task.CompletedTask;
+    }
+}

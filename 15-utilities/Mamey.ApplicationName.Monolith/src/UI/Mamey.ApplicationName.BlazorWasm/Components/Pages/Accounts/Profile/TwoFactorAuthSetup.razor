@@ -1,0 +1,32 @@
+<MudPaper Class="p-4 mb-4" Elevation="3">
+    <MudText Typo="Typo.h5">Two-Factor Authentication (2FA)</MudText>
+    <MudSwitch T="bool" Label="Enable 2FA" @bind-Checked="Is2FAEnabled" OnChange="Toggle2FA" />
+
+    @if (Is2FAEnabled)
+    {
+        <MudText Typo="Typo.body2" Class="mt-2">Two-Factor Authentication is enabled. Use the code below to set up an authenticator app.</MudText>
+        <MudTextField T="string" Label="Authenticator Code" Value="AuthenticatorCode" ReadOnly="true" Variant="Variant.Outlined" FullWidth="true" InputType="InputType.Number" />
+    }
+
+    <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="GenerateAuthenticatorCode">Generate New Code</MudButton>
+</MudPaper>
+
+@code {
+    private bool Is2FAEnabled = false;
+    private string AuthenticatorCode = string.Empty;
+
+    private void Toggle2FA(bool enabled)
+    {
+        Is2FAEnabled = enabled;
+        if (enabled)
+        {
+            GenerateAuthenticatorCode();
+        }
+    }
+
+    private void GenerateAuthenticatorCode()
+    {
+        // Generate a new authenticator code
+        AuthenticatorCode = "ABC123DEF456"; // Replace with actual code generation logic
+    }
+}

@@ -1,0 +1,98 @@
+@page "/banking/security"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFBDETBClient FBDETBClient
+@inject ILogger<Security> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Security" Icon="fas fa-shield-alt" Subtitle="Security monitoring and alerts">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Alerts" Value="@_alerts.Count.ToString()" Icon="fas fa-bell" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Open" Value="@_openCount.ToString()" Icon="fas fa-folder-open" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="High Severity" Value="@_highSeverityCount.ToString()" Icon="fas fa-exclamation-circle" Color="#EF4444" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Resolved" Value="@_resolvedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Security Alerts" Class="mt-4">
+        <MudTable T="SecurityInfo" Items="@_alerts" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Security ID</MudTh>
+                <MudTh>Account</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Severity</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Detected</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.SecurityId</MudTd>
+                <MudTd>@context.AccountId</MudTd>
+                <MudTd>@context.SecurityType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Severity == "Critical" ? Color.Error : context.Severity == "High" ? Color.Warning : Color.Info)">
+                        @context.Severity
+                    </MudChip>
+                </MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Resolved" ? Color.Success : context.Status == "Open" ? Color.Warning : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.DetectedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<SecurityInfo> _alerts = new();
+    private int _openCount;
+    private int _highSeverityCount;
+    private int _resolvedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _alerts = await FBDETBClient.GetSecurityAlertsAsync();
+            _openCount = _alerts.Count(a => a.Status == "Open" || a.Status == "Investigating");
+            _highSeverityCount = _alerts.Count(a => a.Severity == "High" || a.Severity == "Critical");
+            _resolvedCount = _alerts.Count(a => a.Status == "Resolved");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading security alerts");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

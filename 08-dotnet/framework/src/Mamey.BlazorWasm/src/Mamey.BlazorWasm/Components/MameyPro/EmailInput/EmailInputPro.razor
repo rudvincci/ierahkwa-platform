@@ -1,0 +1,58 @@
+@using Mamey.Types
+@using Mamey.BlazorWasm.Components.Foundation
+
+<MudTextField T="string"
+              Label="@Label" Placeholder="@Placeholder"
+              @bind-Value="_raw"
+              Immediate="true"
+              OnBlur="@(() => Validate())"
+              Required="@Required"
+              Disabled="@Disabled"
+              Adornment="@Adornment" AdornmentIcon="@AdornmentIcon"
+              Variant="@Variant"
+              Error="_error"
+              ErrorText="@_errorText"
+              Class="@Class" Style="@Style" />
+<FieldMessages HelperText="@HelperText" />
+
+@code {
+    [Parameter] public string Label { get; set; } = "Email";
+    [Parameter] public string HelperText { get; set; } = "We’ll validate and store a normalized Email VO";
+    [Parameter] public string Placeholder { get; set; } = "name@example.com";
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public Adornment Adornment { get; set; } = Adornment.End;
+    [Parameter] public string? AdornmentIcon { get; set; } = Icons.Material.Filled.Email;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public Email? Value { get; set; }
+    [Parameter] public EventCallback<Email?> ValueChanged { get; set; }
+
+    private string _raw = "";
+    private bool _error = false;
+    private string _errorText = "";
+
+    protected override void OnParametersSet()
+    {
+        if (Value is not null) _raw = Value.Value;
+    }
+
+    private async Task Validate()
+    {
+        _error = false; _errorText = "";
+        try
+        {
+            var email = new Email(_raw); // throws on invalid :contentReference[oaicite:1]{index=1}
+            await ValueChanged.InvokeAsync(email);
+        }
+        catch (Exception ex)
+        {
+            _error = true;
+            _errorText = ex.Message;
+            await ValueChanged.InvokeAsync(null);
+        }
+        StateHasChanged();
+    }
+}

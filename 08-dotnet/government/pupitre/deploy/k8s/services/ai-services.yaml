@@ -1,0 +1,242 @@
+---
+# AI Services Kubernetes Deployments
+# AI Tutors - High resource requirements for LLM
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pupitre-ai-tutors
+  namespace: pupitre-ai
+  labels:
+    app: pupitre-ai-tutors
+    tier: ai
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pupitre-ai-tutors
+  template:
+    metadata:
+      labels:
+        app: pupitre-ai-tutors
+        tier: ai
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "60101"
+    spec:
+      containers:
+        - name: pupitre-ai-tutors
+          image: ghcr.io/pupitre/pupitre-ai-tutors:latest
+          ports:
+            - containerPort: 60101
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pupitre-ai-secrets
+                  key: openai-api-key
+            - name: QDRANT_HOST
+              value: "qdrant.pupitre-data.svc.cluster.local"
+            - name: QDRANT_PORT
+              value: "6333"
+          envFrom:
+            - configMapRef:
+                name: pupitre-common-config
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"
+              nvidia.com/gpu: "1"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 60101
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 60101
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pupitre-ai-tutors
+  namespace: pupitre-ai
+spec:
+  selector:
+    app: pupitre-ai-tutors
+  ports:
+    - port: 60101
+      targetPort: 60101
+---
+# AI Assessments
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pupitre-ai-assessments
+  namespace: pupitre-ai
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pupitre-ai-assessments
+  template:
+    metadata:
+      labels:
+        app: pupitre-ai-assessments
+    spec:
+      containers:
+        - name: pupitre-ai-assessments
+          image: ghcr.io/pupitre/pupitre-ai-assessments:latest
+          ports:
+            - containerPort: 60102
+          envFrom:
+            - configMapRef:
+                name: pupitre-common-config
+            - secretRef:
+                name: pupitre-ai-secrets
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pupitre-ai-assessments
+  namespace: pupitre-ai
+spec:
+  selector:
+    app: pupitre-ai-assessments
+  ports:
+    - port: 60102
+      targetPort: 60102
+---
+# AI Content Generation
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pupitre-ai-content
+  namespace: pupitre-ai
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pupitre-ai-content
+  template:
+    metadata:
+      labels:
+        app: pupitre-ai-content
+    spec:
+      containers:
+        - name: pupitre-ai-content
+          image: ghcr.io/pupitre/pupitre-ai-content:latest
+          ports:
+            - containerPort: 60103
+          envFrom:
+            - configMapRef:
+                name: pupitre-common-config
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pupitre-ai-content
+  namespace: pupitre-ai
+spec:
+  selector:
+    app: pupitre-ai-content
+  ports:
+    - port: 60103
+      targetPort: 60103
+---
+# AI Safety - Critical service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pupitre-ai-safety
+  namespace: pupitre-ai
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pupitre-ai-safety
+  template:
+    metadata:
+      labels:
+        app: pupitre-ai-safety
+    spec:
+      containers:
+        - name: pupitre-ai-safety
+          image: ghcr.io/pupitre/pupitre-ai-safety:latest
+          ports:
+            - containerPort: 60107
+          envFrom:
+            - configMapRef:
+                name: pupitre-common-config
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pupitre-ai-safety
+  namespace: pupitre-ai
+spec:
+  selector:
+    app: pupitre-ai-safety
+  ports:
+    - port: 60107
+      targetPort: 60107
+---
+# Horizontal Pod Autoscaler for AI Tutors
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pupitre-ai-tutors-hpa
+  namespace: pupitre-ai
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pupitre-ai-tutors
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80

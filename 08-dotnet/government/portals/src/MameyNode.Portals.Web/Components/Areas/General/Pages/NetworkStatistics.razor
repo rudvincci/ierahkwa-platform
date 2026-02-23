@@ -1,0 +1,135 @@
+@page "/explorer/network"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IInfrastructureClient InfrastructureClient
+@inject ILogger<NetworkStatistics> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Network Statistics" Icon="fas fa-chart-line" Subtitle="Real-time network statistics and metrics">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshStatistics" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    @if (_networkInfo != null && _networkHealth != null)
+    {
+        <MudGrid Spacing="3" Class="mt-4">
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Connected Peers" Value="@_networkHealth.ConnectedPeers.ToString()" Icon="fas fa-network-wired" Color="#3B82F6" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Health Score" Value="@_networkHealth.HealthScore.ToString("F1")%" Icon="fas fa-heartbeat" Color="@(_networkHealth.IsHealthy ? "#10B981" : "#EF4444")" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Sync Status" Value="@_networkHealth.SyncStatus" Icon="fas fa-sync" Color="#F59E0B" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Network Status" Value="@(_networkHealth.IsHealthy ? "Healthy" : "Unhealthy")" Icon="fas fa-check-circle" Color="@(_networkHealth.IsHealthy ? "#10B981" : "#EF4444")" />
+            </MudItem>
+        </MudGrid>
+
+        <CardContainer Title="Network Information" Class="mt-4">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Network Name:</strong> @_networkInfo.NetworkName</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Network ID:</strong> @_networkInfo.NetworkId</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Total Peers:</strong> @_networkInfo.TotalPeers</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Active Peers:</strong> @_networkInfo.ActivePeers</MudText>
+                </MudItem>
+            </MudGrid>
+        </CardContainer>
+    }
+
+    @if (_ledgerStats != null)
+    {
+        <CardContainer Title="Ledger Statistics" Class="mt-4">
+            <MudGrid>
+                <MudItem xs="12" md="4">
+                    <MudText Typo="Typo.body1"><strong>Total Blocks:</strong> @_ledgerStats.TotalBlocks.ToString("N0")</MudText>
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudText Typo="Typo.body1"><strong>Total Accounts:</strong> @_ledgerStats.TotalAccounts.ToString("N0")</MudText>
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudText Typo="Typo.body1"><strong>Total Supply:</strong> @_ledgerStats.TotalSupply</MudText>
+                </MudItem>
+            </MudGrid>
+        </CardContainer>
+    }
+
+    @if (_peers.Any())
+    {
+        <CardContainer Title="Network Peers" Class="mt-4">
+            <MudTable T="PeerInfo" Items="@_peers" Hover="true" Dense="false" Striped="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>Peer ID</MudTh>
+                    <MudTh>Address</MudTh>
+                    <MudTh>Port</MudTh>
+                    <MudTh>Version</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Latency</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.PeerId</MudTd>
+                    <MudTd>@context.Address</MudTd>
+                    <MudTd>@context.Port</MudTd>
+                    <MudTd>@context.Version</MudTd>
+                    <MudTd>
+                        <MudChip T="string" Size="Size.Small" Color="@(context.IsOnline ? Color.Success : Color.Default)">
+                            @(context.IsOnline ? "Online" : "Offline")
+                        </MudChip>
+                    </MudTd>
+                    <MudTd>@context.LatencyMs ms</MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </CardContainer>
+    }
+</PageContainer>
+
+@code {
+    private NetworkInfo? _networkInfo;
+    private NetworkHealthInfo? _networkHealth;
+    private LedgerStatsInfo? _ledgerStats;
+    private List<PeerInfo> _peers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStatisticsAsync();
+    }
+
+    private async Task LoadStatisticsAsync()
+    {
+        try
+        {
+            _networkInfo = await InfrastructureClient.GetNetworkInfoAsync();
+            _networkHealth = await InfrastructureClient.GetNetworkHealthAsync();
+            _ledgerStats = await InfrastructureClient.GetLedgerStatsAsync();
+            _peers = await InfrastructureClient.GetPeersAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading network statistics");
+        }
+    }
+
+    private async Task RefreshStatistics()
+    {
+        await LoadStatisticsAsync();
+        StateHasChanged();
+    }
+}
+
+

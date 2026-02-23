@@ -1,0 +1,251 @@
+@page "/citizen/documents"
+@implements IAsyncDisposable
+@attribute [Authorize(Roles = "Citizen")]
+@using Mamey.Portal.Citizenship.Application.Models
+@using Mamey.Portal.Citizenship.Application.Services
+@using Mamey.Portal.Shared.Tenancy
+@using Mamey.Portal.Shared.Auth
+@using Mamey.Portal.Web.Realtime
+@inject ICitizenPortalService CitizenPortal
+@inject ICitizenshipBackofficeService Backoffice
+@inject NavigationManager Nav
+@inject ITenantContext Tenant
+@inject ICurrentUserContext CurrentUser
+@inject ICitizenshipRealtimeClient Realtime
+@inject IHttpClientFactory HttpClientFactory
+
+<PageTitle>Documents</PageTitle>
+
+@code {
+    private IReadOnlyList<CitizenDocumentDto> _docs = Array.Empty<CitizenDocumentDto>();
+    private IReadOnlyList<CitizenUploadDto> _uploads = Array.Empty<CitizenUploadDto>();
+    private string? _error;
+    private IDisposable? _sub;
+    private Dictionary<Guid, bool> _renewing = new();
+    private string? _renewError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _docs = await CitizenPortal.GetDocumentsAsync();
+            _uploads = await CitizenPortal.GetUploadsAsync();
+
+            // Start realtime updates for this citizen.
+            var baseUri = Nav.ToAbsoluteUri("/");
+            await Realtime.StartAsync(baseUri, Tenant.TenantId, CurrentUser.UserName);
+
+            _sub = Realtime.IssuedDocumentCreated.Subscribe(async _ =>
+            {
+                try
+                {
+                    _docs = await CitizenPortal.GetDocumentsAsync();
+                    _uploads = await CitizenPortal.GetUploadsAsync();
+                    await InvokeAsync(StateHasChanged);
+                }
+                catch
+                {
+                    // ignore refresh errors
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _sub?.Dispose();
+        await Realtime.DisposeAsync();
+    }
+
+    private static string DownloadHref(Guid issuedDocumentId) => $"/citizen/files/{issuedDocumentId}";
+    private static string UploadHref(Guid uploadId) => $"/citizen/uploads/{uploadId}";
+
+    private void Download(Guid issuedDocumentId)
+    {
+        // Force a full load so the browser treats it like a file download response.
+        Nav.NavigateTo(DownloadHref(issuedDocumentId), forceLoad: true);
+    }
+
+    private void DownloadUpload(Guid uploadId)
+    {
+        Nav.NavigateTo(UploadHref(uploadId), forceLoad: true);
+    }
+
+    private bool IsExpiredOrExpiringSoon(CitizenDocumentDto doc)
+    {
+        if (!doc.ExpiresAt.HasValue)
+            return false;
+        
+        var daysUntilExpiry = (doc.ExpiresAt.Value - DateTimeOffset.UtcNow).TotalDays;
+        return daysUntilExpiry <= 30; // Expired or expiring within 30 days
+    }
+
+    private bool IsExpired(CitizenDocumentDto doc)
+    {
+        if (!doc.ExpiresAt.HasValue)
+            return false;
+        
+        return doc.ExpiresAt.Value <= DateTimeOffset.UtcNow;
+    }
+
+    private async Task RenewDocument(Guid documentId)
+    {
+        _renewError = null;
+        _renewing[documentId] = true;
+        StateHasChanged();
+
+        try
+        {
+            var client = HttpClientFactory.CreateClient();
+            var baseUri = Nav.ToAbsoluteUri("/");
+            var response = await client.PostAsync($"{baseUri}citizen/documents/{documentId}/renew", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Refresh documents list
+                _docs = await CitizenPortal.GetDocumentsAsync();
+                _renewError = null;
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                _renewError = $"Failed to renew document: {errorContent}";
+            }
+        }
+        catch (Exception ex)
+        {
+            _renewError = ex.Message;
+        }
+        finally
+        {
+            _renewing[documentId] = false;
+            StateHasChanged();
+        }
+    }
+}
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h4">My Documents</MudText>
+    <MudText Typo="Typo.body2">
+        Tenant-scoped issued documents for the current citizen (by email).
+    </MudText>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(_renewError))
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-3">@_renewError</MudAlert>
+    }
+
+    <MudTable Items="_docs" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Document #</MudTh>
+            <MudTh>Type</MudTh>
+            <MudTh>Variant</MudTh>
+            <MudTh>Issued</MudTh>
+            <MudTh>Expires</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Document #">@context.DocumentNumber</MudTd>
+            <MudTd DataLabel="Type">@context.Type</MudTd>
+            <MudTd DataLabel="Variant">@context.Variant</MudTd>
+            <MudTd DataLabel="Issued">@context.IssuedAt.LocalDateTime.ToString("yyyy-MM-dd")</MudTd>
+            <MudTd DataLabel="Expires">
+                @if (context.ExpiresAt.HasValue)
+                {
+                    <MudText Color="@(IsExpired(context) ? Color.Error : IsExpiredOrExpiringSoon(context) ? Color.Warning : Color.Default)">
+                        @context.ExpiresAt.Value.LocalDateTime.ToString("yyyy-MM-dd")
+                    </MudText>
+                }
+                else
+                {
+                    <MudText>-</MudText>
+                }
+            </MudTd>
+            <MudTd DataLabel="Status">
+                @if (IsExpired(context))
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Error">Expired</MudChip>
+                }
+                else if (IsExpiredOrExpiringSoon(context))
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Warning">Expiring Soon</MudChip>
+                }
+                else if (context.ExpiresAt.HasValue)
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success">Valid</MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Info">No Expiration</MudChip>
+                }
+            </MudTd>
+            <MudTd DataLabel="Actions">
+                <MudStack Row="true" Spacing="1">
+                    <MudButton Variant="Variant.Text" 
+                              Size="Size.Small"
+                              OnClick="@(() => Download(context.IssuedDocumentId))">
+                        Download
+                    </MudButton>
+                    @if (IsExpiredOrExpiringSoon(context))
+                    {
+                        <MudButton Variant="Variant.Filled" 
+                                  Color="Color.Primary"
+                                  Size="Size.Small"
+                                  Disabled="@(_renewing.GetValueOrDefault(context.IssuedDocumentId, false))"
+                                  OnClick="@(() => RenewDocument(context.IssuedDocumentId))">
+                            @if (_renewing.GetValueOrDefault(context.IssuedDocumentId, false))
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-1">Renewing...</MudText>
+                            }
+                            else
+                            {
+                                <MudText>Renew</MudText>
+                            }
+                        </MudButton>
+                    }
+                </MudStack>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    <MudDivider Class="my-6" />
+
+    <MudText Typo="Typo.h5">My Uploads</MudText>
+    <MudText Typo="Typo.body2">
+        Your uploaded personal documents, passport photo, and signature.
+    </MudText>
+
+    <MudTable Items="_uploads" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Kind</MudTh>
+            <MudTh>File</MudTh>
+            <MudTh>Type</MudTh>
+            <MudTh Align="Align.Right">Size</MudTh>
+            <MudTh>Uploaded</MudTh>
+            <MudTh>Download</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Kind">@context.Kind</MudTd>
+            <MudTd DataLabel="File">@context.FileName</MudTd>
+            <MudTd DataLabel="Type">@context.ContentType</MudTd>
+            <MudTd DataLabel="Size" Align="Align.Right">@context.Size</MudTd>
+            <MudTd DataLabel="Uploaded">@context.UploadedAt.LocalDateTime</MudTd>
+            <MudTd DataLabel="Download">
+                <MudButton Variant="Variant.Text" OnClick="@(() => DownloadUpload(context.UploadId))">Download</MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudStack>
+
+

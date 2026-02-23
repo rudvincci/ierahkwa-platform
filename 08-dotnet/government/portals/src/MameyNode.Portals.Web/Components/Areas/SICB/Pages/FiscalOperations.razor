@@ -1,0 +1,96 @@
+@page "/sicb/fiscal-operations"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject ISICBClient SICBClient
+@inject ILogger<FiscalOperations> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Fiscal Operations" Icon="fas fa-building" Subtitle="Government fiscal operations">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Operations" Value="@_operations.Count.ToString()" Icon="fas fa-list" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Amount" Value="@_totalAmount.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Executed" Value="@_executedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Fiscal Operations" Class="mt-4">
+        <MudTable T="FiscalOperationInfo" Items="@_operations" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Operation ID</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Program</MudTh>
+                <MudTh>Recipient</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.OperationId</MudTd>
+                <MudTd>@context.OperationType</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>@context.ProgramId</MudTd>
+                <MudTd>@context.RecipientId</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Executed" ? Color.Success : context.Status == "Pending" ? Color.Warning : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<FiscalOperationInfo> _operations = new();
+    private decimal _totalAmount;
+    private int _executedCount;
+    private int _pendingCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _operations = await SICBClient.GetFiscalOperationsAsync();
+            _totalAmount = _operations.Sum(o => decimal.Parse(o.Amount));
+            _executedCount = _operations.Count(o => o.Status == "Executed");
+            _pendingCount = _operations.Count(o => o.Status == "Pending");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading fiscal operations");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

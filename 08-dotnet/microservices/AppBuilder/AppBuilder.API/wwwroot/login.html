@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | IERAHKWA Appy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --bg: #0a0e17; --card: #0d1a2d; --border: #1e3a5f; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .box { background: var(--card); border: 2px solid var(--gold); border-radius: 16px; padding: 2rem; width: 100%; max-width: 400px; }
+        .box h1 { color: var(--gold); margin-bottom: 0.5rem; font-size: 1.5rem; }
+        .box p { color: #888; margin-bottom: 1.5rem; font-size: 0.9rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; color: #aaa; margin-bottom: 4px; font-size: 0.9rem; }
+        .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: #fff; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1rem; margin-top: 0.5rem; }
+        .btn-gold { background: var(--gold); color: #000; }
+        .btn-gold:hover { opacity: 0.9; }
+        .tabs { display: flex; gap: 0; margin-bottom: 1.5rem; }
+        .tabs a { flex: 1; text-align: center; padding: 10px; color: #888; text-decoration: none; border-bottom: 2px solid var(--border); }
+        .tabs a.active { color: var(--gold); border-bottom-color: var(--gold); }
+        .back { display: inline-block; margin-top: 1rem; color: var(--gold); text-decoration: none; font-size: 0.9rem; }
+        .back:hover { text-decoration: underline; }
+        .err { color: #f66; font-size: 0.9rem; margin-top: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1><i class="bi bi-phone"></i> IERAHKWA Appy</h1>
+        <p>AI-Powered No-Code App Builder · Sovereign Government of Ierahkwa</p>
+        <div class="tabs">
+            <a href="#" class="active" id="tabLogin" onclick="showTab('login'); return false;">Login</a>
+            <a href="#" id="tabReg" onclick="showTab('register'); return false;">Register</a>
+        </div>
+
+        <div id="formLogin">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPass" placeholder="••••••••">
+            </div>
+            <div class="err" id="errLogin"></div>
+            <button class="btn btn-gold" onclick="login()"><i class="bi bi-box-arrow-in-right"></i> Login</button>
+        </div>
+
+        <div id="formRegister" style="display:none;">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="regName" placeholder="Your name">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="regEmail" placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="regPass" placeholder="••••••••">
+            </div>
+            <div class="err" id="errReg"></div>
+            <button class="btn btn-gold" onclick="register()"><i class="bi bi-person-plus"></i> Register</button>
+        </div>
+
+        <a href="/" class="back"><i class="bi bi-arrow-left"></i> Back to App Builder</a>
+    </div>
+    <script>
+        const API = '';
+        function showTab(t) {
+            document.getElementById('formLogin').style.display = t === 'login' ? 'block' : 'none';
+            document.getElementById('formRegister').style.display = t === 'register' ? 'block' : 'none';
+            document.getElementById('tabLogin').classList.toggle('active', t === 'login');
+            document.getElementById('tabReg').classList.toggle('active', t === 'register');
+        }
+        async function login() {
+            const email = document.getElementById('loginEmail').value, pass = document.getElementById('loginPass').value;
+            document.getElementById('errLogin').textContent = '';
+            const r = await fetch(API + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) });
+            const j = await r.json();
+            if (r.ok && j.token) {
+                localStorage.setItem('appy_token', j.token);
+                localStorage.setItem('appy_user', JSON.stringify(j.user));
+                window.location.href = '/';
+            } else document.getElementById('errLogin').textContent = j.error || 'Login failed';
+        }
+        async function register() {
+            const name = document.getElementById('regName').value, email = document.getElementById('regEmail').value, pass = document.getElementById('regPass').value;
+            document.getElementById('errReg').textContent = '';
+            const r = await fetch(API + '/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass, name: name || null }) });
+            const j = await r.json();
+            if (r.ok && j.token) {
+                localStorage.setItem('appy_token', j.token);
+                localStorage.setItem('appy_user', JSON.stringify(j.user));
+                window.location.href = '/';
+            } else document.getElementById('errReg').textContent = j.error || 'Registration failed';
+        }
+    </script>
+</body>
+</html>

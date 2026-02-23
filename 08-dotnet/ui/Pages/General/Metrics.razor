@@ -1,0 +1,112 @@
+@page "/general/metrics"
+@inject MameyMetricsClient MetricsClient
+@inject IMetadataService MetadataService
+@inject ILogger<Metrics> Logger
+
+<PageTitle>Metrics - MameyNode UI</PageTitle>
+
+<h1>Metrics</h1>
+
+<ErrorDisplay HasError="@hasError" ErrorMessage="@errorMessage" ErrorDetails="@errorDetails" OnDismiss="ClearError" />
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Prometheus Export</h5>
+                <button class="btn btn-primary" @onclick="LoadAsync" disabled="@isLoading">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Loading...</text>
+                    }
+                    else
+                    {
+                        <text>Refresh</text>
+                    }
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="form-text mb-2">
+                    This calls <code>MetricsService.GetPrometheusMetrics</code> and shows the raw text output.
+                </div>
+
+                @if (string.IsNullOrWhiteSpace(promText) && !isLoading)
+                {
+                    <p class="text-muted mb-0">Click "Refresh" to load metrics.</p>
+                }
+                else if (isLoading)
+                {
+                    <p class="text-muted mb-0">Loading metrics...</p>
+                }
+                else
+                {
+                    <pre class="mb-0" style="max-height: 60vh; overflow: auto;">@promText</pre>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<MetadataDisplay />
+
+@code {
+    private string? promText;
+    private bool isLoading;
+    private bool hasError;
+    private string? errorMessage;
+    private string? errorDetails;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        isLoading = true;
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+        StateHasChanged();
+
+        try
+        {
+            var correlationId = MetadataService.GetCorrelationId();
+            var metadata = MetadataService.GetMetadata(correlationId);
+            var callOptions = new Grpc.Core.CallOptions(metadata, deadline: DateTime.UtcNow.AddSeconds(30));
+
+            var resp = await MetricsClient.Client.GetPrometheusMetricsAsync(new GetPrometheusMetricsRequest(), callOptions);
+            if (!resp.Success)
+            {
+                hasError = true;
+                errorMessage = "Metrics service returned an error.";
+                errorDetails = resp.ErrorMessage;
+                promText = null;
+                return;
+            }
+
+            promText = resp.MetricsText;
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to load metrics.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to load metrics");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearError()
+    {
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+    }
+}
+

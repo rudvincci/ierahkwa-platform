@@ -1,0 +1,27 @@
+@namespace MameyNode.Portals.Shared.Components.Layout
+
+<MudAppBar Elevation="8" Dense="false">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+    <MudText Typo="Typo.h6">@Title</MudText>
+    <MudSpacer />
+    @if (Actions != null)
+    {
+        @Actions
+    }
+</MudAppBar>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? Actions { get; set; }
+    [Parameter] public EventCallback OnToggleDrawer { get; set; }
+
+    private async Task ToggleDrawer()
+    {
+        if (OnToggleDrawer.HasDelegate)
+        {
+            await OnToggleDrawer.InvokeAsync();
+        }
+    }
+}
+
+

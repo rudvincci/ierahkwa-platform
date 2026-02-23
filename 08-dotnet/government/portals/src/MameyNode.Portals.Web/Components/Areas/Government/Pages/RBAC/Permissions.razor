@@ -1,0 +1,67 @@
+@page "/rbac/permissions"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<Permissions> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Permission Management" Icon="fas fa-key" Subtitle="Manage permissions and access rights">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <CardContainer Title="Permissions" Class="mt-4">
+        <MudTable T="PermissionInfo" Items="@_permissions" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Permission ID</MudTh>
+                <MudTh>Permission Name</MudTh>
+                <MudTh>Resource</MudTh>
+                <MudTh>Action</MudTh>
+                <MudTh>Description</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.PermissionId</MudTd>
+                <MudTd>@context.PermissionName</MudTd>
+                <MudTd>@context.Resource</MudTd>
+                <MudTd>@context.Action</MudTd>
+                <MudTd>@context.Description</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<PermissionInfo> _permissions = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _permissions = await GovernmentClient.GetPermissionsAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading permissions");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

@@ -1,0 +1,96 @@
+@page "/sicb/treasury"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject ISICBClient SICBClient
+@inject ILogger<Treasury> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Treasury Programs" Icon="fas fa-chart-pie" Subtitle="Treasury program management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Programs" Value="@_programs.Count.ToString()" Icon="fas fa-folder" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Budget" Value="@_totalBudget.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Disbursed" Value="@_totalDisbursed.ToString("C")" Icon="fas fa-paper-plane" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active Programs" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Treasury Programs" Class="mt-4">
+        <MudTable T="TreasuryProgramInfo" Items="@_programs" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Program ID</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Budget</MudTh>
+                <MudTh>Allocated</MudTh>
+                <MudTh>Disbursed</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Start Date</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.ProgramId</MudTd>
+                <MudTd>@context.ProgramName</MudTd>
+                <MudTd>@decimal.Parse(context.Budget).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.Allocated).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.Disbursed).ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.StartDate.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<TreasuryProgramInfo> _programs = new();
+    private decimal _totalBudget;
+    private decimal _totalDisbursed;
+    private int _activeCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _programs = await SICBClient.GetTreasuryProgramsAsync();
+            _totalBudget = _programs.Sum(p => decimal.Parse(p.Budget));
+            _totalDisbursed = _programs.Sum(p => decimal.Parse(p.Disbursed));
+            _activeCount = _programs.Count(p => p.Status == "Active");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading treasury programs");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

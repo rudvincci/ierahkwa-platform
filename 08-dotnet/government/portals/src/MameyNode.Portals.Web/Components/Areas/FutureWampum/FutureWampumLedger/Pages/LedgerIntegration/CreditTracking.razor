@@ -1,0 +1,100 @@
+@page "/ledger-integration/credit-tracking"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumLedgerClient FutureWampumLedgerClient
+@inject ILogger<CreditTracking> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Credit Tracking" Icon="fas fa-chart-line" Subtitle="Credit history and tracking">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <CardContainer Title="Credit Tracking" Class="mt-4">
+        <MudTextField @bind-Value="_accountId" Label="Account ID" Class="mt-4" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LoadCreditData" Class="mt-4">
+            Load Credit Data
+        </MudButton>
+
+        @if (_creditSummary != null)
+        {
+            <MudGrid Spacing="3" Class="mt-4">
+                <MudItem xs="12" md="4">
+                    <MetricCard Title="Total Credit" Value="@decimal.Parse(_creditSummary.TotalCredit).ToString("C")" Icon="fas fa-dollar-sign" Color="#3B82F6" />
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MetricCard Title="Available Credit" Value="@decimal.Parse(_creditSummary.AvailableCredit).ToString("C")" Icon="fas fa-wallet" Color="#10B981" />
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MetricCard Title="Used Credit" Value="@decimal.Parse(_creditSummary.UsedCredit).ToString("C")" Icon="fas fa-hand-holding-usd" Color="#F59E0B" />
+                </MudItem>
+            </MudGrid>
+        }
+
+        @if (_creditHistory.Any())
+        {
+            <CardContainer Title="Credit History" Class="mt-4">
+                <MudTable T="CreditEntryInfo" Items="@_creditHistory" Hover="true" Dense="false" Striped="true" Elevation="0">
+                    <HeaderContent>
+                        <MudTh>Credit ID</MudTh>
+                        <MudTh>Account ID</MudTh>
+                        <MudTh>Credit Type</MudTh>
+                        <MudTh>Amount</MudTh>
+                        <MudTh>Description</MudTh>
+                        <MudTh>Timestamp</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@context.CreditId</MudTd>
+                        <MudTd>@context.AccountId</MudTd>
+                        <MudTd>@context.CreditType</MudTd>
+                        <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                        <MudTd>@context.Description</MudTd>
+                        <MudTd>@context.Timestamp.ToString("yyyy-MM-dd HH:mm")</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+            </CardContainer>
+        }
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<CreditEntryInfo> _creditHistory = new();
+    private CreditSummaryInfo? _creditSummary;
+    private string _accountId = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.CompletedTask;
+    }
+
+    private async Task LoadCreditData()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(_accountId))
+            {
+                _creditHistory = await FutureWampumLedgerClient.GetCreditHistoryAsync(_accountId);
+                _creditSummary = await FutureWampumLedgerClient.GetCreditSummaryAsync(_accountId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading credit data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadCreditData();
+        StateHasChanged();
+    }
+}
+

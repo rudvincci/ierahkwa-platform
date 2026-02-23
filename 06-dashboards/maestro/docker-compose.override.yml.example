@@ -1,0 +1,30 @@
+# Docker Compose Override Example
+# Copy to docker-compose.override.yml and customize for your needs
+# This file is excluded from git
+
+version: '3.8'
+
+services:
+  maestro:
+    environment:
+      # Override default ports if needed
+      - DASHBOARD_PORT=3000
+      - MCP_PORT=3001
+      
+      # Development mode
+      # - NODE_ENV=development
+      
+    volumes:
+      # Mount your repository
+      # - /path/to/your/repo:/workspace:rw
+      
+      # Mount cursor-agent if installed on host
+      # - /usr/local/bin/cursor-agent:/usr/local/bin/cursor-agent:ro
+      
+      # Mount git config for private sync
+      # - ${HOME}/.gitconfig:/root/.gitconfig:ro
+      # - ${HOME}/.ssh:/root/.ssh:ro
+      
+      # Development: Mount source code for live reload
+      # - ./src:/app/src:ro
+      # - ./config:/app/config:ro

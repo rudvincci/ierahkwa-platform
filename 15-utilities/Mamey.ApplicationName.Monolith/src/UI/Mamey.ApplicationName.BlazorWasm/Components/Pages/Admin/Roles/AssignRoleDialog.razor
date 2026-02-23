@@ -1,0 +1,34 @@
+@using System.Collections.ObjectModel
+@using Mamey.ApplicationName.BlazorWasm.Models.Roles
+
+@code {
+    [Parameter] public ObservableCollection<User> Users { get; set; }
+    [Parameter] public ObservableCollection<Role> Roles { get; set; }
+    [Parameter] public EventCallback<(User User, string Role)> OnRoleAssigned { get; set; }
+
+    private void AssignRole(User user, string role)
+    {
+        user.AssignedRole = role;
+        OnRoleAssigned.InvokeAsync((user, role));
+    }
+}
+
+<MudTable Items="Users" Hover="true" Striped="true">
+    <HeaderContent>
+        <MudTh>User</MudTh>
+        <MudTh>Email</MudTh>
+        <MudTh>Assigned Role</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.Name</MudTd>
+        <MudTd>@context.Email</MudTd>
+        <MudTd>
+            <MudSelect T="string" Label="Role" Value="@context.AssignedRole" OnChange="(e) => AssignRole(context, e.Value)">
+                @foreach (var role in Roles)
+                {
+                    <MudSelectItem T="string" Value="@role.RoleName">@role.RoleName</MudSelectItem>
+                }
+            </MudSelect>
+        </MudTd>
+    </RowTemplate>
+</MudTable>

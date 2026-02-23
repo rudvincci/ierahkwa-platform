@@ -1,0 +1,13 @@
+namespace Mamey.CQRS.Queries;
+
+public class PagedDto<T>
+{
+    public List<T> Items { get; set; } = new();
+    //public bool IsEmpty { get; set; }
+    public bool IsNotEmpty { get; set; }
+    public bool Empty => Items is null || !Items.Any();
+    public int CurrentPage { get; set; }
+    public int ResultsPerPage { get; set; }
+    public int TotalPages { get; set; }
+    public long TotalResults { get; set; }
+}

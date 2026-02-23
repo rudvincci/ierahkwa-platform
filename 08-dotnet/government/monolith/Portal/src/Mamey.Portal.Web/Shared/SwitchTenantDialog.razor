@@ -1,0 +1,41 @@
+@using Microsoft.AspNetCore.Components
+@using MudBlazor
+
+@namespace Mamey.Portal.Web.Shared
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">Switch Tenant (Dev)</MudText>
+        <MudText Typo="Typo.body2" Class="mud-text-secondary" GutterBottom="true">
+            Updates your cookie-backed mock session tenant for this browser.
+        </MudText>
+        <MudTextField Label="Tenant Id" @bind-Value="_tenant" Variant="Variant.Outlined" FullWidth="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Switch</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public string CurrentTenantId { get; set; } = "default";
+
+    private string _tenant = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _tenant = string.IsNullOrWhiteSpace(CurrentTenantId) ? "default" : CurrentTenantId;
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok((_tenant ?? string.Empty).Trim()));
+    }
+}
+
+
+
+

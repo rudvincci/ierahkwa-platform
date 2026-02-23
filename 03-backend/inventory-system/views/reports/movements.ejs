@@ -1,0 +1,100 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-arrow-left-right"></i> Movement Report</h2>
+        <a href="/reports/export/excel/movements" class="btn btn-success"><i class="bi bi-file-earmark-excel"></i> Export</a>
+    </div>
+
+    <!-- Summary -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>$<%= totals.purchase.toLocaleString('en-US', {minimumFractionDigits: 2}) %></h3>
+                    <small>Total Purchases</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h3>$<%= totals.sale.toLocaleString('en-US', {minimumFractionDigits: 2}) %></h3>
+                    <small>Total Sales</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3><%= totals.count %></h3>
+                    <small>Total Movements</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">From</label>
+                    <input type="date" name="start_date" class="form-control" value="<%= filters.start_date %>">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">To</label>
+                    <input type="date" name="end_date" class="form-control" value="<%= filters.end_date %>">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Type</label>
+                    <select name="type" class="form-select">
+                        <option value="">All</option>
+                        <option value="purchase" <%= filters.type === 'purchase' ? 'selected' : '' %>>Purchase</option>
+                        <option value="sale" <%= filters.type === 'sale' ? 'selected' : '' %>>Sale</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-hover" id="movementsTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Document</th>
+                        <th>Product</th>
+                        <th>Type</th>
+                        <th class="text-end">Qty</th>
+                        <th class="text-end">Price</th>
+                        <th class="text-end">Total</th>
+                        <th>User</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% movements.forEach(m => { %>
+                    <tr>
+                        <td><%= new Date(m.created_at).toLocaleDateString() %></td>
+                        <td><small><%= m.document_number || '-' %></small></td>
+                        <td><%= m.product_name %></td>
+                        <td><span class="badge bg-<%= m.type === 'purchase' ? 'success' : 'danger' %>"><%= m.type %></span></td>
+                        <td class="text-end"><%= m.quantity %></td>
+                        <td class="text-end">$<%= m.unit_price.toFixed(2) %></td>
+                        <td class="text-end">$<%= m.total_value.toFixed(2) %></td>
+                        <td><%= m.user_name %></td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>$(document).ready(function() { $('#movementsTable').DataTable({ order: [[0, 'desc']], pageLength: 50 }); });</script>
+
+<%- include('../partials/footer') %>

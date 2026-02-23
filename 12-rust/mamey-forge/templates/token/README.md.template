@@ -1,0 +1,73 @@
+# {{project_name}}
+
+A fungible (ERC-20-like) token contract for [MameyFutureNode](https://github.com/Mamey-io/MameyFutureNode), scaffolded with [MameyForge](https://github.com/Mamey-io/MameyForge).
+
+## Features
+
+- **Mint / Burn** — Controlled token supply with minter role
+- **Transfer** — Direct and delegated (approve + transferFrom) transfers
+- **Allowance** — ERC-20 approval pattern
+- **Pause / Unpause** — Owner-controlled emergency stop
+- **Safe Math** — Overflow and underflow protected arithmetic
+
+## Getting Started
+
+### Prerequisites
+
+- Rust 1.75+ with `wasm32-unknown-unknown` target
+- MameyForge CLI
+
+```bash
+rustup target add wasm32-unknown-unknown
+```
+
+### Build
+
+```bash
+mameyforge build
+```
+
+### Test
+
+```bash
+mameyforge test
+```
+
+### Deploy
+
+```bash
+mameyforge devnet start
+mameyforge deploy --network devnet --args '{"name":"MyToken","symbol":"MTK","decimals":18,"initial_supply":1000000}'
+```
+
+### Interact
+
+```bash
+# Check balance
+mameyforge query --contract <ADDRESS> --function balance_of --args '{"account":"<ACCOUNT>"}'
+
+# Transfer tokens
+mameyforge call --contract <ADDRESS> --function transfer --args '{"to":"<TO>","amount":100}'
+
+# Mint (minter only)
+mameyforge call --contract <ADDRESS> --function mint --args '{"to":"<TO>","amount":5000}'
+```
+
+## Project Structure
+
+```
+{{project_name}}/
+├── contracts/
+│   └── src/
+│       └── lib.rs          # Token contract
+├── tests/
+│   └── integration.rs      # Integration tests
+├── scripts/
+│   └── deploy.rs           # Deployment script
+├── Cargo.toml
+└── mameyforge.toml
+```
+
+## License
+
+MIT OR Apache-2.0

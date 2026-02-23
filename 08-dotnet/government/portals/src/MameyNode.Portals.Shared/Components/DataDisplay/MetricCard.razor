@@ -1,0 +1,34 @@
+@namespace MameyNode.Portals.Shared.Components.DataDisplay
+@using MudBlazor
+
+<MudCard Elevation="2" Class="metric-card" Style="@($"border-left: 4px solid {Color};")">
+    <MudCardContent>
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+            <MudStack>
+                <MudText Typo="Typo.body2" Color="@MudBlazor.Color.Secondary">@Title</MudText>
+                <MudText Typo="Typo.h4" Class="mt-1">@Value</MudText>
+                @if (!string.IsNullOrEmpty(ChangeText))
+                {
+                    <MudText Typo="Typo.caption" Color="@(IsPositiveChange ? MudBlazor.Color.Success : MudBlazor.Color.Error)">
+                        <MudIcon Icon="@(IsPositiveChange ? Icons.Material.Filled.TrendingUp : Icons.Material.Filled.TrendingDown)" Size="Size.Small" />
+                        @ChangeText
+                    </MudText>
+                }
+            </MudStack>
+            @if (!string.IsNullOrEmpty(Icon))
+            {
+                <MudIcon Icon="@Icon" Size="Size.Large" Style="@($"color: {Color};")" />
+            }
+        </MudStack>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public string Color { get; set; } = "#1976D2";
+    [Parameter] public string? ChangeText { get; set; }
+    [Parameter] public bool IsPositiveChange { get; set; } = true;
+}
+

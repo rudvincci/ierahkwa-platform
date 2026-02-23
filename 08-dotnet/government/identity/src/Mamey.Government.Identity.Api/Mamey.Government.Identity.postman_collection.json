@@ -1,0 +1,1312 @@
+{
+	"info": {
+		"_postman_id": "mamey-government-identity-api",
+		"name": "Mamey Government Identity API",
+		"description": "Complete API collection for Mamey Government Identity Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Subject Management",
+			"item": [
+				{
+					"name": "Browse Subjects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/identity?Page=1&ResultsPerPage=10&Name=John",
+							"host": ["{{identity-service}}"],
+							"path": ["identity"],
+							"query": [
+								{"key": "Page", "value": "1"},
+								{"key": "ResultsPerPage", "value": "10"},
+								{"key": "Name", "value": "John", "disabled": true}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Subject by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/identity/{{subjectId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["identity", "{{subjectId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Subject by Email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/identity/by-email/{{email}}",
+							"host": ["{{identity-service}}"],
+							"path": ["identity", "by-email", "{{email}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Subjects by Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/identity/by-status/Active",
+							"host": ["{{identity-service}}"],
+							"path": ["identity", "by-status", "Active"]
+						}
+					}
+				},
+				{
+					"name": "Get Subjects by Role",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/identity/by-role/{{roleId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["identity", "by-role", "{{roleId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Recently Authenticated Subjects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/identity/recently-authenticated",
+							"host": ["{{identity-service}}"],
+							"path": ["identity", "recently-authenticated"]
+						}
+					}
+				},
+				{
+					"name": "Create Subject",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{$guid}}\",\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"tags\": [\"citizen\", \"verified\"]\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/identity",
+							"host": ["{{identity-service}}"],
+							"path": ["identity"]
+						}
+					}
+				},
+				{
+					"name": "Update Subject",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{subjectId}}\",\n  \"name\": \"John Doe Updated\",\n  \"email\": \"john.doe.updated@example.com\",\n  \"tags\": [\"citizen\", \"verified\", \"premium\"]\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/identity/{{subjectId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["identity", "{{subjectId}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Subject",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/identity/{{subjectId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["identity", "{{subjectId}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Browse Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/users?Page=1&ResultsPerPage=10&Username=johndoe&Email=example.com&Status=Active",
+							"host": ["{{identity-service}}"],
+							"path": ["users"],
+							"query": [
+								{"key": "Page", "value": "1"},
+								{"key": "ResultsPerPage", "value": "10"},
+								{"key": "Username", "value": "johndoe", "disabled": true},
+								{"key": "Email", "value": "example.com", "disabled": true},
+								{"key": "Status", "value": "Active", "disabled": true}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/users/{{userId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "{{userId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get User by Email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/users/by-email/{{email}}",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "by-email", "{{email}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Users by Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/users/by-status/Active",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "by-status", "Active"]
+						}
+					}
+				},
+				{
+					"name": "Get Users by Role",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/users/by-role/{{roleId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "by-role", "{{roleId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get User Sessions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/users/{{userId}}/sessions",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "{{userId}}", "sessions"]
+						}
+					}
+				},
+				{
+					"name": "Get Recently Active Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/users/recently-active",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "recently-active"]
+						}
+					}
+				},
+				{
+					"name": "Get User Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/users/statistics",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "statistics"]
+						}
+					}
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{$guid}}\",\n  \"subjectId\": \"{{subjectId}}\",\n  \"username\": \"johndoe\",\n  \"email\": \"john.doe@example.com\",\n  \"passwordHash\": \"$2a$10$N9qo8uLOickgx2ZMRZoMye\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/users",
+							"host": ["{{identity-service}}"],
+							"path": ["users"]
+						}
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{userId}}\",\n  \"username\": \"johndoe_updated\",\n  \"email\": \"john.doe.updated@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/users/{{userId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "{{userId}}"]
+						}
+					}
+				},
+				{
+					"name": "Change User Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{userId}}\",\n  \"newPasswordHash\": \"$2a$10$NewPasswordHashHere\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/users/{{userId}}/change-password",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "{{userId}}", "change-password"]
+						}
+					}
+				},
+				{
+					"name": "Activate User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/users/{{userId}}/activate",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "{{userId}}", "activate"]
+						}
+					}
+				},
+				{
+					"name": "Deactivate User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/users/{{userId}}/deactivate",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "{{userId}}", "deactivate"]
+						}
+					}
+				},
+				{
+					"name": "Lock User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{userId}}\",\n  \"lockedUntil\": \"2024-12-31T23:59:59Z\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/users/{{userId}}/lock",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "{{userId}}", "lock"]
+						}
+					}
+				},
+				{
+					"name": "Unlock User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/users/{{userId}}/unlock",
+							"host": ["{{identity-service}}"],
+							"path": ["users", "{{userId}}", "unlock"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Role Management",
+			"item": [
+				{
+					"name": "Browse Roles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/roles?Page=1&ResultsPerPage=10&Name=Admin&Status=Active",
+							"host": ["{{identity-service}}"],
+							"path": ["roles"],
+							"query": [
+								{"key": "Page", "value": "1"},
+								{"key": "ResultsPerPage", "value": "10"},
+								{"key": "Name", "value": "Admin", "disabled": true},
+								{"key": "Status", "value": "Active", "disabled": true}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Role by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/roles/{{roleId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["roles", "{{roleId}}"]
+						}
+					}
+				},
+				{
+					"name": "Search Roles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/roles/search?searchTerm=admin",
+							"host": ["{{identity-service}}"],
+							"path": ["roles", "search"],
+							"query": [
+								{"key": "searchTerm", "value": "admin"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Roles by Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/roles/by-status/Active",
+							"host": ["{{identity-service}}"],
+							"path": ["roles", "by-status", "Active"]
+						}
+					}
+				},
+				{
+					"name": "Get Roles by Permission",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/roles/by-permission/{{permissionId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["roles", "by-permission", "{{permissionId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Role Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/roles/statistics",
+							"host": ["{{identity-service}}"],
+							"path": ["roles", "statistics"]
+						}
+					}
+				},
+				{
+					"name": "Create Role",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{$guid}}\",\n  \"name\": \"Administrator\",\n  \"description\": \"Full system administrator role\",\n  \"permissionIds\": [\n    \"{{permissionId1}}\",\n    \"{{permissionId2}}\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/roles",
+							"host": ["{{identity-service}}"],
+							"path": ["roles"]
+						}
+					}
+				},
+				{
+					"name": "Update Role",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{roleId}}\",\n  \"name\": \"Senior Administrator\",\n  \"description\": \"Senior system administrator role with additional permissions\",\n  \"permissionIds\": [\n    \"{{permissionId1}}\",\n    \"{{permissionId2}}\",\n    \"{{permissionId3}}\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/roles/{{roleId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["roles", "{{roleId}}"]
+						}
+					}
+				},
+				{
+					"name": "Assign Role to Subject",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"subjectId\": \"{{subjectId}}\",\n  \"roleId\": \"{{roleId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/subjects/{{subjectId}}/roles/{{roleId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["subjects", "{{subjectId}}", "roles", "{{roleId}}"]
+						}
+					}
+				},
+				{
+					"name": "Remove Role from Subject",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/subjects/{{subjectId}}/roles/{{roleId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["subjects", "{{subjectId}}", "roles", "{{roleId}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Permission Management",
+			"item": [
+				{
+					"name": "Browse Permissions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/permissions?Page=1&ResultsPerPage=10&Resource=users&Action=read&Status=Active",
+							"host": ["{{identity-service}}"],
+							"path": ["permissions"],
+							"query": [
+								{"key": "Page", "value": "1"},
+								{"key": "ResultsPerPage", "value": "10"},
+								{"key": "Resource", "value": "users", "disabled": true},
+								{"key": "Action", "value": "read", "disabled": true},
+								{"key": "Status", "value": "Active", "disabled": true}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Permission by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/permissions/{{permissionId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["permissions", "{{permissionId}}"]
+						}
+					}
+				},
+				{
+					"name": "Search Permissions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/permissions/search?searchTerm=read",
+							"host": ["{{identity-service}}"],
+							"path": ["permissions", "search"],
+							"query": [
+								{"key": "searchTerm", "value": "read"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Permissions by Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/permissions/by-status/Active",
+							"host": ["{{identity-service}}"],
+							"path": ["permissions", "by-status", "Active"]
+						}
+					}
+				},
+				{
+					"name": "Get Permissions by Role",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/permissions/by-role/{{roleId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["permissions", "by-role", "{{roleId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Permissions by Resource",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/permissions/by-resource/users",
+							"host": ["{{identity-service}}"],
+							"path": ["permissions", "by-resource", "users"]
+						}
+					}
+				},
+				{
+					"name": "Get Permissions by Action",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/permissions/by-action/read",
+							"host": ["{{identity-service}}"],
+							"path": ["permissions", "by-action", "read"]
+						}
+					}
+				},
+				{
+					"name": "Get Permission Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/permissions/statistics",
+							"host": ["{{identity-service}}"],
+							"path": ["permissions", "statistics"]
+						}
+					}
+				},
+				{
+					"name": "Create Permission",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{$guid}}\",\n  \"name\": \"Read Users\",\n  \"description\": \"Permission to read user information\",\n  \"resource\": \"users\",\n  \"action\": \"read\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/permissions",
+							"host": ["{{identity-service}}"],
+							"path": ["permissions"]
+						}
+					}
+				},
+				{
+					"name": "Update Permission",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{permissionId}}\",\n  \"name\": \"Read and Write Users\",\n  \"description\": \"Permission to read and write user information\",\n  \"resource\": \"users\",\n  \"action\": \"read,write\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/permissions/{{permissionId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["permissions", "{{permissionId}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Session Management",
+			"item": [
+				{
+					"name": "Get Session by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/sessions/{{sessionId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["sessions", "{{sessionId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Session by Refresh Token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/sessions/by-refresh-token/{{refreshToken}}",
+							"host": ["{{identity-service}}"],
+							"path": ["sessions", "by-refresh-token", "{{refreshToken}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Session by Access Token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/sessions/by-access-token/{{accessToken}}",
+							"host": ["{{identity-service}}"],
+							"path": ["sessions", "by-access-token", "{{accessToken}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Session Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/sessions/statistics",
+							"host": ["{{identity-service}}"],
+							"path": ["sessions", "statistics"]
+						}
+					}
+				},
+				{
+					"name": "Create Session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{$guid}}\",\n  \"userId\": \"{{userId}}\",\n  \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"refreshToken\": \"refresh_token_here\",\n  \"expiresAt\": \"2024-12-31T23:59:59Z\",\n  \"ipAddress\": \"192.168.1.100\",\n  \"userAgent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/sessions",
+							"host": ["{{identity-service}}"],
+							"path": ["sessions"]
+						}
+					}
+				},
+				{
+					"name": "Refresh Session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sessionId\": \"{{sessionId}}\",\n  \"newAccessToken\": \"new_access_token_here\",\n  \"newRefreshToken\": \"new_refresh_token_here\",\n  \"newExpiresAt\": \"2024-12-31T23:59:59Z\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/sessions/{{sessionId}}/refresh",
+							"host": ["{{identity-service}}"],
+							"path": ["sessions", "{{sessionId}}", "refresh"]
+						}
+					}
+				},
+				{
+					"name": "Revoke Session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sessionId\": \"{{sessionId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/sessions/{{sessionId}}/revoke",
+							"host": ["{{identity-service}}"],
+							"path": ["sessions", "{{sessionId}}", "revoke"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Email Confirmation",
+			"item": [
+				{
+					"name": "Get Email Confirmation by Code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/email-confirmations/by-code/{{confirmationCode}}",
+							"host": ["{{identity-service}}"],
+							"path": ["email-confirmations", "by-code", "{{confirmationCode}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Email Confirmation by User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/email-confirmations/by-user/{{userId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["email-confirmations", "by-user", "{{userId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Pending Email Confirmations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/email-confirmations/pending",
+							"host": ["{{identity-service}}"],
+							"path": ["email-confirmations", "pending"]
+						}
+					}
+				},
+				{
+					"name": "Get Email Confirmation Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/email-confirmations/statistics",
+							"host": ["{{identity-service}}"],
+							"path": ["email-confirmations", "statistics"]
+						}
+					}
+				},
+				{
+					"name": "Create Email Confirmation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{$guid}}\",\n  \"userId\": \"{{userId}}\",\n  \"email\": \"john.doe@example.com\",\n  \"confirmationCode\": \"ABC123XYZ\",\n  \"expiresAt\": \"2024-12-31T23:59:59Z\",\n  \"ipAddress\": \"192.168.1.100\",\n  \"userAgent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/email-confirmations",
+							"host": ["{{identity-service}}"],
+							"path": ["email-confirmations"]
+						}
+					}
+				},
+				{
+					"name": "Confirm Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"confirmationCode\": \"{{confirmationCode}}\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/email-confirmations/confirm",
+							"host": ["{{identity-service}}"],
+							"path": ["email-confirmations", "confirm"]
+						}
+					}
+				},
+				{
+					"name": "Resend Email Confirmation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{userId}}\",\n  \"newConfirmationCode\": \"DEF456GHI\",\n  \"newExpiresAt\": \"2024-12-31T23:59:59Z\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/email-confirmations/resend",
+							"host": ["{{identity-service}}"],
+							"path": ["email-confirmations", "resend"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Two-Factor Authentication",
+			"item": [
+				{
+					"name": "Get Two-Factor Auth by User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/two-factor-auth/by-user/{{userId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["two-factor-auth", "by-user", "{{userId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Two-Factor Auth Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/two-factor-auth/statistics",
+							"host": ["{{identity-service}}"],
+							"path": ["two-factor-auth", "statistics"]
+						}
+					}
+				},
+				{
+					"name": "Setup Two-Factor Authentication",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{$guid}}\",\n  \"userId\": \"{{userId}}\",\n  \"secretKey\": \"JBSWY3DPEHPK3PXP\",\n  \"qrCodeUrl\": \"otpauth://totp/Example:john.doe@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Example\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/two-factor-auth/setup",
+							"host": ["{{identity-service}}"],
+							"path": ["two-factor-auth", "setup"]
+						}
+					}
+				},
+				{
+					"name": "Activate Two-Factor Authentication",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{userId}}\",\n  \"totpCode\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/two-factor-auth/activate",
+							"host": ["{{identity-service}}"],
+							"path": ["two-factor-auth", "activate"]
+						}
+					}
+				},
+				{
+					"name": "Verify Two-Factor Authentication",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{userId}}\",\n  \"totpCode\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/two-factor-auth/verify",
+							"host": ["{{identity-service}}"],
+							"path": ["two-factor-auth", "verify"]
+						}
+					}
+				},
+				{
+					"name": "Disable Two-Factor Authentication",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/two-factor-auth/disable",
+							"host": ["{{identity-service}}"],
+							"path": ["two-factor-auth", "disable"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Multi-Factor Authentication",
+			"item": [
+				{
+					"name": "Get Multi-Factor Auth by User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/multi-factor-auth/by-user/{{userId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["multi-factor-auth", "by-user", "{{userId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Enabled MFA Methods by User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/multi-factor-auth/methods/by-user/{{userId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["multi-factor-auth", "methods", "by-user", "{{userId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Active MFA Challenge by User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/multi-factor-auth/challenges/active/{{userId}}",
+							"host": ["{{identity-service}}"],
+							"path": ["multi-factor-auth", "challenges", "active", "{{userId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Multi-Factor Auth Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{identity-service}}/multi-factor-auth/statistics",
+							"host": ["{{identity-service}}"],
+							"path": ["multi-factor-auth", "statistics"]
+						}
+					}
+				},
+				{
+					"name": "Setup Multi-Factor Authentication",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{$guid}}\",\n  \"userId\": \"{{userId}}\",\n  \"enabledMethods\": [1, 2, 3],\n  \"requiredMethods\": 2\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/multi-factor-auth/setup",
+							"host": ["{{identity-service}}"],
+							"path": ["multi-factor-auth", "setup"]
+						}
+					}
+				},
+				{
+					"name": "Enable MFA Method",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{userId}}\",\n  \"method\": 1\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/multi-factor-auth/methods/enable",
+							"host": ["{{identity-service}}"],
+							"path": ["multi-factor-auth", "methods", "enable"]
+						}
+					}
+				},
+				{
+					"name": "Disable MFA Method",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{userId}}\",\n  \"method\": 1\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/multi-factor-auth/methods/disable",
+							"host": ["{{identity-service}}"],
+							"path": ["multi-factor-auth", "methods", "disable"]
+						}
+					}
+				},
+				{
+					"name": "Create MFA Challenge",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{$guid}}\",\n  \"multiFactorAuthId\": \"{{multiFactorAuthId}}\",\n  \"method\": 1,\n  \"challengeData\": \"challenge_data_here\",\n  \"expiresAt\": \"2024-12-31T23:59:59Z\",\n  \"ipAddress\": \"192.168.1.100\",\n  \"userAgent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/multi-factor-auth/challenges",
+							"host": ["{{identity-service}}"],
+							"path": ["multi-factor-auth", "challenges"]
+						}
+					}
+				},
+				{
+					"name": "Verify MFA Challenge",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"challengeId\": \"{{challengeId}}\",\n  \"response\": \"challenge_response_here\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/multi-factor-auth/challenges/{{challengeId}}/verify",
+							"host": ["{{identity-service}}"],
+							"path": ["multi-factor-auth", "challenges", "{{challengeId}}", "verify"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Credential Management",
+			"item": [
+				{
+					"name": "Revoke Credential",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{credentialId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{identity-service}}/credentials/{{credentialId}}/revoke",
+							"host": ["{{identity-service}}"],
+							"path": ["credentials", "{{credentialId}}", "revoke"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:50001",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "123e4567-e89b-12d3-a456-426614174000",
+			"type": "string"
+		},
+		{
+			"key": "subjectId",
+			"value": "456e7890-e89b-12d3-a456-426614174000",
+			"type": "string"
+		},
+		{
+			"key": "roleId",
+			"value": "789e0123-e89b-12d3-a456-426614174000",
+			"type": "string"
+		},
+		{
+			"key": "permissionId",
+			"value": "012e3456-e89b-12d3-a456-426614174000",
+			"type": "string"
+		},
+		{
+			"key": "sessionId",
+			"value": "345e6789-e89b-12d3-a456-426614174000",
+			"type": "string"
+		},
+		{
+			"key": "email",
+			"value": "john.doe@example.com",
+			"type": "string"
+		},
+		{
+			"key": "confirmationCode",
+			"value": "ABC123XYZ",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "refresh_token_here",
+			"type": "string"
+		},
+		{
+			"key": "multiFactorAuthId",
+			"value": "678e9012-e89b-12d3-a456-426614174000",
+			"type": "string"
+		},
+		{
+			"key": "challengeId",
+			"value": "901e2345-e89b-12d3-a456-426614174000",
+			"type": "string"
+		},
+		{
+			"key": "credentialId",
+			"value": "234e5678-e89b-12d3-a456-426614174000",
+			"type": "string"
+		}
+	]
+}
+

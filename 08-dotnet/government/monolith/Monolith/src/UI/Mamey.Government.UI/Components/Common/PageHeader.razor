@@ -1,0 +1,42 @@
+<MudStack Spacing="2" Class="mb-4">
+    <MudBreadcrumbs Items="_breadcrumbs" />
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+        <MudStack Spacing="0">
+            <MudText Typo="Typo.h4">@Title</MudText>
+            @if (!string.IsNullOrWhiteSpace(Subtitle))
+            {
+                <MudText Typo="Typo.body2" Class="mud-text-secondary">@Subtitle</MudText>
+            }
+        </MudStack>
+        @if (Actions != null)
+        {
+            <MudStack Row="true" Spacing="2">
+                @Actions
+            </MudStack>
+        }
+    </MudStack>
+</MudStack>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Subtitle { get; set; }
+
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
+
+    [Parameter]
+    public List<BreadcrumbItem>? Breadcrumbs { get; set; }
+
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    protected override void OnParametersSet()
+    {
+        _breadcrumbs = Breadcrumbs ?? new List<BreadcrumbItem>
+        {
+            new("Home", "/", false, Icons.Material.Filled.Home)
+        };
+    }
+}

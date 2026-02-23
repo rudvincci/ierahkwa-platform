@@ -1,0 +1,51 @@
+@using Mamey.BlazorWasm.Components.Foundation
+<MudPaper Class="@PaperClass" Style="@Style">
+    <MudText Typo="Typo.subtitle1">@Label</MudText>
+
+    <MudRadioGroup T="string" @bind-Value="_unit" SelectedOptionChanged="OnUnitChanged">
+        <MudRadio T="string" Value="@("lbs")">Pounds (lbs)</MudRadio>
+        <MudRadio T="string" Value="@("kg")">Kilograms (kg)</MudRadio>
+    </MudRadioGroup>
+
+    @if (_unit == "lbs")
+    {
+        <MudTextField T="double" Label="Weight (lbs)" Immediate="true" ValueChanged="@(v => OnLbsChanged(v))" />
+    }
+    else
+    {
+        <MudTextField T="double" Label="Weight (kg)" Immediate="true"  ValueChanged="@(v => OnKgChanged(v))" />
+    }
+
+    <FieldMessages HelperText="@HelperText" />
+</MudPaper>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Weight";
+    [Parameter] public string HelperText { get; set; } = "Stored canonically in pounds";
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public double WeightInLbs { get; set; }
+    [Parameter] public EventCallback<double> WeightInLbsChanged { get; set; }
+
+    private string _unit = "lbs";
+    private double _lbs;
+    private double _kg;
+
+    protected override void OnParametersSet()
+    {
+        if (_unit == "lbs") _lbs = WeightInLbs;
+        else _kg = WeightInLbs / 2.20462;
+    }
+
+    private Task OnLbsChanged(double v) => WeightInLbsChanged.InvokeAsync(v);
+    private Task OnKgChanged(double v)   => WeightInLbsChanged.InvokeAsync(v * 2.20462);
+
+    private void OnUnitChanged(string unit)
+    {
+        _unit = unit;
+        StateHasChanged();
+    }
+
+    private string PaperClass => $"pa-4 ma-2 {Class}";
+}

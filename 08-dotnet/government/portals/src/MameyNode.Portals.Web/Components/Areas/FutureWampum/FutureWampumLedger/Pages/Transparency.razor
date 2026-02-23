@@ -1,0 +1,84 @@
+@page "/ledger/transparency"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumLedgerClient FutureWampumLedgerClient
+@inject ILogger<Transparency> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Transparency" Icon="fas fa-eye" Subtitle="Ledger transparency dashboard">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Transactions" Value="@_totalTransactions.ToString()" Icon="fas fa-list" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active Accounts" Value="@_activeAccounts.ToString()" Icon="fas fa-users" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Currency Pairs" Value="@_currencyPairs.ToString()" Icon="fas fa-coins" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Currency Volumes" Class="mt-4">
+        <MudTable Items="@_currencyVolumes" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Currency</MudTh>
+                <MudTh>Volume</MudTh>
+                <MudTh>Transaction Count</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd>@decimal.Parse(context.Volume).ToString("C")</MudTd>
+                <MudTd>@context.TransactionCount</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private string _totalTransactions = "0";
+    private decimal _totalVolume;
+    private int _activeAccounts;
+    private int _currencyPairs;
+    private List<CurrencyVolumeInfo> _currencyVolumes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            var dashboard = await FutureWampumLedgerClient.GetTransparencyDashboardAsync();
+            _totalTransactions = dashboard.TotalTransactions;
+            _totalVolume = decimal.Parse(dashboard.TotalVolume);
+            _activeAccounts = dashboard.ActiveAccounts;
+            _currencyVolumes = dashboard.CurrencyVolumes;
+            _currencyPairs = _currencyVolumes.Count;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading transparency dashboard");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

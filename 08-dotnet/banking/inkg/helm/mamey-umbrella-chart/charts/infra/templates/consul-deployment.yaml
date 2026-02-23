@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "infra.fullname" . }}-consul
+  labels:
+    app: consul
+spec:
+  replicas: {{ .Values.consul.replicaCount }}
+  selector:
+    matchLabels:
+      app: consul
+  template:
+    metadata:
+      labels:
+        app: consul
+    spec:
+      containers:
+      - name: consul
+        image: "{{ .Values.consul.image }}"
+        imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+        ports:
+        - containerPort: {{ .Values.consul.port }}
+        volumeMounts:
+        - name: consul-data
+          mountPath: /consul/data
+        livenessProbe:
+          httpGet:
+            path: /v1/status/leader
+            port: {{ .Values.consul.port }}
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /v1/status/leader
+            port: {{ .Values.consul.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+      volumes:
+      - name: consul-data
+        persistentVolumeClaim:
+          claimName: consul-pvc

@@ -1,0 +1,43 @@
+@namespace MameyNode.Portals.Shared.Components.Specialized
+
+<MudCard Elevation="2" Class="ma-2">
+    <MudCardContent>
+        <MudStack Spacing="2">
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                <MudText Typo="Typo.body2" Color="Color.Secondary">@Label</MudText>
+                @if (!string.IsNullOrEmpty(Icon))
+                {
+                    <MudIcon Icon="@Icon" Size="Size.Small" Color="@IconColor" />
+                }
+            </MudStack>
+            <MudText Typo="Typo.h4">@Value</MudText>
+            @if (!string.IsNullOrEmpty(Change))
+            {
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                    <MudIcon 
+                        Icon="@(Change.StartsWith("+") ? Icons.Material.Filled.TrendingUp : Icons.Material.Filled.TrendingDown)" 
+                        Size="Size.Small" 
+                        Color="@(Change.StartsWith("+") ? Color.Success : Color.Error)" />
+                    <MudText 
+                        Typo="Typo.caption" 
+                        Color="@(Change.StartsWith("+") ? Color.Success : Color.Error)">
+                        @Change
+                    </MudText>
+                    @if (!string.IsNullOrEmpty(ChangePeriod))
+                    {
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@ChangePeriod</MudText>
+                    }
+                </MudStack>
+            }
+        </MudStack>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public Color IconColor { get; set; } = Color.Primary;
+    [Parameter] public string? Change { get; set; }
+    [Parameter] public string? ChangePeriod { get; set; }
+}

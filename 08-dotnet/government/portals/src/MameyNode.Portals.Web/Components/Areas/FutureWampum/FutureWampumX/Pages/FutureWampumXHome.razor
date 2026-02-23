@@ -1,0 +1,93 @@
+@page "/dex"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<FutureWampumXHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="FutureWampumX" Icon="fas fa-exchange-alt" Subtitle="Decentralized Exchange and Trading">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Pools" Value="@_pools.Count.ToString()" Icon="fas fa-swimming-pool" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Swaps" Value="@_swaps.Count.ToString()" Icon="fas fa-exchange-alt" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Trading Pairs" Value="@_tradingPairs.Count.ToString()" Icon="fas fa-chart-line" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Liquidity Pools" Elevation="2">
+                <MudText Typo="Typo.body2">Manage liquidity pools</MudText>
+                <MudButton Href="/dex/pools" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Pools
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Swaps" Elevation="2">
+                <MudText Typo="Typo.body2">Token swap operations</MudText>
+                <MudButton Href="/dex/swaps" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Swaps
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Trading Pairs" Elevation="2">
+                <MudText Typo="Typo.body2">Trading pair management</MudText>
+                <MudButton Href="/dex/trading-pairs" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Pairs
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private List<PoolInfo> _pools = new();
+    private List<SwapInfo> _swaps = new();
+    private List<TradingPairInfo> _tradingPairs = new();
+    private decimal _totalVolume;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _pools = await FutureWampumXClient.GetPoolsAsync();
+            _swaps = await FutureWampumXClient.GetSwapsAsync();
+            _tradingPairs = await FutureWampumXClient.GetTradingPairsAsync();
+            _totalVolume = _swaps.Sum(s => decimal.Parse(s.AmountIn ?? "0"));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading DEX data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

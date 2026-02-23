@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Ierahkwa Forex Investment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #0f1628;
+            --bg-card: linear-gradient(145deg, #121a2e 0%, #0d1220 100%);
+            --gold: #FFD700;
+            --gold-light: #FFEC8B;
+            --gold-dark: #B8860B;
+            --neon-green: #00FF88;
+            --neon-cyan: #00FFFF;
+            --neon-magenta: #FF00FF;
+            --neon-orange: #FF6B00;
+            --neon-pink: #FF1493;
+            --neon-purple: #9D00FF;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0AEC0;
+            --border-color: rgba(255, 215, 0, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at 20% 30%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+        }
+
+        .admin-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-secondary);
+            border-right: 2px solid var(--gold);
+            padding: 1.5rem;
+        }
+
+        .sidebar-logo {
+            text-align: center;
+            padding: 1rem 0 2rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-logo h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            background: linear-gradient(90deg, var(--gold), var(--neon-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-logo span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--gold);
+            border-left: 3px solid var(--gold);
+        }
+
+        .nav-link .icon {
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .stat-card.gold::before { background: var(--gold); }
+        .stat-card.green::before { background: var(--neon-green); }
+        .stat-card.cyan::before { background: var(--neon-cyan); }
+        .stat-card.magenta::before { background: var(--neon-magenta); }
+        .stat-card.orange::before { background: var(--neon-orange); }
+        .stat-card.purple::before { background: var(--neon-purple); }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card.gold .stat-value { color: var(--gold); }
+        .stat-card.green .stat-value { color: var(--neon-green); }
+        .stat-card.cyan .stat-value { color: var(--neon-cyan); }
+        .stat-card.magenta .stat-value { color: var(--neon-magenta); }
+        .stat-card.orange .stat-value { color: var(--neon-orange); }
+        .stat-card.purple .stat-value { color: var(--neon-purple); }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .stat-change.positive {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--neon-green);
+        }
+
+        .stat-change.negative {
+            background: rgba(255, 20, 147, 0.2);
+            color: var(--neon-pink);
+        }
+
+        /* Data Table */
+        .data-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .data-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .data-card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--gold);
+        }
+
+        .action-btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, var(--neon-green), #00AA55);
+            color: #000;
+        }
+
+        .action-btn.danger {
+            background: linear-gradient(135deg, var(--neon-pink), #C71585);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        tr:hover {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-active {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--neon-green);
+        }
+
+        .status-pending {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--gold);
+        }
+
+        .status-completed {
+            background: rgba(0, 255, 255, 0.2);
+            color: var(--neon-cyan);
+        }
+
+        .status-rejected {
+            background: rgba(255, 20, 147, 0.2);
+            color: var(--neon-pink);
+        }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+
+        .chart-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .chart-placeholder {
+            height: 250px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        /* Risk Alerts */
+        .risk-alert {
+            background: linear-gradient(135deg, rgba(255, 20, 147, 0.2), rgba(255, 107, 0, 0.2));
+            border: 1px solid var(--neon-pink);
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .risk-alert-icon {
+            font-size: 1.5rem;
+        }
+
+        .risk-alert-content {
+            flex: 1;
+        }
+
+        .risk-alert-title {
+            font-weight: 700;
+            color: var(--neon-pink);
+        }
+
+        .risk-alert-message {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h1>IERAHKWA ADMIN</h1>
+                <span>Forex Investment Management</span>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a class="nav-link active" onclick="showPage('dashboard')">
+                            <span class="icon">📊</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="showPage('accounts')">
+                            <span class="icon">👥</span>
+                            <span>User Accounts</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="showPage('investments')">
+                            <span class="icon">📈</span>
+                            <span>Investments</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="showPage('plans')">
+                            <span class="icon">📋</span>
+                            <span>Investment Plans</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="showPage('signals')">
+                            <span class="icon">⚡</span>
+                            <span>Signal Providers</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="showPage('transactions')">
+                            <span class="icon">💳</span>
+                            <span>Transactions</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="showPage('fraud')">
+                            <span class="icon">🛡️</span>
+                            <span>Fraud Detection</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="showPage('settings')">
+                            <span class="icon">⚙️</span>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Admin Dashboard</h1>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <span style="color: var(--neon-green);">● LIVE</span>
+                    <span style="color: var(--text-secondary);">Last update: <span id="last-update">Just now</span></span>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card gold">
+                    <span class="stat-change positive">+12.5%</span>
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-value">$15.75M</div>
+                    <div class="stat-label">Total Invested</div>
+                </div>
+                <div class="stat-card green">
+                    <span class="stat-change positive">+8.3%</span>
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-value">$2.89M</div>
+                    <div class="stat-label">Total Profit Generated</div>
+                </div>
+                <div class="stat-card cyan">
+                    <span class="stat-change positive">+156</span>
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value">12,500</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-card magenta">
+                    <span class="stat-change positive">+45</span>
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value">12,300</div>
+                    <div class="stat-label">Active Investments</div>
+                </div>
+                <div class="stat-card orange">
+                    <span class="stat-change positive">+$125K</span>
+                    <div class="stat-icon">💳</div>
+                    <div class="stat-value">$28.5M</div>
+                    <div class="stat-label">Total Deposits</div>
+                </div>
+                <div class="stat-card purple">
+                    <span class="stat-change negative">-3.2%</span>
+                    <div class="stat-icon">🔄</div>
+                    <div class="stat-value">$12.75M</div>
+                    <div class="stat-label">Total Withdrawals</div>
+                </div>
+            </div>
+
+            <!-- Risk Alerts -->
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3 class="data-card-title">🛡️ Fraud Detection Alerts</h3>
+                    <button class="action-btn primary">View All</button>
+                </div>
+                <div class="risk-alert">
+                    <span class="risk-alert-icon">⚠️</span>
+                    <div class="risk-alert-content">
+                        <div class="risk-alert-title">High-Frequency Deposit Detected</div>
+                        <div class="risk-alert-message">User #12345 made 8 deposits in the last 5 minutes - Risk Score: 85</div>
+                    </div>
+                    <button class="action-btn danger">Review</button>
+                </div>
+                <div class="risk-alert">
+                    <span class="risk-alert-icon">🚨</span>
+                    <div class="risk-alert-content">
+                        <div class="risk-alert-title">Large Withdrawal Request</div>
+                        <div class="risk-alert-message">Withdrawal of $95,000 to new address - Risk Score: 72</div>
+                    </div>
+                    <button class="action-btn danger">Review</button>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3 class="chart-title">Investment Growth (30 Days)</h3>
+                    <div class="chart-placeholder">
+                        <canvas id="investmentChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Investment by Plan</h3>
+                    <div class="chart-placeholder">
+                        <canvas id="planDistribution"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Investments Table -->
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3 class="data-card-title">📈 Recent Investments</h3>
+                    <button class="action-btn primary">Export CSV</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Investment ID</th>
+                            <th>User</th>
+                            <th>Plan</th>
+                            <th>Amount</th>
+                            <th>ROI</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="color: var(--gold);">INV-20260118-A1B2C3</td>
+                            <td>user@email.com</td>
+                            <td>VIP Elite Plan</td>
+                            <td style="color: var(--neon-green);">$50,000</td>
+                            <td>32%</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td><button class="action-btn primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--gold);">INV-20260118-D4E5F6</td>
+                            <td>investor@company.com</td>
+                            <td>Premium Plan</td>
+                            <td style="color: var(--neon-green);">$15,000</td>
+                            <td>22%</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td><button class="action-btn primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--gold);">INV-20260118-G7H8I9</td>
+                            <td>trader@forex.com</td>
+                            <td>Growth Plan</td>
+                            <td style="color: var(--neon-green);">$5,000</td>
+                            <td>15%</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td><button class="action-btn primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--gold);">INV-20260118-J0K1L2</td>
+                            <td>new@user.com</td>
+                            <td>Starter Plan</td>
+                            <td style="color: var(--neon-green);">$1,000</td>
+                            <td>8%</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td><button class="action-btn primary">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Recent Transactions Table -->
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3 class="data-card-title">💳 Recent Transactions</h3>
+                    <button class="action-btn primary">View All</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Type</th>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Risk Score</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="color: var(--gold);">TXN-20260118125432</td>
+                            <td><span style="color: var(--neon-green);">Deposit</span></td>
+                            <td>user@email.com</td>
+                            <td style="color: var(--neon-green);">+$10,000</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td><span style="color: var(--neon-green);">12</span></td>
+                            <td><button class="action-btn primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--gold);">TXN-20260118125128</td>
+                            <td><span style="color: var(--neon-pink);">Withdrawal</span></td>
+                            <td>investor@company.com</td>
+                            <td style="color: var(--neon-pink);">-$5,000</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td><span style="color: var(--gold);">45</span></td>
+                            <td><button class="action-btn success">Approve</button></td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--gold);">TXN-20260118124856</td>
+                            <td><span style="color: var(--neon-cyan);">Investment</span></td>
+                            <td>trader@forex.com</td>
+                            <td style="color: var(--neon-cyan);">$25,000</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td><span style="color: var(--neon-green);">8</span></td>
+                            <td><button class="action-btn primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--gold);">TXN-20260118124523</td>
+                            <td><span style="color: var(--neon-pink);">Withdrawal</span></td>
+                            <td>suspicious@test.com</td>
+                            <td style="color: var(--neon-pink);">-$95,000</td>
+                            <td><span class="status-badge status-rejected">Flagged</span></td>
+                            <td><span style="color: var(--neon-pink);">85</span></td>
+                            <td><button class="action-btn danger">Review</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function showPage(page) {
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            event.target.closest('.nav-link').classList.add('active');
+            console.log('Showing page:', page);
+        }
+
+        // Update timestamp
+        setInterval(() => {
+            document.getElementById('last-update').textContent = 'Just now';
+        }, 60000);
+
+        // Simulate loading analytics
+        async function loadAnalytics() {
+            try {
+                const response = await fetch('http://localhost:3500/api/analytics/platform');
+                const data = await response.json();
+                console.log('Platform Analytics:', data);
+            } catch (error) {
+                console.log('Using default analytics data');
+            }
+        }
+
+        loadAnalytics();
+    </script>
+</body>
+</html>

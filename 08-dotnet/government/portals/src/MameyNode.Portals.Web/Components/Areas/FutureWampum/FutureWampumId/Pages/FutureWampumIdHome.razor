@@ -1,0 +1,93 @@
+@page "/futurewampum/identity"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumIdClient FutureWampumIdClient
+@inject ILogger<FutureWampumIdHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="FutureWampumID" Icon="fas fa-id-card" Subtitle="Digital identity management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Verifications" Value="@_verifications.Count.ToString()" Icon="fas fa-user-check" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Credentials" Value="@_credentials.Count.ToString()" Icon="fas fa-certificate" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Wallets" Value="@_wallets.Count.ToString()" Icon="fas fa-wallet" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Verified" Value="@_verifiedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Identity Verification" Elevation="2">
+                <MudText Typo="Typo.body2">Verify digital identities</MudText>
+                <MudButton Href="/futurewampum/identity/verification" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Verifications
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Digital Credentials" Elevation="2">
+                <MudText Typo="Typo.body2">Manage digital credentials</MudText>
+                <MudButton Href="/futurewampum/identity/credentials" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Credentials
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Identity Wallets" Elevation="2">
+                <MudText Typo="Typo.body2">Manage identity wallets</MudText>
+                <MudButton Href="/futurewampum/identity/wallets" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Wallets
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private List<IdentityVerificationInfo> _verifications = new();
+    private List<DigitalCredentialInfo> _credentials = new();
+    private List<IdentityWalletInfo> _wallets = new();
+    private int _verifiedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _verifications = await FutureWampumIdClient.GetIdentityVerificationsAsync();
+            _credentials = await FutureWampumIdClient.GetDigitalCredentialsAsync();
+            _wallets = await FutureWampumIdClient.GetIdentityWalletsAsync();
+            _verifiedCount = _verifications.Count(v => v.Verified);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading FutureWampumID data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

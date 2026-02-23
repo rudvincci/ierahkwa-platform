@@ -1,0 +1,282 @@
+syntax = "proto3";
+
+package mamey.node;
+
+// Node service for MameyNode blockchain
+service NodeService {
+    // Get node information
+    rpc GetNodeInfo(GetNodeInfoRequest) returns (GetNodeInfoResponse);
+    
+    // Get block by hash
+    rpc GetBlock(GetBlockRequest) returns (GetBlockResponse);
+    
+    // Get account information
+    rpc GetAccount(GetAccountRequest) returns (GetAccountResponse);
+    
+    // Get account history
+    rpc GetAccountHistory(GetAccountHistoryRequest) returns (GetAccountHistoryResponse);
+    
+    // Publish a block
+    rpc PublishBlock(PublishBlockRequest) returns (PublishBlockResponse);
+
+    // Verify a block's signature(s) using classical, PQC, or hybrid algorithms.
+    rpc VerifyBlock(VerifyBlockRequest) returns (VerifyBlockResponse);
+    
+    // Get peers
+    rpc GetPeers(GetPeersRequest) returns (GetPeersResponse);
+    
+    // Get confirmation height
+    rpc GetConfirmationHeight(GetConfirmationHeightRequest) returns (GetConfirmationHeightResponse);
+
+    // Get pending blocks for an account
+    rpc GetPendingBlocks(GetPendingBlocksRequest) returns (GetPendingBlocksResponse);
+
+    // Get representatives
+    rpc GetRepresentatives(GetRepresentativesRequest) returns (GetRepresentativesResponse);
+
+    // Get bootstrap status
+    rpc GetBootstrapStatus(GetBootstrapStatusRequest) returns (GetBootstrapStatusResponse);
+
+    // Get network information (detailed)
+    rpc GetNetworkInfo(GetNetworkInfoRequest) returns (GetNetworkInfoResponse);
+
+    // Get ledger statistics
+    rpc GetLedgerStats(GetLedgerStatsRequest) returns (GetLedgerStatsResponse);
+}
+
+// Get node info request
+message GetNodeInfoRequest {
+}
+
+// Get node info response
+message GetNodeInfoResponse {
+    string version = 1;
+    string node_id = 2;
+    uint64 block_count = 3;
+    uint64 account_count = 4;
+    uint32 peer_count = 5;
+    uint64 confirmation_height = 6;
+}
+
+// Get block request
+message GetBlockRequest {
+    string block_hash = 1;  // Hex-encoded block hash
+}
+
+// Get block response
+message GetBlockResponse {
+    bytes block_data = 1;  // Serialized block
+    bool exists = 2;
+    string error_message = 3;
+}
+
+// Get account request
+message GetAccountRequest {
+    string account = 1;  // Hex-encoded account
+}
+
+// Get account response
+message GetAccountResponse {
+    string account = 1;
+    string head_block = 2;  // Hex-encoded head block hash
+    string representative = 3;  // Hex-encoded representative account
+    string balance = 4;  // Balance as string
+    uint64 block_count = 5;
+    bool exists = 6;
+    string error_message = 7;
+}
+
+// Get account history request
+message GetAccountHistoryRequest {
+    string account = 1;  // Hex-encoded account
+    uint32 limit = 2;  // Maximum number of blocks to return
+    uint32 offset = 3;  // Offset for pagination
+}
+
+// Get account history response
+message GetAccountHistoryResponse {
+    string account = 1;
+    repeated BlockInfo blocks = 2;
+    uint32 total_count = 3;
+    bool success = 4;
+    string error_message = 5;
+}
+
+// Block info
+message BlockInfo {
+    string block_hash = 1;  // Hex-encoded block hash
+    string previous = 2;  // Hex-encoded previous block hash
+    string account = 3;  // Hex-encoded account
+    uint64 timestamp = 4;
+    bytes block_data = 5;  // Serialized block
+
+    // Signature algorithm used for this block (e.g. \"ed25519\", \"ml-dsa-65\").
+    string signature_algorithm = 6;
+
+    // Primary signature bytes. For classical-only or PQC-only blocks this will
+    // contain the single signature. For hybrid blocks this may contain a
+    // combined representation.
+    bytes signature = 7;
+
+    // Optional classical signature component for hybrid blocks.
+    bytes classical_signature = 8;
+
+    // Indicates whether this block is considered quantum-resistant (PQC or hybrid).
+    bool quantum_resistant = 9;
+}
+
+// Verify block request for signature validation.
+message VerifyBlockRequest {
+    // Serialized block to verify.
+    bytes block_data = 1;
+
+    // Signature bytes to verify (combined or PQC signature).
+    bytes signature = 2;
+
+    // Public key bytes corresponding to the signer.
+    bytes public_key = 3;
+
+    // Signature algorithm identifier (e.g. \"ml-dsa-65\", \"hybrid-rsa-mldsa65\").
+    string signature_algorithm = 4;
+
+    // When true, perform hybrid verification (classical + PQC) when applicable.
+    bool verify_hybrid = 5;
+}
+
+// Verify block response indicating validation results.
+message VerifyBlockResponse {
+    // Overall result: true if the block is considered valid.
+    bool valid = 1;
+
+    // When hybrid validation is requested, indicates classical component validity.
+    bool classical_valid = 2;
+
+    // When hybrid or PQC validation is requested, indicates PQC component validity.
+    bool pq_valid = 3;
+
+    bool success = 4;
+    string error_message = 5;
+}
+
+// Publish block request
+message PublishBlockRequest {
+    bytes block_data = 1;  // Serialized block
+}
+
+// Publish block response
+message PublishBlockResponse {
+    string block_hash = 1;  // Hex-encoded block hash
+    bool accepted = 2;
+    string error_message = 3;
+}
+
+// Get peers request
+message GetPeersRequest {
+}
+
+// Get peers response
+message GetPeersResponse {
+    repeated PeerInfo peers = 1;
+    uint32 total_count = 2;
+}
+
+// Peer info
+message PeerInfo {
+    string peer_id = 1;
+    string address = 2;
+    string state = 3;  // "Connected", "Disconnected", "Connecting"
+    uint64 last_seen = 4;  // Unix timestamp
+}
+
+// Get confirmation height request
+message GetConfirmationHeightRequest {
+}
+
+// Get confirmation height response
+message GetConfirmationHeightResponse {
+    uint64 confirmation_height = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get pending blocks request
+message GetPendingBlocksRequest {
+    string account = 1;  // Hex-encoded account
+    uint32 limit = 2;
+    uint32 offset = 3;
+    bool include_active = 4; // Include blocks currently being processed
+}
+
+// Get pending blocks response
+message GetPendingBlocksResponse {
+    repeated string block_hashes = 1;
+    map<string, string> blocks = 2; // Map of hash to amount/source
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get representatives request
+message GetRepresentativesRequest {
+    uint32 limit = 1;
+    uint32 offset = 2;
+    string sort_order = 3; // "weight", "count", "uptime"
+}
+
+// Get representatives response
+message GetRepresentativesResponse {
+    repeated RepresentativeInfo representatives = 1;
+    uint32 total_count = 2;
+}
+
+// Representative info
+message RepresentativeInfo {
+    string account = 1;
+    string weight = 2; // Voting weight
+    uint32 delegators_count = 3;
+    bool is_online = 4;
+}
+
+// Get bootstrap status request
+message GetBootstrapStatusRequest {
+}
+
+// Get bootstrap status response
+message GetBootstrapStatusResponse {
+    bool is_bootstrapping = 1;
+    uint64 bootstrap_target = 2;
+    uint64 current_block = 3;
+    uint32 connections = 4;
+    string phase = 5; // "Idle", "Pulling", "Processing"
+    uint64 remaining_blocks = 6;
+}
+
+// Get network info request
+message GetNetworkInfoRequest {
+}
+
+// Get network info response
+message GetNetworkInfoResponse {
+    uint32 active_peers = 1;
+    uint32 max_peers = 2;
+    uint64 bytes_sent = 3;
+    uint64 bytes_received = 4;
+    string protocol_version = 5;
+    uint32 active_transactions = 6;
+    double average_latency_ms = 7;
+}
+
+// Get ledger stats request
+message GetLedgerStatsRequest {
+}
+
+// Get ledger stats response
+message GetLedgerStatsResponse {
+    uint64 account_count = 1;
+    uint64 block_count = 2;
+    uint64 cemented_count = 3;
+    uint64 unchecked_count = 4;
+    string database_size = 5;
+    uint64 pruning_target = 6;
+}
+
+

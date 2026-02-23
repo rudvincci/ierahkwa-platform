@@ -1,0 +1,100 @@
+@page "/compliance/aml"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<AML> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="AML/CFT" Icon="fas fa-exclamation-triangle" Subtitle="Anti-Money Laundering and Counter Financing of Terrorism">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Flags" Value="@_amlFlags.Count.ToString()" Icon="fas fa-flag" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Open" Value="@_openCount.ToString()" Icon="fas fa-folder-open" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="High Risk" Value="@_highRiskCount.ToString()" Icon="fas fa-exclamation-circle" Color="#EF4444" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Resolved" Value="@_resolvedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="AML Flags" Class="mt-4">
+        <MudTable T="AMLFlagInfo" Items="@_amlFlags" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Flag ID</MudTh>
+                <MudTh>Account</MudTh>
+                <MudTh>Transaction</MudTh>
+                <MudTh>Reason</MudTh>
+                <MudTh>Risk Level</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.FlagId</MudTd>
+                <MudTd>@context.AccountId</MudTd>
+                <MudTd>@context.TransactionId</MudTd>
+                <MudTd>@context.Reason</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.RiskLevel == "Critical" ? Color.Error : context.RiskLevel == "High" ? Color.Warning : Color.Info)">
+                        @context.RiskLevel
+                    </MudChip>
+                </MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == FlagStatus.Resolved ? Color.Success : context.Status == FlagStatus.Active ? Color.Warning : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<AMLFlagInfo> _amlFlags = new();
+    private int _openCount;
+    private int _highRiskCount;
+    private int _resolvedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _amlFlags = await GovernmentClient.GetAMLFlagsAsync();
+            _openCount = _amlFlags.Count(f => f.Status == FlagStatus.Active);
+            _highRiskCount = _amlFlags.Count(f => f.RiskLevel == "High" || f.RiskLevel == "Critical");
+            _resolvedCount = _amlFlags.Count(f => f.Status == FlagStatus.Resolved);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading AML flags");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

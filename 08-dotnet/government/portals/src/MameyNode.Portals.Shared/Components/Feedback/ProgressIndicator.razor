@@ -1,0 +1,34 @@
+@namespace MameyNode.Portals.Shared.Components.Feedback
+
+<MudStack Spacing="2">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.body2">@Label</MudText>
+            @if (ShowPercentage)
+            {
+                <MudText Typo="Typo.body2" Color="Color.Secondary">@Value%</MudText>
+            }
+        </MudStack>
+    }
+    <MudProgressLinear 
+        Value="@Value" 
+        Color="@Color" 
+        Indeterminate="@Indeterminate"
+        BufferValue="@(Buffer ?? 0)" />
+    @if (!string.IsNullOrEmpty(HelperText))
+    {
+        <MudText Typo="Typo.caption" Color="Color.Secondary">@HelperText</MudText>
+    }
+</MudStack>
+
+@code {
+    [Parameter] public int Value { get; set; } = 0;
+    [Parameter] public int? Buffer { get; set; }
+    [Parameter] public bool Indeterminate { get; set; } = false;
+    [Parameter] public Color Color { get; set; } = Color.Primary;
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? HelperText { get; set; }
+    [Parameter] public bool ShowPercentage { get; set; } = true;
+}
+

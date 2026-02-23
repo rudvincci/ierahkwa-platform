@@ -1,0 +1,27 @@
+@using MudBlazor
+@using Microsoft.AspNetCore.Components
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6" Class="mb-2">@Title</MudText>
+        <MudPaper Class="pa-3" Style="max-height: 70vh; overflow: auto;">
+            @((MarkupString)(Html ?? string.Empty))
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Close">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance Dialog { get; set; } = default!;
+
+    [Parameter] public string Title { get; set; } = "Preview";
+    [Parameter] public string Html { get; set; } = string.Empty;
+
+    private void Close() => Dialog.Close(DialogResult.Ok(true));
+}
+
+
+
+

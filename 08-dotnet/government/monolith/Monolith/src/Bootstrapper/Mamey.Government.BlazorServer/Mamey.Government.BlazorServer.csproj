@@ -1,0 +1,117 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-Mamey.Government.BlazorServer-bcb73818-a78c-4e3f-867e-aa65e06e5d05</UserSecretsId>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.*" />
+    <PackageReference Include="MudBlazor" Version="8.*" />
+    <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <!-- Mamey Framework -->
+    <ProjectReference Include="..\..\..\..\..\Mamey\src\Mamey.MicroMonolith.Infrastructure\src\Mamey.MicroMonolith.Infrastructure\Mamey.MicroMonolith.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Mamey\src\Mamey.Secrets.Vault\src\Mamey.Secrets.Vault\Mamey.Secrets.Vault.csproj" />
+    <ProjectReference Include="..\..\Modules\Certificates\Mamey.Government.Modules.Certificates.Api\Mamey.Government.Modules.Certificates.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Citizens\Mamey.Government.Modules.Citizens.Api\Mamey.Government.Modules.Citizens.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\CMS\Mamey.Government.Modules.CMS.Api\Mamey.Government.Modules.CMS.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Documents\Mamey.Government.Modules.Documents.Api\Mamey.Government.Modules.Documents.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Identity\Mamey.Government.Modules.Identity.Api\Mamey.Government.Modules.Identity.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Notifications\Mamey.Government.Modules.Notifications.Api\Mamey.Government.Modules.Notifications.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Passports\Mamey.Government.Modules.Passports.Api\Mamey.Government.Modules.Passports.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\Tenant\Mamey.Government.Modules.Tenant.Api\Mamey.Government.Modules.Tenant.Api.csproj" />
+    <ProjectReference Include="..\..\Modules\TravelIdentities\Mamey.Government.Modules.TravelIdentities.Api\Mamey.Government.Modules.TravelIdentities.Api.csproj" />
+    
+    <!-- Shared -->
+    <ProjectReference Include="..\..\Shared\Mamey.Government.Shared.Abstractions\Mamey.Government.Shared.Abstractions.csproj" />
+    
+    <!-- UI -->
+    <ProjectReference Include="..\..\UI\Mamey.Government.UI\Mamey.Government.UI.csproj" />
+    
+    <!-- Module APIs -->
+    <ProjectReference Include="..\..\Modules\CitizenshipApplications\Mamey.Government.Modules.CitizenshipApplications.Api\Mamey.Government.Modules.CitizenshipApplications.Api.csproj" />
+    
+    <!-- Module Core projects (required for EF migrations) -->
+    <ProjectReference Include="..\..\Modules\CitizenshipApplications\Mamey.Government.Modules.CitizenshipApplications.Core\Mamey.Government.Modules.CitizenshipApplications.Core.csproj" />
+    <ProjectReference Include="..\..\Modules\Citizens\Mamey.Government.Modules.Citizens.Core\Mamey.Government.Modules.Citizens.Core.csproj" />
+    <ProjectReference Include="..\..\Modules\Certificates\Mamey.Government.Modules.Certificates.Core\Mamey.Government.Modules.Certificates.Core.csproj" />
+    <ProjectReference Include="..\..\Modules\CMS\Mamey.Government.Modules.CMS.Core\Mamey.Government.Modules.CMS.Core.csproj" />
+    <ProjectReference Include="..\..\Modules\Documents\Mamey.Government.Modules.Documents.Core\Mamey.Government.Modules.Documents.Core.csproj" />
+    <ProjectReference Include="..\..\Modules\Identity\Mamey.Government.Modules.Identity.Core\Mamey.Government.Modules.Identity.Core.csproj" />
+    <ProjectReference Include="..\..\Modules\Passports\Mamey.Government.Modules.Passports.Core\Mamey.Government.Modules.Passports.Core.csproj" />
+    <ProjectReference Include="..\..\Modules\Tenant\Mamey.Government.Modules.Tenant.Core\Mamey.Government.Modules.Tenant.Core.csproj" />
+    <ProjectReference Include="..\..\Modules\TravelIdentities\Mamey.Government.Modules.TravelIdentities.Core\Mamey.Government.Modules.TravelIdentities.Core.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\AccessDenied.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Admin\Index.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Admin\_Imports.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ConfirmEmail.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ConfirmEmailChange.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ExternalLogin.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ForgotPassword.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ForgotPasswordConfirmation.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\InvalidPasswordReset.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\InvalidUser.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Lockout.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Login.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\LoginWith2fa.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\LoginWithRecoveryCode.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\ChangePassword.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\DeletePersonalData.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\Disable2fa.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\Email.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\EnableAuthenticator.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\ExternalLogins.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\GenerateRecoveryCodes.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\Index.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\Notifications.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\PersonalData.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\ResetAuthenticator.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\SetPassword.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\TwoFactorAuthentication.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\_Imports.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Register.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\RegisterConfirmation.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ResendEmailConfirmation.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ResetPassword.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ResetPasswordConfirmation.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\_Imports.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\AdminLayout.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\ExternalLoginPicker.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\ManageLayout.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\ManageNavMenu.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\RedirectToLogin.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\ShowRecoveryCodes.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\StatusMessage.razor" />
+    <_ContentIncludedByDefault Remove="Components\App.razor" />
+    <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
+    <_ContentIncludedByDefault Remove="Components\Layout\NavMenu.razor" />
+    <_ContentIncludedByDefault Remove="Components\Pages\Auth.razor" />
+    <_ContentIncludedByDefault Remove="Components\Pages\Counter.razor" />
+    <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
+    <_ContentIncludedByDefault Remove="Components\Pages\Home.razor" />
+    <_ContentIncludedByDefault Remove="Components\Pages\Weather.razor" />
+    <_ContentIncludedByDefault Remove="Components\Routes.razor" />
+    <_ContentIncludedByDefault Remove="Components\_Imports.razor" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Components\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocsSoberanos — Editor Soberano | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0e;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;--gold:#d4a853;--tq:#2dd4a8;--wp:#9b6dff;--blue:#4d8eff;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#252530;--paper:#1c1c26}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden}
+.app{display:flex;flex-direction:column;height:100vh}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--brd);padding:6px 16px;display:flex;align-items:center;gap:12px}
+.tb-brand{display:flex;align-items:center;gap:6px}.tb-brand span{font-size:20px}.tb-brand h1{font-size:14px;font-weight:700;color:var(--blue)}
+.tb-title{font-size:14px;font-weight:600;padding:4px 8px;border-radius:4px;border:1px solid transparent;cursor:text}.tb-title:hover{border-color:var(--brd)}
+.tb-saved{font-size:10px;color:var(--tq);font-family:'IBM Plex Mono',monospace}
+.tb-r{margin-left:auto;display:flex;gap:6px;align-items:center}
+.btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.btn:hover{background:var(--bg3);color:var(--txt)}.btn.share{background:var(--blue);color:#fff;border-color:var(--blue)}
+.tb-users{display:flex;margin-left:8px}.tb-u{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-left:-6px;border:2px solid var(--bg2)}
+.menubar{background:var(--bg2);border-bottom:1px solid var(--brd);padding:2px 16px;display:flex;gap:2px}
+.mb{padding:4px 10px;border-radius:4px;font-size:12px;color:var(--txt2);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif}.mb:hover{background:var(--bg3);color:var(--txt)}
+.toolbar{background:var(--bg2);border-bottom:1px solid var(--brd);padding:4px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.t{width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;background:none;color:var(--txt2);font-size:13px;transition:all 0.1s}.t:hover{background:var(--bg3);color:var(--txt)}
+.tsel{padding:2px 6px;border-radius:4px;background:var(--bg3);border:1px solid var(--brd);color:var(--txt2);font-size:11px;height:28px;font-family:'DM Sans',sans-serif}
+.tsep{width:1px;height:20px;background:var(--brd);margin:0 4px}
+.editor{flex:1;overflow-y:auto;display:flex;justify-content:center;padding:32px 20px;scrollbar-width:thin;scrollbar-color:var(--brd) transparent}
+.paper{width:100%;max-width:740px;min-height:1000px;background:var(--paper);border:1px solid var(--brd);border-radius:4px;padding:72px 80px;box-shadow:0 4px 24px rgba(0,0,0,0.3);position:relative}
+.wm{position:absolute;top:20px;right:20px;font-size:9px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+.doc-t{font-family:'Source Serif 4',serif;font-size:32px;font-weight:700;margin-bottom:8px;outline:none}
+.doc-sub{font-size:14px;color:var(--txt3);margin-bottom:24px;font-family:'IBM Plex Mono',monospace}
+.doc h2{font-family:'Source Serif 4',serif;font-size:22px;font-weight:700;margin:24px 0 8px;border-bottom:1px solid var(--brd);padding-bottom:6px}
+.doc h3{font-size:17px;font-weight:700;margin:18px 0 6px;color:var(--gold)}
+.doc p{font-family:'Source Serif 4',serif;font-size:15px;line-height:1.8;margin-bottom:12px}
+.doc strong{color:var(--gold)}
+.doc blockquote{border-left:3px solid var(--gold);padding:8px 16px;margin:12px 0;background:rgba(212,168,83,0.04);font-style:italic;color:var(--txt2);font-family:'Source Serif 4',serif;font-size:14px;line-height:1.6}
+.doc code{font-family:'IBM Plex Mono',monospace;font-size:13px;background:var(--bg3);padding:2px 6px;border-radius:3px;color:var(--tq)}
+.doc table{width:100%;border-collapse:collapse;margin:16px 0}
+.doc th,.doc td{border:1px solid var(--brd);padding:8px 12px;font-size:13px;text-align:left;font-family:'DM Sans',sans-serif}
+.doc th{background:var(--bg3);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.5px}
+.hl{background:rgba(212,168,83,0.15);padding:1px 3px;border-radius:2px}
+.cm{background:rgba(77,142,255,0.15);border-bottom:2px solid var(--blue);cursor:pointer}
+@media(max-width:768px){.paper{padding:32px 24px}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topbar">
+  <div class="tb-brand"><span>📄</span><h1>DocsSoberanos</h1></div>
+  <div class="tb-title">Propuesta: Red Soberana de las Américas</div>
+  <div class="tb-saved">🔒 Guardado en MameyNode · hace 2 min</div>
+  <div class="tb-r">
+    <button class="btn">💬</button><button class="btn">📤</button><button class="btn">🌐 Atabey</button><button class="btn share">🔗 Compartir</button>
+    <div class="tb-users">
+      <div class="tb-u" style="background:linear-gradient(135deg,var(--gold),var(--tq))">CA</div>
+      <div class="tb-u" style="background:linear-gradient(135deg,#ff6b6b,var(--wp))">MC</div>
+      <div class="tb-u" style="background:linear-gradient(135deg,var(--tq),#4da6ff)">RT</div>
+    </div>
+  </div>
+</div>
+<div class="menubar"><button class="mb">Archivo</button><button class="mb">Editar</button><button class="mb">Ver</button><button class="mb">Insertar</button><button class="mb">Formato</button><button class="mb">Herramientas</button><button class="mb">BDET</button></div>
+<div class="toolbar">
+  <button class="t">↩</button><button class="t">↪</button><button class="t">🖨</button><div class="tsep"></div>
+  <select class="tsel"><option>Normal</option><option>Título 1</option><option>Título 2</option></select>
+  <select class="tsel"><option>Source Serif</option><option>DM Sans</option></select>
+  <select class="tsel"><option>15</option><option>12</option><option>18</option><option>24</option></select><div class="tsep"></div>
+  <button class="t" style="font-weight:900">B</button><button class="t" style="font-style:italic">I</button><button class="t" style="text-decoration:underline">U</button><div class="tsep"></div>
+  <button class="t">🔗</button><button class="t">💬</button><button class="t">📷</button><div class="tsep"></div>
+  <button class="t">≡</button><button class="t">•</button><button class="t">1.</button><button class="t">☐</button><div class="tsep"></div>
+  <button class="t" title="MameyAI">🤖</button><button class="t" title="Atabey">🌐</button><button class="t" title="BDET">💎</button>
+</div>
+<div class="editor">
+  <div class="paper">
+    <div class="wm">🔒 MameyNode · Cifrado E2E</div>
+    <div class="doc-t" contenteditable="true">Propuesta: Red Soberana Digital de las Américas</div>
+    <div class="doc-sub">Versión 2.1 · Febrero 2026 · Clasificación: Confidencial Soberano</div>
+    <div class="doc" contenteditable="true">
+      <h2>1. Resumen Ejecutivo</h2>
+      <p>La <strong>Red Soberana Digital de las Américas</strong> es una infraestructura tecnológica completa diseñada para proporcionar <span class="hl">soberanía digital</span> a los más de <strong>72 millones de personas indígenas</strong> en el continente americano.</p>
+      <p>El proyecto comprende <strong>296 plataformas integradas</strong> sobre MameyNode blockchain, incluyendo BDET Bank (sistema financiero), 24 plataformas de servicios Soberano, telecomunicaciones satelitales, cifrado cuántico post-quantum, y 42 motores de inteligencia artificial independientes.</p>
+      <blockquote>"La soberanía digital no es un lujo — es un derecho fundamental de los pueblos originarios. Sin control sobre nuestra infraestructura tecnológica, la autodeterminación permanece incompleta." — Cacike Soberano</blockquote>
+
+      <h2>2. Alcance y Beneficiarios</h2>
+      <table>
+        <tr><th>Región</th><th>Población</th><th>Organizaciones</th><th>Fase</th></tr>
+        <tr><td>Norteamérica (NCAI)</td><td>7M — 574 tribus</td><td>NCAI, AFN</td><td>Piloto Q1 2026</td></tr>
+        <tr><td>México</td><td>27M — 68 idiomas</td><td>INPI</td><td>Fase 2</td></tr>
+        <tr><td>Centroamérica</td><td>8M</td><td>Varios</td><td>Fase 2</td></tr>
+        <tr><td>Caribe</td><td>500K+</td><td>CADO, UCTP, Kalinago</td><td>Piloto Q1 2026</td></tr>
+        <tr><td>Sudamérica</td><td>30M+ — 800+ pueblos</td><td>FILAC, COICA, CONAIE</td><td>Piloto Q1 2026</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>72M+</strong></td><td><strong>50+ organizaciones</strong></td><td></td></tr>
+      </table>
+
+      <h2>3. Infraestructura Técnica</h2>
+      <h3>3.1 MameyNode Blockchain</h3>
+      <p>Blockchain soberana con <strong>12,847 TPS</strong>, consensus mechanism adaptado para gobernanza comunitaria indígena. Smart contracts para las 24 plataformas Soberano. Cifrado cuántico post-quantum.</p>
+      <p>Versión actual: <code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f29f939f978b9c9d9697b284c6dcc0dcc2">[email&#160;protected]</a></code> — 12 nuevos smart contracts desplegados, gas fees reducidos 34%.</p>
+
+      <h3>3.2 BDET Bank</h3>
+      <p>Sistema financiero completo: cuentas, pagos, escrow, microcréditos, seguros comunitarios, forex Wampum↔USD/EUR/BTC/ETH. 11 motores bancarios. <span class="cm">24 plataformas integradas</span> con splits de comisión automatizados.</p>
+
+      <h3>3.3 Ecosistema Soberano (24 plataformas)</h3>
+      <p>RentaSoberano, SoberanoUber, SoberanoEats, SoberanoFarm, SoberanoDoctor, SoberanoMarket, SoberanoBuild, SoberanoGuard, SoberanoTeach, SoberanoTrade, SoberanoClean, SoberanoEnergy, SoberanoWater, y 11 más — todos integrados con BDET Bank y operando sobre MameyNode.</p>
+
+      <h3>3.4 AI Fortress</h3>
+      <p><strong>42 motores de IA soberanos</strong> operando al 99.97% de capacidad. Sistema de seguridad con detección de anomalías, cifrado cuántico, y monitoreo continuo. Cero brechas detectadas desde el despliegue.</p>
+
+      <h2>4. Métricas Actuales</h2>
+      <table>
+        <tr><th>Métrica</th><th>Valor</th><th>Tendencia</th></tr>
+        <tr><td>Usuarios activos</td><td>24,847</td><td style="color:#34d399">▲ +23%</td></tr>
+        <tr><td>Volumen BDET diario</td><td>Ⓦ 1.2M</td><td style="color:#34d399">▲ +18%</td></tr>
+        <tr><td>Plataformas activas</td><td>296</td><td style="color:#34d399">▲ +12</td></tr>
+        <tr><td>Transacciones/segundo</td><td>12,847 TPS</td><td>Estable</td></tr>
+        <tr><td>Motores AI</td><td>42</td><td>Estable</td></tr>
+        <tr><td>Idiomas soportados</td><td>14 indígenas + 6</td><td style="color:#34d399">▲ +2</td></tr>
+        <tr><td>Consultas telemedicina/día</td><td>847</td><td style="color:#34d399">▲ +34%</td></tr>
+        <tr><td>Estudiantes Pupitre</td><td>12,847</td><td style="color:#34d399">▲ +23%</td></tr>
+      </table>
+
+      <h2>5. Próximos Pasos</h2>
+      <p><strong>Semana 1-2 (Febrero 2026):</strong> Llamada con NCAI, FILAC, COICA. Demostración de plataforma. Discusión de piloto con 5 naciones tribales.</p>
+      <p><strong>Mes 1-2 (Marzo-Abril 2026):</strong> Despliegue de pilotos en comunidades seleccionadas. Integración de idiomas Navajo, Cherokee, Lakota en Atabey. Apertura de cuentas BDET para comunidades piloto.</p>
+      <p><strong>Mes 3-6:</strong> Expansión a 19 países via FILAC. Lanzamiento de CanalSoberano, MúsicaSoberana, y 10+ nuevas plataformas. Objetivo: 100,000 usuarios activos.</p>
+
+      <h2>6. Solicitud</h2>
+      <p>Invitamos a las organizaciones indígenas de las Américas a unirse a la Red Soberana como socios fundadores. La infraestructura está construida. Los servicios están operando. Solo falta una cosa: <strong>nuestra unidad como pueblos originarios</strong>.</p>
+      <blockquote>"72 millones de voces. Una infraestructur

@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Bookstore.Api.Protos";
+
+package Pupitre.Bookstore;
+
+// gRPC service for Book operations
+service BookService {
+    // Get a single Book by ID
+    rpc GetBook (GetBookRequest) returns (BookResponse) {};
+    
+    // List all Books with pagination
+    rpc ListBooks (ListBooksRequest) returns (ListBooksResponse) {};
+    
+    // Stream Book updates
+    rpc StreamBookUpdates (StreamBookUpdatesRequest) returns (stream BookResponse) {};
+}
+
+message GetBookRequest {
+    string id = 1;
+}
+
+message ListBooksRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListBooksResponse {
+    repeated BookResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message BookResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamBookUpdatesRequest {
+    string filter = 1;
+}

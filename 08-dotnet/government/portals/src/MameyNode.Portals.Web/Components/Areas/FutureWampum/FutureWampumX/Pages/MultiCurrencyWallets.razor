@@ -1,0 +1,94 @@
+@page "/dex/multi-currency-wallets"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<MultiCurrencyWallets> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Multi-Currency Wallets" Icon="fas fa-wallet" Subtitle="Multi-currency wallet management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Wallets" Value="@_wallets.Count.ToString()" Icon="fas fa-wallet" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Balance" Value="@_totalBalance.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Currencies" Value="@_currencyCount.ToString()" Icon="fas fa-coins" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Multi-Currency Wallets" Class="mt-4">
+        <MudTable T="MultiCurrencyWalletInfo" Items="@_wallets" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Wallet ID</MudTh>
+                <MudTh>Account ID</MudTh>
+                <MudTh>Currencies</MudTh>
+                <MudTh>Total Balance</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.WalletId</MudTd>
+                <MudTd>@context.AccountId</MudTd>
+                <MudTd>@string.Join(", ", context.Balances.Keys)</MudTd>
+                <MudTd>@context.Balances.Values.Sum(b => decimal.Parse(b)).ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.IsActive ? Color.Success : Color.Default)">
+                        @(context.IsActive ? "Active" : "Inactive")
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<MultiCurrencyWalletInfo> _wallets = new();
+    private int _activeCount;
+    private decimal _totalBalance;
+    private int _currencyCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _wallets = await FutureWampumXClient.GetMultiCurrencyWalletsAsync();
+            _activeCount = _wallets.Count(w => w.IsActive);
+            _totalBalance = _wallets.Sum(w => w.Balances.Values.Sum(b => decimal.Parse(b)));
+            _currencyCount = _wallets.SelectMany(w => w.Balances.Keys).Distinct().Count();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading multi-currency wallets");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

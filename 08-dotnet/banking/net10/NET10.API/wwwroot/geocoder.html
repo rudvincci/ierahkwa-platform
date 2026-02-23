@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 GEOCODER PRO | Address ↔ Lat/Lng | NET10</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --neon-green: #00FF41; --neon-cyan: #00FFFF; --neon-purple: #9D4EDD; --neon-blue: #0066FF; --neon-red: #FF3366; --bg-dark: #0a0e17; --bg-card: #0d1a2d; --bg-input: #142238; --border: #1e3a5f; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17, #0d2a1a, #0a0e17); color: #fff; min-height: 100vh; }
+        
+        .header { background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan)); padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; color: #000; }
+        .header-brand { display: flex; align-items: center; gap: 15px; }
+        .brand-icon { width: 50px; height: 50px; background: rgba(0,0,0,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8em; }
+        .brand-text h1 { font-family: 'Orbitron', sans-serif; font-size: 1.4em; }
+        .header-stats { display: flex; gap: 15px; }
+        .stat-pill { background: rgba(0,0,0,0.2); padding: 6px 15px; border-radius: 20px; font-weight: 600; font-size: 0.85em; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; font-family: 'Exo 2', sans-serif; }
+        .btn-dark { background: rgba(0,0,0,0.3); color: #fff; }
+        .btn-white { background: #fff; color: #000; }
+        .btn:hover { transform: translateY(-2px); }
+        
+        .main-layout { display: grid; grid-template-columns: 300px 1fr; min-height: calc(100vh - 70px); }
+        
+        .sidebar { background: var(--bg-card); border-right: 2px solid var(--neon-green); padding: 20px; }
+        .sidebar-title { font-family: 'Orbitron', sans-serif; color: var(--neon-green); font-size: 0.9em; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        
+        .mode-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        .mode-btn { flex: 1; padding: 15px 10px; border: 2px solid var(--border); border-radius: 12px; background: var(--bg-input); cursor: pointer; text-align: center; transition: all 0.3s; }
+        .mode-btn:hover { border-color: var(--neon-green); }
+        .mode-btn.active { border-color: var(--neon-green); background: rgba(0, 255, 65, 0.1); }
+        .mode-btn i { font-size: 1.5em; color: var(--neon-cyan); display: block; margin-bottom: 5px; }
+        .mode-btn.active i { color: var(--neon-green); }
+        .mode-btn span { font-size: 0.8em; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.8em; color: #888; margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 10px 12px; background: var(--bg-input); border: 2px solid var(--border); border-radius: 8px; color: #fff; font-size: 0.9em; }
+        .form-input:focus { border-color: var(--neon-green); outline: none; }
+        
+        .api-key-status { display: flex; align-items: center; gap: 8px; font-size: 0.8em; margin-top: 5px; }
+        .api-key-status.valid { color: var(--neon-green); }
+        .api-key-status.invalid { color: var(--neon-red); }
+        
+        .field-mapping { background: var(--bg-input); border-radius: 10px; padding: 15px; margin-bottom: 15px; }
+        .field-mapping h4 { font-size: 0.85em; color: var(--gold); margin-bottom: 10px; }
+        
+        .content { padding: 20px; display: flex; flex-direction: column; }
+        
+        .drop-zone { border: 2px dashed var(--border); border-radius: 15px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s; margin-bottom: 20px; }
+        .drop-zone:hover, .drop-zone.dragover { border-color: var(--neon-green); background: rgba(0, 255, 65, 0.05); }
+        .drop-zone i { font-size: 3em; color: var(--neon-cyan); margin-bottom: 10px; }
+        .drop-zone h4 { color: var(--gold); margin-bottom: 5px; }
+        .drop-zone p { font-size: 0.85em; color: #888; }
+        
+        .data-grid { flex: 1; background: var(--bg-card); border: 2px solid var(--border); border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; }
+        .grid-header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg-input); }
+        .grid-title { font-family: 'Orbitron', sans-serif; color: var(--gold); }
+        .grid-stats { display: flex; gap: 15px; font-size: 0.85em; }
+        .grid-stat { display: flex; align-items: center; gap: 5px; }
+        .grid-stat.success { color: var(--neon-green); }
+        .grid-stat.failed { color: var(--neon-red); }
+        .grid-stat.pending { color: var(--gold); }
+        
+        .grid-container { flex: 1; overflow: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+        th { background: var(--bg-dark); padding: 12px 15px; text-align: left; color: #888; font-size: 0.8em; text-transform: uppercase; position: sticky; top: 0; }
+        td { padding: 10px 15px; border-bottom: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 0.85em; }
+        tr:hover { background: rgba(0, 255, 65, 0.05); }
+        
+        .row-status { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .row-status.pending { background: #888; }
+        .row-status.processing { background: var(--neon-blue); animation: pulse 1s infinite; }
+        .row-status.success { background: var(--neon-green); }
+        .row-status.failed { background: var(--neon-red); }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        .status-badge { padding: 3px 10px; border-radius: 10px; font-size: 0.75em; }
+        .status-badge.success { background: rgba(0, 255, 65, 0.2); color: var(--neon-green); }
+        .status-badge.failed { background: rgba(255, 51, 102, 0.2); color: var(--neon-red); }
+        .status-badge.pending { background: rgba(136, 136, 136, 0.2); color: #888; }
+        
+        .grid-footer { padding: 15px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .progress-container { flex: 1; max-width: 400px; }
+        .progress-info { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85em; }
+        .progress-bar { height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan)); border-radius: 4px; transition: width 0.3s; }
+        
+        .action-buttons { display: flex; gap: 10px; }
+        .btn-primary { background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan)); color: #000; }
+        .btn-secondary { background: var(--bg-input); color: #fff; border: 1px solid var(--border); }
+        .btn-success { background: linear-gradient(135deg, var(--neon-green), #00cc33); color: #000; }
+        .btn-danger { background: linear-gradient(135deg, var(--neon-red), #cc0033); color: #fff; }
+        
+        .single-mode { margin-bottom: 20px; }
+        .single-mode .card { background: var(--bg-card); border: 2px solid var(--border); border-radius: 15px; padding: 20px; }
+        .single-mode .card-title { font-family: 'Orbitron', sans-serif; color: var(--neon-cyan); margin-bottom: 15px; }
+        .result-display { background: var(--bg-input); border-radius: 10px; padding: 15px; margin-top: 15px; }
+        .result-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
+        .result-row:last-child { border-bottom: none; }
+        .result-label { color: #888; }
+        .result-value { font-family: 'JetBrains Mono', monospace; color: var(--neon-cyan); }
+        
+        .toast { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan)); color: #000; padding: 15px 25px; border-radius: 12px; display: none; z-index: 1000; font-weight: 600; }
+        .toast.show { display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-brand">
+            <div class="brand-icon">🌍</div>
+            <div class="brand-text">
+                <h1>GEOCODER PRO</h1>
+                <span>Address ↔ Coordinates Converter</span>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="stat-pill" id="totalStat">📊 0 Rows</div>
+            <div class="stat-pill" id="successStat">✅ 0 Success</div>
+            <div class="stat-pill" id="failedStat">❌ 0 Failed</div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-dark" onclick="window.location.href='../../platform/index.html'">
+                <i class="bi bi-house"></i> Plataforma
+            </button>
+            <button class="btn btn-white" onclick="exportResults()">
+                <i class="bi bi-download"></i> Export CSV
+            </button>
+        </div>
+    </div>
+    
+    <div class="main-layout">
+        <div class="sidebar">
+            <div class="sidebar-title"><i class="bi bi-gear"></i> Configuración</div>
+            
+            <div class="mode-selector">
+                <div class="mode-btn active" onclick="setMode('geocode')">
+                    <i class="bi bi-geo-alt"></i>
+                    <span>Geocoding</span>
+                </div>
+                <div class="mode-btn" onclick="setMode('reverse')">
+                    <i class="bi bi-pin-map"></i>
+                    <span>Reverse</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Google API Key</label>
+                <input type="password" class="form-input" id="apiKey" placeholder="AIza..." oninput="validateApiKey()">
+                <div class="api-key-status" id="apiKeyStatus"></div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Idioma de Resultados</label>
+                <select class="form-input" id="language">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="de">Deutsch</option>
+                    <option value="pt">Português</option>
+                    <option value="it">Italiano</option>
+                    <option value="ja">日本語</option>
+                    <option value="ko">한국어</option>
+                    <option value="zh-CN">中文</option>
+                </select>
+            </div>
+            
+            <div class="field-mapping" id="geocodeFields">
+                <h4>📍 Campos de Dirección</h4>
+                <div class="form-group">
+                    <label class="form-label">Dirección Completa</label>
+                    <select class="form-input" id="addressField"><option value="">-- Seleccionar --</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Calle</label>
+                    <select class="form-input" id="streetField"><option value="">-- Seleccionar --</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ciudad</label>
+                    <select class="form-input" id="cityField"><option value="">-- Seleccionar --</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Estado</label>
+                    <select class="form-input" id="stateField"><option value="">-- Seleccionar --</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">País</label>
+                    <select class="form-input" id="countryField"><option value="">-- Seleccionar --</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Código Postal</label>
+                    <select class="form-input" id="postalField"><option value="">-- Seleccionar --</option></select>
+                </div>
+            </div>
+            
+            <div class="field-mapping" id="reverseFields" style="display: none;">
+                <h4>📌 Campos de Coordenadas</h4>
+                <div class="form-group">
+                    <label class="form-label">Latitud</label>
+                    <select class="form-input" id="latField"><option value="">-- Seleccionar --</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Longitud</label>
+                    <select class="form-input" id="lngField"><option value="">-- Seleccionar --</option></select>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="processData()">
+                <i class="bi bi-play"></i> Procesar
+            </button>
+        </div>
+        
+        <div class="content">
+            <!-- Single Mode -->
+            <div class="single-mode">
+                <div class="card">
+                    <div class="card-title" id="singleModeTitle">🔍 Geocoding Individual</div>
+                    <div id="singleGeocodeForm">
+                        <div class="form-group">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-input" id="singleAddress" placeholder="1600 Amphitheatre Parkway, Mountain View, CA">
+                        </div>
+                        <button class="btn btn-primary" onclick="geocodeSingle()">
+                            <i class="bi bi-search"></i> Geocodificar
+                        </button>
+                    </div>
+                    <div id="singleReverseForm" style="display: none;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label class="form-label">Latitud</label>
+                                <input type="number" step="any" class="form-input" id="singleLat" placeholder="37.4224764">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Longitud</label>
+                                <input type="number" step="any" class="form-input" id="singleLng" placeholder="-122.0842499">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="reverseGeocodeSingle()">
+                            <i class="bi bi-search"></i> Reverse Geocode
+                        </button>
+                    </div>
+                    <div class="result-display" id="singleResult" style="display: none;"></div>
+                </div>
+            </div>
+            
+            <!-- Drop Zone -->
+            <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <i class="bi bi-cloud-upload"></i>
+                <h4>Arrastra un archivo CSV aquí</h4>
+                <p>o haz clic para seleccionar</p>
+            </div>
+            <input type="file" id="fileInput" style="display: none;" accept=".csv" onchange="handleFile(event)">
+            
+            <!-- Data Grid -->
+            <div class="data-grid" id="dataGrid" style="display: none;">
+                <div class="grid-header">
+                    <span class="grid-title">📊 Datos Cargados</span>
+                    <div class="grid-stats">
+                        <span class="grid-stat pending"><span class="row-status pending"></span> <span id="pendingCount">0</span> Pendientes</span>
+                        <span class="grid-stat success"><span class="row-status success"></span> <span id="successCount">0</span> Éxito</span>
+                        <span class="grid-stat failed"><span class="row-status failed"></span> <span id="failedCount">0</span> Error</span>
+                    </div>
+                </div>
+                <div class="grid-container">
+                    <table>
+                        <thead id="gridHeader"></thead>
+                        <tbody id="gridBody"></tbody>
+                    </table>
+                </div>
+                <div class="grid-footer">
+                    <div class="progress-container">
+                        <div class="progress-info">
+                            <span id="progressText">Listo para procesar</span>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="retryFailed()">
+                            <i class="bi bi-arrow-clockwise"></i> Reintentar Fallidos
+                        </button>
+                        <button class="btn btn-success" onclick="exportResults()">
+                            <i class="bi bi-download"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        let currentMode = 'geocode';
+        let csvHeaders = [];
+        let csvData = [];
+        let processedData = [];
+        
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            event.target.closest('.mode-btn').classList.add('active');
+            
+            document.getElementById('geocodeFields').style.display = mode === 'geocode' ? 'block' : 'none';
+            document.getElementById('reverseFields').style.display = mode === 'reverse' ? 'block' : 'none';
+            document.getElementById('singleGeocodeForm').style.display = mode === 'geocode' ? 'block' : 'none';
+            document.getElementById('singleReverseForm').style.display = mode === 'reverse' ? 'block' : 'none';
+            document.getElementById('singleModeTitle').textContent = mode === 'geocode' ? '🔍 Geocoding Individual' : '📌 Reverse Geocoding Individual';
+        }
+        
+        function validateApiKey() {
+            const key = document.getElementById('apiKey').value;
+            const status = document.getElementById('apiKeyStatus');
+            if (key.length > 10) {
+                status.className = 'api-key-status valid';
+                status.innerHTML = '<i class="bi bi-check-circle"></i> API Key configurada';
+            } else {
+                status.className = 'api-key-status invalid';
+                status.innerHTML = '<i class="bi bi-x-circle"></i> API Key requerida';
+            }
+        }
+        
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                parseCSV(e.target.result);
+            };
+            reader.readAsText(file);
+        }
+        
+        function parseCSV(content) {
+            const lines = content.split(/\r?\n/).filter(l => l.trim());
+            if (lines.length < 2) {
+                showToast('❌ Archivo vacío o inválido');
+                return;
+            }
+            
+            csvHeaders = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+            csvData = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+                const row = {};
+                csvHeaders.forEach((h, idx) => row[h] = values[idx] || '');
+                row._status = 'pending';
+                row._rowNum = i;
+                csvData.push(row);
+            }
+            
+            populateFieldSelectors();
+            renderGrid();
+            document.getElementById('dropZone').style.display = 'none';
+            document.getElementById('dataGrid').style.display = 'flex';
+            updateStats();
+            showToast(`✅ ${csvData.length} filas cargadas`);
+        }
+        
+        function populateFieldSelectors() {
+            const selectors = ['addressField', 'streetField', 'cityField', 'stateField', 'countryField', 'postalField', 'latField', 'lngField'];
+            selectors.forEach(id => {
+                const select = document.getElementById(id);
+                select.innerHTML = '<option value="">-- Seleccionar --</option>';
+                csvHeaders.forEach(h => {
+                    select.innerHTML += `<option value="${h}">${h}</option>`;
+                });
+            });
+            
+            // Auto-detect common field names
+            csvHeaders.forEach(h => {
+                const lower = h.toLowerCase();
+                if (lower.includes('address') || lower.includes('direccion')) document.getElementById('addressField').value = h;
+                if (lower.includes('street') || lower.includes('calle')) document.getElementById('streetField').value = h;
+                if (lower.includes('city') || lower.includes('ciudad')) document.getElementById('cityField').value = h;
+                if (lower.includes('state') || lower.includes('estado')) document.getElementById('stateField').value = h;
+                if (lower.includes('country') || lower.includes('pais')) document.getElementById('countryField').value = h;
+                if (lower.includes('postal') || lower.includes('zip') || lower.includes('cp')) document.getElementById('postalField').value = h;
+                if (lower.includes('lat')) document.getElementById('latField').value = h;
+                if (lower.includes('lng') || lower.includes('lon')) document.getElementById('lngField').value = h;
+            });
+        }
+        
+        function renderGrid() {
+            const headerRow = '<tr><th>#</th><th>Status</th>' + csvHeaders.map(h => `<th>${h}</th>`).join('') + 
+                (currentMode === 'geocode' ? '<th>Lat</th><th>Lng</th>' : '<th>Address</th>') + '</tr>';
+            document.getElementById('gridHeader').innerHTML = headerRow;
+            
+            let bodyHtml = '';
+            csvData.forEach((row, idx) => {
+                const statusClass = row._status || 'pending';
+                bodyHtml += `<tr id="row-${idx}">
+                    <td>${row._rowNum}</td>
+                    <td><span class="row-status ${statusClass}"></span></td>
+                    ${csvHeaders.map(h => `<td>${row[h] || ''}</td>`).join('')}
+                    <td id="result-${idx}-1">-</td>
+                    ${currentMode === 'geocode' ? `<td id="result-${idx}-2">-</td>` : ''}
+                </tr>`;
+            });
+            document.getElementById('gridBody').innerHTML = bodyHtml;
+        }
+        
+        function updateStats() {
+            const total = csvData.length;
+            const success = csvData.filter(r => r._status === 'success').length;
+            const failed = csvData.filter(r => r._status === 'failed').length;
+            const pending = csvData.filter(r => r._status === 'pending').length;
+            
+            document.getElementById('totalStat').textContent = `📊 ${total} Rows`;
+            document.getElementById('successStat').textContent = `✅ ${success} Success`;
+            document.getElementById('failedStat').textContent = `❌ ${failed} Failed`;
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('successCount').textContent = success;
+            document.getElementById('failedCount').textContent = failed;
+        }
+        
+        async function processData() {
+            const apiKey = document.getElementById('apiKey').value;
+            if (!apiKey) {
+                showToast('❌ API Key requerida');
+                return;
+            }
+            
+            const total = csvData.length;
+            let processed = 0;
+            
+            for (let i = 0; i < csvData.length; i++) {
+                const row = csvData[i];
+                if (row._status === 'success') {
+                    processed++;
+                    continue;
+                }
+                
+                // Update UI to processing
+                row._status = 'processing';
+                document.querySelector(`#row-${i} .row-status`).className = 'row-status processing';
+                
+                try {
+                    let result;
+                    if (currentMode === 'geocode') {
+                        const address = buildAddress(row);
+                        result = await simulateGeocode(address);
+                        document.getElementById(`result-${i}-1`).textContent = result.lat.toFixed(6);
+                        document.getElementById(`result-${i}-2`).textContent = result.lng.toFixed(6);
+                        row._lat = result.lat;
+                        row._lng = result.lng;
+                    } else {
+                        const lat = parseFloat(row[document.getElementById('latField').value]);
+                        const lng = parseFloat(row[document.getElementById('lngField').value]);
+                        result = await simulateReverseGeocode(lat, lng);
+                        document.getElementById(`result-${i}-1`).textContent = result.address;
+                        row._address = result.address;
+                    }
+                    
+                    row._status = 'success';
+                    document.querySelector(`#row-${i} .row-status`).className = 'row-status success';
+                } catch (err) {
+                    row._status = 'failed';
+                    row._error = err.message;
+                    document.querySelector(`#row-${i} .row-status`).className = 'row-status failed';
+                }
+                
+                processed++;
+                const percent = Math.round((processed / total) * 100);
+                document.getElementById('progressFill').style.width = percent + '%';
+                document.getElementById('progressPercent').textContent = percent + '%';
+                document.getElementById('progressText').textContent = `Procesando ${processed} de ${total}`;
+                updateStats();
+                
+                await new Promise(r => setTimeout(r, 100));
+            }
+            
+            document.getElementById('progressText').textContent = 'Proceso completado';
+            showToast('✅ Proceso completado');
+        }
+        
+        function buildAddress(row) {
+            const parts = [];
+            const fields = ['addressField', 'streetField', 'cityField', 'stateField', 'countryField', 'postalField'];
+            fields.forEach(f => {
+                const fieldName = document.getElementById(f).value;
+                if (fieldName && row[fieldName]) parts.push(row[fieldName]);
+            });
+            return parts.join(', ');
+        }
+        
+        // Simulated geocoding (replace with actual API call)
+        async function simulateGeocode(address) {
+            await new Promise(r => setTimeout(r, 200));
+            const hash = address.split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0);
+            return {
+                lat: 37.4 + (hash % 100) / 1000,
+                lng: -122.0 + (hash % 100) / 1000
+            };
+        }
+        
+        async function simulateReverseGeocode(lat, lng) {
+            await new Promise(r => setTimeout(r, 200));
+            return {
+                address: `${Math.round(lat * 1000)} Example Street, City ${Math.round(lng * -10)}, Country`
+            };
+        }
+        
+        function geocodeSingle() {
+            const address = document.getElementById('singleAddress').value;
+            if (!address) { showToast('❌ Ingresa una dirección'); return; }
+            
+            simulateGeocode(address).then(result => {
+                document.getElementById('singleResult').style.display = 'block';
+                document.getElementById('singleResult').innerHTML = `
+                    <div class="result-row"><span class="result-label">Dirección</span><span class="result-value">${address}</span></div>
+                    <div class="result-row"><span class="result-label">Latitud</span><span class="result-value">${result.lat.toFixed(6)}</span></div>
+                    <div class="result-row"><span class="result-label">Longitud</span><span class="result-value">${result.lng.toFixed(6)}</span></div>
+                `;
+                showToast('✅ Geocodificación exitosa');
+            });
+        }
+        
+        function reverseGeocodeSingle() {
+            const lat = parseFloat(document.getElementById('singleLat').value);
+            const lng = parseFloat(document.getElementById('singleLng').value);
+            if (isNaN(lat) || isNaN(lng)) { showToast('❌ Coordenadas inválidas'); return; }
+            
+            simulateReverseGeocode(lat, lng).then(result => {
+                document.getElementById('singleResult').style.display = 'block';
+                document.getElementById('singleResult').innerHTML = `
+                    <div class="result-row"><span class="result-label">Coordenadas</span><span class="result-value">${lat}, ${lng}</span></div>
+                    <div class="result-row"><span class="result-label">Dirección</span><span class="result-value">${result.address}</span></div>
+                `;
+                showToast('✅ Reverse geocoding exitoso');
+            });
+        }
+        
+        function retryFailed() {
+            csvData.filter(r => r._status === 'failed').forEach(r => r._status = 'pending');
+            renderGrid();
+            updateStats();
+            processData();
+        }
+        
+        function exportResults() {
+            if (!csvData.length) { showToast('❌ No hay datos para exportar'); return; }
+            
+            let csv = csvHeaders.join(',') + (currentMode === 'geocode' ? ',Latitude,Longitude' : ',Address') + ',Status\n';
+            csvData.forEach(row => {
+                const values = csvHeaders.map(h => `"${(row[h] || '').replace(/"/g, '""')}"`);
+                if (currentMode === 'geocode') {
+                    values.push(row._lat || '', row._lng || '');
+                } else {
+                    values.push(`"${(row._address || '').replace(/"/g, '""')}"`);
+                }
+                values.push(row._status);
+                csv += values.join(',') + '\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `geocoded_results_${Date.now()}.csv`;
+            a.click();
+            showToast('📥 CSV exportado');
+        }
+        
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Drag and drop
+        const dropZone = document.getElementById('dropZone');
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                const reader = new FileReader();
+                reader.onload = ev => parseCSV(ev.target.result);
+                reader.readAsText(file);
+            }
+        });
+        
+        showToast('🌍 Geocoder Pro cargado');
+    </script>
+</body>
+</html>

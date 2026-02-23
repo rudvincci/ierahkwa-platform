@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔏 BIOMETRICS | Ierahkwa Biometric Authentication</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --green: #00FF41; --cyan: #00FFFF; --red: #FF1744; --purple: #9D4EDD; --orange: #FF6B35; --bg: #0a0e17; --card: #0d1a2d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17, #0a0e1a, #0a0e17); color: #fff; min-height: 100vh; }
+        
+        .header { background: var(--card); padding: 15px 30px; border-bottom: 3px solid var(--cyan); display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--cyan), var(--purple)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+        .logo h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--cyan); }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .security-badge { background: rgba(0,255,65,0.2); border: 1px solid var(--green); padding: 8px 15px; border-radius: 20px; color: var(--green); font-size: 0.85em; display: flex; align-items: center; gap: 8px; }
+        .nav-link { padding: 10px 20px; background: rgba(0,255,255,0.2); border: 1px solid var(--cyan); border-radius: 10px; color: var(--cyan); text-decoration: none; }
+        
+        .main { padding: 25px; max-width: 1400px; margin: 0 auto; }
+        
+        /* Stats Row */
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--card); border-radius: 15px; padding: 20px; text-align: center; border: 1px solid rgba(0,255,255,0.2); }
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 1.8em; color: var(--cyan); }
+        .stat-label { font-size: 0.8em; color: #888; margin-top: 5px; }
+        
+        /* Main Grid */
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        
+        /* Biometric Methods */
+        .section { background: var(--card); border-radius: 20px; padding: 25px; margin-bottom: 25px; }
+        .section-title { font-family: 'Orbitron', sans-serif; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        .biometric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .biometric-card { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 25px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: all 0.3s; position: relative; }
+        .biometric-card:hover { border-color: var(--cyan); }
+        .biometric-card.active { border-color: var(--green); background: rgba(0,255,65,0.1); }
+        .biometric-card.active::after { content: '✓'; position: absolute; top: 15px; right: 15px; background: var(--green); color: #000; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .biometric-icon { font-size: 3em; margin-bottom: 15px; }
+        .biometric-name { font-family: 'Orbitron', sans-serif; margin-bottom: 5px; }
+        .biometric-status { font-size: 0.85em; color: #888; }
+        .biometric-status.enrolled { color: var(--green); }
+        
+        /* Scanner Interface */
+        .scanner-section { background: var(--card); border-radius: 20px; padding: 25px; }
+        .scanner-container { background: linear-gradient(135deg, rgba(0,255,255,0.1), rgba(157,78,221,0.1)); border-radius: 20px; padding: 40px; text-align: center; position: relative; overflow: hidden; }
+        .scanner-ring { width: 200px; height: 200px; border: 3px solid var(--cyan); border-radius: 50%; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .scanner-ring::before { content: ''; position: absolute; width: 100%; height: 100%; border: 3px solid transparent; border-top-color: var(--green); border-radius: 50%; animation: spin 2s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .scanner-icon { font-size: 4em; }
+        .scanner-text { font-family: 'Orbitron', sans-serif; color: var(--cyan); margin-bottom: 10px; }
+        .scanner-status { color: #888; font-size: 0.9em; }
+        .scanner-btn { padding: 15px 40px; background: linear-gradient(135deg, var(--cyan), var(--purple)); border: none; border-radius: 15px; color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 600; cursor: pointer; margin-top: 20px; }
+        
+        /* Enrolled Devices */
+        .device-list { margin-top: 20px; }
+        .device-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; margin-bottom: 10px; }
+        .device-icon { font-size: 1.5em; width: 50px; height: 50px; background: rgba(0,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+        .device-info { flex: 1; }
+        .device-name { font-weight: 600; margin-bottom: 3px; }
+        .device-meta { font-size: 0.8em; color: #888; }
+        .device-status { padding: 5px 12px; border-radius: 10px; font-size: 0.8em; }
+        .device-status.active { background: rgba(0,255,65,0.2); color: var(--green); }
+        .device-status.inactive { background: rgba(255,255,255,0.1); color: #888; }
+        
+        /* Security Settings */
+        .setting-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-info { display: flex; align-items: center; gap: 12px; }
+        .setting-icon { font-size: 1.3em; }
+        .setting-name { font-weight: 600; }
+        .setting-desc { font-size: 0.8em; color: #888; }
+        .toggle-switch { width: 50px; height: 26px; background: rgba(255,255,255,0.1); border-radius: 13px; position: relative; cursor: pointer; transition: all 0.3s; }
+        .toggle-switch.active { background: var(--green); }
+        .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: all 0.3s; }
+        .toggle-switch.active::after { left: 26px; }
+        
+        /* Activity Log */
+        .activity-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 10px; margin-bottom: 8px; }
+        .activity-item.success { border-left: 3px solid var(--green); }
+        .activity-item.failed { border-left: 3px solid var(--red); }
+        .activity-icon { font-size: 1.2em; }
+        .activity-info { flex: 1; }
+        .activity-title { font-size: 0.9em; }
+        .activity-time { font-size: 0.75em; color: #888; }
+        
+        /* Enrollment Progress */
+        .enrollment-progress { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; margin-top: 20px; }
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .progress-title { font-size: 0.9em; color: #888; }
+        .progress-value { font-family: 'Orbitron', sans-serif; color: var(--cyan); }
+        .progress-bar { height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--green)); border-radius: 5px; transition: width 0.5s; }
+        .progress-steps { display: flex; justify-content: space-between; margin-top: 15px; }
+        .progress-step { text-align: center; }
+        .progress-step-icon { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 5px; font-size: 1.2em; }
+        .progress-step-icon.complete { background: var(--green); }
+        .progress-step-name { font-size: 0.75em; color: #888; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🔏</div>
+            <div>
+                <h1>BIOMETRICS</h1>
+                <p style="color: #888; font-size: 0.75em;">Advanced Authentication</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="security-badge">
+                <i class="bi bi-shield-lock-fill"></i>
+                All Methods Verified
+            </div>
+            <a href="/platform" class="nav-link"><i class="bi bi-arrow-left"></i> Platform</a>
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value">4</div>
+                <div class="stat-label">Enrolled Methods</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">156</div>
+                <div class="stat-label">Authentications Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: var(--green);">99.8%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Registered Devices</div>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <!-- Left Column -->
+            <div>
+                <!-- Biometric Methods -->
+                <div class="section">
+                    <div class="section-title"><i class="bi bi-fingerprint"></i> Biometric Methods</div>
+                    <div class="biometric-grid">
+                        <div class="biometric-card active" onclick="selectBiometric('fingerprint')">
+                            <div class="biometric-icon">👆</div>
+                            <div class="biometric-name">Fingerprint</div>
+                            <div class="biometric-status enrolled">✅ Enrolled</div>
+                        </div>
+                        <div class="biometric-card active" onclick="selectBiometric('face')">
+                            <div class="biometric-icon">😊</div>
+                            <div class="biometric-name">Face ID</div>
+                            <div class="biometric-status enrolled">✅ Enrolled</div>
+                        </div>
+                        <div class="biometric-card active" onclick="selectBiometric('iris')">
+                            <div class="biometric-icon">👁️</div>
+                            <div class="biometric-name">Iris Scan</div>
+                            <div class="biometric-status enrolled">✅ Enrolled</div>
+                        </div>
+                        <div class="biometric-card active" onclick="selectBiometric('voice')">
+                            <div class="biometric-icon">🎤</div>
+                            <div class="biometric-name">Voice Print</div>
+                            <div class="biometric-status enrolled">✅ Enrolled</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enrolled Devices -->
+                <div class="section">
+                    <div class="section-title"><i class="bi bi-phone"></i> Registered Devices</div>
+                    <div class="device-list">
+                        <div class="device-item">
+                            <div class="device-icon">📱</div>
+                            <div class="device-info">
+                                <div class="device-name">iPhone 15 Pro</div>
+                                <div class="device-meta">Face ID, Touch ID • Last used: 5 min ago</div>
+                            </div>
+                            <span class="device-status active">● Active</span>
+                        </div>
+                        <div class="device-item">
+                            <div class="device-icon">💻</div>
+                            <div class="device-info">
+                                <div class="device-name">MacBook Pro</div>
+                                <div class="device-meta">Touch ID • Last used: 2 hours ago</div>
+                            </div>
+                            <span class="device-status active">● Active</span>
+                        </div>
+                        <div class="device-item">
+                            <div class="device-icon">⌚</div>
+                            <div class="device-info">
+                                <div class="device-name">Apple Watch</div>
+                                <div class="device-meta">Wrist detection • Last used: 1 day ago</div>
+                            </div>
+                            <span class="device-status inactive">○ Inactive</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Settings -->
+                <div class="section">
+                    <div class="section-title"><i class="bi bi-shield-lock"></i> Security Settings</div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">🔐</span>
+                            <div>
+                                <div class="setting-name">Multi-Factor Required</div>
+                                <div class="setting-desc">Require 2+ biometric methods for high-security actions</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">⚡</span>
+                            <div>
+                                <div class="setting-name">Quick Authentication</div>
+                                <div class="setting-desc">Enable fast login for trusted devices</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">🔔</span>
+                            <div>
+                                <div class="setting-name">Login Alerts</div>
+                                <div class="setting-desc">Notify on new device authentication</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">🚫</span>
+                            <div>
+                                <div class="setting-name">Lockout After Failures</div>
+                                <div class="setting-desc">Lock account after 5 failed attempts</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div>
+                <!-- Scanner Interface -->
+                <div class="scanner-section">
+                    <div class="section-title"><i class="bi bi-fingerprint"></i> Biometric Scanner</div>
+                    <div class="scanner-container">
+                        <div class="scanner-ring">
+                            <div class="scanner-icon" id="scannerIcon">👆</div>
+                        </div>
+                        <div class="scanner-text" id="scannerText">Ready to Scan</div>
+                        <div class="scanner-status" id="scannerStatus">Place your finger on the sensor</div>
+                        <button class="scanner-btn" onclick="startScan()">Start Verification</button>
+                    </div>
+                    
+                    <div class="enrollment-progress">
+                        <div class="progress-header">
+                            <span class="progress-title">Biometric Enrollment</span>
+                            <span class="progress-value">4/4 Complete</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%;"></div>
+                        </div>
+                        <div class="progress-steps">
+                            <div class="progress-step">
+                                <div class="progress-step-icon complete">👆</div>
+                                <div class="progress-step-name">Fingerprint</div>
+                            </div>
+                            <div class="progress-step">
+                                <div class="progress-step-icon complete">😊</div>
+                                <div class="progress-step-name">Face</div>
+                            </div>
+                            <div class="progress-step">
+                                <div class="progress-step-icon complete">👁️</div>
+                                <div class="progress-step-name">Iris</div>
+                            </div>
+                            <div class="progress-step">
+                                <div class="progress-step-icon complete">🎤</div>
+                                <div class="progress-step-name">Voice</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="section" style="margin-top: 25px;">
+                    <div class="section-title"><i class="bi bi-clock-history"></i> Recent Authentications</div>
+                    <div class="activity-item success">
+                        <div class="activity-icon">✅</div>
+                        <div class="activity-info">
+                            <div class="activity-title">Face ID authentication successful</div>
+                            <div class="activity-time">5 minutes ago • iPhone 15 Pro</div>
+                        </div>
+                    </div>
+                    <div class="activity-item success">
+                        <div class="activity-icon">✅</div>
+                        <div class="activity-info">
+                            <div class="activity-title">Touch ID authentication successful</div>
+                            <div class="activity-time">2 hours ago • MacBook Pro</div>
+                        </div>
+                    </div>
+                    <div class="activity-item success">
+                        <div class="activity-icon">✅</div>
+                        <div class="activity-info">
+                            <div class="activity-title">Multi-factor verification passed</div>
+                            <div class="activity-time">Yesterday • Banking Transaction</div>
+                        </div>
+                    </div>
+                    <div class="activity-item failed">
+                        <div class="activity-icon">❌</div>
+                        <div class="activity-info">
+                            <div class="activity-title">Voice print mismatch (retried successfully)</div>
+                            <div class="activity-time">2 days ago • iPhone 15 Pro</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        const biometricIcons = { fingerprint: '👆', face: '😊', iris: '👁️', voice: '🎤' };
+        const biometricNames = { fingerprint: 'Fingerprint', face: 'Face ID', iris: 'Iris', voice: 'Voice' };
+        let currentBiometric = 'fingerprint';
+        
+        function selectBiometric(type) {
+            currentBiometric = type;
+            document.getElementById('scannerIcon').textContent = biometricIcons[type];
+            document.getElementById('scannerText').textContent = `${biometricNames[type]} Scanner`;
+            document.getElementById('scannerStatus').textContent = `Ready to scan ${biometricNames[type].toLowerCase()}`;
+        }
+        
+        function startScan() {
+            const scannerText = document.getElementById('scannerText');
+            const scannerStatus = document.getElementById('scannerStatus');
+            
+            scannerText.textContent = 'Scanning...';
+            scannerStatus.textContent = 'Please hold still...';
+            
+            setTimeout(() => {
+                scannerText.textContent = '✅ Verified!';
+                scannerStatus.textContent = 'Authentication successful';
+                
+                setTimeout(() => {
+                    selectBiometric(currentBiometric);
+                }, 2000);
+            }, 2000);
+        }
+        
+        console.log('🔏 BIOMETRICS - Authentication System Initialized');
+    </script>
+</body>
+</html>

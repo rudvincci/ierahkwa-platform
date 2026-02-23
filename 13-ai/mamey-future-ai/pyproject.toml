@@ -1,0 +1,81 @@
+[tool.poetry]
+name = "mamey-future-ai"
+version = "0.1.0"
+description = "Advanced AI and Machine Learning Services Platform for the Mamey Ecosystem"
+authors = ["Mamey Technologies <info@mamey.io>"]
+readme = "README.md"
+packages = [{include = "mamey_future_ai"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+grpcio = "^1.60.0"
+grpcio-tools = "^1.60.0"
+protobuf = "^4.25.0"
+pydantic = "^2.5.0"
+pydantic-settings = "^2.1.0"
+mlflow = "^2.8.0"
+onnxruntime = "^1.16.0"
+redis = "^5.0.0"
+psycopg2-binary = "^2.9.9"
+prometheus-client = "^0.19.0"
+opentelemetry-api = "^1.21.0"
+opentelemetry-sdk = "^1.21.0"
+opentelemetry-instrumentation-grpc = "^0.42b0"
+structlog = "^23.2.0"
+httpx = "^0.25.0"
+boto3 = "^1.29.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+pytest-asyncio = "^0.21.0"
+pytest-cov = "^4.1.0"
+pytest-mock = "^3.12.0"
+black = "^23.11.0"
+ruff = "^0.1.6"
+mypy = "^1.7.0"
+types-protobuf = "^4.25.0.20240101"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+include = '\.pyi?$'
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+addopts = "-v --cov=mamey_future_ai --cov-report=term-missing --cov-report=html"

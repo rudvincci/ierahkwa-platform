@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 DATA HUB | Ierahkwa Analytics Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --green: #00FF41; --cyan: #00FFFF; --red: #FF1744; --purple: #9D4EDD; --orange: #FF6B35; --bg: #0a0e17; --card: #0d1a2d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17, #1a0a2e, #0a0e17); color: #fff; min-height: 100vh; }
+        
+        .header { background: var(--card); padding: 15px 30px; border-bottom: 3px solid var(--cyan); display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--cyan), var(--purple)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+        .logo h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--cyan); }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .data-status { background: rgba(0,255,65,0.2); border: 1px solid var(--green); padding: 8px 15px; border-radius: 20px; color: var(--green); font-size: 0.85em; display: flex; align-items: center; gap: 8px; }
+        .nav-link { padding: 10px 20px; background: rgba(0,255,255,0.2); border: 1px solid var(--cyan); border-radius: 10px; color: var(--cyan); text-decoration: none; }
+        
+        .main { padding: 25px; max-width: 1600px; margin: 0 auto; }
+        
+        /* Stats Row */
+        .stats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--card); border-radius: 15px; padding: 20px; border: 1px solid rgba(0,255,255,0.2); position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(0,255,255,0.1) 0%, transparent 70%); }
+        .stat-icon { font-size: 1.5em; margin-bottom: 10px; }
+        .stat-label { color: #888; font-size: 0.8em; margin-bottom: 5px; }
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 1.5em; color: var(--cyan); }
+        .stat-change { font-size: 0.8em; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
+        .stat-change.up { color: var(--green); }
+        .stat-change.down { color: var(--red); }
+        
+        /* Dashboard Grid */
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
+        
+        .section { background: var(--card); border-radius: 20px; padding: 25px; margin-bottom: 25px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section-title { font-family: 'Orbitron', sans-serif; color: var(--gold); display: flex; align-items: center; gap: 10px; }
+        .section-actions { display: flex; gap: 10px; }
+        .action-btn { padding: 8px 15px; background: rgba(0,255,255,0.1); border: 1px solid var(--cyan); border-radius: 8px; color: var(--cyan); cursor: pointer; font-size: 0.85em; }
+        
+        /* Charts */
+        .chart-container { height: 250px; display: flex; align-items: flex-end; gap: 10px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 15px; margin-bottom: 20px; }
+        .chart-bar { flex: 1; background: linear-gradient(180deg, var(--cyan), rgba(0,255,255,0.3)); border-radius: 5px; position: relative; min-height: 20px; transition: all 0.3s; }
+        .chart-bar:hover { filter: brightness(1.3); transform: scaleY(1.02); }
+        .chart-bar-label { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 0.7em; color: #888; white-space: nowrap; }
+        .chart-bar-value { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 0.75em; color: var(--cyan); }
+        
+        /* Line Chart */
+        .line-chart { height: 200px; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 20px; position: relative; }
+        .line-chart svg { width: 100%; height: 100%; }
+        .line-chart path { fill: none; stroke: var(--cyan); stroke-width: 3; }
+        .line-chart .area { fill: url(#gradient); opacity: 0.3; }
+        
+        /* Data Table */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: rgba(0,255,255,0.1); padding: 12px 15px; text-align: left; font-family: 'Orbitron', sans-serif; color: var(--cyan); font-size: 0.85em; }
+        .data-table td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .data-table tr:hover { background: rgba(0,255,255,0.05); }
+        
+        /* Metrics Grid */
+        .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .metric-card { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; }
+        .metric-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .metric-title { font-size: 0.9em; color: #888; }
+        .metric-icon { font-size: 1.5em; }
+        .metric-value { font-family: 'Orbitron', sans-serif; font-size: 2em; color: var(--gold); margin-bottom: 10px; }
+        .metric-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .metric-bar-fill { height: 100%; border-radius: 10px; }
+        .metric-bar-fill.green { background: linear-gradient(90deg, var(--green), #00cc33); }
+        .metric-bar-fill.cyan { background: linear-gradient(90deg, var(--cyan), var(--purple)); }
+        .metric-bar-fill.gold { background: linear-gradient(90deg, var(--gold), var(--orange)); }
+        
+        /* Real-time Feed */
+        .feed-item { display: flex; gap: 15px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .feed-item:last-child { border-bottom: none; }
+        .feed-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2em; }
+        .feed-icon.transaction { background: rgba(0,255,65,0.2); }
+        .feed-icon.user { background: rgba(157,78,221,0.2); }
+        .feed-icon.alert { background: rgba(255,23,68,0.2); }
+        .feed-icon.system { background: rgba(0,255,255,0.2); }
+        .feed-info { flex: 1; }
+        .feed-title { font-size: 0.9em; margin-bottom: 3px; }
+        .feed-meta { font-size: 0.75em; color: #888; }
+        .feed-value { font-family: 'Orbitron', sans-serif; color: var(--cyan); font-size: 0.9em; }
+        
+        /* Query Builder */
+        .query-builder { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; }
+        .query-input { width: 100%; padding: 15px; border: 2px solid rgba(0,255,255,0.3); border-radius: 10px; background: rgba(0,0,0,0.5); color: var(--cyan); font-family: monospace; font-size: 0.9em; margin-bottom: 15px; }
+        .query-input:focus { outline: none; border-color: var(--cyan); }
+        .query-buttons { display: flex; gap: 10px; }
+        .query-btn { padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 0.85em; }
+        .query-btn.run { background: var(--cyan); border: none; color: #000; font-weight: 600; }
+        .query-btn.save { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+        
+        /* Pulse Animation */
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .pulse { animation: pulse 2s infinite; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📊</div>
+            <div>
+                <h1>DATA HUB</h1>
+                <p style="color: #888; font-size: 0.75em;">Real-Time Analytics Platform</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="data-status">
+                <span class="pulse" style="width: 8px; height: 8px; background: var(--green); border-radius: 50%;"></span>
+                Live Data Stream
+            </div>
+            <a href="/platform" class="nav-link"><i class="bi bi-arrow-left"></i> Platform</a>
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Stats Row -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-label">Total Records</div>
+                <div class="stat-value">2.4M</div>
+                <div class="stat-change up"><i class="bi bi-arrow-up"></i> +12.5%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-label">Queries/min</div>
+                <div class="stat-value">1,247</div>
+                <div class="stat-change up"><i class="bi bi-arrow-up"></i> +8.3%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💾</div>
+                <div class="stat-label">Data Size</div>
+                <div class="stat-value">847 GB</div>
+                <div class="stat-change">+2.1 GB today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔄</div>
+                <div class="stat-label">Sync Status</div>
+                <div class="stat-value" style="color: var(--green);">100%</div>
+                <div class="stat-change up">All nodes synced</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-label">Avg. Response</div>
+                <div class="stat-value">12ms</div>
+                <div class="stat-change down" style="color: var(--green);"><i class="bi bi-arrow-down"></i> -3ms</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🛡️</div>
+                <div class="stat-label">Uptime</div>
+                <div class="stat-value">99.99%</div>
+                <div class="stat-change">30 days</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div>
+                <!-- Transaction Volume Chart -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title"><i class="bi bi-graph-up"></i> Transaction Volume (24h)</div>
+                        <div class="section-actions">
+                            <button class="action-btn">Day</button>
+                            <button class="action-btn" style="background: var(--cyan); color: #000;">Week</button>
+                            <button class="action-btn">Month</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-bar" style="height: 40%;"><span class="chart-bar-label">00:00</span><span class="chart-bar-value">$45K</span></div>
+                        <div class="chart-bar" style="height: 35%;"><span class="chart-bar-label">02:00</span></div>
+                        <div class="chart-bar" style="height: 25%;"><span class="chart-bar-label">04:00</span></div>
+                        <div class="chart-bar" style="height: 30%;"><span class="chart-bar-label">06:00</span></div>
+                        <div class="chart-bar" style="height: 55%;"><span class="chart-bar-label">08:00</span></div>
+                        <div class="chart-bar" style="height: 75%;"><span class="chart-bar-label">10:00</span></div>
+                        <div class="chart-bar" style="height: 90%;"><span class="chart-bar-label">12:00</span><span class="chart-bar-value">$120K</span></div>
+                        <div class="chart-bar" style="height: 85%;"><span class="chart-bar-label">14:00</span></div>
+                        <div class="chart-bar" style="height: 70%;"><span class="chart-bar-label">16:00</span></div>
+                        <div class="chart-bar" style="height: 80%;"><span class="chart-bar-label">18:00</span></div>
+                        <div class="chart-bar" style="height: 65%;"><span class="chart-bar-label">20:00</span></div>
+                        <div class="chart-bar" style="height: 50%;"><span class="chart-bar-label">22:00</span></div>
+                    </div>
+                </div>
+                
+                <!-- Query Builder -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title"><i class="bi bi-code-slash"></i> Query Builder</div>
+                    </div>
+                    <div class="query-builder">
+                        <textarea class="query-input" rows="4" placeholder="SELECT * FROM transactions WHERE amount > 10000 ORDER BY timestamp DESC LIMIT 100">SELECT * FROM transactions 
+WHERE timestamp > NOW() - INTERVAL '24 hours'
+ORDER BY amount DESC
+LIMIT 50</textarea>
+                        <div class="query-buttons">
+                            <button class="query-btn run" onclick="runQuery()"><i class="bi bi-play-fill"></i> Run Query</button>
+                            <button class="query-btn save"><i class="bi bi-bookmark"></i> Save Query</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Table -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title"><i class="bi bi-table"></i> Recent Transactions</div>
+                        <div class="section-actions">
+                            <button class="action-btn"><i class="bi bi-download"></i> Export</button>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>TX ID</th>
+                                <th>Type</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Amount</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-family: monospace; color: var(--cyan);">0x7f4a...8e7d</td>
+                                <td>Transfer</td>
+                                <td>Ruddie S.</td>
+                                <td>María G.</td>
+                                <td style="color: var(--gold);">$25,000</td>
+                                <td>2 min ago</td>
+                            </tr>
+                            <tr>
+                                <td style="font-family: monospace; color: var(--cyan);">0x3b2c...9f1a</td>
+                                <td>Stake</td>
+                                <td>Carlos R.</td>
+                                <td>Pool-001</td>
+                                <td style="color: var(--green);">5,000 IGT</td>
+                                <td>5 min ago</td>
+                            </tr>
+                            <tr>
+                                <td style="font-family: monospace; color: var(--cyan);">0x9d8e...4c2b</td>
+                                <td>Swap</td>
+                                <td>Ana L.</td>
+                                <td>DEX</td>
+                                <td style="color: var(--purple);">1.5 ETH</td>
+                                <td>8 min ago</td>
+                            </tr>
+                            <tr>
+                                <td style="font-family: monospace; color: var(--cyan);">0x1a2b...5d6e</td>
+                                <td>Wire</td>
+                                <td>BDET Bank</td>
+                                <td>BBVA MX</td>
+                                <td style="color: var(--gold);">$50,000</td>
+                                <td>15 min ago</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div>
+                <!-- Key Metrics -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title"><i class="bi bi-speedometer2"></i> Key Metrics</div>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-title">Active Users</span>
+                                <span class="metric-icon">👥</span>
+                            </div>
+                            <div class="metric-value">456</div>
+                            <div class="metric-bar"><div class="metric-bar-fill green" style="width: 76%;"></div></div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-title">API Calls</span>
+                                <span class="metric-icon">🔌</span>
+                            </div>
+                            <div class="metric-value">12.4K</div>
+                            <div class="metric-bar"><div class="metric-bar-fill cyan" style="width: 62%;"></div></div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-title">Storage Used</span>
+                                <span class="metric-icon">💾</span>
+                            </div>
+                            <div class="metric-value">84.7%</div>
+                            <div class="metric-bar"><div class="metric-bar-fill gold" style="width: 84.7%;"></div></div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-title">Cache Hit Rate</span>
+                                <span class="metric-icon">⚡</span>
+                            </div>
+                            <div class="metric-value">98.2%</div>
+                            <div class="metric-bar"><div class="metric-bar-fill green" style="width: 98.2%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Real-time Feed -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title"><i class="bi bi-activity"></i> Live Feed</div>
+                    </div>
+                    <div id="liveFeed">
+                        <div class="feed-item">
+                            <div class="feed-icon transaction">💸</div>
+                            <div class="feed-info">
+                                <div class="feed-title">Wire Transfer Completed</div>
+                                <div class="feed-meta">BDET → BBVA Mexico</div>
+                            </div>
+                            <div class="feed-value">$50,000</div>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-icon user">👤</div>
+                            <div class="feed-info">
+                                <div class="feed-title">New Citizen Registered</div>
+                                <div class="feed-meta">CIT-2026-0234</div>
+                            </div>
+                            <div class="feed-value">Just now</div>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-icon system">🔄</div>
+                            <div class="feed-info">
+                                <div class="feed-title">Block #1,234,568 Mined</div>
+                                <div class="feed-meta">45 transactions</div>
+                            </div>
+                            <div class="feed-value">12s ago</div>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-icon transaction">📈</div>
+                            <div class="feed-info">
+                                <div class="feed-title">Staking Reward Distributed</div>
+                                <div class="feed-meta">Pool IGT-MAIN</div>
+                            </div>
+                            <div class="feed-value">1,250 IGT</div>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-icon alert">⚠️</div>
+                            <div class="feed-info">
+                                <div class="feed-title">High Volume Alert</div>
+                                <div class="feed-meta">TradeX Exchange</div>
+                            </div>
+                            <div class="feed-value" style="color: var(--orange);">+45%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Sources -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title"><i class="bi bi-database"></i> Data Sources</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(0,255,65,0.1); border-radius: 10px;">
+                            <span>🔗 Blockchain Node</span>
+                            <span style="color: var(--green);">● Connected</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(0,255,65,0.1); border-radius: 10px;">
+                            <span>🏦 Banking API</span>
+                            <span style="color: var(--green);">● Connected</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(0,255,65,0.1); border-radius: 10px;">
+                            <span>📊 Analytics DB</span>
+                            <span style="color: var(--green);">● Connected</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(0,255,65,0.1); border-radius: 10px;">
+                            <span>🤖 AI Engine</span>
+                            <span style="color: var(--green);">● Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        function runQuery() {
+            alert('✅ Query executed successfully!\n\n50 records returned in 12ms\n\nResults displayed in table below.');
+        }
+        
+        // Simulate live feed updates
+        setInterval(() => {
+            const feed = document.getElementById('liveFeed');
+            const types = ['transaction', 'user', 'system', 'alert'];
+            const messages = [
+                { icon: '💸', title: 'New Transaction', meta: 'Token transfer', value: Math.floor(Math.random() * 10000) + ' IGT' },
+                { icon: '👤', title: 'User Login', meta: 'Citizen portal', value: 'Just now' },
+                { icon: '🔄', title: 'Data Sync', meta: 'All nodes', value: '100%' },
+            ];
+            const msg = messages[Math.floor(Math.random() * messages.length)];
+            const type = types[Math.floor(Math.random() * types.length)];
+            
+            // Optional: Add new items to feed (commented out to avoid spam)
+            // console.log('New feed item:', msg.title);
+        }, 5000);
+        
+        console.log('📊 DATA HUB - Analytics Platform Initialized');
+    </script>
+</body>
+</html>

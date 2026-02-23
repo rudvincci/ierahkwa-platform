@@ -1,0 +1,84 @@
+@page "/ledger/audit"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumLedgerClient FutureWampumLedgerClient
+@inject ILogger<Audit> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Audit Trail" Icon="fas fa-shield-alt" Subtitle="Ledger audit trail">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <CardContainer Title="Audit Trail" Class="mt-4">
+        <MudText Typo="Typo.body1">Select an entity to view its audit trail.</MudText>
+        <MudTextField @bind-Value="_entityType" Label="Entity Type" Class="mt-4" />
+        <MudTextField @bind-Value="_entityId" Label="Entity ID" Class="mt-4" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LoadAuditTrail" Class="mt-4">
+            Load Audit Trail
+        </MudButton>
+
+        @if (_auditEntries.Any())
+        {
+            <MudTable T="AuditTrailInfo" Items="@_auditEntries" Hover="true" Dense="false" Striped="true" Elevation="0" Class="mt-4">
+                <HeaderContent>
+                    <MudTh>Entry ID</MudTh>
+                    <MudTh>Entity Type</MudTh>
+                    <MudTh>Entity ID</MudTh>
+                    <MudTh>Action</MudTh>
+                    <MudTh>Actor</MudTh>
+                    <MudTh>Timestamp</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.EntryId</MudTd>
+                    <MudTd>@context.EntityType</MudTd>
+                    <MudTd>@context.EntityId</MudTd>
+                    <MudTd>@context.Action</MudTd>
+                    <MudTd>@context.Actor</MudTd>
+                    <MudTd>@context.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        }
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<AuditTrailInfo> _auditEntries = new();
+    private string _entityType = "Transaction";
+    private string _entityId = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.CompletedTask;
+    }
+
+    private async Task LoadAuditTrail()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(_entityId))
+            {
+                _auditEntries = await FutureWampumLedgerClient.GetAuditTrailAsync(_entityType, _entityId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading audit trail");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadAuditTrail();
+        StateHasChanged();
+    }
+}
+

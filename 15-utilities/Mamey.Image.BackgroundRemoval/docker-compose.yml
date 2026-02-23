@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  mamey-image-bg:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - MAMEY_IMAGE_BG_HOST=0.0.0.0
+      - MAMEY_IMAGE_BG_PORT=5000
+      - MAMEY_IMAGE_BG_DEBUG=false
+      - MAMEY_IMAGE_BG_MODEL_NAME=u2net
+      - MAMEY_IMAGE_BG_LOG_LEVEL=INFO
+    volumes:
+      - ./images:/app/images
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+

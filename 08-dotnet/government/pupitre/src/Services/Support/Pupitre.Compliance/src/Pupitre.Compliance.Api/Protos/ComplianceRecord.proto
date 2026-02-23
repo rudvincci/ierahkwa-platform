@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Compliance.Api.Protos";
+
+package Pupitre.Compliance;
+
+// gRPC service for ComplianceRecord operations
+service ComplianceRecordService {
+    // Get a single ComplianceRecord by ID
+    rpc GetComplianceRecord (GetComplianceRecordRequest) returns (ComplianceRecordResponse) {};
+    
+    // List all ComplianceRecords with pagination
+    rpc ListComplianceRecords (ListComplianceRecordsRequest) returns (ListComplianceRecordsResponse) {};
+    
+    // Stream ComplianceRecord updates
+    rpc StreamComplianceRecordUpdates (StreamComplianceRecordUpdatesRequest) returns (stream ComplianceRecordResponse) {};
+}
+
+message GetComplianceRecordRequest {
+    string id = 1;
+}
+
+message ListComplianceRecordsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListComplianceRecordsResponse {
+    repeated ComplianceRecordResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message ComplianceRecordResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamComplianceRecordUpdatesRequest {
+    string filter = 1;
+}

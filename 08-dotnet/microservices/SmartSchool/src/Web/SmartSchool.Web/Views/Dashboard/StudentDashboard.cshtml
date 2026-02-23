@@ -1,0 +1,108 @@
+@model StudentDashboardViewModel
+@{
+    ViewData["Title"] = "Student Dashboard";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Student Dashboard</h1>
+</div>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Class</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@(Model.ClassName ?? "Not Assigned")</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-door-open text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Grade</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@(Model.GradeName ?? "N/A")</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-layers text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Completed Homeworks</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.CompletedHomeworks / @Model.TotalHomeworks</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-check-circle text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Average Score</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.AverageScore.ToString("N1")%</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-trophy text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <a asp-controller="MyHomeworks" asp-action="Index" class="btn btn-primary w-100">
+                            <i class="bi bi-clipboard-check me-2"></i>View Homeworks
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="LiveClasses" asp-action="MyClasses" class="btn btn-success w-100">
+                            <i class="bi bi-camera-video me-2"></i>Live Classes
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Schedules" asp-action="MySchedule" class="btn btn-info w-100 text-white">
+                            <i class="bi bi-calendar-week me-2"></i>My Schedule
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="MyHomeworks" asp-action="Results" class="btn btn-warning w-100">
+                            <i class="bi bi-graph-up me-2"></i>My Results
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

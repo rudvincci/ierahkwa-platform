@@ -1,0 +1,93 @@
+@page "/biis/interbank"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IBIISClient BIISClient
+@inject ILogger<Interbank> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Interbank Channels" Icon="fas fa-network-wired" Subtitle="Manage interbank communication channels">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Channels" Value="@_channels.Count.ToString()" Icon="fas fa-network-wired" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Active Channels" Value="@_activeChannels.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Capacity" Value="@_totalCapacity.ToString("C")" Icon="fas fa-chart-bar" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Interbank Channels" Class="mt-4">
+        <MudTable T="InterbankChannelInfo" Items="@_channels" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Channel ID</MudTh>
+                <MudTh>Bank A</MudTh>
+                <MudTh>Bank B</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Capacity</MudTh>
+                <MudTh>Usage</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Established</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.ChannelId</MudTd>
+                <MudTd>@context.BankA</MudTd>
+                <MudTd>@context.BankB</MudTd>
+                <MudTd>@context.ChannelType</MudTd>
+                <MudTd>@decimal.Parse(context.Capacity).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.CurrentUsage).ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.IsActive ? Color.Success : Color.Default)">
+                        @(context.IsActive ? "Active" : "Inactive")
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.EstablishedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<InterbankChannelInfo> _channels = new();
+    private int _activeChannels;
+    private decimal _totalCapacity;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _channels = await BIISClient.GetInterbankChannelsAsync();
+            _activeChannels = _channels.Count(c => c.IsActive);
+            _totalCapacity = _channels.Sum(c => decimal.Parse(c.Capacity));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading interbank channels");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

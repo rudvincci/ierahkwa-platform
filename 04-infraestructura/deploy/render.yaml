@@ -1,0 +1,67 @@
+# Render Blueprint - IERAHKWA Sovereign Platform
+# https://render.com/docs/blueprint-spec
+# Despliega servicios por separado; conecta BANKING_API_URL al URL del banking-api.
+
+services:
+  # Node Mamey (servidor principal)
+  - type: web
+    name: ierahkwa-node
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8545
+      - key: BANKING_API_URL
+        fromService:
+          type: web
+          name: ierahkwa-banking-api
+          property: hostname
+        # Si banking-api está en otro lugar: sync: false y value: https://tu-banking-api.onrender.com
+    healthCheckPath: /health
+
+  # Banking Bridge (API bancaria unificada)
+  - type: web
+    name: ierahkwa-banking-bridge
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: node
+    buildCommand: npm install
+    startCommand: BRIDGE_PORT=3001 node banking-bridge.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BRIDGE_PORT
+        value: "3001"
+      - key: BANKING_API_URL
+        fromService:
+          type: web
+          name: ierahkwa-banking-api
+          property: hostname
+    healthCheckPath: /api/health
+
+  # Platform (frontend estático) - requiere Docker o static site
+  # Opción: usar "static site" en Render apuntando a /platform; o un web con server.js
+  - type: web
+    name: ierahkwa-platform
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: platform
+    buildCommand: "true"
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /health
+
+# Nota: ierahkwa-banking-api (.NET) debe desplegarse aparte (Render soporta .NET).
+# Crea un servicio "web" con runtime: docker y buildContext: IerahkwaBanking.NET10,
+# o usa Render's .NET support si está disponible. Mientras tanto, BANKING_API_URL
+# puede apuntar a un despliegue .NET en otra plataforma (Railway, Fly, Azure, etc.).

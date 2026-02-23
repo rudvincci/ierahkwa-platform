@@ -1,0 +1,46 @@
+@namespace MameyNode.Portals.Shared.Components.DataDisplay
+@using MudBlazor
+
+<MudCard Elevation="2">
+    @if (!string.IsNullOrEmpty(Title) || HeaderActions != null)
+    {
+        <MudCardHeader>
+            <CardHeaderContent>
+                @if (!string.IsNullOrEmpty(Title))
+                {
+                    <MudText Typo="Typo.h6">@Title</MudText>
+                }
+                @if (!string.IsNullOrEmpty(Subtitle))
+                {
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@Subtitle</MudText>
+                }
+            </CardHeaderContent>
+            <CardHeaderActions>
+                @HeaderActions
+            </CardHeaderActions>
+        </MudCardHeader>
+    }
+    <MudCardContent>
+        @if (ChartData != null)
+        {
+            @ChartData
+        }
+        @if (ChildContent != null)
+        {
+            @ChildContent
+        }
+        @if (ChartData == null && ChildContent == null)
+        {
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Chart data will be displayed here</MudText>
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public RenderFragment? ChartData { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? HeaderActions { get; set; }
+}
+

@@ -1,0 +1,122 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Super Admin Dashboard</h1>
+</div>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Schools</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalSchools</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-building text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Teachers</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalTeachers</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-person-badge text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Students</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalStudents</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-people text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Parents</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalParents</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-person-heart text-gray-300" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Schools" asp-action="Create" class="btn btn-primary w-100">
+                            <i class="bi bi-building-add me-2"></i>New School
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="SchoolAdmins" asp-action="Create" class="btn btn-success w-100">
+                            <i class="bi bi-person-plus me-2"></i>New School Admin
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Users" asp-action="Index" class="btn btn-info w-100 text-white">
+                            <i class="bi bi-people me-2"></i>Manage Users
+                        </a>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <a asp-controller="Roles" asp-action="Index" class="btn btn-warning w-100">
+                            <i class="bi bi-shield-check me-2"></i>Manage Roles
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">System Information</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Version:</strong> 3.0</p>
+                <p><strong>Framework:</strong> .NET 10</p>
+                <p><strong>Architecture:</strong> Clean Architecture</p>
+                <p><strong>Database:</strong> SQL Server</p>
+            </div>
+        </div>
+    </div>
+</div>

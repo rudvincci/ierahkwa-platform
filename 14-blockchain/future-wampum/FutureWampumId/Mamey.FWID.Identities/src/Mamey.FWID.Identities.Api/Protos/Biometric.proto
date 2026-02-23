@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option csharp_namespace = "Mamey.FWID.Identities.Api.Protos";
+
+package Services.Biometric;
+
+service BiometricService {
+    rpc VerifyBiometric (VerifyBiometricRequest) returns (VerifyBiometricResponse) {}
+    rpc VerifyBiometricStream (stream VerifyBiometricRequest) returns (stream VerifyBiometricResponse) {}
+}
+
+message VerifyBiometricRequest {
+    string identityId = 1;
+    BiometricDataMessage providedBiometric = 2;
+    double threshold = 3;
+}
+
+message VerifyBiometricResponse {
+    bool isVerified = 1;
+    double matchScore = 2;
+    double threshold = 3;
+    string identityId = 4;
+    int64 verifiedAt = 5;
+    string errorMessage = 6;
+}
+
+message BiometricDataMessage {
+    string type = 1;
+    bytes data = 2;
+    string storageReference = 3;
+}
+
+
+

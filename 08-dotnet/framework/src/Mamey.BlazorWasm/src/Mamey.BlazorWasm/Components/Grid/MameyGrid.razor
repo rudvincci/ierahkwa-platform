@@ -1,0 +1,142 @@
+﻿@typeparam TModel
+@typeparam TApiClient
+@*<MameyGrid Items="@citizens"  TModel="Citizen" Columns="_modelColumns" SelectedItem="selectedCitizen"
+               DetailPageLinkGenerator="@((model) => GenerateDetailLink(model))"
+               Hover="true" OnRowClicked="OnRowClicked" Filter="new Func<Citizen,bool>(new Func<Citizen,bool>(FilterCitizens1))"
+               TextChanged="TextChanged"
+               >
+    </MameyGrid>*@
+
+<style>
+    .selected {
+        background-color: #1E88E5 !important;
+    }
+
+        .selected > td {
+            color: white !important;
+        }
+
+            .selected > td .mud-input {
+                color: white !important;
+            }
+</style>
+
+@if (Items == null)
+{
+    <MudProgressCircular Color="LoadingProgressColor" Indeterminate="true" />
+}
+else
+{ 
+<MudPaper Class="ma-5 pa-5">
+    @if (!DisableToolbar)
+    {
+        <MudPaper>
+            <MudStack>
+                <MudStack Row="true">
+                    <MudText Typo="Typo.h6">@ToolbarText</MudText>
+                    <MudSpacer />
+                    @if (!DisableSearch)
+                        {
+                        <MudTextField T="string" @bind-Value="_searchString" Placeholder="@Placeholder"
+                                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                      IconSize="Size.Medium" Class="mt-0" TextChanged="OnSearchTextChanged" OnKeyDown="OnKeyDown">
+                        </MudTextField>
+                        }
+
+                </MudStack>
+                <MudExpansionPanels>
+                    <MudExpansionPanel Text="Filters" Icon="@Icons.Material.Filled.Sort" MaxHeight="150" Expanded="false">
+                        <MudStack>
+
+                            @*<MudCheckBox @bind-Value="boolean" Label="Default">bool: @boolean</MudCheckBox>
+                                <MudSelect @bind-Value="enumValue" Label="Filter by Status" HelperText="Select a status to Filter by" OpenIcon="@Icons.Material.Filled.LocalDrink" AdornmentColor="Color.Secondary">
+                                    @foreach (CitizenshipApplicationStatus item in Enum.GetValues(typeof(CitizenshipApplicationStatus)))
+                                    {
+                                        <MudSelectItem Value="@item">@item</MudSelectItem>
+                                    }
+                                </MudSelect>*@
+                        </MudStack>
+                    </MudExpansionPanel>
+
+                </MudExpansionPanels>
+
+            </MudStack>
+        </MudPaper>
+    }
+<MudTable @ref="mudTable" T="TModel" 
+          Items="Items"
+          SelectedItem="SelectedItem"
+          ServerData="ServerReload"
+          Class="Class"
+          Filter="Filter"
+          OnRowClick="OnRowClicked"
+          Hover="Hover"
+          Elevation="Elevation"
+          Dense="Dense"
+          Bordered="Bordered"
+          Striped="Striped"
+          SortLabel="SortLabel"
+          RowClass="cursor-pointer"
+          RowClassFunc="@SelectedRowClassFunc"
+          AllowUnsorted="AllowUnsorted">
+
+    @* <HeaderContent> *@
+    @*     @foreach (var column in Columns) *@
+    @*     { *@
+    @*         <MudTh> *@
+    @*             <MudTableSortLabel T="TModel" @onclick="() => ApplySort(column.Property)" *@
+    @*                                SortDirection="GetSortDirection(column.Property)"> *@
+    @*                 @column.Header *@
+    @*             </MudTableSortLabel> *@
+    @*         </MudTh> *@
+    @*         <MudTh></MudTh> *@
+    @*     } *@
+    @* </HeaderContent> *@
+    <Columns>
+        @foreach (var column in ViewModel.VisibleColumns)
+        {
+            <MudTh> 
+                <MudTableSortLabel T="TModel" @onclick="() => ApplySort(column.Property)"
+                                   SortDirection="GetSortDirection(column.Property)">
+                    @column.Header
+                </MudTableSortLabel>
+            </MudTh>
+            @* <MudTh @if (!string.IsNullOrEmpty(column.Tooltip)) @attributes="@("title", column.Tooltip)"> *@
+            @*     @column.Header *@
+            @* </MudTh> *@
+        }
+    </Columns>
+    @* <RowTemplate Context="item"> *@
+    @*     @foreach (var column in Columns) *@
+    @*     { *@
+    @*         <MudTd>@(GetColumnValue(item, column.Property))</MudTd> *@
+    @*     } *@
+    @* </RowTemplate> *@
+    @* <PagerContent> *@
+    @*     <MudTablePager PageSizeOptions="new int[]{10, 20, 50, 100}" /> *@
+    @* </PagerContent> *@
+    <RowTemplate>
+        @foreach (var column in ViewModel.VisibleColumns)
+        {
+            @if (column.ColumnTemplate != null)
+            {
+                // column.ColumnTemplate((TModel)context);
+            }
+            else
+            {
+                @* <MudTd>@column.Property.Compile().Invoke((TModel)context)</MudTd> *@
+            }
+        }
+    </RowTemplate>
+    <PagerContent>
+        <MudPagination  @bind-Page="ViewModel.CurrentPage" PageSize="ViewModel.PageSize" TotalItems="@ViewModel.Items.Count" />
+    </PagerContent>
+</MudTable>
+</MudPaper>
+}
+
+
+
+@code{
+
+}

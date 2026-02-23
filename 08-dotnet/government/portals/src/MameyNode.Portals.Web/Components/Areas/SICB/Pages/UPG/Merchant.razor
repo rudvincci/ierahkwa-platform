@@ -1,0 +1,96 @@
+@page "/upg/merchant"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IUPGClient UPGClient
+@inject ILogger<Merchant> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Merchant Services" Icon="fas fa-store" Subtitle="Merchant settlement services">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Settlements" Value="@_settlements.Count.ToString()" Icon="fas fa-handshake" Color="#14B8A6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Amount" Value="@_totalAmount.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Completed" Value="@_completedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Merchant Settlements" Class="mt-4">
+        <MudTable T="MerchantSettlementInfo" Items="@_settlements" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Settlement ID</MudTh>
+                <MudTh>Merchant</MudTh>
+                <MudTh>Period</MudTh>
+                <MudTh>Total Amount</MudTh>
+                <MudTh>Transactions</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.SettlementId</MudTd>
+                <MudTd>@context.MerchantId</MudTd>
+                <MudTd>@context.SettlementPeriod</MudTd>
+                <MudTd>@decimal.Parse(context.TotalAmount).ToString("C")</MudTd>
+                <MudTd>@context.TransactionCount</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == SettlementStatus.Completed ? Color.Success : context.Status == SettlementStatus.Processing ? Color.Warning : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<MerchantSettlementInfo> _settlements = new();
+    private decimal _totalAmount;
+    private int _completedCount;
+    private int _pendingCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _settlements = await UPGClient.GetMerchantSettlementsAsync();
+            _totalAmount = _settlements.Where(s => s.Status == SettlementStatus.Completed).Sum(s => decimal.Parse(s.TotalAmount));
+            _completedCount = _settlements.Count(s => s.Status == SettlementStatus.Completed);
+            _pendingCount = _settlements.Count(s => s.Status == SettlementStatus.Pending);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading merchant settlements");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

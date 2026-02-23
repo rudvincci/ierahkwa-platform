@@ -1,0 +1,541 @@
+@page "/gov/certificates/{CertificateNumber}"
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+
+<PageTitle>Certificate @CertificateNumber - Government Portal</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+}
+else if (_certificate is null)
+{
+    <MudPaper Elevation="0" Class="pa-6">
+        <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="py-16">
+            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" Color="Color.Warning" />
+            <MudText Typo="Typo.h5" Class="mt-4">Certificate Not Found</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                The Certificate @CertificateNumber could not be found.
+            </MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/gov/certificates" Class="mt-4">
+                Back to Certificates
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+}
+else
+{
+    <MudPaper Elevation="0" Class="pa-6">
+        <MudStack Spacing="4">
+            @* Header *@
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                <MudStack>
+                    <MudBreadcrumbs Items="_breadcrumbs" />
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.CardMembership" Size="Size.Large" Color="Color.Primary" />
+                        <MudStack Spacing="0">
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                <MudText Typo="Typo.h4" Style="font-family: monospace;">@_certificate.CertificateNumber</MudText>
+                                <MudChip T="string" Color="@GetStatusColor(_certificate.Status)" Size="Size.Medium">
+                                    @_certificate.Status
+                                </MudChip>
+                                <MudChip T="string" Color="@GetTypeColor(_certificate.Type)" Size="Size.Medium" Variant="Variant.Outlined">
+                                    @_certificate.Type Certificate
+                                </MudChip>
+                            </MudStack>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                Issued @_certificate.IssueDate.ToString("MMMM dd, yyyy")
+                            </MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudStack>
+                <MudStack Row="true" Spacing="2">
+                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Download">
+                        Download
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Print">
+                        Print
+                    </MudButton>
+                    @if (_certificate.Status == "Active")
+                    {
+                        <MudMenu Label="Actions" Variant="Variant.Filled" Color="Color.Primary"
+                                 EndIcon="@Icons.Material.Filled.ArrowDropDown">
+                            <MudMenuItem Icon="@Icons.Material.Filled.ContentCopy">Issue Copy</MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.Block" IconColor="Color.Error"
+                                         OnClick="@(() => _revokeDialogVisible = true)">Revoke</MudMenuItem>
+                        </MudMenu>
+                    }
+                </MudStack>
+            </MudStack>
+
+            <MudDivider />
+
+            <MudGrid Spacing="4">
+                @* Left Column *@
+                <MudItem xs="12" md="8">
+                    @* Certificate Preview *@
+                    <MudCard Elevation="3" Class="mb-4" Style="background: linear-gradient(135deg, #F5F5DC 0%, #FAEBD7 100%); border: 3px double #8B4513;">
+                        <MudCardContent Class="pa-8">
+                            <MudStack AlignItems="AlignItems.Center" Spacing="3">
+                                <MudIcon Icon="@Icons.Material.Filled.Verified" Size="Size.Large" Style="color: #8B4513;" />
+                                <MudText Typo="Typo.overline" Style="color: #8B4513; letter-spacing: 4px;">OFFICIAL CERTIFICATE</MudText>
+                                <MudText Typo="Typo.h4" Style="color: #2E4A1E; font-weight: bold;">@_certificate.Type.ToUpper() CERTIFICATE</MudText>
+                                <MudDivider Style="width: 60%; border-color: #8B4513;" />
+                                <MudText Typo="Typo.body1" Style="color: #333;" Class="text-center">
+                                    This is to certify that
+                                </MudText>
+                                <MudText Typo="Typo.h5" Style="color: #2E4A1E; font-weight: bold;">
+                                    @_certificate.CitizenName
+                                </MudText>
+                                <MudText Typo="Typo.body1" Style="color: #333;" Class="text-center">
+                                    @GetCertificateText()
+                                </MudText>
+                                <MudDivider Style="width: 60%; border-color: #8B4513;" />
+                                <MudStack Row="true" Justify="Justify.SpaceBetween" Style="width: 100%;" Class="mt-4">
+                                    <MudStack Spacing="0" AlignItems="AlignItems.Center">
+                                        <MudText Typo="Typo.caption" Style="color: #666;">Certificate No.</MudText>
+                                        <MudText Typo="Typo.body2" Style="font-family: monospace;">@_certificate.CertificateNumber</MudText>
+                                    </MudStack>
+                                    <MudStack Spacing="0" AlignItems="AlignItems.Center">
+                                        <MudText Typo="Typo.caption" Style="color: #666;">Date of Issue</MudText>
+                                        <MudText Typo="Typo.body2">@_certificate.IssueDate.ToString("MMM dd, yyyy")</MudText>
+                                    </MudStack>
+                                    <MudStack Spacing="0" AlignItems="AlignItems.Center">
+                                        <MudText Typo="Typo.caption" Style="color: #666;">Issuing Authority</MudText>
+                                        <MudText Typo="Typo.body2">@_certificate.IssuingAuthority</MudText>
+                                    </MudStack>
+                                </MudStack>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Certificate Details *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Description" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6">Certificate Information</MudText>
+                                </MudStack>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="12" md="6">
+                                    <MudStack Spacing="3">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Certificate Type</MudText>
+                                            <MudChip T="string" Color="@GetTypeColor(_certificate.Type)" Size="Size.Small">
+                                                @_certificate.Type
+                                            </MudChip>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Certificate Number</MudText>
+                                            <MudText Typo="Typo.body1" Style="font-family: monospace;">@_certificate.CertificateNumber</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Issue Date</MudText>
+                                            <MudText Typo="Typo.body1">@_certificate.IssueDate.ToString("MMMM dd, yyyy")</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudStack Spacing="3">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Issuing Authority</MudText>
+                                            <MudText Typo="Typo.body1">@_certificate.IssuingAuthority</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Place of Issue</MudText>
+                                            <MudText Typo="Typo.body1">@_certificate.PlaceOfIssue</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Issued By</MudText>
+                                            <MudText Typo="Typo.body1">@_certificate.IssuedBy</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Subject Information *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6">Subject Information</MudText>
+                                </MudStack>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudButton Size="Size.Small" Href="@($"/gov/citizens/{_certificate.CitizenId}")">
+                                    View Citizen Record
+                                </MudButton>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="12" md="6">
+                                    <MudStack Spacing="3">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Full Name</MudText>
+                                            <MudText Typo="Typo.body1"><strong>@_certificate.CitizenName</strong></MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Citizen ID</MudText>
+                                            <MudText Typo="Typo.body1">@_certificate.CitizenId</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudStack Spacing="3">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Date of Birth</MudText>
+                                            <MudText Typo="Typo.body1">@_certificate.DateOfBirth.ToString("MMMM dd, yyyy")</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Place of Birth</MudText>
+                                            <MudText Typo="Typo.body1">@_certificate.PlaceOfBirth</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Activity Timeline *@
+                    <MudCard Elevation="2">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Timeline" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6">Activity History</MudText>
+                                </MudStack>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudTimeline TimelinePosition="TimelinePosition.Start">
+                                @foreach (var activity in _activities)
+                                {
+                                    <MudTimelineItem Color="@GetActivityColor(activity.Type)" Size="Size.Small">
+                                        <ItemContent>
+                                            <MudStack>
+                                                <MudText Typo="Typo.body2"><strong>@activity.Title</strong></MudText>
+                                                <MudText Typo="Typo.body2">@activity.Description</MudText>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                                    @activity.Timestamp.ToString("MMM dd, yyyy 'at' h:mm tt") • @activity.User
+                                                </MudText>
+                                            </MudStack>
+                                        </ItemContent>
+                                    </MudTimelineItem>
+                                }
+                            </MudTimeline>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                @* Right Column *@
+                <MudItem xs="12" md="4">
+                    @* Certificate Status *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Certificate Status</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack AlignItems="AlignItems.Center" Spacing="3">
+                                <MudIcon Icon="@GetStatusIcon(_certificate.Status)" Size="Size.Large"
+                                         Color="@GetStatusColor(_certificate.Status)" />
+                                <MudText Typo="Typo.h5" Color="@GetStatusColor(_certificate.Status)">
+                                    @_certificate.Status
+                                </MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-center">
+                                    @GetStatusDescription()
+                                </MudText>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Verification *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Verification</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Spacing="3">
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Verification Code</MudText>
+                                    <MudText Typo="Typo.body1" Style="font-family: monospace;">@_certificate.VerificationCode</MudText>
+                                </div>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.QrCode">
+                                    Show QR Code
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Verified">
+                                    Verify Online
+                                </MudButton>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Quick Actions *@
+                    <MudCard Elevation="2">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Quick Actions</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Spacing="2">
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Print">
+                                    Print Certificate
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Download">
+                                    Download PDF
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Email">
+                                    Send to Citizen
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.ContentCopy">
+                                    Issue Copy
+                                </MudButton>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudStack>
+    </MudPaper>
+}
+
+@* Revoke Dialog *@
+<MudDialog @bind-Visible="_revokeDialogVisible">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Error" Class="mr-2" />
+            Revoke Certificate
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-4">
+            Are you sure you want to revoke Certificate <strong>@CertificateNumber</strong>?
+            This action cannot be undone.
+        </MudText>
+        <MudTextField @bind-Value="_revokeReason" Label="Reason for Revocation" Variant="Variant.Outlined"
+                      Lines="3" Required="true" RequiredError="Please provide a reason" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _revokeDialogVisible = false)">Cancel</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="RevokeCertificate">Revoke</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject Mamey.Government.UI.Services.ICertificatesService CertificatesService
+
+@code {
+    [Parameter]
+    public string CertificateNumber { get; set; } = "";
+
+    // Default tenant ID - in production, get from user claims
+    private static readonly Guid TenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    private bool _loading = true;
+    private bool _revokeDialogVisible = false;
+    private string _revokeReason = "";
+
+    private CertificateDetailsData? _certificate;
+    private List<Activity> _activities = new();
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    private record CertificateDetailsData(
+        Guid Id,
+        string CertificateNumber,
+        string Type,
+        string CitizenId,
+        string CitizenName,
+        DateTime DateOfBirth,
+        string PlaceOfBirth,
+        DateTime IssueDate,
+        string IssuingAuthority,
+        string PlaceOfIssue,
+        string IssuedBy,
+        string VerificationCode,
+        string Status);
+
+    private record Activity(
+        DateTime Timestamp,
+        string Type,
+        string Title,
+        string Description,
+        string User);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _breadcrumbs = new List<BreadcrumbItem>
+        {
+            new("Home", href: "/"),
+            new("Certificates", href: "/gov/certificates"),
+            new(CertificateNumber, href: null, disabled: true)
+        };
+
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        StateHasChanged();
+
+        try
+        {
+            var certData = await CertificatesService.GetByNumberAsync(TenantId, CertificateNumber);
+            
+            if (certData is not null)
+            {
+                _certificate = new CertificateDetailsData(
+                    certData.Id,
+                    certData.CertificateNumber ?? CertificateNumber,
+                    certData.Type ?? "Citizenship",
+                    certData.CitizenId?.ToString() ?? "Unknown",
+                    certData.CitizenName ?? "Unknown",
+                    certData.DateOfBirth,
+                    certData.PlaceOfBirth ?? "",
+                    certData.IssueDate,
+                    certData.IssuingAuthority ?? "Department of Citizenship",
+                    certData.PlaceOfIssue ?? "Government Portal HQ",
+                    certData.IssuedBy ?? "System",
+                    certData.VerificationCode ?? $"VRF-{DateTime.Now.Year}-{Guid.NewGuid().ToString("N")[..12].ToUpper()}",
+                    certData.Status ?? "Active");
+
+                _activities = new List<Activity>
+                {
+                    new(certData.IssueDate, "Issue", "Certificate Issued", $"Certificate {certData.CertificateNumber} issued to {certData.CitizenName}.", "System")
+                };
+            }
+            else
+            {
+                LoadMockData();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading certificate data: {ex.Message}");
+            LoadMockData();
+        }
+
+        _loading = false;
+    }
+
+    private void LoadMockData()
+    {
+        _certificate = new CertificateDetailsData(
+            Guid.NewGuid(),
+            CertificateNumber,
+            "Citizenship",
+            "CIT-00001",
+            "John Smith",
+            new DateTime(1985, 6, 15),
+            "Springfield, Illinois",
+            DateTime.Now.AddMonths(-6),
+            "Department of Citizenship",
+            "Government Portal HQ",
+            "Agent Amelia Grant",
+            "VRF-2024-ABC123XYZ",
+            "Active");
+
+        _activities = new List<Activity>
+        {
+            new(DateTime.Now.AddMonths(-6), "Issue", "Certificate Issued", $"Certificate {CertificateNumber} issued to John Smith.", "Agent Amelia Grant"),
+            new(DateTime.Now.AddMonths(-6).AddDays(-1), "Approval", "Application Approved", "Certificate application approved.", "Agent Rafael Ortega"),
+            new(DateTime.Now.AddMonths(-6).AddDays(-5), "Application", "Application Submitted", "Certificate application submitted.", "John Smith")
+        };
+    }
+
+    private string GetCertificateText() => _certificate?.Type switch
+    {
+        "Birth" => $"was born on {_certificate.DateOfBirth:MMMM dd, yyyy} in {_certificate.PlaceOfBirth}.",
+        "Citizenship" => "is hereby recognized as a citizen with all rights and privileges thereof.",
+        "Marriage" => "has entered into the bonds of matrimony as recorded in the official registry.",
+        "Death" => "has passed away and this certificate serves as official record.",
+        "Good Standing" => "is in good standing with no pending legal matters.",
+        _ => "is officially certified as stated herein."
+    };
+
+    private string GetStatusDescription() => _certificate?.Status switch
+    {
+        "Active" => "This certificate is valid and can be used for official purposes.",
+        "Archived" => "This certificate has been archived and is for historical reference only.",
+        "Revoked" => "This certificate has been revoked and is no longer valid.",
+        _ => ""
+    };
+
+    private string GetStatusIcon(string status) => status switch
+    {
+        "Active" => Icons.Material.Filled.CheckCircle,
+        "Archived" => Icons.Material.Filled.Archive,
+        "Revoked" => Icons.Material.Filled.Cancel,
+        _ => Icons.Material.Filled.Help
+    };
+
+    private async Task RevokeCertificate()
+    {
+        if (_certificate is null) return;
+
+        if (string.IsNullOrWhiteSpace(_revokeReason))
+        {
+            Snackbar.Add("Please provide a reason for revocation", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            var success = await CertificatesService.RevokeAsync(TenantId, _certificate.Id, _revokeReason);
+            if (success)
+            {
+                Snackbar.Add($"Certificate {CertificateNumber} revoked", Severity.Info);
+                _revokeDialogVisible = false;
+                Navigation.NavigateTo("/gov/certificates");
+            }
+            else
+            {
+                Snackbar.Add("Failed to revoke certificate. Please try again.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error revoking certificate: {ex.Message}");
+            Snackbar.Add("An error occurred while revoking the certificate.", Severity.Error);
+        }
+    }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Active" => Color.Success,
+        "Archived" => Color.Warning,
+        "Revoked" => Color.Error,
+        _ => Color.Default
+    };
+
+    private Color GetTypeColor(string type) => type switch
+    {
+        "Birth" => Color.Info,
+        "Death" => Color.Dark,
+        "Marriage" => Color.Tertiary,
+        "Citizenship" => Color.Primary,
+        "Good Standing" => Color.Secondary,
+        _ => Color.Default
+    };
+
+    private Color GetActivityColor(string type) => type switch
+    {
+        "Issue" => Color.Success,
+        "Approval" => Color.Primary,
+        "Application" => Color.Info,
+        "Revoke" => Color.Error,
+        _ => Color.Default
+    };
+}

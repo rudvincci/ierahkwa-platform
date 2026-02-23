@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 REPORT ENGINE | Ierahkwa Analytics Reports</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --green: #00FF41; --cyan: #00FFFF; --red: #FF1744; --purple: #9D4EDD; --orange: #FF6B35; --bg: #0a0e17; --card: #0d1a2d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17, #0a1a2e, #0a0e17); color: #fff; min-height: 100vh; }
+        
+        .header { background: var(--card); padding: 15px 30px; border-bottom: 3px solid var(--cyan); display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--cyan), var(--purple)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+        .logo h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--cyan); }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .nav-link { padding: 10px 20px; background: rgba(0,255,255,0.2); border: 1px solid var(--cyan); border-radius: 10px; color: var(--cyan); text-decoration: none; }
+        .create-btn { padding: 10px 25px; background: var(--cyan); border: none; border-radius: 10px; color: #000; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        .main { display: grid; grid-template-columns: 280px 1fr; height: calc(100vh - 80px); }
+        
+        /* Sidebar */
+        .sidebar { background: var(--card); border-right: 1px solid rgba(0,255,255,0.2); padding: 20px; overflow-y: auto; }
+        .sidebar-title { font-size: 0.7em; color: #666; text-transform: uppercase; margin: 20px 0 10px; }
+        .report-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 10px; cursor: pointer; margin-bottom: 5px; }
+        .report-item:hover, .report-item.active { background: rgba(0,255,255,0.1); }
+        .report-item.active { border-left: 3px solid var(--cyan); }
+        .report-icon { font-size: 1.3em; width: 30px; text-align: center; }
+        
+        .saved-reports { margin-top: 20px; }
+        .saved-report { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-bottom: 10px; cursor: pointer; }
+        .saved-report:hover { background: rgba(0,255,255,0.1); }
+        .saved-report h4 { font-size: 0.9em; margin-bottom: 5px; }
+        .saved-report span { font-size: 0.75em; color: #888; }
+        
+        /* Content */
+        .content { padding: 25px; overflow-y: auto; }
+        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .content-title { font-family: 'Orbitron', sans-serif; color: var(--cyan); }
+        
+        /* Report Builder */
+        .builder-section { background: var(--card); border-radius: 20px; padding: 25px; margin-bottom: 25px; }
+        .builder-title { font-family: 'Orbitron', sans-serif; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        .builder-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .builder-group { display: flex; flex-direction: column; gap: 8px; }
+        .builder-group label { color: var(--cyan); font-size: 0.85em; }
+        .builder-group select, .builder-group input { padding: 12px 15px; border: 1px solid rgba(0,255,255,0.3); border-radius: 10px; background: rgba(0,0,0,0.3); color: #fff; }
+        
+        .generate-btn { padding: 15px 40px; background: linear-gradient(135deg, var(--cyan), var(--purple)); border: none; border-radius: 12px; color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        
+        /* Report Preview */
+        .report-preview { background: var(--card); border-radius: 20px; padding: 25px; }
+        .preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .preview-title { font-family: 'Orbitron', sans-serif; color: var(--gold); }
+        .preview-actions { display: flex; gap: 10px; }
+        .preview-btn { padding: 10px 20px; background: rgba(0,255,255,0.1); border: 1px solid var(--cyan); border-radius: 10px; color: var(--cyan); cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        /* Charts Grid */
+        .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 25px; }
+        .chart-card { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; }
+        .chart-title { font-size: 0.9em; color: #888; margin-bottom: 15px; }
+        .chart-container { height: 200px; display: flex; align-items: flex-end; gap: 8px; }
+        .chart-bar { flex: 1; background: linear-gradient(180deg, var(--cyan), rgba(0,255,255,0.3)); border-radius: 5px; transition: all 0.3s; }
+        .chart-bar:hover { filter: brightness(1.3); }
+        
+        /* Data Table */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: rgba(0,255,255,0.1); padding: 12px 15px; text-align: left; font-family: 'Orbitron', sans-serif; color: var(--cyan); font-size: 0.85em; }
+        .data-table td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .data-table tr:hover { background: rgba(0,255,255,0.05); }
+        
+        /* Summary Cards */
+        .summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+        .summary-card { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; text-align: center; }
+        .summary-value { font-family: 'Orbitron', sans-serif; font-size: 2em; color: var(--cyan); margin-bottom: 5px; }
+        .summary-label { font-size: 0.85em; color: #888; }
+        .summary-change { font-size: 0.8em; margin-top: 5px; }
+        .summary-change.up { color: var(--green); }
+        .summary-change.down { color: var(--red); }
+        
+        /* Templates Grid */
+        .templates-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; }
+        .template-card { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .template-card:hover { border-color: var(--cyan); }
+        .template-icon { font-size: 2.5em; margin-bottom: 10px; }
+        .template-name { font-weight: 600; margin-bottom: 5px; }
+        .template-desc { font-size: 0.8em; color: #888; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📊</div>
+            <div>
+                <h1>REPORT ENGINE</h1>
+                <p style="color: #888; font-size: 0.75em;">AI-Powered Analytics</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="create-btn" onclick="generateReport()"><i class="bi bi-file-earmark-bar-graph"></i> Generate Report</button>
+            <a href="/platform" class="nav-link"><i class="bi bi-arrow-left"></i> Platform</a>
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Report Types</div>
+            <div class="report-item active">
+                <span class="report-icon">📈</span>
+                <span>Financial</span>
+            </div>
+            <div class="report-item">
+                <span class="report-icon">👥</span>
+                <span>Citizens</span>
+            </div>
+            <div class="report-item">
+                <span class="report-icon">🏦</span>
+                <span>Banking</span>
+            </div>
+            <div class="report-item">
+                <span class="report-icon">📄</span>
+                <span>Contracts</span>
+            </div>
+            <div class="report-item">
+                <span class="report-icon">🔐</span>
+                <span>Security</span>
+            </div>
+            <div class="report-item">
+                <span class="report-icon">🛒</span>
+                <span>Procurement</span>
+            </div>
+            <div class="report-item">
+                <span class="report-icon">⚙️</span>
+                <span>System</span>
+            </div>
+            
+            <div class="sidebar-title">Saved Reports</div>
+            <div class="saved-reports">
+                <div class="saved-report">
+                    <h4>📊 Q4 2025 Financial</h4>
+                    <span>Generated Jan 15, 2026</span>
+                </div>
+                <div class="saved-report">
+                    <h4>👥 Citizen Growth</h4>
+                    <span>Generated Jan 10, 2026</span>
+                </div>
+                <div class="saved-report">
+                    <h4>🏦 Banking Summary</h4>
+                    <span>Generated Jan 5, 2026</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-title">Quick Templates</div>
+            <div class="templates-grid" style="grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                <div class="template-card" style="padding: 15px;">
+                    <div style="font-size: 1.5em;">📅</div>
+                    <div style="font-size: 0.8em;">Daily</div>
+                </div>
+                <div class="template-card" style="padding: 15px;">
+                    <div style="font-size: 1.5em;">📆</div>
+                    <div style="font-size: 0.8em;">Weekly</div>
+                </div>
+                <div class="template-card" style="padding: 15px;">
+                    <div style="font-size: 1.5em;">🗓️</div>
+                    <div style="font-size: 0.8em;">Monthly</div>
+                </div>
+                <div class="template-card" style="padding: 15px;">
+                    <div style="font-size: 1.5em;">📊</div>
+                    <div style="font-size: 0.8em;">Custom</div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Content -->
+        <section class="content">
+            <!-- Report Builder -->
+            <div class="builder-section">
+                <div class="builder-title"><i class="bi bi-tools"></i> Report Builder</div>
+                <div class="builder-row">
+                    <div class="builder-group">
+                        <label>Report Type</label>
+                        <select>
+                            <option>Financial Summary</option>
+                            <option>Citizen Analytics</option>
+                            <option>Banking Operations</option>
+                            <option>Contract Status</option>
+                            <option>Security Audit</option>
+                        </select>
+                    </div>
+                    <div class="builder-group">
+                        <label>Date Range</label>
+                        <select>
+                            <option>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                            <option>Last Quarter</option>
+                            <option>Last Year</option>
+                            <option>Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="builder-group">
+                        <label>Department</label>
+                        <select>
+                            <option>All Departments</option>
+                            <option>Treasury</option>
+                            <option>IT</option>
+                            <option>Healthcare</option>
+                            <option>Legal</option>
+                        </select>
+                    </div>
+                    <div class="builder-group">
+                        <label>Format</label>
+                        <select>
+                            <option>Dashboard View</option>
+                            <option>PDF Report</option>
+                            <option>Excel Export</option>
+                            <option>API JSON</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="generate-btn" onclick="generateReport()">
+                    <i class="bi bi-lightning"></i> Generate Report
+                </button>
+            </div>
+            
+            <!-- Report Preview -->
+            <div class="report-preview">
+                <div class="preview-header">
+                    <div class="preview-title">📊 Financial Summary Report</div>
+                    <div class="preview-actions">
+                        <button class="preview-btn"><i class="bi bi-printer"></i> Print</button>
+                        <button class="preview-btn"><i class="bi bi-download"></i> Export PDF</button>
+                        <button class="preview-btn"><i class="bi bi-share"></i> Share</button>
+                    </div>
+                </div>
+                
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-value">$5.6M</div>
+                        <div class="summary-label">Total Revenue</div>
+                        <div class="summary-change up">↑ +22% vs last period</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">$3.2M</div>
+                        <div class="summary-label">Total Expenses</div>
+                        <div class="summary-change up">↑ +8%</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">$2.4M</div>
+                        <div class="summary-label">Net Income</div>
+                        <div class="summary-change up">↑ +35%</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">42%</div>
+                        <div class="summary-label">Profit Margin</div>
+                        <div class="summary-change up">↑ +5%</div>
+                    </div>
+                </div>
+                
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-title">Monthly Revenue</div>
+                        <div class="chart-container">
+                            <div class="chart-bar" style="height: 60%;"></div>
+                            <div class="chart-bar" style="height: 45%;"></div>
+                            <div class="chart-bar" style="height: 70%;"></div>
+                            <div class="chart-bar" style="height: 55%;"></div>
+                            <div class="chart-bar" style="height: 80%;"></div>
+                            <div class="chart-bar" style="height: 90%;"></div>
+                            <div class="chart-bar" style="height: 75%;"></div>
+                            <div class="chart-bar" style="height: 85%;"></div>
+                            <div class="chart-bar" style="height: 95%;"></div>
+                            <div class="chart-bar" style="height: 88%;"></div>
+                            <div class="chart-bar" style="height: 92%;"></div>
+                            <div class="chart-bar" style="height: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Expenses by Department</div>
+                        <div class="chart-container">
+                            <div class="chart-bar" style="height: 85%; background: linear-gradient(180deg, var(--gold), rgba(255,215,0,0.3));"></div>
+                            <div class="chart-bar" style="height: 65%; background: linear-gradient(180deg, var(--purple), rgba(157,78,221,0.3));"></div>
+                            <div class="chart-bar" style="height: 45%; background: linear-gradient(180deg, var(--green), rgba(0,255,65,0.3));"></div>
+                            <div class="chart-bar" style="height: 55%; background: linear-gradient(180deg, var(--orange), rgba(255,107,53,0.3));"></div>
+                            <div class="chart-bar" style="height: 35%; background: linear-gradient(180deg, var(--red), rgba(255,23,68,0.3));"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Table -->
+                <div style="margin-top: 20px;">
+                    <h4 style="color: var(--gold); margin-bottom: 15px; font-family: 'Orbitron', sans-serif;">Transaction Details</h4>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Department</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Jan 21</td>
+                                <td>Token Sales Revenue</td>
+                                <td>Treasury</td>
+                                <td style="color: var(--green);">Income</td>
+                                <td style="color: var(--green);">+$125,000</td>
+                            </tr>
+                            <tr>
+                                <td>Jan 20</td>
+                                <td>Server Infrastructure</td>
+                                <td>IT</td>
+                                <td style="color: var(--red);">Expense</td>
+                                <td style="color: var(--red);">-$45,000</td>
+                            </tr>
+                            <tr>
+                                <td>Jan 19</td>
+                                <td>Staking Returns</td>
+                                <td>DeFi</td>
+                                <td style="color: var(--green);">Income</td>
+                                <td style="color: var(--green);">+$8,500</td>
+                            </tr>
+                            <tr>
+                                <td>Jan 18</td>
+                                <td>Healthcare Supplies</td>
+                                <td>Healthcare</td>
+                                <td style="color: var(--red);">Expense</td>
+                                <td style="color: var(--red);">-$28,500</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <script>
+        function generateReport() {
+            alert('📊 GENERATING REPORT...\n\n✅ Fetching data from 5 sources\n✅ Processing 12,456 records\n✅ Applying AI analysis\n✅ Generating visualizations\n\n📄 Report ready!\n\nYou can now download, print, or share.');
+        }
+        
+        console.log('📊 REPORT ENGINE - Analytics Platform Initialized');
+    </script>
+</body>
+</html>

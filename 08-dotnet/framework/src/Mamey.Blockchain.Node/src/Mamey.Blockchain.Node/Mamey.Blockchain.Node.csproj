@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>Mamey.Blockchain.Node - .NET client library for MameyNode NodeService via gRPC</Description>
+    <Authors>Mamey.io</Authors>
+    <LangVersion>Latest</LangVersion>
+    <AssemblyName>Mamey.Blockchain.Node</AssemblyName>
+    <Title>Mamey.Blockchain.Node</Title>
+    <PackageId>Mamey.Blockchain.Node</PackageId>
+    <PackageTags>Mamey;Blockchain;NodeService;gRPC</PackageTags>
+    <Version>2.0.0</Version>
+    <PackageLicenseExpression>Proprietary</PackageLicenseExpression>
+    <Copyright>Copyright (c) 2025 Mamey.io</Copyright>
+    <Company>Mamey.io</Company>
+    <PackageProjectUrl>https://github.com/Mamey-io/Mamey</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Mamey-io/Mamey</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" Version="2.59.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.59.0" PrivateAssets="All" />
+    <PackageReference Include="Google.Protobuf" Version="3.31.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.11" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Mamey\src\Mamey\Mamey.csproj" />
+    <ProjectReference Include="..\..\..\Mamey.Security.PostQuantum\src\Mamey.Security.PostQuantum\Mamey.Security.PostQuantum.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Protobuf Include="Protos\node.proto" GrpcServices="Client">
+      <Link>Protos\node.proto</Link>
+    </Protobuf>
+    <Protobuf Include="Protos\rpc.proto" GrpcServices="Client">
+      <Link>Protos\rpc.proto</Link>
+    </Protobuf>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Remove="tests\**" />
+    <EmbeddedResource Remove="tests\**" />
+    <None Remove="tests\**" />
+  </ItemGroup>
+</Project>

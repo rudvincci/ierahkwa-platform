@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Mongo\" />
+    <None Remove="Mongo\Documents\" />
+    <None Remove="Mongo\Repositories\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domain\" />
+    <Folder Include="Hubs\" />
+    <Folder Include="Mongo\" />
+    <Folder Include="Mongo\Documents\" />
+    <Folder Include="Mongo\Repositories\" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <ProjectReference Include="..\..\..\..\..\Mamey\src\Mamey\src\Mamey\Mamey.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <PackageReference Include="Mamey" Version="2.0.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Mamey\src\Mamey.MicroMonolith.Abstractions\src\Mamey.MicroMonolith.Abstractions\Mamey.MicroMonolith.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Mamey\src\Mamey.MicroMonolith.Infrastructure\src\Mamey.MicroMonolith.Infrastructure\Mamey.MicroMonolith.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Mamey\src\Mamey\src\Mamey\Mamey.csproj" />
+    
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\banking-products.seed.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

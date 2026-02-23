@@ -1,0 +1,30 @@
+# Mamey.Info/k8s/mameynode-pqc/pvc.yaml
+# PersistentVolumeClaim for MameyNode PQC data storage
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mameynode-pqc-data
+  namespace: mamey
+  labels:
+    app: mameynode
+    version: v2-pqc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: standard
+
+---
+# Namespace (create first if not exists)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mamey
+  labels:
+    name: mamey
+    environment: production
+
+

@@ -1,0 +1,45 @@
+@namespace MameyNode.Portals.Shared.Components.DataDisplay
+
+<MudCard Elevation="2" Class="ma-2">
+    <MudCardContent>
+        <MudStack Spacing="2">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                @if (!string.IsNullOrEmpty(Icon))
+                {
+                    <MudIcon Icon="@Icon" Size="Size.Medium" Color="@IconColor" />
+                }
+                <MudText Typo="Typo.body2" Color="Color.Secondary">@Title</MudText>
+            </MudStack>
+            <MudText Typo="Typo.h4">@Value</MudText>
+            @if (!string.IsNullOrEmpty(Trend))
+            {
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                    <MudIcon Icon="@GetTrendIcon()" Size="Size.Small" Color="@GetTrendColor()" />
+                    <MudText Typo="Typo.caption" Color="@GetTrendColor()">@Trend</MudText>
+                </MudStack>
+            }
+        </MudStack>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public Color IconColor { get; set; } = Color.Primary;
+    [Parameter] public string? Trend { get; set; }
+
+    private string GetTrendIcon()
+    {
+        if (string.IsNullOrEmpty(Trend)) return Icons.Material.Filled.TrendingFlat;
+        return Trend.StartsWith("+") ? Icons.Material.Filled.TrendingUp : Icons.Material.Filled.TrendingDown;
+    }
+
+    private Color GetTrendColor()
+    {
+        if (string.IsNullOrEmpty(Trend)) return Color.Default;
+        return Trend.StartsWith("+") ? Color.Success : Color.Error;
+    }
+}
+
+

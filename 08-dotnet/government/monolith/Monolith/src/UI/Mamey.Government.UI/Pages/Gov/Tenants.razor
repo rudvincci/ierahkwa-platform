@@ -1,0 +1,66 @@
+@page "/gov/tenants"
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Tenants - Administration</PageTitle>
+
+<MudPaper Elevation="0" Class="pa-6">
+    <MudStack Spacing="4">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h4" Color="Color.Primary">Tenant Management</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+                Create Tenant
+            </MudButton>
+        </MudStack>
+
+        <MudText Typo="Typo.body1">
+            Manage multi-tenant organizations in the system. Each tenant represents a separate nation or organization.
+        </MudText>
+
+        <MudTable Items="@_tenants" Hover="true" Striped="true" Dense="true" Elevation="2">
+            <HeaderContent>
+                <MudTh>Tenant ID</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Domain</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd><MudText Typo="Typo.body2" Style="font-family: monospace;">@context.TenantId</MudText></MudTd>
+                <MudTd>@context.Name</MudTd>
+                <MudTd>@context.Domain</MudTd>
+                <MudTd>
+                    <MudChip T="string" Color="@GetStatusColor(context.Status)" Size="Size.Small">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.Created.ToString("MMM dd, yyyy")</MudTd>
+                <MudTd>
+                    <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
+                        <MudButton Color="Color.Primary">Edit</MudButton>
+                        <MudButton Color="Color.Info">Settings</MudButton>
+                    </MudButtonGroup>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudStack>
+</MudPaper>
+
+@code {
+    private record Tenant(string TenantId, string Name, string Domain, string Status, DateTime Created);
+
+    private readonly List<Tenant> _tenants = new()
+    {
+        new("default", "Mamey Government", "mamey.gov", "Active", DateTime.Now.AddYears(-1)),
+        new("demo", "Demo Organization", "demo.mamey.gov", "Active", DateTime.Now.AddMonths(-3)),
+        new("test", "Test Tenant", "test.mamey.gov", "Inactive", DateTime.Now.AddMonths(-6))
+    };
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Active" => Color.Success,
+        "Inactive" => Color.Warning,
+        "Suspended" => Color.Error,
+        _ => Color.Default
+    };
+}

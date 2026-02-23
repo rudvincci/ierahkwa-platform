@@ -1,0 +1,220 @@
+syntax = "proto3";
+
+package mamey.bridge;
+
+// Banking bridge service for MameyNode blockchain
+service BridgeService {
+    // Account mapping operations
+    rpc MapAccount(MapAccountRequest) returns (MapAccountResponse);
+    rpc GetAccountMapping(GetAccountMappingRequest) returns (GetAccountMappingResponse);
+    rpc ListAccountMappings(ListAccountMappingsRequest) returns (ListAccountMappingsResponse);
+    rpc RemoveAccountMapping(RemoveAccountMappingRequest) returns (RemoveAccountMappingResponse);
+    
+    // Identity bridge operations
+    rpc BridgeIdentity(BridgeIdentityRequest) returns (BridgeIdentityResponse);
+    rpc GetBridgedIdentity(GetBridgedIdentityRequest) returns (GetBridgedIdentityResponse);
+    rpc SyncIdentity(SyncIdentityRequest) returns (SyncIdentityResponse);
+    
+    // Transaction bridge operations
+    rpc BridgeTransaction(BridgeTransactionRequest) returns (BridgeTransactionResponse);
+    rpc GetBridgedTransaction(GetBridgedTransactionRequest) returns (GetBridgedTransactionResponse);
+    rpc ListBridgedTransactions(ListBridgedTransactionsRequest) returns (ListBridgedTransactionsResponse);
+}
+
+// Map account request
+message MapAccountRequest {
+    string banking_account_id = 1;
+    string blockchain_account = 2;
+    string account_type = 3;
+    map<string, string> metadata = 4;
+}
+
+// Map account response
+message MapAccountResponse {
+    string mapping_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get account mapping request
+message GetAccountMappingRequest {
+    string banking_account_id = 1;
+}
+
+// Get account mapping response
+message GetAccountMappingResponse {
+    AccountMapping mapping = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// List account mappings request
+message ListAccountMappingsRequest {
+    string account_type = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// List account mappings response
+message ListAccountMappingsResponse {
+    repeated AccountMapping mappings = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Remove account mapping request
+message RemoveAccountMappingRequest {
+    string mapping_id = 1;
+}
+
+// Remove account mapping response
+message RemoveAccountMappingResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Bridge identity request
+message BridgeIdentityRequest {
+    string source_system = 1;
+    string source_identity_id = 2;
+    string target_system = 3;
+    map<string, string> identity_data = 4;
+}
+
+// Bridge identity response
+message BridgeIdentityResponse {
+    string bridge_id = 1;
+    string target_identity_id = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get bridged identity request
+message GetBridgedIdentityRequest {
+    string bridge_id = 1;
+}
+
+// Get bridged identity response
+message GetBridgedIdentityResponse {
+    BridgedIdentity identity = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Sync identity request
+message SyncIdentityRequest {
+    string bridge_id = 1;
+    map<string, string> updates = 2;
+}
+
+// Sync identity response
+message SyncIdentityResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Bridge transaction request
+message BridgeTransactionRequest {
+    string source_system = 1;
+    string source_transaction_id = 2;
+    string target_system = 3;
+    string from_account = 4;
+    string to_account = 5;
+    string amount = 6;
+    string currency = 7;
+    map<string, string> transaction_data = 8;
+}
+
+// Bridge transaction response
+message BridgeTransactionResponse {
+    string bridge_id = 1;
+    string target_transaction_id = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get bridged transaction request
+message GetBridgedTransactionRequest {
+    string bridge_id = 1;
+}
+
+// Get bridged transaction response
+message GetBridgedTransactionResponse {
+    BridgedTransaction transaction = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// List bridged transactions request
+message ListBridgedTransactionsRequest {
+    string source_system = 1;
+    string target_system = 2;
+    uint32 limit = 3;
+    uint32 offset = 4;
+}
+
+// List bridged transactions response
+message ListBridgedTransactionsResponse {
+    repeated BridgedTransaction transactions = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Account mapping
+message AccountMapping {
+    string mapping_id = 1;
+    string banking_account_id = 2;
+    string blockchain_account = 3;
+    string account_type = 4;
+    uint64 created_at = 5;
+    MappingStatus status = 6;
+}
+
+// Bridged identity
+message BridgedIdentity {
+    string bridge_id = 1;
+    string source_system = 2;
+    string source_identity_id = 3;
+    string target_system = 4;
+    string target_identity_id = 5;
+    map<string, string> identity_data = 6;
+    uint64 bridged_at = 7;
+    uint64 last_synced_at = 8;
+    BridgeStatus status = 9;
+}
+
+// Bridged transaction
+message BridgedTransaction {
+    string bridge_id = 1;
+    string source_system = 2;
+    string source_transaction_id = 3;
+    string target_system = 4;
+    string target_transaction_id = 5;
+    string from_account = 6;
+    string to_account = 7;
+    string amount = 8;
+    string currency = 9;
+    uint64 bridged_at = 10;
+    BridgeStatus status = 11;
+}
+
+// Mapping status enum
+enum MappingStatus {
+    ACTIVE = 0;
+    SUSPENDED = 1;
+    REMOVED = 2;
+}
+
+// Bridge status enum
+enum BridgeStatus {
+    PENDING = 0;
+    COMPLETED = 1;
+    FAILED = 2;
+    SYNCING = 3;
+}
+
+
+
+

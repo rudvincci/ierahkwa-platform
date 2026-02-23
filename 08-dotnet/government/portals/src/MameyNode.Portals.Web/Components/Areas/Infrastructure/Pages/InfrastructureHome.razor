@@ -1,0 +1,121 @@
+@page "/mameynode"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IInfrastructureClient InfrastructureClient
+@inject ILogger<InfrastructureHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Infrastructure" Icon="fas fa-server" Subtitle="MameyNode Infrastructure & Operations">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    @if (_nodeInfo != null)
+    {
+        <MudGrid Spacing="3" Class="mt-4">
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Node Version" Value="@_nodeInfo.Version" Icon="fas fa-code-branch" Color="#3B82F6" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Peer Count" Value="@_nodeInfo.PeerCount.ToString()" Icon="fas fa-network-wired" Color="#10B981" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Block Count" Value="@_nodeInfo.BlockCount.ToString("N0")" Icon="fas fa-cube" Color="#F59E0B" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Account Count" Value="@_nodeInfo.AccountCount.ToString("N0")" Icon="fas fa-users" Color="#10B981" />
+            </MudItem>
+        </MudGrid>
+    }
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Block Explorer" Elevation="2">
+                <MudText Typo="Typo.body2">Explore blockchain transactions and blocks</MudText>
+                <MudButton Href="/explorer" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Explorer
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="ILP" Elevation="2">
+                <MudText Typo="Typo.body2">Interledger Protocol services</MudText>
+                <MudButton Href="/ilp" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to ILP
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Metrics" Elevation="2">
+                <MudText Typo="Typo.body2">System metrics and monitoring</MudText>
+                <MudButton Href="/metrics" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Metrics
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Node Management" Elevation="2">
+                <MudText Typo="Typo.body2">Node configuration and management</MudText>
+                <MudButton Href="/node" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Node
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Sharding" Elevation="2">
+                <MudText Typo="Typo.body2">Sharding configuration and management</MudText>
+                <MudButton Href="/sharding" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Sharding
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Webhooks" Elevation="2">
+                <MudText Typo="Typo.body2">Webhook configuration and management</MudText>
+                <MudButton Href="/webhooks" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Webhooks
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Callbacks" Elevation="2">
+                <MudText Typo="Typo.body2">Callback configuration and management</MudText>
+                <MudButton Href="/callbacks" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Callbacks
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private NodeInfo? _nodeInfo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _nodeInfo = await InfrastructureClient.GetNodeInfoAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading infrastructure data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}

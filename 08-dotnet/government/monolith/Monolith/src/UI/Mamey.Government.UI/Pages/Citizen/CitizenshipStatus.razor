@@ -1,0 +1,119 @@
+@page "/citizen/citizenship-status"
+@layout CitizenLayout
+@attribute [Authorize]
+
+<PageTitle>Citizenship Status - Citizen Portal</PageTitle>
+
+<PageHeader Title="Citizenship Status" Subtitle="View your current citizenship status and progression" />
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" md="8">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Current Status</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="4">
+                    <MudIcon Icon="@Icons.Material.Filled.VerifiedUser" Size="Size.Large" Color="Color.Success" />
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.h5" Color="Color.Success">Resident</MudText>
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">Since March 15, 2024</MudText>
+                    </MudStack>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+
+        <MudCard Elevation="2" Class="mt-4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Status Progression</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudTimeline TimelinePosition="TimelinePosition.Start">
+                    <MudTimelineItem Color="Color.Success" Size="Size.Medium">
+                        <ItemContent>
+                            <MudText Typo="Typo.subtitle1">Applicant</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">January 2024 - Completed</MudText>
+                        </ItemContent>
+                    </MudTimelineItem>
+                    <MudTimelineItem Color="Color.Success" Size="Size.Medium">
+                        <ItemContent>
+                            <MudText Typo="Typo.subtitle1">Resident</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">March 2024 - Current</MudText>
+                        </ItemContent>
+                    </MudTimelineItem>
+                    <MudTimelineItem Color="Color.Default" Size="Size.Medium">
+                        <ItemContent>
+                            <MudText Typo="Typo.subtitle1">Citizen</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">Eligible in March 2025</MudText>
+                        </ItemContent>
+                    </MudTimelineItem>
+                </MudTimeline>
+            </MudCardContent>
+        </MudCard>
+
+        <MudCard Elevation="2" Class="mt-4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Requirements for Next Level</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudList T="string" Dense="true">
+                    <MudListItem Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Success">
+                        12 months residency period
+                    </MudListItem>
+                    <MudListItem Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Success">
+                        Complete citizenship course
+                    </MudListItem>
+                    <MudListItem Icon="@Icons.Material.Filled.RadioButtonUnchecked" IconColor="Color.Default">
+                        Pass citizenship examination
+                    </MudListItem>
+                    <MudListItem Icon="@Icons.Material.Filled.RadioButtonUnchecked" IconColor="Color.Default">
+                        Submit application for progression
+                    </MudListItem>
+                </MudList>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/citizen/apply-progression">
+                    Apply for Citizenship
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Status Levels</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudList T="string" Dense="true">
+                    <MudListItem>
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.subtitle2">Applicant</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">Initial application stage</MudText>
+                        </MudStack>
+                    </MudListItem>
+                    <MudListItem>
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.subtitle2">Resident</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">Full residency rights</MudText>
+                        </MudStack>
+                    </MudListItem>
+                    <MudListItem>
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.subtitle2">Citizen</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">Full citizenship rights</MudText>
+                        </MudStack>
+                    </MudListItem>
+                </MudList>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>

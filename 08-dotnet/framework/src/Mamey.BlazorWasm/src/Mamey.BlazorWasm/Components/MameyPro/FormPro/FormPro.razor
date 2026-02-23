@@ -1,0 +1,29 @@
+@using Mamey.BlazorWasm.Components.Foundation
+
+<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit" OnInvalidSubmit="@OnInvalidSubmit">
+    <DataAnnotationsValidator />
+    @if (ShowValidationSummary)
+    {
+        <ValidationSummary />
+    }
+    <MudStack Spacing="@Spacing" Class="@FormClass" Style="@Style">
+        @ChildContent
+    </MudStack>
+</EditForm>
+
+@code {
+    [Parameter] public object? Model { get; set; }
+    [Parameter] public EventCallback<EditContext> OnValidSubmit { get; set; }
+    [Parameter] public EventCallback<EditContext> OnInvalidSubmit { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool ShowValidationSummary { get; set; } = false;
+    [Parameter] public int Spacing { get; set; } = 3;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    private string FormClass => $"mamey-form-pro {Class}";
+}
+
+
+
+

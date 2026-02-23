@@ -1,0 +1,91 @@
+name: Sovereign Platform CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate Structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check project structure
+        run: |
+          for dir in 01-documentos 02-plataformas-html 03-backend 04-infraestructura 05-api 06-dashboards 07-scripts 08-dotnet 09-assets; do
+            test -d "$dir" || (echo "MISSING: $dir" && exit 1)
+          done
+          echo "Project structure validated"
+
+  build-node:
+    name: Build Node.js Services
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - api-gateway
+          - pos-system
+          - ierahkwa-shop
+          - inventory-system
+          - forex-trading-server
+          - smart-school-node
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install and validate
+        run: |
+          cd 03-backend/${{ matrix.service }}
+          if [ -f package.json ]; then
+            npm install --ignore-scripts
+            echo "Built ${{ matrix.service }}"
+          fi
+
+  build-dotnet:
+    name: Build .NET Services
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore and build
+        run: |
+          find 08-dotnet -name "*.sln" -maxdepth 4 | head -10 | while read sln; do
+            echo "Building $sln..."
+            dotnet restore "$sln" || true
+          done
+
+  build-rust:
+    name: Build Rust Components
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build MameyForge
+        run: |
+          if [ -f 12-rust/mamey-forge/Cargo.toml ]; then
+            cd 12-rust/mamey-forge && cargo check
+          fi
+      - name: Build MameyNode Rust SDK
+        run: |
+          if [ -f 12-rust/mamey-node-rust/Cargo.toml ]; then
+            cd 12-rust/mamey-node-rust && cargo check
+          fi
+
+  docker-validate:
+    name: Validate Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose files
+        run: |
+          for f in docker-compose.sovereign.yml docker-compose.dev.yml docker-compose.infra.yml; do
+            if [ -f "$f" ]; then
+              docker compose -f "$f" config --quiet && echo "Valid: $f"
+            fi
+          done

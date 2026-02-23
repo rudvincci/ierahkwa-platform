@@ -1,0 +1,256 @@
+syntax = "proto3";
+
+package mamey.metrics;
+
+// Metrics service for MameyNode blockchain
+service MetricsService {
+    // Metric collection
+    rpc RecordMetric(RecordMetricRequest) returns (RecordMetricResponse);
+    rpc RecordCounter(RecordCounterRequest) returns (RecordCounterResponse);
+    rpc RecordHistogram(RecordHistogramRequest) returns (RecordHistogramResponse);
+    rpc RecordGauge(RecordGaugeRequest) returns (RecordGaugeResponse);
+    
+    // Metric retrieval
+    rpc GetMetric(GetMetricRequest) returns (GetMetricResponse);
+    rpc GetMetrics(GetMetricsRequest) returns (GetMetricsResponse);
+    rpc GetCounter(GetCounterRequest) returns (GetCounterResponse);
+    rpc GetHistogram(GetHistogramRequest) returns (GetHistogramResponse);
+    rpc GetGauge(GetGaugeRequest) returns (GetGaugeResponse);
+    
+    // Metric aggregation
+    rpc GetMetricSummary(GetMetricSummaryRequest) returns (GetMetricSummaryResponse);
+    rpc GetMetricsByLabel(GetMetricsByLabelRequest) returns (GetMetricsByLabelResponse);
+    
+    // Prometheus export
+    rpc ExportPrometheus(ExportPrometheusRequest) returns (ExportPrometheusResponse);
+    rpc GetPrometheusMetrics(GetPrometheusMetricsRequest) returns (GetPrometheusMetricsResponse);
+}
+
+// Record metric request
+message RecordMetricRequest {
+    string metric_name = 1;
+    double value = 2;
+    map<string, string> labels = 3;
+    uint64 timestamp = 4;
+}
+
+// Record metric response
+message RecordMetricResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Record counter request
+message RecordCounterRequest {
+    string counter_name = 1;
+    double increment = 2;
+    map<string, string> labels = 3;
+}
+
+// Record counter response
+message RecordCounterResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Record histogram request
+message RecordHistogramRequest {
+    string histogram_name = 1;
+    double value = 2;
+    map<string, string> labels = 3;
+}
+
+// Record histogram response
+message RecordHistogramResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Record gauge request
+message RecordGaugeRequest {
+    string gauge_name = 1;
+    double value = 2;
+    map<string, string> labels = 3;
+}
+
+// Record gauge response
+message RecordGaugeResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Get metric request
+message GetMetricRequest {
+    string metric_name = 1;
+    map<string, string> labels = 2;
+}
+
+// Get metric response
+message GetMetricResponse {
+    MetricData metric = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get metrics request
+message GetMetricsRequest {
+    repeated string metric_names = 1;
+    map<string, string> labels = 2;
+}
+
+// Get metrics response
+message GetMetricsResponse {
+    repeated MetricData metrics = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get counter request
+message GetCounterRequest {
+    string counter_name = 1;
+    map<string, string> labels = 2;
+}
+
+// Get counter response
+message GetCounterResponse {
+    CounterData counter = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get histogram request
+message GetHistogramRequest {
+    string histogram_name = 1;
+    map<string, string> labels = 2;
+}
+
+// Get histogram response
+message GetHistogramResponse {
+    HistogramData histogram = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get gauge request
+message GetGaugeRequest {
+    string gauge_name = 1;
+    map<string, string> labels = 2;
+}
+
+// Get gauge response
+message GetGaugeResponse {
+    GaugeData gauge = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get metric summary request
+message GetMetricSummaryRequest {
+    string metric_name = 1;
+    uint64 start_time = 2;
+    uint64 end_time = 3;
+    map<string, string> labels = 4;
+}
+
+// Get metric summary response
+message GetMetricSummaryResponse {
+    MetricSummary summary = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get metrics by label request
+message GetMetricsByLabelRequest {
+    string label_name = 1;
+    string label_value = 2;
+    uint32 limit = 3;
+    uint32 offset = 4;
+}
+
+// Get metrics by label response
+message GetMetricsByLabelResponse {
+    repeated MetricData metrics = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Export Prometheus request
+message ExportPrometheusRequest {
+    string format = 1;  // "text", "protobuf"
+}
+
+// Export Prometheus response
+message ExportPrometheusResponse {
+    bytes metrics_data = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get Prometheus metrics request
+message GetPrometheusMetricsRequest {
+}
+
+// Get Prometheus metrics response
+message GetPrometheusMetricsResponse {
+    string metrics_text = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Metric data
+message MetricData {
+    string metric_name = 1;
+    double value = 2;
+    map<string, string> labels = 3;
+    uint64 timestamp = 4;
+    string metric_type = 5;
+}
+
+// Counter data
+message CounterData {
+    string counter_name = 1;
+    double value = 2;
+    map<string, string> labels = 3;
+    uint64 last_updated = 4;
+}
+
+// Histogram data
+message HistogramData {
+    string histogram_name = 1;
+    repeated HistogramBucket buckets = 2;
+    double sum = 3;
+    uint64 count = 4;
+    map<string, string> labels = 5;
+}
+
+// Histogram bucket
+message HistogramBucket {
+    double upper_bound = 1;
+    uint64 count = 2;
+}
+
+// Gauge data
+message GaugeData {
+    string gauge_name = 1;
+    double value = 2;
+    map<string, string> labels = 3;
+    uint64 last_updated = 4;
+}
+
+// Metric summary
+message MetricSummary {
+    string metric_name = 1;
+    double min = 2;
+    double max = 3;
+    double average = 4;
+    double sum = 5;
+    uint64 count = 6;
+    double p50 = 7;
+    double p95 = 8;
+    double p99 = 9;
+}
+
+
+
+

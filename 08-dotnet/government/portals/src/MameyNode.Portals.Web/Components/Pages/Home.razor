@@ -1,0 +1,390 @@
+@page "/"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MudBlazor
+@rendermode InteractiveServer
+
+<PageTitle>MameyNode Portals</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudText Typo="Typo.h3" Class="mb-4">Welcome to MameyNode Portals</MudText>
+    <MudText Typo="Typo.body1" Class="mb-6">Dashboard overview of all applications</MudText>
+
+    <!-- Application Widgets Grid -->
+    <MudGrid Spacing="3">
+        <!-- BIIS Widget -->
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Style="border-left: 4px solid #3B82F6; cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/biis"))">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.Public" Size="Size.Medium" Style="color: #3B82F6;" />
+                        <MudText Typo="Typo.h6">BIIS</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Class="mb-2">Bank of International Indigenous Settlements</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Active: @_biisActive | Pending: @_biisPending</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- SICB Widget -->
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Style="border-left: 4px solid #F59E0B; cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/sicb"))">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.AccountBalance" Size="Size.Medium" Style="color: #F59E0B;" />
+                        <MudText Typo="Typo.h6">SICB</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Class="mb-2">Sovereign Ierahkwa Central Bank</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Reserves: $0 | Instruments: 0</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Portable Banking Node Widget -->
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Style="border-left: 4px solid #14B8A6; cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/portable"))">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.Laptop" Size="Size.Medium" Style="color: #14B8A6;" />
+                        <MudText Typo="Typo.h6">Portable Node</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Class="mb-2">Universal Protocol Gateway</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Protocols: 0 | Adapters: 0</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- FBDETB Widget -->
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Style="border-left: 4px solid #10B981; cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/banking"))">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.AccountBalanceWallet" Size="Size.Medium" Style="color: #10B981;" />
+                        <MudText Typo="Typo.h6">Future BDET Bank</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Class="mb-2">Banking Services</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Accounts: @_bankingAccounts | Transactions: @_bankingTransactions</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Government Widget -->
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Style="border-left: 4px solid #DC2626; cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/admin"))">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.Gavel" Size="Size.Medium" Style="color: #DC2626;" />
+                        <MudText Typo="Typo.h6">Government</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Class="mb-2">Citizenship & Administration</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Citizens: 0 | Applications: 0</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- FutureWampumPay Widget -->
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Style="border-left: 4px solid #8B5CF6; cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/payments"))">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.Payment" Size="Size.Medium" Style="color: #8B5CF6;" />
+                        <MudText Typo="Typo.h6">FutureWampumPay</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Class="mb-2">Payment Services</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Total: @_payTotal | Pending: @_payPending</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- FutureWampumX Widget -->
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Style="border-left: 4px solid #F97316; cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/dex"))">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.SwapHoriz" Size="Size.Medium" Style="color: #F97316;" />
+                        <MudText Typo="Typo.h6">FutureWampumX</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Class="mb-2">Currency Exchange & DEX</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Trades: 0 | Volume: $0</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- FutureWampumID Widget -->
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Style="border-left: 4px solid #06B6D4; cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/futurewampum/identity"))">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.Badge" Size="Size.Medium" Style="color: #06B6D4;" />
+                        <MudText Typo="Typo.h6">FutureWampumID</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Class="mb-2">Identity Management</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Identities: @_idIdentities | Credentials: @_idCredentials</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- FutureWampumLedger Widget -->
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Style="border-left: 4px solid #10B981; cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/ledger"))">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.Book" Size="Size.Medium" Style="color: #10B981;" />
+                        <MudText Typo="Typo.h6">FutureWampumLedger</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Class="mb-2">Blockchain Ledger</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Blocks: 0 | Transactions: 0</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- FutureWampumMerchant Widget -->
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Style="border-left: 4px solid #EAB308; cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/merchant"))">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.Store" Size="Size.Medium" Style="color: #EAB308;" />
+                        <MudText Typo="Typo.h6">FutureWampumMerchant</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Class="mb-2">Merchant Services</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Merchants: @_merchantMerchants | Orders: @_merchantOrders</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- FutureWampumGov Widget -->
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Style="border-left: 4px solid #6366F1; cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/futurewampum/gov"))">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Medium" Style="color: #6366F1;" />
+                        <MudText Typo="Typo.h6">FutureWampumGov</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Class="mb-2">Government Financial Operations</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Programs: 0 | Disbursements: 0</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Infrastructure Widget -->
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard Elevation="2" Style="border-left: 4px solid #6B7280; cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/mameynode"))">
+                <MudCardContent>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.Storage" Size="Size.Medium" Style="color: #6B7280;" />
+                        <MudText Typo="Typo.h6">Infrastructure</MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Class="mb-2">MameyNode Infrastructure & Operations</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Status: Active | Services: 8</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
+    [Inject] private IBIISClient BIISClient { get; set; } = null!;
+    [Inject] private ISICBClient SICBClient { get; set; } = null!;
+    [Inject] private IFBDETBClient FBDETBClient { get; set; } = null!;
+    [Inject] private IGovernmentClient GovernmentClient { get; set; } = null!;
+    [Inject] private IFutureWampumPayClient FutureWampumPayClient { get; set; } = null!;
+    [Inject] private IFutureWampumXClient FutureWampumXClient { get; set; } = null!;
+    [Inject] private IFutureWampumIdClient FutureWampumIdClient { get; set; } = null!;
+    [Inject] private IFutureWampumLedgerClient FutureWampumLedgerClient { get; set; } = null!;
+    [Inject] private IFutureWampumMerchantClient FutureWampumMerchantClient { get; set; } = null!;
+    [Inject] private IFutureWampumGovClient FutureWampumGovClient { get; set; } = null!;
+    [Inject] private ILogger<Home> Logger { get; set; } = null!;
+
+    private int _biisActive;
+    private int _biisPending;
+    private string _sicbReserves = "$0";
+    private int _sicbInstruments;
+    private int _bankingAccounts;
+    private int _bankingTransactions;
+    private int _govCitizens;
+    private int _govApplications;
+    private string _payTotal = "$0";
+    private int _payPending;
+    private int _dexTrades;
+    private string _dexVolume = "$0";
+    private int _idIdentities;
+    private int _idCredentials;
+    private int _ledgerBlocks;
+    private int _ledgerTransactions;
+    private int _merchantMerchants;
+    private int _merchantOrders;
+    private int _govPrograms;
+    private int _govDisbursements;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboardDataAsync();
+    }
+
+    private async Task LoadDashboardDataAsync()
+    {
+        try
+        {
+            // Load BIIS data
+            try
+            {
+                var settlements = await BIISClient.GetCrossBorderSettlementsAsync();
+                _biisActive = settlements.Count(s => s.Status == "Active" || s.Status == "Completed");
+                _biisPending = settlements.Count(s => s.Status == "Pending" || s.Status == "Processing");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to load BIIS data");
+            }
+
+            // Load SICB data
+            try
+            {
+                var reserves = await SICBClient.GetLedgerReservesAsync();
+                if (reserves != null)
+                {
+                    _sicbReserves = reserves.Sum(r => decimal.Parse(r.TotalReserves ?? "0")).ToString("C");
+                }
+                var instruments = await SICBClient.GetMonetaryInstrumentsAsync();
+                if (instruments != null)
+                {
+                    _sicbInstruments = instruments.Count;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to load SICB data");
+            }
+
+            // Load Banking data
+            try
+            {
+                var accounts = await FBDETBClient.GetAccountsAsync();
+                _bankingAccounts = accounts.Count;
+                var wallets = await FBDETBClient.GetWalletsAsync();
+                _bankingTransactions = wallets.Count; // Use wallets as proxy for activity
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to load Banking data");
+            }
+
+            // Load Government data
+            try
+            {
+                var citizens = await GovernmentClient.GetCitizensAsync();
+                if (citizens != null)
+                {
+                    _govCitizens = citizens.Count;
+                }
+                var applications = await GovernmentClient.GetCitizenshipApplicationsAsync();
+                if (applications != null)
+                {
+                    _govApplications = applications.Count;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to load Government data");
+            }
+
+            // Load Payment data
+            try
+            {
+                var wallets = await FutureWampumPayClient.GetWalletsAsync();
+                _payTotal = wallets.Sum(w => decimal.Parse(w.Amount ?? "0")).ToString("C");
+                var payments = await FutureWampumPayClient.GetP2PPaymentsAsync();
+                _payPending = payments.Count(p => p.Status.ToString() == "Pending");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to load Payment data");
+            }
+
+            // Load DEX data
+            try
+            {
+                var swaps = await FutureWampumXClient.GetSwapsAsync();
+                if (swaps != null)
+                {
+                    _dexTrades = swaps.Count;
+                    _dexVolume = swaps.Sum(s => decimal.Parse(s.AmountIn ?? "0")).ToString("C");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to load DEX data");
+            }
+
+            // Load Identity data
+            try
+            {
+                var identities = await FutureWampumIdClient.GetIdentityVerificationsAsync();
+                _idIdentities = identities.Count;
+                var credentials = await FutureWampumIdClient.GetDigitalCredentialsAsync();
+                _idCredentials = credentials.Count;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to load Identity data");
+            }
+
+            // Load Ledger data
+            try
+            {
+                var blocks = await FutureWampumLedgerClient.GetBlocksAsync();
+                if (blocks != null)
+                {
+                    _ledgerBlocks = blocks.Count;
+                }
+                var transactions = await FutureWampumLedgerClient.GetTransactionsAsync();
+                if (transactions != null)
+                {
+                    _ledgerTransactions = transactions.Count;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to load Ledger data");
+            }
+
+            // Load Merchant data
+            try
+            {
+                var merchants = await FutureWampumMerchantClient.GetMerchantOnboardingsAsync();
+                _merchantMerchants = merchants.Count;
+                var invoices = await FutureWampumMerchantClient.GetInvoicesAsync();
+                _merchantOrders = invoices.Count;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to load Merchant data");
+            }
+
+            // Load FutureWampumGov data
+            try
+            {
+                var programs = await FutureWampumGovClient.GetProgramsAsync();
+                if (programs != null)
+                {
+                    _govPrograms = programs.Count;
+                }
+                var disbursements = await FutureWampumGovClient.GetDisbursementsAsync();
+                if (disbursements != null)
+                {
+                    _govDisbursements = disbursements.Count;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to load FutureWampumGov data");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading dashboard data");
+        }
+    }
+}

@@ -1,0 +1,219 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+#  IERAHKWA SOVEREIGN PLATFORM - PROMETHEUS ALERT RULES
+#  Critical Alerts for 24/7 Operation
+# ═══════════════════════════════════════════════════════════════════════════════
+
+groups:
+  # ─────────────────────────────────────────────────────────────────────────────
+  #  SERVICE AVAILABILITY
+  # ─────────────────────────────────────────────────────────────────────────────
+  - name: availability
+    interval: 30s
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "{{ $labels.instance }} has been down for more than 1 minute."
+
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m])) by (service)
+          / sum(rate(http_requests_total[5m])) by (service) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate on {{ $labels.service }}"
+          description: "Error rate is above 5% for 5 minutes."
+
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service))
+          > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency on {{ $labels.service }}"
+          description: "95th percentile latency is above 2 seconds."
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  #  RESOURCE UTILIZATION
+  # ─────────────────────────────────────────────────────────────────────────────
+  - name: resources
+    interval: 30s
+    rules:
+      - alert: HighMemoryUsage
+        expr: |
+          (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)
+          / node_memory_MemTotal_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 90%."
+
+      - alert: CriticalMemoryUsage
+        expr: |
+          (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)
+          / node_memory_MemTotal_bytes > 0.95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 95%. Immediate action required."
+
+      - alert: HighCPUUsage
+        expr: |
+          100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 80%."
+
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{fstype!="tmpfs"}
+          / node_filesystem_size_bytes{fstype!="tmpfs"}) < 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk space is below 10%."
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  #  DATABASE ALERTS
+  # ─────────────────────────────────────────────────────────────────────────────
+  - name: databases
+    interval: 30s
+    rules:
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL database is not responding."
+
+      - alert: PostgresHighConnections
+        expr: |
+          sum(pg_stat_activity_count) by (instance)
+          / sum(pg_settings_max_connections) by (instance) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High PostgreSQL connection usage"
+          description: "Connection pool is above 80%."
+
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis cache is not responding."
+
+      - alert: RedisHighMemory
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis memory usage high"
+          description: "Redis memory usage is above 90%."
+
+      - alert: MongoDown
+        expr: mongodb_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MongoDB is down"
+          description: "MongoDB database is not responding."
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  #  BLOCKCHAIN ALERTS
+  # ─────────────────────────────────────────────────────────────────────────────
+  - name: blockchain
+    interval: 30s
+    rules:
+      - alert: BlockchainNodeDown
+        expr: ierahkwa_node_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Blockchain node is down"
+          description: "Ierahkwa blockchain node is not responding."
+
+      - alert: BlockProductionStopped
+        expr: increase(ierahkwa_block_height[5m]) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Block production stopped"
+          description: "No new blocks produced in 5 minutes."
+
+      - alert: HighPendingTransactions
+        expr: ierahkwa_pending_transactions > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High pending transactions"
+          description: "More than 1000 pending transactions."
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  #  SECURITY ALERTS
+  # ─────────────────────────────────────────────────────────────────────────────
+  - name: security
+    interval: 30s
+    rules:
+      - alert: HighRateLimitHits
+        expr: sum(rate(nginx_http_requests_total{status="429"}[5m])) > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate limit hits"
+          description: "Many requests are being rate limited. Possible attack."
+
+      - alert: TooManyFailedLogins
+        expr: sum(rate(auth_failed_logins_total[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Too many failed login attempts"
+          description: "Possible brute force attack detected."
+
+      - alert: SSLCertificateExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 30
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "Certificate expires in less than 30 days."
+
+      - alert: SSLCertificateExpiringSoonCritical
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 7
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: "SSL certificate expiring very soon"
+          description: "Certificate expires in less than 7 days!"

@@ -1,0 +1,42 @@
+@namespace MameyNode.Portals.Shared.Components.Specialized
+
+<MudStack Row="true" Spacing="1" Wrap="Wrap.Wrap" Class="@Class">
+    @if (Tags != null)
+    {
+        @foreach (var tag in Tags)
+        {
+            @if (tag.Removable)
+            {
+                <MudChip T="string"
+                    Color="@tag.Color" 
+                    Size="@Size" 
+                    Variant="@Variant"
+                    OnClose="@(() => OnTagRemoved.InvokeAsync(tag))">
+                    @tag.Label
+                </MudChip>
+            }
+            else
+            {
+                <MudChip T="string"
+                    Color="@tag.Color" 
+                    Size="@Size" 
+                    Variant="@Variant">
+                    @tag.Label
+                </MudChip>
+            }
+        }
+    }
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+</MudStack>
+
+@code {
+    [Parameter] public List<TagInfo>? Tags { get; set; }
+    [Parameter] public Size Size { get; set; } = Size.Small;
+    [Parameter] public Variant Variant { get; set; } = Variant.Filled;
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public EventCallback<TagInfo> OnTagRemoved { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

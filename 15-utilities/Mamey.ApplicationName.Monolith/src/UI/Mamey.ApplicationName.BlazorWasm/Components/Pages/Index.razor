@@ -1,0 +1,85 @@
+﻿@page "/"
+@using Mamey.BlazorWasm.Models
+
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="home-page-container">
+    <!-- Hero Section -->
+    <Hero Items="_source" Class="mb-5" />
+    
+    <!-- About FHCT Section -->
+    <section id="about" class="section">
+        <MudPaper Elevation="0" Class="section-paper">
+            <h2 class="section-title animate-slide-in">About Futurehead Group</h2>
+            <p class="section-content animate-fade-in">
+                Our initiative is dedicated to establishing a sustainable ecosystem for cryptocurrency mining, coupled with the
+                successful recovery of historically owned lands by Indigenous communities.
+            </p>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Class="read-more-button">Discover Our Mission</MudButton>
+        </MudPaper>
+    </section>
+    
+    <!-- Key Highlights -->
+    <CardHighlight Items="GetFeaturedProducts()" />
+    
+
+    <!-- Get Involved -->
+    <section class="section pt-8">
+        <MudPaper Elevation="2" Class="section-paper">
+            <MudImage Src="https://via.placeholder.com/1080x600" Alt="1280x600" Elevation="25" Class="rounded-lg mud-elevation-1" />
+            <h2 class="section-title animate-slide-in">Get Involved</h2>
+            <p class="section-content animate-fade-in">
+                Start using FHCT tokens, invest in real estate, or join our citizenship program. Take action today!
+            </p>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="cta-button">Join Us Today</MudButton>
+        </MudPaper>
+    </section>
+</MudContainer>
+@code {
+    
+    private List<HeroContent> _source = new List<HeroContent>()
+    {
+        new HeroContent()
+        {
+            ImageSource = "/images/futuristic-astronaut-standing-in-dark-galaxy-exploration-generated-by-ai-free-photo.jpg",
+            Text= "Empowering Indigenous Communities Through Innovation",
+            SubText = "Join the FHCT Initiative: Where Tradition Meets Technology",
+            Top = 75,
+            Left = 35,
+        },
+        new HeroContent()
+        {
+            ImageSource = "/images/923967-scaled.jpeg",
+            Text= "Some cool text",
+            SubText = "fasdfas ;laskdjfa;lskdjf al;sdjkf "
+        },
+    };
+
+
+    private List<FeaturedProduct> GetFeaturedProducts()
+    {
+        return new List<FeaturedProduct>()
+        {
+            new FeaturedProduct()
+            {
+                Title = "Futurehead Coin Trust",
+                Description = "Empowering communities with decentralized finance solutions.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 1,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Smart City Vision",
+                Description = "Building sustainable and culturally rich communities.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 2,
+            },
+            new FeaturedProduct()
+            {
+                Title = "NFTs",
+                Description = "Presenving Indigenous heritage through digital art.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 3,
+            }
+        };
+    }
+}

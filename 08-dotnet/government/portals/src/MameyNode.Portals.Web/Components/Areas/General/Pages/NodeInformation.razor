@@ -1,0 +1,116 @@
+@page "/explorer/node"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IInfrastructureClient InfrastructureClient
+@inject ILogger<NodeInformation> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Node Information" Icon="fas fa-server" Subtitle="Detailed node information and status">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshNodeInfo" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    @if (_nodeInfo != null)
+    {
+        <MudGrid Spacing="3" Class="mt-4">
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Node Version" Value="@_nodeInfo.Version" Icon="fas fa-code-branch" Color="#3B82F6" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Peer Count" Value="@_nodeInfo.PeerCount.ToString()" Icon="fas fa-network-wired" Color="#10B981" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Block Count" Value="@_nodeInfo.BlockCount.ToString("N0")" Icon="fas fa-cube" Color="#F59E0B" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MetricCard Title="Account Count" Value="@_nodeInfo.AccountCount.ToString("N0")" Icon="fas fa-users" Color="#10B981" />
+            </MudItem>
+        </MudGrid>
+
+        <CardContainer Title="Node Details" Class="mt-4">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Node ID:</strong> @_nodeInfo.NodeId</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Version:</strong> @_nodeInfo.Version</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Confirmation Height:</strong> @_nodeInfo.ConfirmationHeight.ToString("N0")</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Peer Count:</strong> @_nodeInfo.PeerCount</MudText>
+                </MudItem>
+            </MudGrid>
+        </CardContainer>
+    }
+
+    @if (_versionInfo != null)
+    {
+        <CardContainer Title="Version Information" Class="mt-4">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Version:</strong> @_versionInfo.Version</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body1"><strong>Build Date:</strong> @_versionInfo.BuildDate.ToString("yyyy-MM-dd")</MudText>
+                </MudItem>
+            </MudGrid>
+        </CardContainer>
+    }
+
+    @if (_telemetryInfo != null)
+    {
+        <CardContainer Title="Telemetry" Class="mt-4">
+            <MudGrid>
+                <MudItem xs="12" md="4">
+                    <MudText Typo="Typo.body1"><strong>Uptime:</strong> @_telemetryInfo.Uptime</MudText>
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudText Typo="Typo.body1"><strong>Memory Usage:</strong> @_telemetryInfo.MemoryUsage</MudText>
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudText Typo="Typo.body1"><strong>CPU Usage:</strong> @_telemetryInfo.CpuUsage</MudText>
+                </MudItem>
+            </MudGrid>
+        </CardContainer>
+    }
+</PageContainer>
+
+@code {
+    private NodeInfo? _nodeInfo;
+    private VersionInfo? _versionInfo;
+    private TelemetryInfo? _telemetryInfo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNodeInfoAsync();
+    }
+
+    private async Task LoadNodeInfoAsync()
+    {
+        try
+        {
+            _nodeInfo = await InfrastructureClient.GetNodeInfoAsync();
+            _versionInfo = await InfrastructureClient.GetVersionAsync();
+            _telemetryInfo = await InfrastructureClient.GetTelemetryAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading node information");
+        }
+    }
+
+    private async Task RefreshNodeInfo()
+    {
+        await LoadNodeInfoAsync();
+        StateHasChanged();
+    }
+}
+
+

@@ -1,0 +1,47 @@
+@using Mamey.Types
+@using Mamey.BlazorWasm.Components.Foundation
+@using System.ComponentModel.DataAnnotations
+@using Mamey
+
+<MudSelect T="EyeColor?"
+           Label="@Label"
+           Placeholder="@Placeholder"
+           Value="@Value"
+           ValueChanged="@ValueChanged"
+           Required="@Required"
+           Disabled="@Disabled"
+           Variant="@Variant"
+           Dense="@Dense"
+           Class="@Class"
+           Style="@Style">
+    @if (AllowEmpty && !Required)
+    {
+        <MudSelectItem T="EyeColor?" Value="@((EyeColor?)null)">-- Select --</MudSelectItem>
+    }
+    @foreach (var color in Enum.GetValues<EyeColor>())
+    {
+        var displayName = color.GetEnumDisplayName() ?? color.ToString();
+        <MudSelectItem T="EyeColor?" Value="@color">@displayName</MudSelectItem>
+    }
+</MudSelect>
+<FieldMessages HelperText="@HelperText" />
+
+@code {
+    [Parameter] public string Label { get; set; } = "Eye Color";
+    [Parameter] public string HelperText { get; set; } = "Select your eye color";
+    [Parameter] public string Placeholder { get; set; } = "Select eye color";
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public bool Dense { get; set; } = true;
+    [Parameter] public bool AllowEmpty { get; set; } = true;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public EyeColor? Value { get; set; }
+    [Parameter] public EventCallback<EyeColor?> ValueChanged { get; set; }
+}
+
+
+
+

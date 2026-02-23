@@ -1,0 +1,72 @@
+@page "/cockleshell-bay/smart-city"
+
+@using Mamey.BlazorWasm.Models
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="smart-city-page-container">
+    <!-- Header Section -->
+    <MudPaper Class="header-section" Elevation="0">
+        <h1 class="page-title animate-slide-in">Smart City Vision</h1>
+        <p class="page-subtitle animate-fade-in">
+            A Transformative Model for Indigenous Community Development
+        </p>
+    </MudPaper>
+
+    <!-- Vision Overview Section -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Our Vision</h2>
+            <p class="section-content animate-fade-in">
+                We envision a smart city that seamlessly integrates advanced technology with Indigenous cultural heritage.
+                This initiative aims to create a vibrant hub where innovation meets tradition, fostering economic growth,
+                sustainability, and community well-being.
+            </p>
+        </MudPaper>
+    </section>
+
+    <!-- Key Features Section -->
+    <CardHighlight Items="GetKeyFeatures()" />
+
+    <!-- Sustainability Goals -->
+    <section class="section">
+        <MudPaper Elevation="2" Class="section-paper">
+            <h2 class="section-title animate-slide-in">Sustainability Goals</h2>
+            <ul class="goals-list animate-fade-in">
+                <li>Reduce environmental footprint through renewable energy and green construction.</li>
+                <li>Promote cultural and historical preservation in urban development.</li>
+                <li>Create job opportunities and foster economic independence for Indigenous communities.</li>
+                <li>Establish a model for sustainable living and development worldwide.</li>
+            </ul>
+        </MudPaper>
+    </section>
+</MudContainer>
+
+
+@code {
+    private List<FeaturedProduct> GetKeyFeatures()
+    {
+        return new List<FeaturedProduct>()
+        {
+            new FeaturedProduct()
+            {
+                Title = "Community-Centric Design",
+                Description = "Prioritizing the needs and preferences of Indigenous communities, ensuring cultural heritage and traditional practices are embedded in urban design.",
+                ImageUrl = "images/community-centric.png",
+                Id = 1,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Sustainable Infrastructure",
+                Description = "Utilizing renewable energy, eco-friendly construction, and smart technologies to minimize environmental impact while enhancing quality of life.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 2,
+            },
+            new FeaturedProduct()
+            {
+                Title = "Cultural Preservation",
+                Description = "Dedicated spaces for cultural gatherings, museums, and educational centers celebrating Indigenous history and traditions.",
+                ImageUrl = "https://via.placeholder.com/300",
+                Id = 3,
+            }
+        };
+    }
+}

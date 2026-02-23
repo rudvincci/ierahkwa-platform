@@ -1,0 +1,110 @@
+﻿@page "/"
+@using Mamey.Portal.Cms.Application.Models
+@using Mamey.Portal.Cms.Application.Services
+@inject ICmsContentService Cms
+
+<PageTitle>Mamey Portal</PageTitle>
+
+@code {
+    private IReadOnlyList<NewsItem> _publishedNews = Array.Empty<NewsItem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Public homepage: show only published items.
+        _publishedNews = await Cms.GetPublishedNewsAsync(5);
+    }
+}
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h3">Mamey Portal</MudText>
+    <MudText Typo="Typo.body1">
+        Greenfield modular monolith portal (UI-first). Public content is tenant-driven via CMS; citizen and government portals are permission-based.
+    </MudText>
+
+    <MudGrid Spacing="2">
+        <MudItem xs="12" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Become a Citizen</MudText>
+                    <MudText Typo="Typo.body2">Start an application and upload documents (mock).</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/become-a-citizen">
+                        Apply
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Validate Citizen ID</MudText>
+                    <MudText Typo="Typo.body2">Public verification without exposing private information.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Href="/public/validate-citizen">
+                        Validate
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">CMS</MudText>
+                    <MudText Typo="Typo.body2">Manage news, recognitions, pages, and publishing workflow.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/cms">
+                        Open CMS
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider />
+
+    <MudText Typo="Typo.h5">Latest News</MudText>
+    @if (_publishedNews.Count == 0)
+    {
+        <MudText Typo="Typo.body2">No published news yet.</MudText>
+    }
+    else
+    {
+        <MudGrid Spacing="2">
+            @foreach (var n in _publishedNews)
+            {
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText Typo="Typo.h6">@n.Title</MudText>
+                            <MudText Typo="Typo.body2">@n.Summary</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                                Published: @((n.PublishedAt ?? n.UpdatedAt).LocalDateTime)
+                            </MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Text" Href="@($"/news/{n.Id}")">Read more</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+
+        <MudButton Variant="Variant.Text" Href="/news">View all news</MudButton>
+    }
+
+    <MudDivider />
+
+    <MudText Typo="Typo.h5">Public Pages</MudText>
+    <MudStack Row="true" Spacing="1">
+        <MudChip T="string" Href="/about-us" Clickable="true">About</MudChip>
+        <MudChip T="string" Href="/our-history" Clickable="true">Our History</MudChip>
+        <MudChip T="string" Href="/cabinet" Clickable="true">Cabinet</MudChip>
+        <MudChip T="string" Href="/recognitions" Clickable="true">Recognitions</MudChip>
+        <MudChip T="string" Href="/library" Clickable="true">Library</MudChip>
+    </MudStack>
+</MudStack>

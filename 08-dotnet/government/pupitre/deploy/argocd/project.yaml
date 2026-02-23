@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: pupitre
+  namespace: argocd
+spec:
+  description: Pupitre Educational Platform Project
+  sourceRepos:
+    - 'https://github.com/pupitre/*'
+    - 'https://charts.bitnami.com/bitnami'
+  destinations:
+    - namespace: pupitre-foundation
+      server: https://kubernetes.default.svc
+    - namespace: pupitre-ai
+      server: https://kubernetes.default.svc
+    - namespace: pupitre-support
+      server: https://kubernetes.default.svc
+    - namespace: pupitre-data
+      server: https://kubernetes.default.svc
+    - namespace: pupitre-observability
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRole
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRoleBinding
+  namespaceResourceBlacklist:
+    - group: ''
+      kind: ResourceQuota
+    - group: ''
+      kind: LimitRange
+  roles:
+    - name: admin
+      description: Admin privileges to pupitre project
+      policies:
+        - p, proj:pupitre:admin, applications, *, pupitre/*, allow
+      groups:
+        - pupitre-admins
+    - name: developer
+      description: Developer privileges to pupitre project
+      policies:
+        - p, proj:pupitre:developer, applications, get, pupitre/*, allow
+        - p, proj:pupitre:developer, applications, sync, pupitre/*, allow
+      groups:
+        - pupitre-developers

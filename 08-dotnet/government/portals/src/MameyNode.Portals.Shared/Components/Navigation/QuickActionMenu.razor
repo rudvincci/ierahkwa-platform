@@ -1,0 +1,33 @@
+@namespace MameyNode.Portals.Shared.Components.Navigation
+
+<MudMenu Icon="@Icon" Color="@Color" Variant="@Variant" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+    <ActivatorContent>
+        <MudButton Icon="@Icon" Color="@Color" Variant="@Variant" Size="@Size" />
+    </ActivatorContent>
+    <ChildContent>
+        @if (Actions != null)
+        {
+            @foreach (var action in Actions)
+            {
+                <MudMenuItem OnClick="@(() => OnActionClick.InvokeAsync(action))">
+                    <MudIcon Icon="@action.Icon" Class="mr-3" />
+                    @action.Label
+                </MudMenuItem>
+            }
+        }
+        @if (ChildContent != null)
+        {
+            @ChildContent
+        }
+    </ChildContent>
+</MudMenu>
+
+@code {
+    [Parameter] public string Icon { get; set; } = "fas fa-plus";
+    [Parameter] public Color Color { get; set; } = Color.Primary;
+    [Parameter] public Variant Variant { get; set; } = Variant.Filled;
+    [Parameter] public Size Size { get; set; } = Size.Medium;
+    [Parameter] public List<QuickActionItem>? Actions { get; set; }
+    [Parameter] public EventCallback<QuickActionItem> OnActionClick { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

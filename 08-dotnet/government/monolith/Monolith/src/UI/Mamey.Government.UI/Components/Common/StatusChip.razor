@@ -1,0 +1,47 @@
+@switch (Status?.ToLowerInvariant())
+{
+    case "draft":
+        <MudChip T="string" Color="Color.Default" Size="Size.Small">Draft</MudChip>
+        break;
+    case "submitted":
+        <MudChip T="string" Color="Color.Info" Size="Size.Small">Submitted</MudChip>
+        break;
+    case "validating":
+    case "processing":
+        <MudChip T="string" Color="Color.Warning" Size="Size.Small">@Status</MudChip>
+        break;
+    case "pending":
+    case "kycpending":
+    case "reviewpending":
+        <MudChip T="string" Color="Color.Secondary" Size="Size.Small">Pending</MudChip>
+        break;
+    case "approved":
+    case "active":
+    case "issued":
+    case "published":
+        <MudChip T="string" Color="Color.Success" Size="Size.Small">@Status</MudChip>
+        break;
+    case "rejected":
+    case "revoked":
+    case "expired":
+    case "cancelled":
+        <MudChip T="string" Color="Color.Error" Size="Size.Small">@Status</MudChip>
+        break;
+    case "probationary":
+        <MudChip T="string" Color="Color.Tertiary" Size="Size.Small">Probationary</MudChip>
+        break;
+    case "resident":
+        <MudChip T="string" Color="Color.Primary" Size="Size.Small">Resident</MudChip>
+        break;
+    case "citizen":
+        <MudChip T="string" Color="Color.Success" Size="Size.Small">Citizen</MudChip>
+        break;
+    default:
+        <MudChip T="string" Color="Color.Default" Size="Size.Small">@(Status ?? "Unknown")</MudChip>
+        break;
+}
+
+@code {
+    [Parameter]
+    public string? Status { get; set; }
+}

@@ -1,0 +1,282 @@
+@page "/general/crypto"
+@inject MameyCryptoClient CryptoClient
+@inject IMetadataService MetadataService
+@inject ILogger<Crypto> Logger
+
+<PageTitle>Crypto Tools - MameyNode UI</PageTitle>
+
+<h1>Crypto Tools</h1>
+
+<ErrorDisplay HasError="@hasError" ErrorMessage="@errorMessage" ErrorDetails="@errorDetails" OnDismiss="ClearError" />
+
+<div class="row mt-3">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Supported Algorithms</h5>
+                <button class="btn btn-primary" @onclick="LoadAlgorithmsAsync" disabled="@isLoadingAlgos">
+                    @if (isLoadingAlgos)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Loading...</text>
+                    }
+                    else
+                    {
+                        <text>Refresh</text>
+                    }
+                </button>
+            </div>
+            <div class="card-body">
+                @if (algorithms == null && !isLoadingAlgos)
+                {
+                    <p class="text-muted mb-0">Click "Refresh" to load supported algorithms.</p>
+                }
+                else if (isLoadingAlgos)
+                {
+                    <p class="text-muted mb-0">Loading...</p>
+                }
+                else if (algorithms != null)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Security</th>
+                                <th>Sizes (pk/sk/sig)</th>
+                                <th>PQ</th>
+                                <th>NIST</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var a in algorithms)
+                            {
+                                <tr>
+                                    <td><code>@a.Name</code></td>
+                                    <td>@a.Type</td>
+                                    <td>@a.SecurityLevel</td>
+                                    <td><code>@a.PublicKeySize/@a.PrivateKeySize/@a.SignatureSize</code></td>
+                                    <td>@(a.QuantumResistant ? "Yes" : "No")</td>
+                                    <td>@a.NistStatus</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mt-3 mt-lg-0">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Hash / VerifyHash</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Algorithm</label>
+                    <input class="form-control" @bind="_hashAlgorithm" placeholder="(empty = blake2b)" />
+                    <div class="form-text">Current node implementation supports <code>blake2b</code> (and defaults to it when empty).</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Input (UTF-8)</label>
+                    <textarea class="form-control" rows="3" @bind="_hashInput"></textarea>
+                </div>
+
+                <div class="d-flex gap-2 mb-3">
+                    <button class="btn btn-primary" @onclick="HashAsync" disabled="@isHashing">
+                        @if (isHashing)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <text>Hashing...</text>
+                        }
+                        else
+                        {
+                            <text>Hash</text>
+                        }
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="VerifyHashAsync" disabled="@isVerifying">
+                        @if (isVerifying)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <text>Verifying...</text>
+                        }
+                        else
+                        {
+                            <text>Verify</text>
+                        }
+                    </button>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(_hashHex))
+                {
+                    <div class="mb-2">
+                        <strong>Hash (hex)</strong>
+                        <pre class="mb-0">@_hashHex</pre>
+                    </div>
+                }
+
+                @if (_hashVerified.HasValue)
+                {
+                    <div class="alert @(_hashVerified.Value ? "alert-success" : "alert-danger") mb-0">
+                        Verify result: <strong>@(_hashVerified.Value ? "valid" : "invalid")</strong>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<MetadataDisplay />
+
+@code {
+    private List<AlgorithmInfo>? algorithms;
+    private bool isLoadingAlgos;
+    private bool isHashing;
+    private bool isVerifying;
+
+    private bool hasError;
+    private string? errorMessage;
+    private string? errorDetails;
+
+    private string _hashAlgorithm = "blake2b";
+    private string _hashInput = "hello";
+    private string? _hashHex;
+    private bool? _hashVerified;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAlgorithmsAsync();
+    }
+
+    private Grpc.Core.CallOptions CreateCallOptions()
+    {
+        var correlationId = MetadataService.GetCorrelationId();
+        var metadata = MetadataService.GetMetadata(correlationId);
+        return new Grpc.Core.CallOptions(metadata, deadline: DateTime.UtcNow.AddSeconds(30));
+    }
+
+    private async Task LoadAlgorithmsAsync()
+    {
+        isLoadingAlgos = true;
+        ClearError();
+        StateHasChanged();
+
+        try
+        {
+            var resp = await CryptoClient.Client.GetSupportedAlgorithmsAsync(
+                new GetSupportedAlgorithmsRequest { IncludeDeprecated = true },
+                CreateCallOptions());
+            algorithms = resp.Algorithms.ToList();
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to load supported algorithms.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to load supported algorithms");
+        }
+        finally
+        {
+            isLoadingAlgos = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HashAsync()
+    {
+        isHashing = true;
+        ClearError();
+        _hashVerified = null;
+        StateHasChanged();
+
+        try
+        {
+            var resp = await CryptoClient.Client.HashAsync(new HashRequest
+            {
+                Data = Google.Protobuf.ByteString.CopyFromUtf8(_hashInput ?? string.Empty),
+                Algorithm = _hashAlgorithm ?? ""
+            }, CreateCallOptions());
+
+            if (!resp.Success)
+            {
+                hasError = true;
+                errorMessage = "Hash failed.";
+                errorDetails = resp.ErrorMessage;
+                return;
+            }
+
+            _hashHex = Convert.ToHexString(resp.Hash.ToByteArray()).ToLowerInvariant();
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to hash data.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to hash data");
+        }
+        finally
+        {
+            isHashing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task VerifyHashAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_hashHex))
+        {
+            hasError = true;
+            errorMessage = "Hash first to produce a hash value.";
+            return;
+        }
+
+        isVerifying = true;
+        ClearError();
+        StateHasChanged();
+
+        try
+        {
+            var hashBytes = Convert.FromHexString(_hashHex);
+            var resp = await CryptoClient.Client.VerifyHashAsync(new VerifyHashRequest
+            {
+                Data = Google.Protobuf.ByteString.CopyFromUtf8(_hashInput ?? string.Empty),
+                Hash = Google.Protobuf.ByteString.CopyFrom(hashBytes),
+                Algorithm = _hashAlgorithm ?? ""
+            }, CreateCallOptions());
+
+            if (!resp.Success)
+            {
+                hasError = true;
+                errorMessage = "VerifyHash failed.";
+                errorDetails = resp.ErrorMessage;
+                return;
+            }
+
+            _hashVerified = resp.Verified;
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to verify hash.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to verify hash");
+        }
+        finally
+        {
+            isVerifying = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearError()
+    {
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+    }
+}
+

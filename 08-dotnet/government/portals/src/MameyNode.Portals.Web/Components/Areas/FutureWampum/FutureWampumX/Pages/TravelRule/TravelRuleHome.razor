@@ -1,0 +1,85 @@
+@page "/travel-rule"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<TravelRuleHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Travel Rule" Icon="fas fa-plane" Subtitle="Travel rule compliance services">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="VASP Directory" Value="@_vasps.Count.ToString()" Icon="fas fa-building" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Trust Lines" Value="@_trustLines.Count.ToString()" Icon="fas fa-link" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active VASPs" Value="@_activeVASPs.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Verified" Value="@_verifiedCount.ToString()" Icon="fas fa-shield-alt" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="VASP Directory" Elevation="2">
+                <MudText Typo="Typo.body2">Virtual Asset Service Provider directory</MudText>
+                <MudButton Href="/travel-rule/vasps" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View VASPs
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Trust Lines" Elevation="2">
+                <MudText Typo="Typo.body2">Trust line management</MudText>
+                <MudButton Href="/travel-rule/trust-lines" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Trust Lines
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private List<VASPDirectoryInfo> _vasps = new();
+    private List<TrustLineInfo> _trustLines = new();
+    private int _activeVASPs;
+    private int _verifiedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _vasps = await FutureWampumXClient.GetVASPDirectoryAsync();
+            _trustLines = await FutureWampumXClient.GetTrustLinesAsync();
+            _activeVASPs = _vasps.Count(v => v.IsActive);
+            _verifiedCount = _vasps.Count(v => v.IsActive);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading travel rule data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

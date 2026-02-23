@@ -1,0 +1,98 @@
+@page "/crypto-exchange/orders"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<Orders> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Exchange Orders" Icon="fas fa-list" Subtitle="Cryptocurrency exchange order management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Orders" Value="@_orders.Count.ToString()" Icon="fas fa-list" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Filled" Value="@_filledCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Exchange Orders" Class="mt-4">
+        <MudTable T="ExchangeOrderInfo" Items="@_orders" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Order ID</MudTh>
+                <MudTh>Trading Pair</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Price</MudTh>
+                <MudTh>Quantity</MudTh>
+                <MudTh>Filled</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.OrderId</MudTd>
+                <MudTd>@context.TradingPair</MudTd>
+                <MudTd>@context.OrderType</MudTd>
+                <MudTd>@decimal.Parse(context.Price ?? "0").ToString("F2")</MudTd>
+                <MudTd>@decimal.Parse(context.Quantity ?? "0").ToString("F6")</MudTd>
+                <MudTd>@decimal.Parse(context.FilledQuantity ?? "0").ToString("F6")</MudTd>
+                <MudTd>
+                    <MudChip T="OrderStatus" Size="Size.Small" Color="@(context.Status == OrderStatus.Filled ? Color.Success : context.Status == OrderStatus.Open ? Color.Warning : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<ExchangeOrderInfo> _orders = new();
+    private int _filledCount;
+    private int _pendingCount;
+    private decimal _totalVolume;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _orders = await FutureWampumXClient.GetExchangeOrdersAsync();
+            _filledCount = _orders.Count(o => o.Status == OrderStatus.Filled);
+            _pendingCount = _orders.Count(o => o.Status == OrderStatus.Open);
+            _totalVolume = _orders.Where(o => o.Status == OrderStatus.Filled).Sum(o => decimal.Parse(o.Price ?? "0") * decimal.Parse(o.Quantity ?? "0"));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading exchange orders");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

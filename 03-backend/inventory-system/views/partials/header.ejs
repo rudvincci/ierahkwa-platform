@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Inventory Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+<% if (user) { %>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">
+            <i class="bi bi-box-seam"></i> Inventory Manager
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-box"></i> Inventory
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/products"><i class="bi bi-grid"></i> Products</a></li>
+                        <li><a class="dropdown-item" href="/categories"><i class="bi bi-tags"></i> Categories</a></li>
+                        <li><a class="dropdown-item" href="/suppliers"><i class="bi bi-truck"></i> Suppliers</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/movements/stock-in"><i class="bi bi-box-arrow-in-down text-success"></i> Stock In</a></li>
+                        <li><a class="dropdown-item" href="/movements/stock-out"><i class="bi bi-box-arrow-up text-danger"></i> Stock Out</a></li>
+                        <li><a class="dropdown-item" href="/movements/adjustment"><i class="bi bi-sliders text-warning"></i> Adjustment</a></li>
+                        <li><a class="dropdown-item" href="/movements/quick-entry"><i class="bi bi-upc-scan"></i> Quick Entry</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/movements"><i class="bi bi-clock-history"></i> Movement History</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-file-earmark-text"></i> Reports
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/reports/stock"><i class="bi bi-clipboard-data"></i> Stock Report</a></li>
+                        <li><a class="dropdown-item" href="/reports/low-stock"><i class="bi bi-exclamation-triangle text-danger"></i> Low Stock Alert</a></li>
+                        <li><a class="dropdown-item" href="/reports/movements"><i class="bi bi-arrow-left-right"></i> Movement Report</a></li>
+                    </ul>
+                </li>
+                <% if (user.role === 'admin') { %>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-gear"></i> Admin
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/users"><i class="bi bi-people"></i> Users</a></li>
+                        <li><a class="dropdown-item" href="/users/activity-log"><i class="bi bi-journal-text"></i> Activity Log</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/settings"><i class="bi bi-sliders"></i> Settings</a></li>
+                        <li><a class="dropdown-item" href="/settings/backup"><i class="bi bi-download"></i> Backup Database</a></li>
+                    </ul>
+                </li>
+                <% } %>
+            </ul>
+            <!-- Quick Search -->
+            <form class="d-flex me-3" action="/products" method="get">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Quick search..." id="quickSearch">
+                    <button class="btn btn-light btn-sm" type="submit"><i class="bi bi-search"></i></button>
+                </div>
+            </form>
+            <!-- User Menu -->
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <%= user.full_name %>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text text-muted small">Role: <%= user.role %></span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/change-password"><i class="bi bi-key"></i> Change Password</a></li>
+                        <li><a class="dropdown-item" href="/settings/help"><i class="bi bi-question-circle"></i> Help</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<% } %>
+
+<main class="<%= user ? 'main-content' : '' %>">
+    <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+        <i class="bi bi-check-circle"></i> <%= success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <% } %>
+    <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+        <i class="bi bi-exclamation-triangle"></i> <%= error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <% } %>

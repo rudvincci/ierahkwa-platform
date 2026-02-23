@@ -1,0 +1,43 @@
+@page "/cabinet"
+
+<PageTitle>Cabinet</PageTitle>
+
+@code {
+    private readonly (string Name, string Role, string Bio)[] _members =
+    [
+        ("Example Leader", "Head of State", "UI-first placeholder biography."),
+        ("Example Minister", "Minister", "UI-first placeholder biography."),
+        ("Example Secretary", "Secretary", "UI-first placeholder biography."),
+    ];
+}
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h4">Cabinet</MudText>
+    <MudText Typo="Typo.body1">
+        This page will be tenant-driven from CMS (cabinet members, photos, roles, terms).
+    </MudText>
+
+    <MudGrid Spacing="2">
+        @foreach (var m in _members)
+        {
+            <MudItem xs="12" md="4">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderAvatar>
+                            <MudAvatar Icon="@Icons.Material.Filled.Person" />
+                        </CardHeaderAvatar>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@m.Name</MudText>
+                            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@m.Role</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body2">@m.Bio</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+</MudStack>
+
+

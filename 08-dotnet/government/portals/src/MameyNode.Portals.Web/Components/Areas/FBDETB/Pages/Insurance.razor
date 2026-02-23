@@ -1,0 +1,98 @@
+@page "/advanced/insurance"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFBDETBClient FBDETBClient
+@inject ILogger<Insurance> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Insurance" Icon="fas fa-shield-alt" Subtitle="Insurance policy management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Policies" Value="@_policies.Count.ToString()" Icon="fas fa-shield-alt" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Coverage" Value="@_totalCoverage.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Premium" Value="@_totalPremium.ToString("C")" Icon="fas fa-coins" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Insurance Policies" Class="mt-4">
+        <MudTable T="InsuranceInfo" Items="@_policies" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Insurance ID</MudTh>
+                <MudTh>Policy Type</MudTh>
+                <MudTh>Insured ID</MudTh>
+                <MudTh>Coverage</MudTh>
+                <MudTh>Premium</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Effective</MudTh>
+                <MudTh>Expiry</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.InsuranceId</MudTd>
+                <MudTd>@context.PolicyType</MudTd>
+                <MudTd>@context.InsuredId</MudTd>
+                <MudTd>@decimal.Parse(context.CoverageAmount).ToString("C")</MudTd>
+                <MudTd>@decimal.Parse(context.Premium).ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.EffectiveDate.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@context.ExpiryDate.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<InsuranceInfo> _policies = new();
+    private decimal _totalCoverage;
+    private int _activeCount;
+    private decimal _totalPremium;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _policies = await FBDETBClient.GetInsurancePoliciesAsync();
+            _totalCoverage = _policies.Sum(p => decimal.Parse(p.CoverageAmount));
+            _activeCount = _policies.Count(p => p.Status == "Active");
+            _totalPremium = _policies.Sum(p => decimal.Parse(p.Premium));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading insurance policies");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

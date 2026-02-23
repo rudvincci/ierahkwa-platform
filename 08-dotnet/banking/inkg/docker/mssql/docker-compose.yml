@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  # web:
+  #   image: your-dotnet-app:latest
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     - ConnectionStrings__DefaultConnection=Server=db;Database=ink_cards;User ID=user;Password=secret;
+  #   ports:
+  #     - "8000:80"
+  #   depends_on:
+  #     - db
+  #   user: dotnetuser
+  #   cap_drop:
+  #     - ALL
+  #   cap_add:
+  #     - NET_BIND_SERVICE
+  #   restart: always
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "200k"
+  #       max-file: "10"
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-CU12-ubuntu-22.04
+    environment:
+      ACCEPT_EULA: 'Y' # You are accepting the End User License Agreement.
+      SA_PASSWORD: 'Secret123!' # The password for the System Administrator account.
+    volumes:
+      - db-data:/var/lib/mssql/data # Mapping the data directory to a named volume "db-data".
+    user: mssql # The service is running as the "mssql" user.
+    # cap_drop:
+    #   - ALL # Dropping all Linux capabilities to enhance security.
+    cap_add:
+      - CHOWN # Adding the capability to make arbitrary changes to file UIDs and GIDs.
+      - SETGID # Adding the capability to set GID.
+      - SETUID # Adding the capability to set UID.
+      - DAC_OVERRIDE # Adding the capability to bypass file read, write, and execute permission checks.
+    restart: always # The service will always restart until manually stopped.
+    logging:
+      driver: "json-file" # Using the json-file logging driver.
+      options:
+        max-size: "200k" # The maximum size of the log before it is rolled.
+        max-file: "10" # The maximum number of log files that can be present.
+    ports:
+      - "1433:1433"
+    networks:
+      - futurebdet
+      - futureheadgroup
+
+volumes:
+  db-data:

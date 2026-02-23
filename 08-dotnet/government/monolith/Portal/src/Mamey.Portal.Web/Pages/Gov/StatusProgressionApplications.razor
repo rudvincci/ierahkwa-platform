@@ -1,0 +1,231 @@
+@page "/gov/progression-applications"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin,Agent")]
+@using Mamey.Portal.Citizenship.Application.Services
+@using Mamey.Portal.Citizenship.Infrastructure.Persistence
+@using Mamey.Portal.Shared.Tenancy
+@using Microsoft.EntityFrameworkCore
+@inject IStatusProgressionService ProgressionService
+@inject CitizenshipDbContext Db
+@inject ITenantContext Tenant
+
+<PageTitle>Status Progression Applications</PageTitle>
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h4">Status Progression Applications</MudText>
+    <MudText Typo="Typo.body1">
+        Review and approve citizenship status progression applications (Probationary → Resident → Citizen).
+    </MudText>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" />
+    }
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(_successMessage))
+    {
+        <MudAlert Severity="Severity.Success" OnCloseButtonClicked="() => _successMessage = null">
+            @_successMessage
+        </MudAlert>
+    }
+
+    @if (_applications.Count > 0)
+    {
+        <MudPaper Class="pa-4">
+            <MudSimpleTable>
+                <thead>
+                    <tr>
+                        <th>Application Number</th>
+                        <th>Email</th>
+                        <th>Current Status</th>
+                        <th>Target Status</th>
+                        <th>Years Completed</th>
+                        <th>Status</th>
+                        <th>Submitted</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var app in _applications)
+                    {
+                        <tr>
+                            <td>@app.ApplicationNumber</td>
+                            <td>@app.Email</td>
+                            <td>
+                                <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(app.CurrentStatus)">
+                                    @app.CurrentStatus
+                                </MudChip>
+                            </td>
+                            <td>
+                                <MudChip T="string" Size="Size.Small" Color="@GetTargetStatusColor(app.TargetStatus)">
+                                    @app.TargetStatus
+                                </MudChip>
+                            </td>
+                            <td>@app.YearsCompletedAtApplication years</td>
+                            <td>
+                                <MudChip T="string" Size="Size.Small" Color="@GetApplicationStatusColor(app.Status)">
+                                    @app.Status
+                                </MudChip>
+                            </td>
+                            <td>@app.CreatedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>
+                                @if (app.Status == "Submitted")
+                                {
+                                    <MudButton Variant="Variant.Filled"
+                                               Color="Color.Success"
+                                               Size="Size.Small"
+                                               OnClick="() => ApproveApplication(app.Id)"
+                                               Disabled="@(_processingIds.Contains(app.Id))">
+                                        @if (_processingIds.Contains(app.Id))
+                                        {
+                                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                            <MudText Class="ms-2">Approving...</MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText>Approve</MudText>
+                                        }
+                                    </MudButton>
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.body2">@app.Status</MudText>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        </MudPaper>
+    }
+    else if (!_loading)
+    {
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.body1">No progression applications found.</MudText>
+        </MudPaper>
+    }
+</MudStack>
+
+@code
+{
+    private bool _loading = true;
+    private string? _error;
+    private string? _successMessage;
+    private List<ProgressionApplicationViewModel> _applications = new();
+    private HashSet<Guid> _processingIds = new();
+
+    private class ProgressionApplicationViewModel
+    {
+        public Guid Id { get; set; }
+        public string ApplicationNumber { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string CurrentStatus { get; set; } = string.Empty;
+        public string TargetStatus { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public int YearsCompletedAtApplication { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadApplicationsAsync();
+    }
+
+    private async Task LoadApplicationsAsync()
+    {
+        try
+        {
+            _loading = true;
+            _error = null;
+
+            var tenantId = Tenant.TenantId;
+            var apps = await (
+                from pa in Db.StatusProgressionApplications.AsNoTracking()
+                join cs in Db.CitizenshipStatuses.AsNoTracking() on pa.CitizenshipStatusId equals cs.Id
+                where pa.TenantId == tenantId
+                orderby pa.CreatedAt descending
+                select new ProgressionApplicationViewModel
+                {
+                    Id = pa.Id,
+                    ApplicationNumber = pa.ApplicationNumber,
+                    Email = cs.Email,
+                    CurrentStatus = cs.Status,
+                    TargetStatus = pa.TargetStatus,
+                    Status = pa.Status,
+                    YearsCompletedAtApplication = pa.YearsCompletedAtApplication,
+                    CreatedAt = pa.CreatedAt
+                })
+                .Take(100)
+                .ToListAsync();
+
+            _applications = apps;
+        }
+        catch (Exception ex)
+        {
+            _error = $"Error loading applications: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task ApproveApplication(Guid id)
+    {
+        try
+        {
+            _processingIds.Add(id);
+            _error = null;
+            _successMessage = null;
+
+            await ProgressionService.ApproveProgressionApplicationAsync(id);
+            _successMessage = "Progression application approved successfully. Status has been updated.";
+            await LoadApplicationsAsync(); // Reload to show updated status
+        }
+        catch (Exception ex)
+        {
+            _error = $"Error approving application: {ex.Message}";
+        }
+        finally
+        {
+            _processingIds.Remove(id);
+        }
+    }
+
+    private Color GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "Probationary" => Color.Warning,
+            "Resident" => Color.Info,
+            "Citizen" => Color.Success,
+            _ => Color.Default
+        };
+    }
+
+    private Color GetTargetStatusColor(string targetStatus)
+    {
+        return targetStatus switch
+        {
+            "Resident" => Color.Info,
+            "Citizen" => Color.Success,
+            _ => Color.Default
+        };
+    }
+
+    private Color GetApplicationStatusColor(string status)
+    {
+        return status switch
+        {
+            "Submitted" => Color.Info,
+            "Approved" => Color.Success,
+            "Rejected" => Color.Error,
+            _ => Color.Default
+        };
+    }
+}
+

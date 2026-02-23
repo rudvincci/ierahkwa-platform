@@ -1,0 +1,15 @@
+<MudPaper Class="p-4 mb-4" Elevation="3">
+    <MudText Typo="Typo.h5">Live Chat Support</MudText>
+    <MudTextField T="string" Placeholder="Type your message..." Variant="Variant.Outlined" FullWidth="true" @bind-Value="Message" />
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" OnClick="SendMessage">Send</MudButton>
+</MudPaper>
+
+@code {
+    private string Message { get; set; }
+
+    private void SendMessage()
+    {
+        Console.WriteLine($"Message sent: {Message}");
+        Message = string.Empty;
+    }
+}

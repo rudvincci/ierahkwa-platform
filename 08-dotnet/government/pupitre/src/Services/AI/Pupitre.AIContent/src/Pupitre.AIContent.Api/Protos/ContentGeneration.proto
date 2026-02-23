@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.AIContent.Api.Protos";
+
+package Pupitre.AIContent;
+
+// gRPC service for ContentGeneration operations
+service ContentGenerationService {
+    // Get a single ContentGeneration by ID
+    rpc GetContentGeneration (GetContentGenerationRequest) returns (ContentGenerationResponse) {};
+    
+    // List all ContentGenerations with pagination
+    rpc ListContentGenerations (ListContentGenerationsRequest) returns (ListContentGenerationsResponse) {};
+    
+    // Stream ContentGeneration updates
+    rpc StreamContentGenerationUpdates (StreamContentGenerationUpdatesRequest) returns (stream ContentGenerationResponse) {};
+}
+
+message GetContentGenerationRequest {
+    string id = 1;
+}
+
+message ListContentGenerationsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListContentGenerationsResponse {
+    repeated ContentGenerationResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message ContentGenerationResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamContentGenerationUpdatesRequest {
+    string filter = 1;
+}

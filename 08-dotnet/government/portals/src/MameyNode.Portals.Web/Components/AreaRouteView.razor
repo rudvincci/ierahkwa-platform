@@ -1,0 +1,71 @@
+@* AreaRouteView.razor - Resolves layouts based on application routes *@
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components
+@using System.Reflection
+@using MameyNode.Portals.Web.Components.Layout
+@* Applications *@
+@using MameyNode.Portals.Web.Components.Areas.BIIS.Layout
+@using MameyNode.Portals.Web.Components.Areas.SICB.Layout
+@using MameyNode.Portals.Web.Components.Areas.SICB.PortableBankingNode.Layout
+@using MameyNode.Portals.Web.Components.Areas.FBDETB.Layout
+@using MameyNode.Portals.Web.Components.Areas.Government.Layout
+@using MameyNode.Portals.Web.Components.Areas.FutureWampum.FutureWampumGov.Layout
+@using MameyNode.Portals.Web.Components.Areas.FutureWampum.FutureWampumId.Layout
+@using MameyNode.Portals.Web.Components.Areas.FutureWampum.FutureWampumPay.Layout
+@using MameyNode.Portals.Web.Components.Areas.FutureWampum.FutureWampumMerchant.Layout
+@using MameyNode.Portals.Web.Components.Areas.FutureWampum.FutureWampumLedger.Layout
+@using MameyNode.Portals.Web.Components.Areas.FutureWampum.FutureWampumX.Layout
+@using MameyNode.Portals.Web.Components.Areas.Infrastructure.Layout
+
+<RouteView RouteData="@RouteData" DefaultLayout="@GetLayoutForRoute()" />
+
+@code {
+    [Parameter] public RouteData? RouteData { get; set; }
+
+    private Type GetLayoutForRoute()
+    {
+        if (RouteData?.PageType == null)
+            return typeof(MainLayout);
+
+        // Get route template from page type
+        var routeAttributes = RouteData.PageType.GetCustomAttributes(typeof(Microsoft.AspNetCore.Components.RouteAttribute), false);
+        if (routeAttributes.Length == 0)
+            return typeof(MainLayout);
+
+        var routeAttr = routeAttributes[0] as Microsoft.AspNetCore.Components.RouteAttribute;
+        if (routeAttr == null || string.IsNullOrEmpty(routeAttr.Template))
+            return typeof(MainLayout);
+
+        var path = routeAttr.Template.ToLowerInvariant();
+
+        // Resolve layout based on application route prefix
+        return path switch
+        {
+            // BIIS - Bank of International Indigenous Settlements
+            var p when p.StartsWith("/biis") => typeof(BIISMainLayout),
+            // SICB - Sovereign Ierahkwa Central Bank
+            var p when p.StartsWith("/sicb") => typeof(SICBMainLayout),
+            // Portable Banking Node (part of SICB)
+            var p when p.StartsWith("/portable") || p.StartsWith("/upg") || p.StartsWith("/odl") => typeof(PortableBankingNodeMainLayout),
+            // FBDETB - Future BDET Bank
+            var p when p.StartsWith("/banking") => typeof(FBDETBMainLayout),
+            // Government Services
+            var p when p.StartsWith("/admin") || p.StartsWith("/government") || p.StartsWith("/citizen") => typeof(GovernmentMainLayout),
+            // FutureWampum Applications
+            var p when p.StartsWith("/futurewampum/gov") => typeof(FutureWampumGovMainLayout),
+            var p when p.StartsWith("/futurewampum/identity") => typeof(FutureWampumIdMainLayout),
+            var p when p.StartsWith("/payments") => typeof(FutureWampumPayMainLayout),
+            var p when p.StartsWith("/merchant") => typeof(FutureWampumMerchantMainLayout),
+            var p when p.StartsWith("/ledger") => typeof(FutureWampumLedgerMainLayout),
+            var p when p.StartsWith("/dex") || p.StartsWith("/crypto-exchange") => typeof(FutureWampumXMainLayout),
+            // MameyNode Infrastructure
+            var p when p.StartsWith("/mameynode") || p.StartsWith("/explorer") || p.StartsWith("/ilp") || 
+                       p.StartsWith("/sharding") || p.StartsWith("/metrics") || p.StartsWith("/webhooks") || 
+                       p.StartsWith("/callbacks") || p.StartsWith("/node") || 
+                       (p.StartsWith("/advanced") && p.Contains("satellite")) => typeof(InfrastructureMainLayout),
+            // Default
+            _ => typeof(MainLayout)
+        };
+    }
+}
+

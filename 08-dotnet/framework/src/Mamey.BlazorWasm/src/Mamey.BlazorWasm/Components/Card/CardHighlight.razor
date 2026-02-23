@@ -1,0 +1,50 @@
+@using Mamey.BlazorWasm.Models
+<section class="section">
+    <MudContainer>
+        <MudGrid Class="justify-center">
+            @foreach (var item in Items)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Style="transition: transform 0.2s; cursor: pointer;" @onmouseover="() => HighlightCard(item.Id)" @onmouseout="() => ResetHighlight(item.Id)" Class="@($"raffle-card-{item.Id}")">
+                        <MudCardMedia Image="@item.ImageUrl" Class="mud-elevation-1" />
+                        <MudCardContent Style="@ContentStyle" >
+                            <MudText Typo="Typo.h6" Align="Align.Center" Style="font-weight: bold">@item.Title</MudText>
+                            <MudText Typo="Typo.body2" Align="Align.Center">@item.Description</MudText>
+                            @* <MudChip T="decimal" Color="Color.Secondary" Variant="Variant.Filled" Class="mt-2"> *@
+                            @*     Tickets: @item.TicketPrice:C *@
+                            @* </MudChip> *@
+                            @* <MudText Typo="Typo.caption" Align="Align.Center" Class="mt-2"> *@
+                            @*     <MudIcon Icon="@Icons.Material.Filled.Timer" Class="mr-1" /> *@
+                            @*     Time Left: @((item.RaffleDate - DateTime.Now).ToString(@"hh\:mm\:ss")) *@
+                            @* </MudText> *@
+                        </MudCardContent>
+                        <MudCardActions Style="@CardActionStyle" Class="justify-center">
+                            <MudButton Href="@item.ButtonHref" Variant="Variant.Filled" Color="Color.Primary">
+                                Participate Now
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudContainer>
+</section>
+
+@code {
+    [Parameter] public List<FeaturedProduct> Items { get; set; }
+    [Parameter] public string ContentStyle { get; set; }
+    [Parameter] public string CardActionStyle { get; set; }
+    
+    private void HighlightCard(int id)
+    {
+        // Add hover effect for the card
+        StateHasChanged();
+    }
+
+    private void ResetHighlight(int id)
+    {
+        // Reset hover effect
+        StateHasChanged();
+    }
+
+}

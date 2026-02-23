@@ -1,0 +1,1 @@
+namespace Mamey.OpenBanking.Specifications.EventNotifications;

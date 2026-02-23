@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Advocate Office — IGT-LEGAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --gold-dark: #B8860B; --neon-green: #00FF41; --neon-cyan: #00FFFF; --bg-dark: #0a0e17; --bg-card: #0d1a2d; --border: #1e3a5f; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17 0%, #0d1a2d 50%, #1a0a2e 100%); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: var(--bg-card); border: 2px solid var(--gold); border-radius: 20px; padding: 40px; max-width: 400px; width: 90%; }
+        .logo { text-align: center; margin-bottom: 24px; }
+        .logo-icon { width: 70px; height: 70px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 32px; }
+        .logo h1 { font-family: 'Orbitron', sans-serif; color: var(--gold); margin-top: 12px; font-size: 1.4em; }
+        .logo p { color: var(--neon-cyan); font-size: 0.85em; letter-spacing: 2px; }
+        .badge { display: inline-block; background: rgba(0,255,65,0.2); color: var(--neon-green); padding: 4px 12px; border-radius: 12px; font-size: 0.75em; margin-top: 8px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #aaa; font-size: 0.95em; }
+        .form-group input { width: 100%; padding: 14px 18px; border: 2px solid var(--border); border-radius: 12px; background: rgba(0,0,0,0.3); color: #fff; font-size: 1em; }
+        .form-group input:focus { outline: none; border-color: var(--gold); }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1em; cursor: pointer; transition: all 0.3s; }
+        .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; }
+        .btn-gold:hover { box-shadow: 0 0 24px rgba(255,215,0,0.5); transform: translateY(-2px); }
+        .error { background: rgba(255,23,68,0.2); color: #ff6b8a; padding: 12px; border-radius: 10px; margin-bottom: 16px; font-size: 0.9em; display: none; }
+        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="logo">
+            <div class="logo-icon"><i class="bi bi-briefcase-fill"></i></div>
+            <h1>ADVOCATE OFFICE</h1>
+            <p>IGT-LEGAL • SOVEREIGN GOVERNMENT</p>
+            <span class="badge">.NET 10</span>
+        </div>
+        <div id="err" class="error"></div>
+        <form id="f">
+            <div class="form-group">
+                <label>Usuario</label>
+                <input type="text" id="user" name="username" placeholder="admin" required autofocus>
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="pwd" name="password" placeholder="advocate" required>
+            </div>
+            <button type="submit" class="btn btn-gold"><i class="bi bi-box-arrow-in-right"></i> Entrar</button>
+        </form>
+        <p class="footer">Demo: admin / advocate</p>
+    </div>
+    <script>
+        const API = '';
+        fetch(API + '/api/auth/check').then(r=>r.json()).then(d=>{ if(d.authenticated) location.href='index.html'; });
+        document.getElementById('f').onsubmit = async e => {
+            e.preventDefault();
+            const err = document.getElementById('err');
+            err.style.display = 'none';
+            try {
+                const r = await fetch(API + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: document.getElementById('user').value, password: document.getElementById('pwd').value }) });
+                const d = await r.json();
+                if (d.success) { localStorage.setItem('token', d.token); localStorage.setItem('user', JSON.stringify(d.user)); location.href = 'index.html'; }
+                else { err.textContent = d.error || 'Error de acceso'; err.style.display = 'block'; }
+            } catch (x) { err.textContent = 'Error de conexión.'; err.style.display = 'block'; }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+@using Mamey.FWID.Identities.BlazorWasm.Services
+@inject IBiometricCaptureService BiometricService
+@implements IAsyncDisposable
+
+<MudCard Elevation="2" Class="pa-4">
+    <MudText Typo="Typo.h6" Class="mb-3">
+        <MudIcon Icon="@Icons.Material.Filled.Mic" Class="mr-2" />
+        Voice Capture
+    </MudText>
+
+    <!-- Privacy Notice -->
+    <MudAlert Severity="Severity.Info" Class="mb-4" Dense="true">
+        <MudText Typo="Typo.body2">
+            Your voice recording will be processed to create a secure voiceprint. 
+            The original audio is not stored.
+        </MudText>
+    </MudAlert>
+
+    @if (_hasError)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">
+            @_errorMessage
+        </MudAlert>
+    }
+
+    <!-- Recording Interface -->
+    <div class="text-center py-4">
+        <!-- Microphone Icon with Level Indicator -->
+        <div style="position: relative; display: inline-block;">
+            <MudIcon Icon="@Icons.Material.Filled.Mic" 
+                     Style="font-size: 5rem;" 
+                     Color="@GetMicColor()" />
+            
+            @if (_isRecording)
+            {
+                <!-- Audio Level Ring -->
+                <div style="position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
+                            border: 3px solid var(--mud-palette-error);
+                            border-radius: 50%;
+                            animation: recording-pulse 1s ease-in-out infinite;">
+                </div>
+            }
+        </div>
+        
+        <!-- Status Text -->
+        <MudText Typo="Typo.h6" Class="mt-3">
+            @GetStatusText()
+        </MudText>
+        
+        <!-- Audio Level Visualization -->
+        @if (_isRecording)
+        {
+            <div class="audio-level-container mt-3" style="display: flex; justify-content: center; align-items: flex-end; height: 40px; gap: 4px;">
+                @for (int i = 0; i < 10; i++)
+                {
+                    var height = Math.Min(40, Math.Max(5, _audioLevel * (0.5 + (double)i / 10)));
+                    <div style="width: 6px; height: @(height)px; background: var(--mud-palette-primary); 
+                                border-radius: 3px; transition: height 0.1s;"></div>
+                }
+            </div>
+            
+            <MudText Typo="Typo.body2" Class="mt-2 mud-text-secondary">
+                Recording: @_recordingDuration.ToString(@"mm\:ss")
+            </MudText>
+        }
+        
+        <!-- Passphrase Display -->
+        @if (!string.IsNullOrEmpty(Passphrase) && !_isRecording && !_hasRecording)
+        {
+            <MudPaper Elevation="0" Class="pa-4 mt-4" Style="background: var(--mud-palette-background-grey);">
+                <MudText Typo="Typo.overline" Class="mud-text-secondary">PLEASE SAY:</MudText>
+                <MudText Typo="Typo.h5">@Passphrase</MudText>
+            </MudPaper>
+        }
+    </div>
+
+    <!-- Quality Feedback -->
+    @if (_quality != null && _quality.Issues.Any())
+    {
+        <MudAlert Severity="Severity.Warning" Class="mt-3" Dense="true">
+            @string.Join(". ", _quality.Issues)
+        </MudAlert>
+    }
+
+    @if (_quality != null && _quality.IsValid)
+    {
+        <MudAlert Severity="Severity.Success" Class="mt-3" Dense="true">
+            Voice recording accepted! Duration: @(_quality.Duration.ToString("F1")) seconds
+        </MudAlert>
+    }
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-center gap-3 mt-4">
+        <MudButton Color="Color.Default" 
+                   Variant="Variant.Outlined"
+                   OnClick="@OnCancelCallback"
+                   Disabled="@_isRecording">
+            Cancel
+        </MudButton>
+        
+        @if (!_isRecording && !_hasRecording)
+        {
+            <MudButton Color="Color.Error" 
+                       Variant="Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.Mic"
+                       OnClick="@StartRecordingAsync">
+                Start Recording
+            </MudButton>
+        }
+        else if (_isRecording)
+        {
+            <MudButton Color="Color.Warning" 
+                       Variant="Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.Stop"
+                       OnClick="@StopRecordingAsync">
+                Stop Recording
+            </MudButton>
+        }
+        else if (_hasRecording)
+        {
+            <MudButton Color="Color.Warning" 
+                       Variant="Variant.Outlined"
+                       OnClick="@RetryAsync">
+                Re-record
+            </MudButton>
+            
+            @if (_quality?.IsValid == true)
+            {
+                <MudButton Color="Color.Success" 
+                           Variant="Variant.Filled"
+                           OnClick="@ConfirmRecordingAsync">
+                    Confirm
+                </MudButton>
+            }
+        }
+    </div>
+</MudCard>
+
+<style>
+    @@keyframes recording-pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.1); }
+    }
+</style>
+
+@code {
+    [Parameter]
+    public string? Passphrase { get; set; } = "The quick brown fox jumps over the lazy dog";
+
+    [Parameter]
+    public int MinDuration { get; set; } = 3;
+
+    [Parameter]
+    public int MaxDuration { get; set; } = 10;
+
+    [Parameter]
+    public EventCallback<VoiceCaptureResult> OnCapture { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private bool _isRecording = false;
+    private bool _hasRecording = false;
+    private bool _hasError = false;
+    private string? _errorMessage;
+    private string? _recordedAudio;
+    private VoiceQualityResult? _quality;
+    private int _audioLevel = 0;
+    private TimeSpan _recordingDuration = TimeSpan.Zero;
+
+    private System.Threading.Timer? _levelTimer;
+    private System.Threading.Timer? _durationTimer;
+    private DateTime _recordingStartTime;
+
+    private async Task StartRecordingAsync()
+    {
+        _hasError = false;
+        _quality = null;
+
+        try
+        {
+            // Check permission
+            var permission = await BiometricService.CheckPermissionAsync("microphone");
+            if (permission == "denied")
+            {
+                throw new Exception("Microphone access denied. Please enable microphone permissions.");
+            }
+
+            // Check for available microphone
+            var devices = await BiometricService.GetAvailableDevicesAsync();
+            if (!devices.HasMicrophone)
+            {
+                throw new Exception("No microphone detected. Please connect a microphone.");
+            }
+
+            // Start recording
+            var success = await BiometricService.StartVoiceRecordingAsync();
+            if (!success)
+            {
+                throw new Exception("Failed to start recording.");
+            }
+
+            _isRecording = true;
+            _recordingStartTime = DateTime.UtcNow;
+            _recordingDuration = TimeSpan.Zero;
+
+            // Start level monitoring
+            _levelTimer = new System.Threading.Timer(async _ => await UpdateAudioLevelAsync(), null, 100, 100);
+            
+            // Start duration timer
+            _durationTimer = new System.Threading.Timer(async _ =>
+            {
+                _recordingDuration = DateTime.UtcNow - _recordingStartTime;
+                await InvokeAsync(StateHasChanged);
+                
+                // Auto-stop at max duration
+                if (_recordingDuration.TotalSeconds >= MaxDuration)
+                {
+                    await StopRecordingAsync();
+                }
+            }, null, 1000, 1000);
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _hasError = true;
+            _errorMessage = ex.Message;
+            StateHasChanged();
+        }
+    }
+
+    private async Task UpdateAudioLevelAsync()
+    {
+        if (!_isRecording) return;
+
+        try
+        {
+            _audioLevel = await BiometricService.GetAudioLevelAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+        catch
+        {
+            // Ignore level update errors
+        }
+    }
+
+    private async Task StopRecordingAsync()
+    {
+        // Stop timers
+        _levelTimer?.Dispose();
+        _levelTimer = null;
+        _durationTimer?.Dispose();
+        _durationTimer = null;
+
+        try
+        {
+            _recordedAudio = await BiometricService.StopVoiceRecordingAsync();
+            _isRecording = false;
+            _hasRecording = true;
+
+            // Assess quality
+            _quality = await BiometricService.AssessVoiceQualityAsync(_recordedAudio);
+        }
+        catch (Exception ex)
+        {
+            _hasError = true;
+            _errorMessage = $"Failed to stop recording: {ex.Message}";
+            _isRecording = false;
+        }
+
+        _audioLevel = 0;
+        StateHasChanged();
+    }
+
+    private async Task RetryAsync()
+    {
+        _hasRecording = false;
+        _recordedAudio = null;
+        _quality = null;
+        StateHasChanged();
+    }
+
+    private async Task ConfirmRecordingAsync()
+    {
+        if (string.IsNullOrEmpty(_recordedAudio)) return;
+
+        var result = new VoiceCaptureResult
+        {
+            Success = true,
+            AudioData = _recordedAudio,
+            Duration = _recordingDuration,
+            Quality = _quality,
+            CapturedAt = DateTime.UtcNow
+        };
+
+        await OnCapture.InvokeAsync(result);
+    }
+
+    private async Task OnCancelCallback()
+    {
+        await CleanupAsync();
+        await OnCancel.InvokeAsync();
+    }
+
+    private async Task CleanupAsync()
+    {
+        _levelTimer?.Dispose();
+        _durationTimer?.Dispose();
+
+        if (_isRecording)
+        {
+            try
+            {
+                await BiometricService.StopVoiceRecordingAsync();
+            }
+            catch { }
+        }
+    }
+
+    private Color GetMicColor()
+    {
+        if (_hasError) return Color.Error;
+        if (_isRecording) return Color.Error;
+        if (_hasRecording && _quality?.IsValid == true) return Color.Success;
+        return Color.Default;
+    }
+
+    private string GetStatusText()
+    {
+        if (_hasError) return "Error";
+        if (_isRecording) return "Recording...";
+        if (_hasRecording && _quality?.IsValid == true) return "Recording Complete";
+        if (_hasRecording && _quality?.IsValid == false) return "Please re-record";
+        return "Ready to Record";
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await CleanupAsync();
+    }
+}

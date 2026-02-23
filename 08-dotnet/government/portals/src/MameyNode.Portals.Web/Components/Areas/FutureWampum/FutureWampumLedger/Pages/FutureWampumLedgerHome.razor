@@ -1,0 +1,97 @@
+@page "/ledger"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumLedgerClient FutureWampumLedgerClient
+@inject ILogger<FutureWampumLedgerHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="FutureWampumLedger" Icon="fas fa-book" Subtitle="Blockchain ledger and transparency">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Transactions" Value="@_totalTransactions.ToString()" Icon="fas fa-list" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Blocks" Value="@_totalBlocks.ToString()" Icon="fas fa-cubes" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active Accounts" Value="@_activeAccounts.ToString()" Icon="fas fa-users" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Transactions" Elevation="2">
+                <MudText Typo="Typo.body2">View and manage transactions</MudText>
+                <MudButton Href="/ledger/transactions" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Transactions
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Blocks" Elevation="2">
+                <MudText Typo="Typo.body2">View blockchain blocks</MudText>
+                <MudButton Href="/ledger/blocks" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Blocks
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Transparency" Elevation="2">
+                <MudText Typo="Typo.body2">Transparency dashboard</MudText>
+                <MudButton Href="/ledger/transparency" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Dashboard
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private int _totalTransactions;
+    private decimal _totalVolume;
+    private int _totalBlocks;
+    private int _activeAccounts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            var transactions = await FutureWampumLedgerClient.GetTransactionsAsync(100);
+            var blocks = await FutureWampumLedgerClient.GetBlocksAsync(100);
+            var dashboard = await FutureWampumLedgerClient.GetTransparencyDashboardAsync();
+            
+            _totalTransactions = int.Parse(dashboard.TotalTransactions);
+            _totalVolume = decimal.Parse(dashboard.TotalVolume);
+            _totalBlocks = blocks.Count;
+            _activeAccounts = dashboard.ActiveAccounts;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading ledger data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

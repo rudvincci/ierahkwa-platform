@@ -1,0 +1,100 @@
+@page "/futurewampum/identity/verification"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumIdClient FutureWampumIdClient
+@inject ILogger<Verification> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Identity Verification" Icon="fas fa-user-check" Subtitle="Digital identity verification">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Verifications" Value="@_verifications.Count.ToString()" Icon="fas fa-user-check" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Verified" Value="@_verifiedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Rejected" Value="@_rejectedCount.ToString()" Icon="fas fa-times-circle" Color="#EF4444" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Identity Verifications" Class="mt-4">
+        <MudTable T="IdentityVerificationInfo" Items="@_verifications" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Verification ID</MudTh>
+                <MudTh>Identity ID</MudTh>
+                <MudTh>Verification Type</MudTh>
+                <MudTh>Verified</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Verifier</MudTh>
+                <MudTh>Verified At</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.VerificationId</MudTd>
+                <MudTd>@context.IdentityId</MudTd>
+                <MudTd>@context.VerificationType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Verified ? Color.Success : Color.Warning)">
+                        @(context.Verified ? "Yes" : "No")
+                    </MudChip>
+                </MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Verified" ? Color.Success : context.Status == "Pending" ? Color.Warning : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.VerifierId</MudTd>
+                <MudTd>@context.VerifiedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<IdentityVerificationInfo> _verifications = new();
+    private int _verifiedCount;
+    private int _pendingCount;
+    private int _rejectedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _verifications = await FutureWampumIdClient.GetIdentityVerificationsAsync();
+            _verifiedCount = _verifications.Count(v => v.Verified);
+            _pendingCount = _verifications.Count(v => v.Status == "Pending");
+            _rejectedCount = _verifications.Count(v => v.Status == "Rejected");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading identity verifications");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

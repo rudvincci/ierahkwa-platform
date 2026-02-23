@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+option csharp_namespace = "Mamey.FWID.Notifications.Api.Protos";
+
+package Services.Notification;
+
+service NotificationService {
+    rpc GetNotifications (GetNotificationsRequest) returns (GetNotificationsResponse) {}
+    rpc MarkAsRead (MarkAsReadRequest) returns (MarkAsReadResponse) {}
+    rpc SendNotification (SendNotificationRequest) returns (SendNotificationResponse) {}
+}
+
+message GetNotificationsRequest {
+    string identityId = 1;
+}
+
+message GetNotificationsResponse {
+    repeated NotificationMessage notifications = 1;
+}
+
+message MarkAsReadRequest {
+    string notificationId = 1;
+    string identityId = 2;
+}
+
+message MarkAsReadResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message SendNotificationRequest {
+    string identityId = 1;
+    string title = 2;
+    string description = 3;
+    string message = 4;
+    string notificationType = 5;
+    string relatedEntityType = 6;
+    string relatedEntityId = 7;
+}
+
+message SendNotificationResponse {
+    string notificationId = 1;
+    bool success = 2;
+    string message = 3;
+}
+
+message NotificationMessage {
+    string id = 1;
+    string identityId = 2;
+    string title = 3;
+    string description = 4;
+    string message = 5;
+    string type = 6;
+    string status = 7;
+    int64 createdAt = 8;
+    int64 sentAt = 9;
+    int64 readAt = 10;
+    bool isRead = 11;
+    string relatedEntityType = 12;
+    string relatedEntityId = 13;
+}
+
+
+
+
+
+
+

@@ -1,0 +1,94 @@
+@page "/banking/cards"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFBDETBClient FBDETBClient
+@inject ILogger<Cards> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Card Services" Icon="fas fa-credit-card" Subtitle="Card management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Cards" Value="@_cards.Count.ToString()" Icon="fas fa-credit-card" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Virtual" Value="@_virtualCount.ToString()" Icon="fas fa-mobile-alt" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Physical" Value="@_physicalCount.ToString()" Icon="fas fa-credit-card" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Cards" Class="mt-4">
+        <MudTable T="CardInfo" Items="@_cards" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Card ID</MudTh>
+                <MudTh>Account</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Expiry</MudTh>
+                <MudTh>Issued</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.CardId</MudTd>
+                <MudTd>@context.AccountId</MudTd>
+                <MudTd>@context.CardType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.ExpiryDate.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@context.IssuedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<CardInfo> _cards = new();
+    private int _activeCount;
+    private int _virtualCount;
+    private int _physicalCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _cards = await FBDETBClient.GetCardsAsync();
+            _activeCount = _cards.Count(c => c.IsActive);
+            _virtualCount = _cards.Count(c => c.CardType == "Virtual");
+            _physicalCount = _cards.Count(c => c.CardType == "Physical");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading cards");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

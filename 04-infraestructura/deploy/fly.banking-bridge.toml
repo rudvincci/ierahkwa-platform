@@ -1,0 +1,27 @@
+# Fly.io - Banking Bridge
+# Uso: desde la raíz:  fly launch -c RuddieSolution/deploy/fly.banking-bridge.toml
+# Configura: fly secrets set BANKING_API_URL=https://tu-banking-api.fly.dev
+#      fly deploy -c RuddieSolution/deploy/fly.banking-bridge.toml
+
+app = "ierahkwa-banking-bridge"
+
+[build]
+  context = "RuddieSolution"
+  dockerfile = "RuddieSolution/deploy/Dockerfile.banking-bridge"
+
+[env]
+  NODE_ENV = "production"
+  BRIDGE_PORT = "3001"
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

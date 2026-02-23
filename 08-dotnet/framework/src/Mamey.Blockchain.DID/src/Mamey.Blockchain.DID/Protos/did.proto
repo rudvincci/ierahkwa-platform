@@ -1,0 +1,269 @@
+syntax = "proto3";
+
+package mamey.did;
+
+option csharp_namespace = "Mamey.DID";
+
+// DID Service for MameyNode blockchain
+// Implements W3C DID Core specification for did:futurewampum method
+service DIDService {
+    // Issue a new DID
+    rpc IssueDID(IssueDIDRequest) returns (IssueDIDResponse);
+    
+    // Resolve a DID to its DID Document
+    rpc ResolveDID(ResolveDIDRequest) returns (ResolveDIDResponse);
+    
+    // Update a DID Document
+    rpc UpdateDIDDocument(UpdateDIDDocumentRequest) returns (UpdateDIDDocumentResponse);
+    
+    // Revoke/Deactivate a DID
+    rpc RevokeDID(RevokeDIDRequest) returns (RevokeDIDResponse);
+    
+    // Get DID history (all versions)
+    rpc GetDIDHistory(GetDIDHistoryRequest) returns (GetDIDHistoryResponse);
+    
+    // Verify DID ownership
+    rpc VerifyDIDOwnership(VerifyDIDOwnershipRequest) returns (VerifyDIDOwnershipResponse);
+    
+    // List DIDs for a controller
+    rpc ListDIDs(ListDIDsRequest) returns (ListDIDsResponse);
+    
+    // Add verification method to DID Document
+    rpc AddVerificationMethod(AddVerificationMethodRequest) returns (AddVerificationMethodResponse);
+    
+    // Remove verification method from DID Document
+    rpc RemoveVerificationMethod(RemoveVerificationMethodRequest) returns (RemoveVerificationMethodResponse);
+    
+    // Add service endpoint to DID Document
+    rpc AddService(AddServiceRequest) returns (AddServiceResponse);
+    
+    // Remove service endpoint from DID Document
+    rpc RemoveService(RemoveServiceRequest) returns (RemoveServiceResponse);
+}
+
+// Issue DID request - creates a new did:futurewampum DID
+message IssueDIDRequest {
+    string controller = 1;                    // The controller (usually an account ID)
+    string method = 2;                        // DID method (default: "futurewampum")
+    repeated VerificationMethod verification_methods = 3;  // Initial verification methods
+    repeated Service services = 4;            // Initial services
+    map<string, string> metadata = 5;         // Additional metadata
+}
+
+// Issue DID response
+message IssueDIDResponse {
+    string did = 1;                           // The issued DID (e.g., did:futurewampum:abc123)
+    string did_document = 2;                  // The DID Document as JSON string
+    string transaction_hash = 3;              // Blockchain transaction hash
+    bool success = 4;
+    string error_message = 5;
+}
+
+// Resolve DID request
+message ResolveDIDRequest {
+    string did = 1;                           // The DID to resolve
+    bool include_metadata = 2;                // Include resolution metadata
+    uint64 version = 3;                       // Specific version (0 = latest)
+}
+
+// Resolve DID response
+message ResolveDIDResponse {
+    string did_document = 1;                  // The DID Document as JSON string
+    DIDDocumentMetadata metadata = 2;         // Document metadata
+    DIDResolutionMetadata resolution_metadata = 3;  // Resolution metadata
+    bool success = 4;
+    string error_message = 5;
+}
+
+// Update DID Document request
+message UpdateDIDDocumentRequest {
+    string did = 1;                           // The DID to update
+    string did_document = 2;                  // The new DID Document as JSON string
+    string proof = 3;                         // Cryptographic proof/signature
+    string reason = 4;                        // Reason for update
+}
+
+// Update DID Document response
+message UpdateDIDDocumentResponse {
+    string transaction_hash = 1;
+    uint64 new_version = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Revoke DID request
+message RevokeDIDRequest {
+    string did = 1;                           // The DID to revoke
+    string proof = 2;                         // Cryptographic proof/signature
+    string reason = 3;                        // Reason for revocation
+}
+
+// Revoke DID response
+message RevokeDIDResponse {
+    string transaction_hash = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get DID history request
+message GetDIDHistoryRequest {
+    string did = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// Get DID history response
+message GetDIDHistoryResponse {
+    repeated DIDHistoryEntry entries = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// DID history entry
+message DIDHistoryEntry {
+    uint64 version = 1;
+    string did_document = 2;                  // DID Document at this version
+    string action = 3;                        // "created", "updated", "deactivated"
+    string actor = 4;                         // Who made the change
+    uint64 timestamp = 5;
+    string transaction_hash = 6;
+    string reason = 7;
+}
+
+// Verify DID ownership request
+message VerifyDIDOwnershipRequest {
+    string did = 1;
+    string challenge = 2;                     // Challenge to sign
+    string signature = 3;                     // Signature of challenge
+    string verification_method_id = 4;        // Which verification method to use
+}
+
+// Verify DID ownership response
+message VerifyDIDOwnershipResponse {
+    bool verified = 1;
+    string verification_method_used = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// List DIDs request
+message ListDIDsRequest {
+    string controller = 1;                    // Controller to list DIDs for
+    bool include_deactivated = 2;
+    uint32 limit = 3;
+    uint32 offset = 4;
+}
+
+// List DIDs response
+message ListDIDsResponse {
+    repeated DIDInfo dids = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// DID info
+message DIDInfo {
+    string did = 1;
+    DIDStatus status = 2;
+    uint64 created = 3;
+    uint64 updated = 4;
+    uint64 version = 5;
+}
+
+// Add verification method request
+message AddVerificationMethodRequest {
+    string did = 1;
+    VerificationMethod verification_method = 2;
+    string proof = 3;
+}
+
+// Add verification method response
+message AddVerificationMethodResponse {
+    string transaction_hash = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Remove verification method request
+message RemoveVerificationMethodRequest {
+    string did = 1;
+    string verification_method_id = 2;        // ID of the verification method to remove
+    string proof = 3;
+}
+
+// Remove verification method response
+message RemoveVerificationMethodResponse {
+    string transaction_hash = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Add service request
+message AddServiceRequest {
+    string did = 1;
+    Service service = 2;
+    string proof = 3;
+}
+
+// Add service response
+message AddServiceResponse {
+    string transaction_hash = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Remove service request
+message RemoveServiceRequest {
+    string did = 1;
+    string service_id = 2;
+    string proof = 3;
+}
+
+// Remove service response
+message RemoveServiceResponse {
+    string transaction_hash = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Verification method (W3C DID Core)
+message VerificationMethod {
+    string id = 1;                            // e.g., did:futurewampum:123#key-1
+    string type = 2;                          // e.g., Ed25519VerificationKey2020
+    string controller = 3;
+    string public_key_multibase = 4;          // Multibase-encoded public key
+    string public_key_jwk = 5;                // JWK-encoded public key (alternative)
+}
+
+// Service endpoint (W3C DID Core)
+message Service {
+    string id = 1;                            // e.g., did:futurewampum:123#service-1
+    string type = 2;                          // e.g., LinkedDomains, CredentialRegistry
+    string service_endpoint = 3;              // URL or JSON object
+}
+
+// DID Document metadata (W3C DID Resolution)
+message DIDDocumentMetadata {
+    uint64 created = 1;
+    uint64 updated = 2;
+    uint64 version_id = 3;
+    bool deactivated = 4;
+    string canonical_id = 5;
+}
+
+// DID Resolution metadata (W3C DID Resolution)
+message DIDResolutionMetadata {
+    string content_type = 1;                  // "application/did+json"
+    string error = 2;                         // Error code if resolution failed
+    string error_message = 3;
+    uint64 duration = 4;                      // Resolution duration in ms
+}
+
+// DID status enum
+enum DIDStatus {
+    ACTIVE = 0;
+    DEACTIVATED = 1;
+    SUSPENDED = 2;
+}

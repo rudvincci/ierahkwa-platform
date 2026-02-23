@@ -1,0 +1,62 @@
+@page "/gov/library"
+@attribute [Authorize(Roles = "Admin,GovernmentAgent,LibraryEditor")]
+
+<PageTitle>Library Management - Government Portal</PageTitle>
+
+<MudPaper Elevation="0" Class="pa-6">
+    <MudStack Spacing="4">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h4" Color="Color.Primary">Library Management</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Upload">
+                Upload Document
+            </MudButton>
+        </MudStack>
+
+        <MudTextField @bind-Value="_searchQuery" Label="Search" Variant="Variant.Outlined"
+                      Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                      Placeholder="Search documents..." />
+
+        <MudTable Items="@_documents" Hover="true" Striped="true" Dense="true" Elevation="2">
+            <HeaderContent>
+                <MudTh>Title</MudTh>
+                <MudTh>Category</MudTh>
+                <MudTh>Uploaded By</MudTh>
+                <MudTh>Date</MudTh>
+                <MudTh>Published</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Title</MudTd>
+                <MudTd><MudChip T="string" Size="Size.Small">@context.Category</MudChip></MudTd>
+                <MudTd>@context.UploadedBy</MudTd>
+                <MudTd>@context.Date.ToString("MMM dd, yyyy")</MudTd>
+                <MudTd>
+                    <MudSwitch T="bool" Value="@context.Published" Color="Color.Success" ReadOnly="true" />
+                </MudTd>
+                <MudTd>
+                    <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
+                        <MudButton Color="Color.Primary">Edit</MudButton>
+                        <MudButton Color="Color.Error">Delete</MudButton>
+                    </MudButtonGroup>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudStack>
+</MudPaper>
+
+@code {
+    private string _searchQuery = "";
+
+    private record Document(string Title, string Category, string UploadedBy, DateTime Date, bool Published);
+
+    private readonly List<Document> _documents = new()
+    {
+        new("Constitution", "Legal", "Admin", DateTime.Now.AddMonths(-12), true),
+        new("Annual Report 2024", "Reports", "Secretary", DateTime.Now.AddDays(-30), true),
+        new("Budget Proposal", "Finance", "Treasury", DateTime.Now.AddDays(-15), false),
+        new("Cultural Guidelines", "Culture", "Editor", DateTime.Now.AddDays(-5), true)
+    };
+}

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Management - Smart Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #4f46e5; --primary-dark: #4338ca; --success: #10b981; --warning: #f59e0b;
+      --danger: #ef4444; --info: #06b6d4; --bg-primary: #0f172a; --bg-secondary: #1e293b;
+      --bg-tertiary: #334155; --text-primary: #f8fafc; --text-secondary: #94a3b8; --border-color: #334155;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+    .dashboard { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: var(--bg-secondary); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; position: fixed; height: 100vh; }
+    .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+    .sidebar-header h1 { font-size: 1.25rem; background: linear-gradient(135deg, #818cf8, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+    .nav-section { margin-bottom: 1rem; }
+    .nav-section-title { padding: 0.5rem 1.5rem; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+    .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.5rem; color: var(--text-secondary); font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .nav-item:hover, .nav-item.active { background: var(--bg-tertiary); color: var(--text-primary); border-left: 3px solid var(--primary); }
+    .nav-item svg { width: 20px; height: 20px; }
+    .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); }
+    .user-info { display: flex; align-items: center; gap: 0.75rem; }
+    .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--warning); display: flex; align-items: center; justify-content: center; font-weight: 600; }
+    .user-details .name { font-weight: 500; font-size: 0.9375rem; }
+    .user-details .role { color: var(--text-secondary); font-size: 0.75rem; }
+    .main-content { flex: 1; margin-left: 260px; padding: 1.5rem 2rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .page-header h2 { font-size: 1.5rem; font-weight: 600; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 0.75rem; padding: 1.5rem; transition: transform 0.2s; }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .stat-icon { width: 48px; height: 48px; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; }
+    .stat-icon.primary { background: rgba(79, 70, 229, 0.2); color: #818cf8; }
+    .stat-icon.success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .stat-icon.warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .stat-icon.danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+    .stat-icon.info { background: rgba(6, 182, 212, 0.2); color: var(--info); }
+    .stat-value { font-size: 1.75rem; font-weight: 700; line-height: 1.2; }
+    .stat-label { color: var(--text-secondary); font-size: 0.875rem; margin-top: 0.25rem; }
+    .card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 0.75rem; overflow: hidden; margin-bottom: 1.5rem; }
+    .card-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .card-header h3 { font-size: 1rem; font-weight: 600; }
+    .card-body { padding: 1.5rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .chart-container { position: relative; height: 250px; width: 100%; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.875rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+    th { color: var(--text-secondary); font-weight: 500; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.05em; background: var(--bg-tertiary); }
+    td { font-size: 0.9rem; }
+    tr:hover { background: var(--bg-tertiary); }
+    .badge { display: inline-flex; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 600; border-radius: 9999px; }
+    .badge-primary { background: rgba(79, 70, 229, 0.2); color: #818cf8; }
+    .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+    .badge-info { background: rgba(6, 182, 212, 0.2); color: var(--info); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1.5rem; font-size: 0.9375rem; font-weight: 500; border: none; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
+    .form-control { width: 100%; padding: 0.75rem 1rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 0.5rem; color: var(--text-primary); font-size: 1rem; }
+    .form-control:focus { outline: none; border-color: var(--primary); }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; font-weight: 500; }
+    .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; }
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+    .modal { background: var(--bg-secondary); border-radius: 0.75rem; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; transform: scale(0.9); transition: transform 0.3s; }
+    .modal-overlay.active .modal { transform: scale(1); }
+    .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { font-size: 1.125rem; font-weight: 600; }
+    .modal-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.5rem; }
+    .modal-body { padding: 1.5rem; }
+    .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 0.75rem; }
+    .text-muted { color: var(--text-secondary); }
+    .text-success { color: var(--success); }
+    .text-danger { color: var(--danger); }
+    .text-warning { color: var(--warning); }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .mt-2 { margin-top: 1rem; }
+    .alert { padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; }
+    .alert-warning { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); color: var(--warning); }
+    .alert-danger { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); }
+    @media (max-width: 1024px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; padding: 1rem; } .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>Smart Platform</h1>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">Inventory Management</div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Inventory</div>
+          <div class="nav-item active" data-section="dashboard">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            Dashboard
+          </div>
+          <div class="nav-item" data-section="stock">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            Stock Levels
+          </div>
+          <div class="nav-item" data-section="warehouses">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            Warehouses
+          </div>
+          <div class="nav-item" data-section="suppliers">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+            Suppliers
+          </div>
+          <div class="nav-item" data-section="movements">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+            Movements
+          </div>
+          <div class="nav-item" data-section="purchase-orders">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Purchase Orders
+          </div>
+          <div class="nav-item" data-section="adjustments">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Adjustments
+          </div>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">Platform</div>
+          <a href="/" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Shop</a>
+          <a href="/chat" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</a>
+          <a href="/pos" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>POS</a>
+          <a href="/admin" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Admin</a>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">A</div>
+          <div class="user-details">
+            <div class="name" id="userName">Administrator</div>
+            <div class="role" id="userRole">Admin</div>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 0.75rem;" onclick="logout()">Sign Out</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <!-- Dashboard -->
+      <section id="dashboard-section" class="section">
+        <div class="page-header"><h2>Inventory Dashboard</h2></div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-header"><div><div class="stat-value" id="totalWarehouses">-</div><div class="stat-label">Warehouses</div></div><div class="stat-icon primary"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div></div></div>
+          <div class="stat-card"><div class="stat-header"><div><div class="stat-value" id="totalSuppliers">-</div><div class="stat-label">Suppliers</div></div><div class="stat-icon info"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg></div></div></div>
+          <div class="stat-card"><div class="stat-header"><div><div class="stat-value" id="totalItems">-</div><div class="stat-label">Total Items</div></div><div class="stat-icon success"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div></div></div>
+          <div class="stat-card"><div class="stat-header"><div><div class="stat-value" id="totalValue">-</div><div class="stat-label">Stock Value</div></div><div class="stat-icon warning"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div></div></div>
+          <div class="stat-card"><div class="stat-header"><div><div class="stat-value text-warning" id="lowStock">-</div><div class="stat-label">Low Stock</div></div><div class="stat-icon warning"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div></div></div>
+          <div class="stat-card"><div class="stat-header"><div><div class="stat-value text-danger" id="outOfStock">-</div><div class="stat-label">Out of Stock</div></div><div class="stat-icon danger"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg></div></div></div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="card"><div class="card-header"><h3>Warehouse Stock Distribution</h3></div><div class="card-body"><div class="chart-container"><canvas id="warehouseChart"></canvas></div></div></div>
+          <div class="card"><div class="card-header"><h3>Low Stock Alerts</h3></div><div class="card-body"><div id="lowStockAlerts"></div></div></div>
+        </div>
+        
+        <div class="card mt-2"><div class="card-header"><h3>Recent Movements</h3></div><div class="card-body"><table><thead><tr><th>Type</th><th>Item</th><th>Warehouse</th><th>Qty</th><th>Date</th></tr></thead><tbody id="recentMovementsTable"><tr><td colspan="5" class="text-center text-muted">Loading...</td></tr></tbody></table></div></div>
+      </section>
+
+      <!-- Stock Levels -->
+      <section id="stock-section" class="section" style="display: none;">
+        <div class="page-header"><h2>Stock Levels</h2><button class="btn btn-primary btn-sm" onclick="showModal('stockModal')">Add Stock</button></div>
+        <div class="card"><div class="card-body"><table><thead><tr><th>Item</th><th>Warehouse</th><th>Qty</th><th>Reserved</th><th>Available</th><th>Min</th><th>Status</th><th>Value</th></tr></thead><tbody id="stockTable"><tr><td colspan="8" class="text-center text-muted">Loading...</td></tr></tbody></table></div></div>
+      </section>
+
+      <!-- Warehouses -->
+      <section id="warehouses-section" class="section" style="display: none;">
+        <div class="page-header"><h2>Warehouses</h2><button class="btn btn-primary btn-sm" onclick="showModal('warehouseModal')">Add Warehouse</button></div>
+        <div class="card"><div class="card-body"><table><thead><tr><th>Name</th><th>Code</th><th>Location</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead><tbody id="warehousesTable"><tr><td colspan="6" class="text-center text-muted">Loading...</td></tr></tbody></table></div></div>
+      </section>
+
+      <!-- Suppliers -->
+      <section id="suppliers-section" class="section" style="display: none;">
+        <div class="page-header"><h2>Suppliers</h2><button class="btn btn-primary btn-sm" onclick="showModal('supplierModal')">Add Supplier</button></div>
+        <div class="card"><div class="card-body"><table><thead><tr><th>Name</th><th>Code</th><th>Contact</th><th>Email</th><th>Phone</th><th>Status</th><th>Actions</th></tr></thead><tbody id="suppliersTable"><tr><td colspan="7" class="text-center text-muted">Loading...</td></tr></tbody></table></div></div>
+      </section>
+
+      <!-- Movements -->
+      <section id="movements-section" class="section" style="display: none;">
+        <div class="page-header"><h2>Stock Movements</h2><button class="btn btn-primary btn-sm" onclick="showModal('movementModal')">Record Movement</button></div>
+        <div class="card"><div class="card-body"><table><thead><tr><th>Date</th><th>Type</th><th>Item</th><th>Warehouse</th><th>Qty</th><th>Before</th><th>After</th><th>Reference</th><th>User</th></tr></thead><tbody id="movementsTable"><tr><td colspan="9" class="text-center text-muted">Loading...</td></tr></tbody></table></div></div>
+      </section>
+
+      <!-- Purchase Orders -->
+      <section id="purchase-orders-section" class="section" style="display: none;">
+        <div class="page-header"><h2>Purchase Orders</h2><button class="btn btn-primary btn-sm" onclick="showModal('poModal')">Create PO</button></div>
+        <div class="card"><div class="card-body"><table><thead><tr><th>PO #</th><th>Supplier</th><th>Warehouse</th><th>Total</th><th>Status</th><th>Expected</th><th>Actions</th></tr></thead><tbody id="poTable"><tr><td colspan="7" class="text-center text-muted">Loading...</td></tr></tbody></table></div></div>
+      </section>
+
+      <!-- Adjustments -->
+      <section id="adjustments-section" class="section" style="display: none;">
+        <div class="page-header"><h2>Stock Adjustments</h2><button class="btn btn-primary btn-sm" onclick="showModal('adjustmentModal')">New Adjustment</button></div>
+        <div class="card"><div class="card-body"><table><thead><tr><th>Adj #</th><th>Warehouse</th><th>Reason</th><th>Items</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead><tbody id="adjustmentsTable"><tr><td colspan="7" class="text-center text-muted">Loading...</td></tr></tbody></table></div></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal-overlay" id="warehouseModal">
+    <div class="modal">
+      <div class="modal-header"><h3>Add Warehouse</h3><button class="modal-close" onclick="closeModal('warehouseModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="warehouseForm">
+          <div class="form-row"><div class="form-group"><label>Name *</label><input type="text" class="form-control" name="name" required></div><div class="form-group"><label>Code *</label><input type="text" class="form-control" name="code" required placeholder="e.g. WH-001"></div></div>
+          <div class="form-group"><label>Address</label><input type="text" class="form-control" name="address"></div>
+          <div class="form-row"><div class="form-group"><label>City</label><input type="text" class="form-control" name="city"></div><div class="form-group"><label>Country</label><input type="text" class="form-control" name="country"></div></div>
+          <div class="form-row"><div class="form-group"><label>Phone</label><input type="tel" class="form-control" name="phone"></div><div class="form-group"><label>Email</label><input type="email" class="form-control" name="email"></div></div>
+          <div class="form-row"><div class="form-group"><label>Manager</label><input type="text" class="form-control" name="manager"></div><div class="form-group"><label>Type</label><select class="form-control" name="type"><option value="warehouse">Warehouse</option><option value="store">Store</option><option value="distribution">Distribution Center</option></select></div></div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('warehouseModal')">Cancel</button><button class="btn btn-primary" onclick="submitWarehouse()">Add Warehouse</button></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="supplierModal">
+    <div class="modal">
+      <div class="modal-header"><h3>Add Supplier</h3><button class="modal-close" onclick="closeModal('supplierModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="supplierForm">
+          <div class="form-row"><div class="form-group"><label>Company Name *</label><input type="text" class="form-control" name="name" required></div><div class="form-group"><label>Code</label><input type="text" class="form-control" name="code" placeholder="Auto-generated if empty"></div></div>
+          <div class="form-row"><div class="form-group"><label>Contact Name</label><input type="text" class="form-control" name="contactName"></div><div class="form-group"><label>Email</label><input type="email" class="form-control" name="email"></div></div>
+          <div class="form-row"><div class="form-group"><label>Phone</label><input type="tel" class="form-control" name="phone"></div><div class="form-group"><label>Tax ID</label><input type="text" class="form-control" name="taxId"></div></div>
+          <div class="form-group"><label>Address</label><input type="text" class="form-control" name="address"></div>
+          <div class="form-row"><div class="form-group"><label>City</label><input type="text" class="form-control" name="city"></div><div class="form-group"><label>Country</label><input type="text" class="form-control" name="country"></div></div>
+          <div class="form-group"><label>Payment Terms</label><select class="form-control" name="paymentTerms"><option value="net30">Net 30</option><option value="net60">Net 60</option><option value="net15">Net 15</option><option value="cod">COD</option></select></div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('supplierModal')">Cancel</button><button class="btn btn-primary" onclick="submitSupplier()">Add Supplier</button></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="movementModal">
+    <div class="modal">
+      <div class="modal-header"><h3>Record Stock Movement</h3><button class="modal-close" onclick="closeModal('movementModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="movementForm">
+          <div class="form-row"><div class="form-group"><label>Warehouse *</label><select class="form-control" name="warehouseId" id="movementWarehouse" required></select></div><div class="form-group"><label>Item *</label><select class="form-control" name="itemId" id="movementItem" required></select></div></div>
+          <div class="form-row"><div class="form-group"><label>Type *</label><select class="form-control" name="type" required><option value="in">Stock In</option><option value="out">Stock Out</option><option value="return">Return</option><option value="damage">Damage</option><option value="expired">Expired</option></select></div><div class="form-group"><label>Quantity *</label><input type="number" class="form-control" name="quantity" min="1" required></div></div>
+          <div class="form-row"><div class="form-group"><label>Unit Cost</label><input type="number" class="form-control" name="unitCost" min="0" step="0.01"></div><div class="form-group"><label>Reference</label><input type="text" class="form-control" name="reference" placeholder="e.g. Invoice #"></div></div>
+          <div class="form-group"><label>Notes</label><textarea class="form-control" name="notes" rows="2"></textarea></div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('movementModal')">Cancel</button><button class="btn btn-primary" onclick="submitMovement()">Record Movement</button></div>
+    </div>
+  </div>
+
+  <script>
+    // Auth check
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/me');
+        if (!res.ok) { window.location.href = '/login'; return null; }
+        return await res.json();
+      } catch { window.location.href = '/login'; return null; }
+    }
+
+    let user = null;
+    let warehouseChart;
+    let warehouses = [], suppliers = [], items = [];
+
+    // Init
+    (async () => {
+      user = await checkAuth();
+      if (user) {
+        document.getElementById('userName').textContent = user.full_name || user.username;
+        document.getElementById('userRole').textContent = user.role || 'User';
+        document.getElementById('userAvatar').textContent = (user.full_name || user.username).charAt(0).toUpperCase();
+        await loadBasicData();
+        loadDashboard();
+      }
+    })();
+
+    // Load basic data for dropdowns
+    async function loadBasicData() {
+      try {
+        const [wRes, sRes, iRes] = await Promise.all([
+          fetch('/api/inventory/warehouses').then(r => r.json()),
+          fetch('/api/inventory/suppliers').then(r => r.json()),
+          fetch('/api/items').then(r => r.json())
+        ]);
+        warehouses = wRes.warehouses || [];
+        suppliers = sRes.suppliers || [];
+        items = iRes || [];
+        
+        // Populate dropdowns
+        const whOptions = warehouses.map(w => `<option value="${w.id}">${w.name} (${w.code})</option>`).join('');
+        const itemOptions = items.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
+        
+        document.getElementById('movementWarehouse').innerHTML = '<option value="">Select...</option>' + whOptions;
+        document.getElementById('movementItem').innerHTML = '<option value="">Select...</option>' + itemOptions;
+      } catch (err) { console.error('Load basic data error:', err); }
+    }
+
+    // Navigation
+    document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+      item.addEventListener('click', () => {
+        const section = item.dataset.section;
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.getElementById(`${section}-section`).style.display = 'block';
+        if (section === 'dashboard') loadDashboard();
+        else if (section === 'stock') loadStock();
+        else if (section === 'warehouses') loadWarehouses();
+        else if (section === 'suppliers') loadSuppliers();
+        else if (section === 'movements') loadMovements();
+        else if (section === 'purchase-orders') loadPurchaseOrders();
+        else if (section === 'adjustments') loadAdjustments();
+      });
+    });
+
+    const formatCurrency = (amt) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amt || 0);
+    const formatDate = (d) => d ? new Date(d).toLocaleDateString() : '-';
+    const getStatusBadge = (status) => {
+      const colors = { active: 'success', inactive: 'secondary', draft: 'primary', sent: 'info', confirmed: 'info', partial: 'warning', received: 'success', cancelled: 'danger', approved: 'success' };
+      return `<span class="badge badge-${colors[status] || 'primary'}">${status}</span>`;
+    };
+    const getTypeBadge = (type) => {
+      const colors = { in: 'success', out: 'danger', adjustment: 'warning', transfer_in: 'info', transfer_out: 'info', return: 'primary', damage: 'danger', expired: 'danger' };
+      return `<span class="badge badge-${colors[type] || 'primary'}">${type}</span>`;
+    };
+
+    // API helper
+    async function api(endpoint, options = {}) {
+      const res = await fetch(`/api/inventory${endpoint}`, {
+        ...options,
+        headers: { 'Content-Type': 'application/json', ...options.headers },
+        body: options.body ? JSON.stringify(options.body) : undefined
+      });
+      return res.json();
+    }
+
+    // Dashboard
+    async function loadDashboard() {
+      try {
+        const data = await api('/dashboard');
+        document.getElementById('totalWarehouses').textContent = data.summary.totalWarehouses;
+        document.getElementById('totalSuppliers').textContent = data.summary.totalSuppliers;
+        document.getElementById('totalItems').textContent = data.summary.totalItems;
+        document.getElementById('totalValue').textContent = formatCurrency(data.summary.totalStockValue);
+        document.getElementById('lowStock').textContent = data.summary.lowStockCount;
+        document.getElementById('outOfStock').textContent = data.summary.outOfStockCount;
+
+        // Warehouse chart
+        if (warehouseChart) warehouseChart.destroy();
+        const ctx = document.getElementById('warehouseChart').getContext('2d');
+        warehouseChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: data.warehouseStock.map(w => w.name),
+            datasets: [{ label: 'Items', data: data.warehouseStock.map(w => w.totalItems), backgroundColor: '#4f46e5' }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, x: { ticks: { color: '#94a3b8' }, grid: { display: false } } } }
+        });
+
+        // Low stock alerts
+        document.getElementById('lowStockAlerts').innerHTML = data.lowStockItems.length > 0 
+          ? data.lowStockItems.map(i => `<div class="alert alert-warning"><strong>${i.itemName}</strong> at ${i.warehouseName}: ${i.quantity}/${i.minQuantity}</div>`).join('')
+          : '<p class="text-muted">No low stock alerts</p>';
+
+        // Recent movements
+        document.getElementById('recentMovementsTable').innerHTML = data.recentMovements.map(m => `
+          <tr><td>${getTypeBadge(m.type)}</td><td>${m.itemName}</td><td>${m.warehouseName}</td><td>${m.quantity}</td><td>${formatDate(m.createdAt)}</td></tr>
+        `).join('') || '<tr><td colspan="5" class="text-center text-muted">No movements</td></tr>';
+      } catch (err) { console.error('Dashboard error:', err); }
+    }
+
+    // Stock
+    async function loadStock() {
+      try {
+        const data = await api('/stock');
+        document.getElementById('stockTable').innerHTML = data.stock.map(s => {
+          const status = s.quantity === 0 ? '<span class="badge badge-danger">Out</span>' : s.quantity <= s.minQuantity ? '<span class="badge badge-warning">Low</span>' : '<span class="badge badge-success">OK</span>';
+          return `<tr><td>${s.itemName}</td><td>${s.warehouseName}</td><td>${s.quantity}</td><td>${s.reservedQuantity}</td><td>${s.availableQuantity}</td><td>${s.minQuantity}</td><td>${status}</td><td>${formatCurrency(s.totalValue)}</td></tr>`;
+        }).join('') || '<tr><td colspan="8" class="text-center text-muted">No stock data</td></tr>';
+      } catch (err) { console.error('Stock error:', err); }
+    }
+
+    // Warehouses
+    async function loadWarehouses() {
+      try {
+        const data = await api('/warehouses');
+        document.getElementById('warehousesTable').innerHTML = data.warehouses.map(w => `
+          <tr><td>${w.name}</td><td>${w.code}</td><td>${w.city || '-'}, ${w.country || '-'}</td><td>${w.type}</td><td>${getStatusBadge(w.status)}</td><td><button class="btn btn-secondary btn-sm">Edit</button></td></tr>
+        `).join('') || '<tr><td colspan="6" class="text-center text-muted">No warehouses</td></tr>';
+      } catch (err) { console.error('Warehouses error:', err); }
+    }
+
+    // Suppliers
+    async function loadSuppliers() {
+      try {
+        const data = await api('/suppliers');
+        document.getElementById('suppliersTable').innerHTML = data.suppliers.map(s => `
+          <tr><td>${s.name}</td><td>${s.code}</td><td>${s.contactName || '-'}</td><td>${s.email || '-'}</td><td>${s.phone || '-'}</td><td>${getStatusBadge(s.status)}</td><td><button class="btn btn-secondary btn-sm">Edit</button></td></tr>
+        `).join('') || '<tr><td colspan="7" class="text-center text-muted">No suppliers</td></tr>';
+      } catch (err) { console.error('Suppliers error:', err); }
+    }
+
+    // Movements
+    async function loadMovements() {
+      try {
+        const data = await api('/movements');
+        document.getElementById('movementsTable').innerHTML = data.movements.map(m => `
+          <tr><td>${formatDate(m.createdAt)}</td><td>${getTypeBadge(m.type)}</td><td>${m.itemName}</td><td>${m.warehouseName}</td><td>${m.quantity}</td><td>${m.quantityBefore}</td><td>${m.quantityAfter}</td><td>${m.reference || '-'}</td><td>${m.userName || '-'}</td></tr>
+        `).join('') || '<tr><td colspan="9" class="text-center text-muted">No movements</td></tr>';
+      } catch (err) { console.error('Movements error:', err); }
+    }
+
+    // Purchase Orders
+    async function loadPurchaseOrders() {
+      try {
+        const data = await api('/purchase-orders');
+        document.getElementById('poTable').innerHTML = data.orders.map(o => `
+          <tr><td>${o.orderNumber}</td><td>${o.supplierName}</td><td>${o.warehouseName}</td><td>${formatCurrency(o.total)}</td><td>${getStatusBadge(o.status)}</td><td>${formatDate(o.expectedDate)}</td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+        `).join('') || '<tr><td colspan="7" class="text-center text-muted">No purchase orders</td></tr>';
+      } catch (err) { console.error('PO error:', err); }
+    }
+
+    // Adjustments
+    async function loadAdjustments() {
+      try {
+        const data = await api('/adjustments');
+        document.getElementById('adjustmentsTable').innerHTML = data.adjustments.map(a => `
+          <tr><td>${a.adjustmentNumber}</td><td>${a.warehouseName}</td><td>${a.reason}</td><td>${a.totalItems}</td><td>${formatCurrency(a.totalValue)}</td><td>${getStatusBadge(a.status)}</td><td>${a.status === 'draft' ? '<button class="btn btn-success btn-sm" onclick="approveAdjustment(' + a.id + ')">Approve</button>' : '-'}</td></tr>
+        `).join('') || '<tr><td colspan="7" class="text-center text-muted">No adjustments</td></tr>';
+      } catch (err) { console.error('Adjustments error:', err); }
+    }
+
+    // Modal functions
+    function showModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    async function submitWarehouse() {
+      const form = document.getElementById('warehouseForm');
+      const data = Object.fromEntries(new FormData(form));
+      try {
+        await api('/warehouses', { method: 'POST', body: data });
+        closeModal('warehouseModal'); form.reset(); loadWarehouses(); loadBasicData();
+      } catch (err) { alert('Error: ' + err.message); }
+    }
+
+    async function submitSupplier() {
+      const form = document.getElementById('supplierForm');
+      const data = Object.fromEntries(new FormData(form));
+      try {
+        await api('/suppliers', { method: 'POST', body: data });
+        closeModal('supplierModal'); form.reset(); loadSuppliers(); loadBasicData();
+      } catch (err) { alert('Error: ' + err.message); }
+    }
+
+    async function submitMovement() {
+      const form = document.getElementById('movementForm');
+      const data = Object.fromEntries(new FormData(form));
+      data.warehouseId = parseInt(data.warehouseId);
+      data.itemId = parseInt(data.itemId);
+      data.quantity = parseInt(data.quantity);
+      if (data.unitCost) data.unitCost = parseFloat(data.unitCost);
+      try {
+        await api('/movements', { method: 'POST', body: data });
+        closeModal('movementModal'); form.reset(); loadMovements(); loadDashboard();
+      } catch (err) { alert('Error: ' + (err.error || err.message)); }
+    }
+
+    async function approveAdjustment(id) {
+      if (!confirm('Approve this adjustment and apply to stock?')) return;
+      try {
+        await api(`/adjustments/${id}/approve`, { method: 'POST' });
+        loadAdjustments(); loadDashboard();
+      } catch (err) { alert('Error: ' + err.message); }
+    }
+
+    function logout() { fetch('/api/auth/logout', { method: 'POST' }).then(() => window.location.href = '/login'); }
+  </script>
+</body>
+</html>

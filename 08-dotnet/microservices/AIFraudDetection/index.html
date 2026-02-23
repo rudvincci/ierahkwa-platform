@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI FRAUD DETECTION | Ierahkwa Security Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --neon-green: #00FF41;
+            --neon-cyan: #00FFFF;
+            --neon-red: #FF1744;
+            --neon-orange: #FF6B35;
+            --neon-purple: #9D4EDD;
+            --bg-dark: #0a0e17;
+            --bg-card: #0d1a2d;
+            --bg-hover: #142238;
+            --border: #1e3a5f;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, #0a0e17 0%, #1a0a0a 50%, #0d1a2d 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 23, 68, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 65, 0.08) 0%, transparent 50%);
+        }
+        
+        .container { position: relative; z-index: 1; max-width: 1800px; margin: 0 auto; padding: 0 40px; }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, rgba(10, 14, 23, 0.98) 0%, rgba(26, 10, 10, 0.95) 100%);
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, var(--neon-red), var(--gold), var(--neon-green), var(--neon-red)) 1;
+            padding: 20px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+        
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo-icon {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, var(--neon-red), var(--neon-orange));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 0 30px rgba(255, 23, 68, 0.5);
+            animation: pulse-red 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse-red {
+            from { box-shadow: 0 0 20px rgba(255, 23, 68, 0.5); }
+            to { box-shadow: 0 0 40px rgba(255, 23, 68, 0.8), 0 0 60px rgba(255, 107, 53, 0.4); }
+        }
+        
+        .logo-text h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6em;
+            background: linear-gradient(90deg, var(--neon-red), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo-text p {
+            color: var(--neon-cyan);
+            font-size: 0.85em;
+            letter-spacing: 3px;
+        }
+        
+        .status-live {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--neon-green);
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .main { padding: 40px 0; }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card.danger { border-color: var(--neon-red); }
+        .stat-card.warning { border-color: var(--neon-orange); }
+        .stat-card.success { border-color: var(--neon-green); }
+        
+        .stat-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2em;
+            font-weight: 700;
+        }
+        
+        .stat-value.red { color: var(--neon-red); }
+        .stat-value.orange { color: var(--neon-orange); }
+        .stat-value.green { color: var(--neon-green); }
+        .stat-value.gold { color: var(--gold); }
+        
+        .stat-label { color: #888; font-size: 0.9em; margin-top: 5px; }
+        
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        /* Panel */
+        .panel {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+        }
+        
+        .panel-title i { color: var(--neon-red); }
+        
+        /* Alert List */
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+        
+        .alert-item.critical {
+            background: rgba(255, 23, 68, 0.1);
+            border: 1px solid var(--neon-red);
+        }
+        
+        .alert-item.high {
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid var(--neon-orange);
+        }
+        
+        .alert-item.medium {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid var(--gold);
+        }
+        
+        .alert-item.low {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--neon-green);
+        }
+        
+        .alert-severity {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .alert-item.critical .alert-severity { background: var(--neon-red); }
+        .alert-item.high .alert-severity { background: var(--neon-orange); }
+        .alert-item.medium .alert-severity { background: var(--gold); color: #000; }
+        .alert-item.low .alert-severity { background: var(--neon-green); color: #000; }
+        
+        .alert-content { flex: 1; }
+        
+        .alert-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .alert-desc {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .alert-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.8em;
+        }
+        
+        .alert-meta span {
+            color: var(--neon-cyan);
+        }
+        
+        .alert-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .alert-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .alert-btn.review {
+            background: var(--neon-cyan);
+            color: #000;
+        }
+        
+        .alert-btn.dismiss {
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+        }
+        
+        /* Risk Meter */
+        .risk-meter {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .risk-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            position: relative;
+            background: conic-gradient(
+                var(--neon-green) 0deg 90deg,
+                var(--gold) 90deg 180deg,
+                var(--neon-orange) 180deg 270deg,
+                var(--neon-red) 270deg 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .risk-inner {
+            width: 160px;
+            height: 160px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .risk-score {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            font-weight: 900;
+            color: var(--neon-green);
+        }
+        
+        .risk-label {
+            font-size: 0.9em;
+            color: #888;
+        }
+        
+        .risk-status {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2em;
+            color: var(--neon-green);
+            margin-bottom: 10px;
+        }
+        
+        .risk-desc {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        /* Activity Feed */
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .activity-icon.scan { background: rgba(0, 255, 255, 0.2); color: var(--neon-cyan); }
+        .activity-icon.block { background: rgba(255, 23, 68, 0.2); color: var(--neon-red); }
+        .activity-icon.approve { background: rgba(0, 255, 65, 0.2); color: var(--neon-green); }
+        .activity-icon.flag { background: rgba(255, 215, 0, 0.2); color: var(--gold); }
+        
+        .activity-content { flex: 1; }
+        
+        .activity-title { font-size: 0.9em; margin-bottom: 3px; }
+        .activity-time { font-size: 0.75em; color: #888; }
+        
+        /* Footer */
+        .footer {
+            background: var(--bg-card);
+            border-top: 3px solid var(--neon-red);
+            padding: 30px 40px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .footer-brand {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-red);
+            margin-bottom: 10px;
+        }
+        
+        .footer-text { color: #888; font-size: 0.9em; }
+        
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .main-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🛡️</div>
+                <div class="logo-text">
+                    <h1>AI FRAUD DETECTION</h1>
+                    <p>SECURITY INTELLIGENCE</p>
+                </div>
+            </div>
+            <div class="status-live">
+                <span class="status-dot"></span>
+                <span style="font-family: 'Orbitron'; color: var(--neon-green);">AI MONITORING ACTIVE</span>
+            </div>
+        </div>
+    </header>
+    
+    <main class="main container">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card danger">
+                <div class="stat-icon">🚨</div>
+                <div class="stat-value red">3</div>
+                <div class="stat-label">Critical Alerts</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-value orange">12</div>
+                <div class="stat-label">High Risk Transactions</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value green">45,892</div>
+                <div class="stat-label">Verified Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔍</div>
+                <div class="stat-value gold">99.7%</div>
+                <div class="stat-label">Detection Accuracy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value green">0.3ms</div>
+                <div class="stat-label">Avg Response Time</div>
+            </div>
+        </div>
+        
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <div>
+                <!-- Active Alerts -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <span>Active Fraud Alerts</span>
+                        </div>
+                    </div>
+                    <div class="alert-list">
+                        <div class="alert-item critical">
+                            <div class="alert-severity">🚨</div>
+                            <div class="alert-content">
+                                <div class="alert-title">Unusual Large Transfer Detected</div>
+                                <div class="alert-desc">Transaction of 500,000 WAMPUM from new account to external wallet</div>
+                                <div class="alert-meta">
+                                    <span>TX: 0x7a3b...9c2d</span>
+                                    <span>Risk Score: 95/100</span>
+                                    <span>2 min ago</span>
+                                </div>
+                            </div>
+                            <div class="alert-actions">
+                                <button class="alert-btn review">Review</button>
+                                <button class="alert-btn dismiss">Block</button>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-item high">
+                            <div class="alert-severity">⚠️</div>
+                            <div class="alert-content">
+                                <div class="alert-title">Multiple Failed Auth Attempts</div>
+                                <div class="alert-desc">15 failed login attempts from FWID-2026-0842 in 5 minutes</div>
+                                <div class="alert-meta">
+                                    <span>IP: 192.168.xxx.xxx</span>
+                                    <span>Risk Score: 78/100</span>
+                                    <span>8 min ago</span>
+                                </div>
+                            </div>
+                            <div class="alert-actions">
+                                <button class="alert-btn review">Review</button>
+                                <button class="alert-btn dismiss">Lock</button>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-item medium">
+                            <div class="alert-severity">⚡</div>
+                            <div class="alert-content">
+                                <div class="alert-title">Rapid Transaction Pattern</div>
+                                <div class="alert-desc">25 transactions in 60 seconds from single wallet</div>
+                                <div class="alert-meta">
+                                    <span>Wallet: 0x4c8d...f1a2</span>
+                                    <span>Risk Score: 62/100</span>
+                                    <span>15 min ago</span>
+                                </div>
+                            </div>
+                            <div class="alert-actions">
+                                <button class="alert-btn review">Review</button>
+                                <button class="alert-btn dismiss">Monitor</button>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-item low">
+                            <div class="alert-severity">ℹ️</div>
+                            <div class="alert-content">
+                                <div class="alert-title">New Device Login</div>
+                                <div class="alert-desc">First login from iOS device for verified account</div>
+                                <div class="alert-meta">
+                                    <span>FWID: 2026-0001-7A3B</span>
+                                    <span>Risk Score: 25/100</span>
+                                    <span>32 min ago</span>
+                                </div>
+                            </div>
+                            <div class="alert-actions">
+                                <button class="alert-btn review">Review</button>
+                                <button class="alert-btn dismiss">Approve</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <!-- Risk Meter -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Network Risk Level</span>
+                        </div>
+                    </div>
+                    <div class="risk-meter">
+                        <div class="risk-circle">
+                            <div class="risk-inner">
+                                <div class="risk-score">23</div>
+                                <div class="risk-label">/ 100</div>
+                            </div>
+                        </div>
+                        <div class="risk-status">LOW RISK</div>
+                        <div class="risk-desc">Network operating within normal parameters</div>
+                    </div>
+                </div>
+                
+                <!-- Activity Feed -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="bi bi-activity"></i>
+                            <span>AI Activity Feed</span>
+                        </div>
+                    </div>
+                    <div class="activity-feed">
+                        <div class="activity-item">
+                            <div class="activity-icon scan"><i class="bi bi-search"></i></div>
+                            <div class="activity-content">
+                                <div class="activity-title">Scanning block #1,247,892</div>
+                                <div class="activity-time">Just now</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon approve"><i class="bi bi-check"></i></div>
+                            <div class="activity-content">
+                                <div class="activity-title">Transaction 0x8f2a verified</div>
+                                <div class="activity-time">2 sec ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon flag"><i class="bi bi-flag"></i></div>
+                            <div class="activity-content">
+                                <div class="activity-title">Pattern flagged for review</div>
+                                <div class="activity-time">15 sec ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon block"><i class="bi bi-shield-x"></i></div>
+                            <div class="activity-content">
+                                <div class="activity-title">Blocked suspicious IP</div>
+                                <div class="activity-time">1 min ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon scan"><i class="bi bi-cpu"></i></div>
+                            <div class="activity-content">
+                                <div class="activity-title">ML model updated</div>
+                                <div class="activity-time">5 min ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="footer-brand">🛡️ AI FRAUD DETECTION - IERAHKWA SECURITY INTELLIGENCE</div>
+        <div class="footer-text">Real-time AI-Powered Protection | Chain ID: 777777 | © 2026 All Rights Reserved</div>
+    </footer>
+</body>
+</html>

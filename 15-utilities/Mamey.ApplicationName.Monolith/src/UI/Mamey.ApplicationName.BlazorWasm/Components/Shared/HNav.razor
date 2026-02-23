@@ -1,0 +1,86 @@
+<nav>
+    <div class="container">
+        <div class="row">
+            <div class="mobile_btn" @onclick="ToggleMobileMenu">
+                <i class="@MobileIconClass"></i>
+            </div>
+            <div class="main_menu" style="display:@(IsMobileMenuVisible ? "block" : "none")">
+                <ul>
+                    <li><a href="#" class="active">Home</a></li>
+                    <li class="has_dropdown">
+                        <a href="#" @onclick="ToggleSubMenu1">Pages <i class="@SubMenuIconClass"></i></a>
+                        @if (IsSubMenu1Visible)
+                        {
+                            <ul class="sub_menu">
+                                <li><a href="#">Page 1</a></li>
+                                <li class="has_dropdown">
+                                    <a href="#" @onclick="ToggleSubMenu2">Page 2 <i class="@SubMenu2IconClass"></i></a>
+                                    @if (IsSubMenu2Visible)
+                                    {
+                                        <ul class="sub_menu">
+                                            <li><a href="#">Page 2.1</a></li>
+                                            <li><a href="#">Page 2.2</a></li>
+                                            <li class="has_dropdown">
+                                                <a href="#" @onclick="ToggleSubMenu3">Page 2.3 <i class="@SubMenu3IconClass"></i></a>
+                                                @if (IsSubMenu3Visible)
+                                                {
+                                                    <ul class="sub_menu">
+                                                        <li><a href="#">Page 2.1</a></li>
+                                                        <li><a href="#">Page 2.2</a></li>
+                                                        <li><a href="#">Page 2.3</a></li>
+                                                        <li><a href="#">Page 2.4</a></li>
+                                                    </ul>
+                                                }
+                                            </li>
+                                            <li><a href="#">Page 2.4</a></li>
+                                        </ul>
+                                    }
+                                </li>
+                                <li><a href="#">Page 3</a></li>
+                                <li><a href="#">Page 4</a></li>
+                            </ul>
+                        }
+                    </li>
+                    <li class="mega_menu_dropdown has_dropdown">
+                        <a href="#">Shop <i class="fas fa-angle-down"></i></a>
+                        <div class="mega_menu sub_menu">
+                            <div class="mega_menu_item">
+                                <img src="https://via.placeholder.com/250x300" />
+                            </div>
+                            <div class="mega_menu_item">
+                                <h3>Theme Elements</h3>
+                                <a href="#">Mega menu item</a>
+                                <a href="#">Mega menu item</a>
+                                <a href="#">Mega menu item</a>
+                                <a href="#">Mega menu item</a>
+                                <a href="#">Mega menu item</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private bool IsMobileMenuVisible { get; set; } = false;
+    private bool IsSubMenu1Visible { get; set; } = false;
+    private bool IsSubMenu2Visible { get; set; } = false;
+    private bool IsSubMenu3Visible { get; set; } = false;
+
+    private string MobileIconClass => IsMobileMenuVisible ? "fas fa-xmark fa-xl" : "fas fa-bars";
+    private string SubMenuIconClass => IsSubMenu1Visible ? "fas fa-angle-up" : "fas fa-angle-down";
+    private string SubMenu2IconClass => IsSubMenu2Visible ? "fas fa-angle-up" : "fas fa-angle-right";
+    private string SubMenu3IconClass => IsSubMenu3Visible ? "fas fa-angle-up" : "fas fa-angle-right";
+
+    private void ToggleMobileMenu() => IsMobileMenuVisible = !IsMobileMenuVisible;
+
+    private void ToggleSubMenu1() => IsSubMenu1Visible = !IsSubMenu1Visible;
+
+    private void ToggleSubMenu2() => IsSubMenu2Visible = !IsSubMenu2Visible;
+
+    private void ToggleSubMenu3() => IsSubMenu3Visible = !IsSubMenu3Visible;
+}

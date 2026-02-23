@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎫 SERVICE DESK | Ierahkwa IT Support</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --green: #00FF41; --cyan: #00FFFF; --red: #FF1744; --purple: #9D4EDD; --orange: #FF6B35; --bg: #0a0e17; --card: #0d1a2d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17, #0e1a0a, #0a0e17); color: #fff; min-height: 100vh; }
+        
+        .header { background: var(--card); padding: 15px 30px; border-bottom: 3px solid var(--green); display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--green), var(--cyan)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+        .logo h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--green); }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .nav-link { padding: 10px 20px; background: rgba(0,255,65,0.2); border: 1px solid var(--green); border-radius: 10px; color: var(--green); text-decoration: none; }
+        .create-btn { padding: 10px 25px; background: var(--green); border: none; border-radius: 10px; color: #000; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        .main { display: grid; grid-template-columns: 280px 1fr 350px; height: calc(100vh - 80px); }
+        
+        /* Sidebar */
+        .sidebar { background: var(--card); border-right: 1px solid rgba(0,255,65,0.2); padding: 20px; overflow-y: auto; }
+        .sidebar-title { font-size: 0.7em; color: #666; text-transform: uppercase; margin: 20px 0 10px; }
+        .filter-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 10px; cursor: pointer; margin-bottom: 5px; }
+        .filter-item:hover, .filter-item.active { background: rgba(0,255,65,0.1); }
+        .filter-item.active { border-left: 3px solid var(--green); }
+        .filter-icon { font-size: 1.3em; width: 30px; text-align: center; }
+        .filter-count { margin-left: auto; background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 10px; font-size: 0.8em; }
+        .filter-count.urgent { background: var(--red); color: #fff; }
+        
+        .agent-status { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; margin-top: 20px; }
+        .agent-status-title { font-size: 0.85em; margin-bottom: 15px; color: var(--cyan); }
+        .agent { display: flex; align-items: center; gap: 10px; padding: 10px 0; }
+        .agent-avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--purple); display: flex; align-items: center; justify-content: center; }
+        .agent-info { flex: 1; }
+        .agent-name { font-size: 0.85em; }
+        .agent-tickets { font-size: 0.75em; color: #888; }
+        .agent-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .agent-dot.online { background: var(--green); }
+        .agent-dot.busy { background: var(--orange); }
+        
+        /* Content */
+        .content { padding: 25px; overflow-y: auto; }
+        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .content-title { font-family: 'Orbitron', sans-serif; color: var(--green); }
+        .search-filter { display: flex; gap: 10px; }
+        .search-filter input { padding: 10px 20px; border: 1px solid rgba(0,255,65,0.3); border-radius: 25px; background: rgba(0,0,0,0.3); color: #fff; width: 250px; }
+        .filter-btn { padding: 10px 15px; background: rgba(0,255,65,0.1); border: 1px solid var(--green); border-radius: 10px; color: var(--green); cursor: pointer; }
+        
+        /* Stats Row */
+        .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--card); border-radius: 15px; padding: 20px; text-align: center; border: 1px solid rgba(0,255,65,0.2); }
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 1.8em; color: var(--green); }
+        .stat-label { font-size: 0.8em; color: #888; margin-top: 5px; }
+        
+        /* Ticket Cards */
+        .ticket-card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--green); cursor: pointer; transition: all 0.3s; }
+        .ticket-card:hover { transform: translateX(5px); }
+        .ticket-card.urgent { border-left-color: var(--red); }
+        .ticket-card.high { border-left-color: var(--orange); }
+        .ticket-card.medium { border-left-color: var(--gold); }
+        
+        .ticket-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .ticket-id { font-family: monospace; color: var(--cyan); font-size: 0.85em; }
+        .ticket-priority { padding: 3px 10px; border-radius: 10px; font-size: 0.75em; }
+        .ticket-priority.urgent { background: rgba(255,23,68,0.2); color: var(--red); }
+        .ticket-priority.high { background: rgba(255,107,53,0.2); color: var(--orange); }
+        .ticket-priority.medium { background: rgba(255,215,0,0.2); color: var(--gold); }
+        .ticket-priority.low { background: rgba(0,255,65,0.2); color: var(--green); }
+        
+        .ticket-title { font-weight: 600; margin-bottom: 8px; }
+        .ticket-meta { display: flex; gap: 20px; font-size: 0.85em; color: #888; margin-bottom: 10px; }
+        .ticket-tags { display: flex; gap: 8px; }
+        .ticket-tag { padding: 3px 10px; background: rgba(255,255,255,0.05); border-radius: 10px; font-size: 0.75em; }
+        
+        .ticket-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .ticket-user { display: flex; align-items: center; gap: 10px; }
+        .ticket-user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--purple); display: flex; align-items: center; justify-content: center; font-size: 0.8em; }
+        .ticket-status { padding: 5px 12px; border-radius: 15px; font-size: 0.8em; }
+        .ticket-status.open { background: rgba(0,255,255,0.2); color: var(--cyan); }
+        .ticket-status.progress { background: rgba(255,107,53,0.2); color: var(--orange); }
+        .ticket-status.resolved { background: rgba(0,255,65,0.2); color: var(--green); }
+        
+        /* Details Panel */
+        .details-panel { background: var(--card); border-left: 1px solid rgba(0,255,65,0.2); padding: 20px; overflow-y: auto; }
+        .panel-header { padding-bottom: 20px; border-bottom: 1px solid rgba(0,255,65,0.2); margin-bottom: 20px; }
+        .panel-title { font-family: 'Orbitron', sans-serif; color: var(--green); margin-bottom: 5px; }
+        .panel-id { font-family: monospace; color: var(--cyan); font-size: 0.85em; }
+        
+        .detail-section { margin-bottom: 20px; }
+        .detail-section-title { font-size: 0.75em; color: #666; text-transform: uppercase; margin-bottom: 10px; }
+        .detail-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9em; }
+        .detail-label { color: #888; }
+        .detail-value { color: #fff; }
+        
+        .conversation { margin-top: 20px; }
+        .message { padding: 15px; background: rgba(0,0,0,0.3); border-radius: 15px; margin-bottom: 10px; }
+        .message.agent { border-left: 3px solid var(--green); }
+        .message.user { border-left: 3px solid var(--cyan); }
+        .message-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85em; }
+        .message-sender { color: var(--cyan); }
+        .message-time { color: #666; }
+        .message-text { font-size: 0.9em; line-height: 1.5; }
+        
+        .reply-box { margin-top: 15px; }
+        .reply-input { width: 100%; padding: 15px; border: 1px solid rgba(0,255,65,0.3); border-radius: 15px; background: rgba(0,0,0,0.3); color: #fff; resize: none; margin-bottom: 10px; }
+        .reply-btn { width: 100%; padding: 12px; background: var(--green); border: none; border-radius: 10px; color: #000; font-weight: 600; cursor: pointer; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); border: 2px solid var(--green); border-radius: 20px; padding: 30px; width: 600px; max-width: 90%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .modal-title { font-family: 'Orbitron', sans-serif; color: var(--green); }
+        .close-btn { background: none; border: none; color: #fff; font-size: 1.5em; cursor: pointer; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: var(--cyan); margin-bottom: 8px; font-size: 0.9em; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid rgba(0,255,65,0.3); border-radius: 10px; background: rgba(0,0,0,0.3); color: #fff; font-size: 1em; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .submit-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--green), var(--cyan)); border: none; border-radius: 12px; color: #000; font-family: 'Orbitron', sans-serif; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🎫</div>
+            <div>
+                <h1>SERVICE DESK</h1>
+                <p style="color: #888; font-size: 0.75em;">IT Support & Helpdesk</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="create-btn" onclick="openModal()"><i class="bi bi-plus"></i> New Ticket</button>
+            <a href="/platform" class="nav-link"><i class="bi bi-arrow-left"></i> Platform</a>
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Tickets</div>
+            <div class="filter-item active">
+                <span class="filter-icon">📥</span>
+                <span>All Tickets</span>
+                <span class="filter-count">45</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🆕</span>
+                <span>New</span>
+                <span class="filter-count">8</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🔄</span>
+                <span>In Progress</span>
+                <span class="filter-count">12</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">✅</span>
+                <span>Resolved</span>
+                <span class="filter-count">25</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🚨</span>
+                <span>Urgent</span>
+                <span class="filter-count urgent">3</span>
+            </div>
+            
+            <div class="sidebar-title">Categories</div>
+            <div class="filter-item">
+                <span class="filter-icon">💻</span>
+                <span>Hardware</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🌐</span>
+                <span>Network</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">📱</span>
+                <span>Software</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🔐</span>
+                <span>Security</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">👤</span>
+                <span>Account</span>
+            </div>
+            
+            <div class="agent-status">
+                <div class="agent-status-title">Support Agents</div>
+                <div class="agent">
+                    <div class="agent-avatar">🤖</div>
+                    <div class="agent-info">
+                        <div class="agent-name">Iera AI</div>
+                        <div class="agent-tickets">15 tickets</div>
+                    </div>
+                    <div class="agent-dot online"></div>
+                </div>
+                <div class="agent">
+                    <div class="agent-avatar">👨</div>
+                    <div class="agent-info">
+                        <div class="agent-name">Carlos R.</div>
+                        <div class="agent-tickets">8 tickets</div>
+                    </div>
+                    <div class="agent-dot online"></div>
+                </div>
+                <div class="agent">
+                    <div class="agent-avatar">👩</div>
+                    <div class="agent-info">
+                        <div class="agent-name">María G.</div>
+                        <div class="agent-tickets">5 tickets</div>
+                    </div>
+                    <div class="agent-dot busy"></div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Content -->
+        <section class="content">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value">45</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--cyan);">8</div>
+                    <div class="stat-label">Open</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--orange);">12</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2.5h</div>
+                    <div class="stat-label">Avg Response</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">94%</div>
+                    <div class="stat-label">Satisfaction</div>
+                </div>
+            </div>
+            
+            <div class="content-header">
+                <div class="content-title">🎫 All Tickets</div>
+                <div class="search-filter">
+                    <input type="text" placeholder="Search tickets...">
+                    <button class="filter-btn"><i class="bi bi-filter"></i></button>
+                </div>
+            </div>
+            
+            <div class="ticket-card urgent">
+                <div class="ticket-header">
+                    <span class="ticket-id">TKT-2026-001</span>
+                    <span class="ticket-priority urgent">🔴 Urgent</span>
+                </div>
+                <div class="ticket-title">Server Down - Production Environment</div>
+                <div class="ticket-meta">
+                    <span>💻 Hardware</span>
+                    <span>🕐 2 hours ago</span>
+                </div>
+                <div class="ticket-tags">
+                    <span class="ticket-tag">Critical</span>
+                    <span class="ticket-tag">Server</span>
+                    <span class="ticket-tag">Production</span>
+                </div>
+                <div class="ticket-footer">
+                    <div class="ticket-user">
+                        <div class="ticket-user-avatar">👨</div>
+                        <span>Carlos R.</span>
+                    </div>
+                    <span class="ticket-status progress">🔄 In Progress</span>
+                </div>
+            </div>
+            
+            <div class="ticket-card high">
+                <div class="ticket-header">
+                    <span class="ticket-id">TKT-2026-002</span>
+                    <span class="ticket-priority high">🟠 High</span>
+                </div>
+                <div class="ticket-title">VPN Connection Issues</div>
+                <div class="ticket-meta">
+                    <span>🌐 Network</span>
+                    <span>🕐 4 hours ago</span>
+                </div>
+                <div class="ticket-tags">
+                    <span class="ticket-tag">VPN</span>
+                    <span class="ticket-tag">Remote</span>
+                </div>
+                <div class="ticket-footer">
+                    <div class="ticket-user">
+                        <div class="ticket-user-avatar">🤖</div>
+                        <span>Iera AI</span>
+                    </div>
+                    <span class="ticket-status open">🆕 Open</span>
+                </div>
+            </div>
+            
+            <div class="ticket-card medium">
+                <div class="ticket-header">
+                    <span class="ticket-id">TKT-2026-003</span>
+                    <span class="ticket-priority medium">🟡 Medium</span>
+                </div>
+                <div class="ticket-title">Password Reset Request</div>
+                <div class="ticket-meta">
+                    <span>👤 Account</span>
+                    <span>🕐 6 hours ago</span>
+                </div>
+                <div class="ticket-tags">
+                    <span class="ticket-tag">Password</span>
+                    <span class="ticket-tag">Access</span>
+                </div>
+                <div class="ticket-footer">
+                    <div class="ticket-user">
+                        <div class="ticket-user-avatar">👩</div>
+                        <span>María G.</span>
+                    </div>
+                    <span class="ticket-status resolved">✅ Resolved</span>
+                </div>
+            </div>
+            
+            <div class="ticket-card">
+                <div class="ticket-header">
+                    <span class="ticket-id">TKT-2026-004</span>
+                    <span class="ticket-priority low">🟢 Low</span>
+                </div>
+                <div class="ticket-title">Software Installation Request</div>
+                <div class="ticket-meta">
+                    <span>📱 Software</span>
+                    <span>🕐 1 day ago</span>
+                </div>
+                <div class="ticket-tags">
+                    <span class="ticket-tag">Installation</span>
+                </div>
+                <div class="ticket-footer">
+                    <div class="ticket-user">
+                        <div class="ticket-user-avatar">🤖</div>
+                        <span>Iera AI</span>
+                    </div>
+                    <span class="ticket-status open">🆕 Open</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Details Panel -->
+        <aside class="details-panel">
+            <div class="panel-header">
+                <div class="panel-title">Server Down - Production</div>
+                <div class="panel-id">TKT-2026-001</div>
+            </div>
+            
+            <div class="detail-section">
+                <div class="detail-section-title">Ticket Details</div>
+                <div class="detail-item"><span class="detail-label">Priority</span><span class="detail-value" style="color: var(--red);">Urgent</span></div>
+                <div class="detail-item"><span class="detail-label">Category</span><span class="detail-value">Hardware</span></div>
+                <div class="detail-item"><span class="detail-label">Created</span><span class="detail-value">2 hours ago</span></div>
+                <div class="detail-item"><span class="detail-label">Assigned To</span><span class="detail-value">Carlos R.</span></div>
+                <div class="detail-item"><span class="detail-label">Status</span><span class="detail-value" style="color: var(--orange);">In Progress</span></div>
+            </div>
+            
+            <div class="detail-section">
+                <div class="detail-section-title">Requester</div>
+                <div class="detail-item"><span class="detail-label">Name</span><span class="detail-value">Ruddie S.</span></div>
+                <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value">ruddie@ierahkwa.gov</span></div>
+                <div class="detail-item"><span class="detail-label">Department</span><span class="detail-value">IT</span></div>
+            </div>
+            
+            <div class="conversation">
+                <div class="detail-section-title">Conversation</div>
+                <div class="message user">
+                    <div class="message-header">
+                        <span class="message-sender">Ruddie S.</span>
+                        <span class="message-time">2 hours ago</span>
+                    </div>
+                    <div class="message-text">Production server is completely down. Users cannot access the platform. This is critical!</div>
+                </div>
+                <div class="message agent">
+                    <div class="message-header">
+                        <span class="message-sender" style="color: var(--green);">Carlos R.</span>
+                        <span class="message-time">1 hour ago</span>
+                    </div>
+                    <div class="message-text">I'm on it. Initial diagnosis shows a disk failure. Starting recovery procedures now.</div>
+                </div>
+                <div class="message agent">
+                    <div class="message-header">
+                        <span class="message-sender" style="color: var(--green);">Iera AI</span>
+                        <span class="message-time">45 min ago</span>
+                    </div>
+                    <div class="message-text">Automatic failover to backup server initiated. Estimated recovery time: 30 minutes.</div>
+                </div>
+            </div>
+            
+            <div class="reply-box">
+                <textarea class="reply-input" rows="3" placeholder="Type your reply..."></textarea>
+                <button class="reply-btn">Send Reply</button>
+            </div>
+        </aside>
+    </main>
+    
+    <!-- New Ticket Modal -->
+    <div class="modal" id="ticketModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">🎫 Create New Ticket</div>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form onsubmit="submitTicket(event)">
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" placeholder="Brief description of the issue" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select required>
+                            <option value="">Select category...</option>
+                            <option>Hardware</option>
+                            <option>Software</option>
+                            <option>Network</option>
+                            <option>Security</option>
+                            <option>Account</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select required>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea rows="4" placeholder="Describe your issue in detail..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Attachments (screenshots, logs, etc.)</label>
+                    <input type="file" multiple>
+                </div>
+                <button type="submit" class="submit-btn">Submit Ticket</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function openModal() { document.getElementById('ticketModal').classList.add('active'); }
+        function closeModal() { document.getElementById('ticketModal').classList.remove('active'); }
+        function submitTicket(e) {
+            e.preventDefault();
+            alert('✅ Ticket Created Successfully!\n\nTicket ID: TKT-2026-XXX\nStatus: Open\n\nOur AI will analyze and route your ticket to the right agent.');
+            closeModal();
+        }
+        
+        console.log('🎫 SERVICE DESK - IT Support System Initialized');
+    </script>
+</body>
+</html>

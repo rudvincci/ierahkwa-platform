@@ -1,0 +1,74 @@
+# {{project_name}}
+
+A non-fungible token (ERC-721-like) contract for [MameyFutureNode](https://github.com/Mamey-io/MameyFutureNode), scaffolded with [MameyForge](https://github.com/Mamey-io/MameyForge).
+
+## Features
+
+- **Mint / Burn** — Create and destroy unique tokens with minter role
+- **Transfer** — Owner, approved, and operator transfer patterns
+- **Approvals** — Per-token and operator-level approvals
+- **Metadata** — Per-token URI and base URI support
+- **Pause / Unpause** — Emergency stop mechanism
+- **Safe Math** — Overflow-protected counters
+
+## Getting Started
+
+### Prerequisites
+
+- Rust 1.75+ with `wasm32-unknown-unknown` target
+- MameyForge CLI
+
+```bash
+rustup target add wasm32-unknown-unknown
+```
+
+### Build
+
+```bash
+mameyforge build
+```
+
+### Test
+
+```bash
+mameyforge test
+```
+
+### Deploy
+
+```bash
+mameyforge devnet start
+mameyforge deploy --network devnet --args '{"name":"My NFTs","symbol":"MNFT"}'
+```
+
+### Interact
+
+```bash
+# Mint an NFT
+mameyforge call --contract <ADDRESS> --function mint --args '{"to":"<ACCOUNT>","uri":"https://example.com/metadata/1.json"}'
+
+# Check owner
+mameyforge query --contract <ADDRESS> --function owner_of --args '{"token_id":1}'
+
+# Transfer
+mameyforge call --contract <ADDRESS> --function transfer --args '{"from":"<FROM>","to":"<TO>","token_id":1}'
+```
+
+## Project Structure
+
+```
+{{project_name}}/
+├── contracts/
+│   └── src/
+│       └── lib.rs          # NFT contract
+├── tests/
+│   └── integration.rs      # Integration tests
+├── scripts/
+│   └── deploy.rs           # Deployment script
+├── Cargo.toml
+└── mameyforge.toml
+```
+
+## License
+
+MIT OR Apache-2.0

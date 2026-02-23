@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Smart School</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #4f46e5; }
+        .sidebar { width: 280px; height: 100vh; position: fixed; background: #1f2937; color: white; overflow-y: auto; }
+        .main-content { margin-left: 280px; padding: 24px; }
+        .endpoint { background: white; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 16px; }
+        .endpoint-header { padding: 16px; cursor: pointer; display: flex; align-items: center; }
+        .endpoint-header:hover { background: #f9fafb; }
+        .method { padding: 4px 12px; border-radius: 4px; font-weight: 600; font-size: 12px; margin-right: 12px; }
+        .method-get { background: #dcfce7; color: #166534; }
+        .method-post { background: #dbeafe; color: #1e40af; }
+        .method-put { background: #fef3c7; color: #92400e; }
+        .method-delete { background: #fee2e2; color: #991b1b; }
+        .endpoint-body { padding: 16px; border-top: 1px solid #e5e7eb; display: none; }
+        .endpoint.open .endpoint-body { display: block; }
+        pre { background: #1f2937; color: #e5e7eb; padding: 16px; border-radius: 8px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar p-4">
+        <h5 class="mb-4"><i class="fas fa-book me-2"></i>API Reference</h5>
+        <nav class="nav flex-column">
+            <a class="nav-link text-white" href="#auth">Authentication</a>
+            <a class="nav-link text-white" href="#users">Users</a>
+            <a class="nav-link text-white" href="#grades">Grades</a>
+            <a class="nav-link text-white" href="#classrooms">Classrooms</a>
+            <a class="nav-link text-white" href="#students">Students</a>
+            <a class="nav-link text-white" href="#teachers">Teachers</a>
+            <a class="nav-link text-white" href="#homework">Homework</a>
+            <a class="nav-link text-white" href="#fees">Fees</a>
+            <a class="nav-link text-white" href="#invoices">Invoices</a>
+            <a class="nav-link text-white" href="#journals">Journals</a>
+            <a class="nav-link text-white" href="#library">Library</a>
+            <a class="nav-link text-white" href="#live-classes">Live Classes</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <h2 class="mb-4">Smart School API Documentation</h2>
+        <p class="text-muted mb-4">Base URL: <code>http://localhost:3000/api</code></p>
+        
+        <section id="auth" class="mb-5">
+            <h4 class="mb-3">Authentication</h4>
+            
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method method-post">POST</span>
+                    <code>/auth/login</code>
+                    <span class="ms-auto text-muted">Login</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Authenticate user and receive JWT token.</p>
+                    <h6>Request Body</h6>
+                    <pre>{ "username": "admin", "password": "P@ssw0rd" }</pre>
+                    <h6>Response</h6>
+                    <pre>{ "success": true, "token": "jwt...", "refreshToken": "...", "user": {...} }</pre>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method method-post">POST</span>
+                    <code>/auth/refresh</code>
+                    <span class="ms-auto text-muted">Refresh Token</span>
+                </div>
+                <div class="endpoint-body">
+                    <h6>Request Body</h6>
+                    <pre>{ "refreshToken": "..." }</pre>
+                </div>
+            </div>
+        </section>
+        
+        <section id="students" class="mb-5">
+            <h4 class="mb-3">Students</h4>
+            
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method method-get">GET</span>
+                    <code>/students</code>
+                    <span class="ms-auto text-muted">List all students</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Get all students with classroom and parent information.</p>
+                    <h6>Headers</h6>
+                    <pre>Authorization: Bearer {token}</pre>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method method-post">POST</span>
+                    <code>/students</code>
+                    <span class="ms-auto text-muted">Create student</span>
+                </div>
+                <div class="endpoint-body">
+                    <h6>Request Body</h6>
+                    <pre>{
+  "username": "john.doe",
+  "password": "password123",
+  "email": "john@school.com",
+  "firstName": "John",
+  "lastName": "Doe",
+  "classRoomId": 1,
+  "dateOfBirth": "2010-05-15",
+  "gender": "Male"
+}</pre>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method method-put">PUT</span>
+                    <code>/students/:id</code>
+                    <span class="ms-auto text-muted">Update student</span>
+                </div>
+                <div class="endpoint-body"><p>Update student details by ID.</p></div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method method-delete">DELETE</span>
+                    <code>/students/:id</code>
+                    <span class="ms-auto text-muted">Delete student</span>
+                </div>
+                <div class="endpoint-body"><p>Soft delete student by ID.</p></div>
+            </div>
+        </section>
+        
+        <section id="invoices" class="mb-5">
+            <h4 class="mb-3">Invoices</h4>
+            
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method method-post">POST</span>
+                    <code>/invoices</code>
+                    <span class="ms-auto text-muted">Create invoice</span>
+                </div>
+                <div class="endpoint-body">
+                    <h6>Request Body</h6>
+                    <pre>{
+  "type": "FeesInvoice",
+  "studentId": 1,
+  "items": [
+    { "feesId": 1, "description": "Tuition Fee", "quantity": 1, "unitPrice": 500 }
+  ],
+  "paidAmount": 200,
+  "paymentMethod": "Cash"
+}</pre>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method method-post">POST</span>
+                    <code>/invoices/:id/payment</code>
+                    <span class="ms-auto text-muted">Add payment</span>
+                </div>
+                <div class="endpoint-body">
+                    <h6>Request Body</h6>
+                    <pre>{ "amount": 100, "paymentMethod": "Card", "reference": "TXN123" }</pre>
+                </div>
+            </div>
+        </section>
+        
+        <section id="homework" class="mb-5">
+            <h4 class="mb-3">Homework</h4>
+            
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method method-post">POST</span>
+                    <code>/homeworks</code>
+                    <span class="ms-auto text-muted">Create homework</span>
+                </div>
+                <div class="endpoint-body">
+                    <h6>Request Body</h6>
+                    <pre>{
+  "title": "Math Assignment 1",
+  "description": "Complete exercises 1-10",
+  "materialId": 1,
+  "classRoomId": 1,
+  "dueDate": "2024-03-01",
+  "questions": [
+    { "question": "What is 2+2?", "type": "Text", "points": 10 }
+  ]
+}</pre>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="method method-post">POST</span>
+                    <code>/homeworks/:id/submit</code>
+                    <span class="ms-auto text-muted">Submit answers (Student)</span>
+                </div>
+                <div class="endpoint-body">
+                    <h6>Request Body</h6>
+                    <pre>{ "answers": [{ "questionId": 1, "answer": "4" }] }</pre>
+                </div>
+            </div>
+        </section>
+        
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            All protected endpoints require <code>Authorization: Bearer {token}</code> header.
+            Multi-tenant endpoints use the user's tenant automatically.
+        </div>
+    </div>
+</body>
+</html>

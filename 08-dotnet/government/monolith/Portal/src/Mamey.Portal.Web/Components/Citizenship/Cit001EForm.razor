@@ -1,0 +1,35 @@
+@* CIT-001-E: Biometric Enrollment Authorization *@
+@using Mamey.Portal.Web.ViewModels.Citizenship
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h6">CIT-001-E: Biometric Enrollment Authorization</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary">
+        Authorization for biometric enrollment. This section will be populated with all fields from CIT-001-E Biometric Enrollment Authorization Form.pdf
+    </MudText>
+
+    <MudPaper Class="pa-4">
+        <MudAlert Severity="Severity.Info" Class="mb-4">
+            <MudText Typo="Typo.body2">
+                <strong>Biometric Data:</strong> Your biometric data (photograph, fingerprints, etc.) will be used for 
+                identity verification and document issuance. This data is stored securely and used only for authorized purposes.
+            </MudText>
+        </MudAlert>
+
+        <MudText Typo="Typo.body1" Class="mb-4">
+            I authorize the collection of my biometric data (fingerprints, photograph, and/or other biometric identifiers) 
+            for the purpose of identity verification, document issuance, and security purposes. I understand that this 
+            biometric data will be stored securely and used only for authorized purposes.
+        </MudText>
+
+        <MudCheckBox T="bool" @bind-Selected="ViewModel.AuthorizeBiometricEnrollment" 
+                    Label="I authorize biometric enrollment as described above" 
+                    Required="true" />
+    </MudPaper>
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public BecomeCitizenViewModel ViewModel { get; set; } = null!;
+}
+
+

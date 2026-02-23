@@ -1,0 +1,45 @@
+@namespace MameyNode.Portals.Shared.Components.DataDisplay
+
+<MudCard Elevation="2" Class="ma-2">
+    <MudCardContent>
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3">
+            @if (!string.IsNullOrEmpty(AvatarUrl))
+            {
+                <MudAvatar Size="Size.Large" Image="@AvatarUrl" />
+            }
+            else if (!string.IsNullOrEmpty(Initials))
+            {
+                <MudAvatar Size="Size.Large">@Initials</MudAvatar>
+            }
+            else
+            {
+                <MudAvatar Size="Size.Large" Color="Color.Primary">
+                    <MudIcon Icon="@Icon" />
+                </MudAvatar>
+            }
+            <MudStack Spacing="1">
+                <MudText Typo="Typo.h6">@Title</MudText>
+                @if (!string.IsNullOrEmpty(Subtitle))
+                {
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@Subtitle</MudText>
+                }
+            </MudStack>
+            <MudSpacer />
+            @if (!string.IsNullOrEmpty(Status))
+            {
+                <StatusBadge Status="@Status" />
+            }
+        </MudStack>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public string? AvatarUrl { get; set; }
+    [Parameter] public string? Initials { get; set; }
+    [Parameter] public string Icon { get; set; } = Icons.Material.Filled.AccountCircle;
+    [Parameter] public string? Status { get; set; }
+}
+
+

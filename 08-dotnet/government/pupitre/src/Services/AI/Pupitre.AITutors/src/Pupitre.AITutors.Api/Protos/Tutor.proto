@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.AITutors.Api.Protos";
+
+package Pupitre.AITutors;
+
+// gRPC service for Tutor operations
+service TutorService {
+    // Get a single Tutor by ID
+    rpc GetTutor (GetTutorRequest) returns (TutorResponse) {};
+    
+    // List all Tutors with pagination
+    rpc ListTutors (ListTutorsRequest) returns (ListTutorsResponse) {};
+    
+    // Stream Tutor updates
+    rpc StreamTutorUpdates (StreamTutorUpdatesRequest) returns (stream TutorResponse) {};
+}
+
+message GetTutorRequest {
+    string id = 1;
+}
+
+message ListTutorsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListTutorsResponse {
+    repeated TutorResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message TutorResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamTutorUpdatesRequest {
+    string filter = 1;
+}

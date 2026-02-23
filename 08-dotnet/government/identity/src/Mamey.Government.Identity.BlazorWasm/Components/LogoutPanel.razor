@@ -1,0 +1,23 @@
+@page "/Account/Logout"
+@using Mamey.Government.Identity.BlazorWasm.Services
+@using Microsoft.Extensions.Logging
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject ILogger<LogoutPanel> Logger
+
+<PageTitle>Logging out…</PageTitle>
+
+<MudText Typo="Typo.h4" GutterBottom="true">Logging out…</MudText>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        Logger.LogInformation("User is being signed out");
+
+        // This will clear the Identity.Application cookie (your only scheme)
+        await AuthService.LogoutAsync();
+
+        // And navigate to login (or homepage) once complete
+        NavigationManager.NavigateTo("/Account/Login");
+    }
+}

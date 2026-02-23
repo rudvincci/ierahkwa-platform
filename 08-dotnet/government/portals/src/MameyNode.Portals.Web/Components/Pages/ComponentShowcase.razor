@@ -1,0 +1,282 @@
+@page "/components"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Shared.Components.Forms
+@using MameyNode.Portals.Shared.Components.Feedback
+@using MameyNode.Portals.Shared.Components.Navigation
+@using MameyNode.Portals.Shared.Components.Specialized
+@using Mamey.BlazorWasm.Routing
+
+<PageContainer Title="Component Showcase">
+    <MudTabs Elevation="0" Rounded="true" Color="Color.Primary">
+        <MudTabPanel Text="Layout Components" Icon="@Icons.Material.Filled.ViewModule">
+            <MudStack Spacing="4">
+                <SectionHeader Title="Layout Components" Icon="@Icons.Material.Filled.ViewModule" />
+                
+                <CardContainer Title="AppBar Component">
+                    <AppBar Title="Example App Bar" />
+                </CardContainer>
+
+                <CardContainer Title="SectionHeader Component">
+                    <SectionHeader Title="Section Title" Icon="@Icons.Material.Filled.Settings" />
+                </CardContainer>
+
+                <CardContainer Title="CardContainer Component">
+                    <CardContainer Title="Card Title" Elevation="2">
+                        <MudText>This is card content with proper Material Design elevation and padding.</MudText>
+                    </CardContainer>
+                </CardContainer>
+            </MudStack>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Data Display" Icon="@Icons.Material.Filled.TableChart">
+            <MudStack Spacing="4">
+                <SectionHeader Title="Data Display Components" Icon="@Icons.Material.Filled.TableChart" />
+                
+                <CardContainer Title="TransactionCard Component">
+                    <TransactionCard 
+                        Description="Payment to John Doe"
+                        Amount="1250.50m"
+                        Currency="USD"
+                        Date="@DateTime.UtcNow.AddHours(-2)"
+                        Status="Completed"
+                        IsCredit="false" />
+                </CardContainer>
+
+                <CardContainer Title="AccountCard Component">
+                    <AccountCard 
+                        Title="John Doe"
+                        Subtitle="Account #12345"
+                        Initials="JD"
+                        Status="Active" />
+                </CardContainer>
+
+                <CardContainer Title="StatusBadge Component">
+                    <MudStack Row="true" Spacing="2">
+                        <StatusBadge Status="Active" />
+                        <StatusBadge Status="Pending" />
+                        <StatusBadge Status="Completed" />
+                        <StatusBadge Status="Error" />
+                    </MudStack>
+                </CardContainer>
+
+                <CardContainer Title="AmountDisplay Component">
+                    <MudStack Spacing="2">
+                        <AmountDisplay Amount="1234.56m" Currency="USD" Typo="Typo.h5" />
+                        <AmountDisplay Amount="5678.90m" Currency="EUR" IsCredit="true" Color="Color.Success" />
+                    </MudStack>
+                </CardContainer>
+
+                <CardContainer Title="DateTimeDisplay Component">
+                    <MudStack Spacing="2">
+                        <DateTimeDisplay DateTime="@DateTime.UtcNow.AddMinutes(-5)" ShowRelativeTime="true" />
+                        <DateTimeDisplay DateTime="@DateTime.UtcNow.AddDays(-2)" ShowRelativeTime="true" />
+                        <DateTimeDisplay DateTime="@DateTime.UtcNow" ShowRelativeTime="false" />
+                    </MudStack>
+                </CardContainer>
+
+                <CardContainer Title="StatCard Component">
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="4">
+                            <StatCard 
+                                Title="Total Revenue"
+                                Value="$125,000"
+                                Trend="+12%"
+                                Icon="@Icons.Material.Filled.TrendingUp" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="4">
+                            <StatCard 
+                                Title="Active Users"
+                                Value="1,234"
+                                Trend="-5%"
+                                Icon="@Icons.Material.Filled.People" />
+                        </MudItem>
+                    </MudGrid>
+                </CardContainer>
+            </MudStack>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Forms" Icon="@Icons.Material.Filled.Edit">
+            <MudStack Spacing="4">
+                <SectionHeader Title="Form Components" Icon="@Icons.Material.Filled.Edit" />
+                
+                <FormCard Title="FormCard Example">
+                    <MudTextField T="string" Label="Email" Variant="Variant.Outlined" />
+                    <MudTextField T="string" Label="Password" Variant="Variant.Outlined" InputType="InputType.Password" />
+                    <ActionButton Label="Submit" Variant="Variant.Filled" Color="Color.Primary" />
+                </FormCard>
+
+                <CardContainer Title="SearchBar Component">
+                    <SearchBar Placeholder="Search transactions..." />
+                </CardContainer>
+
+                <CardContainer Title="ActionButton Component">
+                    <MudStack Row="true" Spacing="2">
+                        <ActionButton Label="Primary" Variant="Variant.Filled" Color="Color.Primary" />
+                        <ActionButton Label="Secondary" Variant="Variant.Outlined" Color="Color.Primary" />
+                        <ActionButton Label="Text" Variant="Variant.Text" Color="Color.Primary" />
+                        <ActionButton IsFab="true" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" />
+                    </MudStack>
+                </CardContainer>
+
+                <FilterPanel>
+                    <MudTextField T="string" Label="Filter by Name" Variant="Variant.Outlined" />
+                    <MudSelect T="string" Label="Status" Variant="Variant.Outlined">
+                        <MudSelectItem Value="@("all")">All</MudSelectItem>
+                        <MudSelectItem Value="@("active")">Active</MudSelectItem>
+                        <MudSelectItem Value="@("inactive")">Inactive</MudSelectItem>
+                    </MudSelect>
+                </FilterPanel>
+            </MudStack>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Feedback" Icon="@Icons.Material.Filled.Info">
+            <MudStack Spacing="4">
+                <SectionHeader Title="Feedback Components" Icon="@Icons.Material.Filled.Info" />
+                
+                <CardContainer Title="LoadingSpinner Component">
+                    <LoadingSpinner IsLoading="true" ShowOverlay="false" />
+                </CardContainer>
+
+                <CardContainer Title="ErrorDisplay Component">
+                    <ErrorDisplay Message="An error occurred" Details="Please try again later." />
+                </CardContainer>
+
+                <CardContainer Title="ProgressIndicator Component">
+                    <ProgressIndicator 
+                        Label="Upload Progress"
+                        Value="65"
+                        ShowPercentage="true"
+                        HelperText="Uploading files..." />
+                </CardContainer>
+
+                <CardContainer Title="ConfirmationDialog Component">
+                    <MudButton OnClick="@(() => showConfirmDialog = true)">Show Confirmation</MudButton>
+                    <ConfirmationDialog 
+                        @bind-IsVisible="@showConfirmDialog"
+                        Title="Confirm Action"
+                        Message="Are you sure you want to delete this item?"
+                        OnConfirm="@(() => showConfirmDialog = false)" />
+                </CardContainer>
+            </MudStack>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Navigation" Icon="@Icons.Material.Filled.Navigation">
+            <MudStack Spacing="4">
+                <SectionHeader Title="Navigation Components" Icon="@Icons.Material.Filled.Navigation" />
+                
+                <CardContainer Title="BreadcrumbNav Component">
+                    <BreadcrumbNav BreadcrumbItems="@breadcrumbs" />
+                </CardContainer>
+
+                <CardContainer Title="Pagination Component">
+                    <Pagination 
+                        CurrentPage="1"
+                        PageSize="10"
+                        TotalItems="150"
+                        PageChanged="@((page) => { })" />
+                </CardContainer>
+
+                <CardContainer Title="QuickActionMenu Component">
+                    <QuickActionMenu 
+                        Icon="@Icons.Material.Filled.Add"
+                        Actions="@quickActions" />
+                </CardContainer>
+            </MudStack>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Specialized" Icon="@Icons.Material.Filled.Star">
+            <MudStack Spacing="4">
+                <SectionHeader Title="Specialized Components" Icon="@Icons.Material.Filled.Star" />
+                
+                <CardContainer Title="EmptyState Component">
+                    <EmptyState 
+                        Title="No items found"
+                        Message="There are no items to display at this time."
+                        Icon="@Icons.Material.Filled.Inbox"
+                        ActionText="Add Item" />
+                </CardContainer>
+
+                <CardContainer Title="SkeletonLoader Component">
+                    <MudStack Spacing="2">
+                        <SkeletonLoader Type="MameyNode.Portals.Shared.Components.Specialized.SkeletonType.Card" />
+                        <SkeletonLoader Type="MameyNode.Portals.Shared.Components.Specialized.SkeletonType.Text" Height="20" />
+                    </MudStack>
+                </CardContainer>
+
+                <CardContainer Title="Timeline Component">
+                    <Timeline Items="@timelineItems" />
+                </CardContainer>
+
+                <CardContainer Title="TagList Component">
+                    <TagList Tags="@tagItems" />
+                </CardContainer>
+
+                <CardContainer Title="MetricCard Component">
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="4">
+                            <MameyNode.Portals.Shared.Components.DataDisplay.MetricCard 
+                                Label="Revenue"
+                                Value="$125,000"
+                                Change="+12%"
+                                ChangePeriod="vs last month"
+                                Icon="@Icons.Material.Filled.TrendingUp" />
+                        </MudItem>
+                    </MudGrid>
+                </CardContainer>
+            </MudStack>
+        </MudTabPanel>
+    </MudTabs>
+</PageContainer>
+
+@code {
+    private bool showConfirmDialog = false;
+
+    private List<BreadcrumbItem> breadcrumbs = new()
+    {
+        new BreadcrumbItem("Home", "/", icon: Icons.Material.Filled.Home),
+        new BreadcrumbItem("Components", "/components", icon: Icons.Material.Filled.ViewModule)
+    };
+
+    private List<QuickActionItem> quickActions = new()
+    {
+        new QuickActionItem { Label = "Add Item", Icon = Icons.Material.Filled.Add },
+        new QuickActionItem { Label = "Import", Icon = Icons.Material.Filled.Upload },
+        new QuickActionItem { Label = "Export", Icon = Icons.Material.Filled.Download }
+    };
+
+    private List<TimelineItem> timelineItems = new()
+    {
+        new TimelineItem 
+        { 
+            Title = "Transaction Created", 
+            Description = "Payment initiated",
+            Time = "2 hours ago",
+            Icon = Icons.Material.Filled.Payment,
+            Color = Color.Success
+        },
+        new TimelineItem 
+        { 
+            Title = "Processing", 
+            Description = "Transaction is being processed",
+            Time = "1 hour ago",
+            Icon = Icons.Material.Filled.Sync,
+            Color = Color.Warning
+        },
+        new TimelineItem 
+        { 
+            Title = "Completed", 
+            Description = "Transaction completed successfully",
+            Time = "30 minutes ago",
+            Icon = Icons.Material.Filled.CheckCircle,
+            Color = Color.Success
+        }
+    };
+
+    private List<TagInfo> tagItems = new()
+    {
+        new TagInfo { Label = "Active", Color = Color.Success },
+        new TagInfo { Label = "Verified", Color = Color.Info },
+        new TagInfo { Label = "Premium", Color = Color.Warning, Removable = true }
+    };
+}

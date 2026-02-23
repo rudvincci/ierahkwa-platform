@@ -1,0 +1,498 @@
+@page "/gov/tenants"
+@attribute [Authorize(Roles = "Admin")]
+@using Mamey.Portal.Tenant.Application.Models
+@using Mamey.Portal.Shared.Storage.DocumentNaming
+@using Mamey.Portal.Web.ViewModels.Gov
+@inject TenantsViewModel Vm
+@inject MudBlazor.ISnackbar Snackbar
+@inject MudBlazor.IDialogService Dialogs
+@inject NavigationManager Nav
+
+<PageTitle>Tenants</PageTitle>
+
+@code {
+    [SupplyParameterFromQuery(Name = "prefillTenantId")]
+    public string? PrefillTenantId { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Vm.ApplyPrefill(PrefillTenantId);
+        Vm.Reload.Execute().Subscribe();
+        return Task.CompletedTask;
+    }
+
+    private string DevSwitchUrl(string tenantId)
+        => $"/dev/mock-login?tenant={Uri.EscapeDataString(tenantId)}&user=admin@example.com&role=Admin";
+
+    private void PreviewTemplate(string kind)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var tenantId = Vm.SelectedTenantId;
+        var sampleVariant = "IdentificationCard";
+        var fullName = "Jane Doe";
+        var dob = new DateOnly(1990, 01, 05);
+        var appNo = "APP-20260105-0001";
+
+        string html = kind switch
+        {
+            "CitizenshipCertificate" => Vm.CitizenshipCertificateTemplateHtml,
+            "BirthCertificate" => Vm.BirthCertificateTemplateHtml,
+            "MarriageCertificate" => Vm.MarriageCertificateTemplateHtml,
+            "NameChangeCertificate" => Vm.NameChangeCertificateTemplateHtml,
+            "Passport" => Vm.PassportTemplateHtml,
+            "IdCard" => Vm.IdCardTemplateHtml,
+            "VehicleTag" => Vm.VehicleTagTemplateHtml,
+            _ => string.Empty
+        };
+
+        PreviewTemplate(kind, html);
+    }
+
+    private void PreviewTemplate(string kind, string html)
+    {
+        if (string.IsNullOrWhiteSpace(html))
+        {
+            Snackbar.Add("No template override to preview (field is empty).", MudBlazor.Severity.Info);
+            return;
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        var tenantId = Vm.SelectedTenantId;
+        var sampleVariant = "IdentificationCard";
+        var fullName = "Jane Doe";
+        var dob = new DateOnly(1990, 01, 05);
+        var appNo = "APP-20260105-0001";
+
+        var variant = string.Empty;
+        if (kind.StartsWith("IdCard:", StringComparison.OrdinalIgnoreCase))
+        {
+            variant = kind["IdCard:".Length..].Trim();
+        }
+        else if (kind.StartsWith("VehicleTag:", StringComparison.OrdinalIgnoreCase))
+        {
+            variant = kind["VehicleTag:".Length..].Trim();
+        }
+
+        var tokens = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["TenantId"] = tenantId,
+            ["Kind"] = kind,
+            ["Variant"] = string.IsNullOrWhiteSpace(variant) ? sampleVariant : variant,
+            ["ApplicationNumber"] = appNo,
+            ["FullName"] = fullName,
+            ["DateOfBirth"] = dob.ToString("yyyy-MM-dd"),
+            ["IssuedAt"] = now.ToString("yyyy-MM-dd"),
+            ["DocumentNumber"] = kind switch
+            {
+                "BirthCertificate" => $"BIRTH-{tenantId.ToUpperInvariant()}-{now:yyMMdd}-ABC123",
+                "MarriageCertificate" => $"MARR-{tenantId.ToUpperInvariant()}-{now:yyMMdd}-ABC123",
+                "NameChangeCertificate" => $"NAME-{tenantId.ToUpperInvariant()}-{now:yyMMdd}-ABC123",
+                "Passport" => $"P-{tenantId.ToUpperInvariant()}-{now:yyMMdd}-ABC123",
+                "IdCard" => $"ID-{tenantId.ToUpperInvariant()}-{now:yyMMdd}-ABC123-{sampleVariant.ToUpperInvariant()}",
+                "VehicleTag" => $"TAG-{tenantId.ToUpperInvariant()}-{now:yyMMdd}-ABC123-STANDARD",
+                _ => ""
+            },
+            ["ExpiresAt"] = now.AddYears(5).ToString("yyyy-MM-dd"),
+        };
+
+        if (kind.StartsWith("IdCard:", StringComparison.OrdinalIgnoreCase))
+        {
+            tokens["DocumentNumber"] = $"ID-{tenantId.ToUpperInvariant()}-{now:yyMMdd}-ABC123-{tokens["Variant"].ToUpperInvariant()}";
+        }
+        else if (kind.StartsWith("VehicleTag:", StringComparison.OrdinalIgnoreCase))
+        {
+            tokens["DocumentNumber"] = $"TAG-{tenantId.ToUpperInvariant()}-{now:yyMMdd}-ABC123-{tokens["Variant"].ToUpperInvariant()}";
+            tokens["ExpiresAt"] = "";
+        }
+
+        foreach (var kv in tokens)
+        {
+            html = html.Replace($"{{{{{kv.Key}}}}}", kv.Value ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+        }
+
+        Dialogs.Show<Mamey.Portal.Web.Shared.TemplatePreviewDialog>(
+            "Template Preview",
+            new MudBlazor.DialogParameters
+            {
+                ["Title"] = $"{kind} (preview)",
+                ["Html"] = html
+            },
+            new MudBlazor.DialogOptions { CloseButton = true, MaxWidth = MudBlazor.MaxWidth.Large, FullWidth = true });
+    }
+
+    private async Task PreviewTemplateRealAsync(string kind, string html)
+    {
+        if (string.IsNullOrWhiteSpace(html))
+        {
+            Snackbar.Add("No template override to preview (field is empty).", MudBlazor.Severity.Info);
+            return;
+        }
+
+        var rendered = await Vm.BuildPreviewHtmlAsync(kind, html);
+        Dialogs.Show<Mamey.Portal.Web.Shared.TemplatePreviewDialog>(
+            "Template Preview (Real Data)",
+            new MudBlazor.DialogParameters
+            {
+                ["Title"] = $"{kind} (preview - real data)",
+                ["Html"] = rendered
+            },
+            new MudBlazor.DialogOptions { CloseButton = true, MaxWidth = MudBlazor.MaxWidth.Large, FullWidth = true });
+    }
+
+    private async Task PreviewVariantRealAsync(string kind)
+    {
+        if (string.IsNullOrWhiteSpace(kind))
+        {
+            Snackbar.Add("No kind provided.", MudBlazor.Severity.Warning);
+            return;
+        }
+
+        // Load the current persisted template for this kind so the "Real" button
+        // works even if the editor isn't open/loaded.
+        var html = await Vm.LoadTemplateHtmlAsync(kind);
+        await PreviewTemplateRealAsync(kind, html);
+    }
+
+    private bool ActivationComplete
+        => Vm.ActivationBrandingComplete
+           && Vm.ActivationNamingComplete
+           && Vm.ActivationTemplatesComplete
+           && Vm.ActivationAdminMembershipEstablished
+           && Vm.ActivationFeatureFlagsReviewed;
+}
+
+<MudStack Spacing="3" Style="max-width: 1100px;">
+    <MudText Typo="Typo.h4">Tenants (Admin)</MudText>
+    <MudText Typo="Typo.body2" Class="mud-text-secondary">
+        Minimal tenant registry + settings. In dev, you can switch the active tenant via the dev-only mock login.
+    </MudText>
+
+    @if (!string.IsNullOrWhiteSpace(Vm.Error))
+    {
+        <MudAlert Severity="MudBlazor.Severity.Error">@Vm.Error</MudAlert>
+    }
+
+    <MudPaper Class="pa-4">
+        <MudText Typo="Typo.h6" GutterBottom="true">Create Tenant</MudText>
+        <MudGrid Spacing="2">
+            <MudItem xs="12" md="4">
+                <MudTextField @bind-Value="Vm.NewTenantId" Label="Tenant Id (slug)" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="8">
+                <MudTextField @bind-Value="Vm.NewDisplayName" Label="Display Name" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="Vm.NewSeal1" Label="Seal Line 1" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="Vm.NewSeal2" Label="Seal Line 2" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="Vm.NewEmail" Label="Contact Email" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@Vm.Busy" OnClick="@(() => Vm.CreateTenant.Execute().Subscribe())">
+                    Create tenant
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudPaper Class="pa-4">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+            <MudText Typo="Typo.h6">Tenant Settings</MudText>
+            @if (!string.IsNullOrWhiteSpace(Vm.SelectedTenantId))
+            {
+                <MudStack Row="true" Spacing="2">
+                    <MudButton Variant="Variant.Outlined" Href="@DevSwitchUrl(Vm.SelectedTenantId!)">
+                        Dev: switch to tenant
+                    </MudButton>
+                </MudStack>
+            }
+        </MudStack>
+
+        <MudDivider Class="my-3" />
+
+        <MudGrid Spacing="2">
+            <MudItem xs="12" md="4">
+                <MudSelect T="string"
+                           Label="Tenant"
+                           Variant="Variant.Outlined"
+                           @bind-Value="Vm.SelectedTenantId"
+                           @bind-Value:after="@(() => Vm.LoadSelected.Execute().Subscribe())">
+                    @foreach (var t in Vm.Tenants)
+                    {
+                        <MudSelectItem T="string" Value="@t.TenantId">@t.TenantId</MudSelectItem>
+                    }
+                </MudSelect>
+
+                @if (!string.IsNullOrWhiteSpace(Vm.SelectedTenantId) && Vm.Settings is not null)
+                {
+                    <MudText Typo="Typo.caption" Class="mt-2 mud-text-secondary">
+                        TenantId: @Vm.Settings.TenantId
+                    </MudText>
+                }
+            </MudItem>
+
+            <MudItem xs="12" md="8">
+                <MudTextField @bind-Value="Vm.BrandingDisplayName" Label="Display Name" Variant="Variant.Outlined" />
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="Vm.BrandingSeal1" Label="Seal Line 1" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="Vm.BrandingSeal2" Label="Seal Line 2" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="Vm.BrandingEmail" Label="Contact Email" Variant="Variant.Outlined" />
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudAlert Severity="MudBlazor.Severity.Info">
+                    Default document naming patterns for this tenant. Tokens: <code>{TenantId}</code>, <code>{ApplicationNumber}</code>, <code>{ApplicationId}</code>,
+                    <code>{Kind}</code>, <code>{OriginalFileName}</code>, <code>{Unique}</code>, <code>{Date:yyyyMMdd}</code>.
+                </MudAlert>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudExpansionPanels>
+                    <MudExpansionPanel Text="Document naming patterns">
+                        <MudTextField @bind-Value="Vm.Pattern.PersonalDocumentPattern" Label="Personal documents" Variant="Variant.Outlined" Lines="2" />
+                        <MudTextField Class="mt-3" @bind-Value="Vm.Pattern.PassportPhotoPattern" Label="Passport photo" Variant="Variant.Outlined" Lines="2" />
+                        <MudTextField Class="mt-3" @bind-Value="Vm.Pattern.SignatureImagePattern" Label="Signature image" Variant="Variant.Outlined" Lines="2" />
+                        <MudTextField Class="mt-3" @bind-Value="Vm.Pattern.PassportDocumentPattern" Label="Passport document" Variant="Variant.Outlined" Lines="2" />
+                        <MudTextField Class="mt-3" @bind-Value="Vm.Pattern.IdCardDocumentPattern" Label="ID card document" Variant="Variant.Outlined" Lines="2" />
+                        <MudTextField Class="mt-3" @bind-Value="Vm.Pattern.VehicleTagDocumentPattern" Label="Vehicle tag document" Variant="Variant.Outlined" Lines="2" />
+                        <MudTextField Class="mt-3" @bind-Value="Vm.Pattern.CitizenshipCertificatePattern" Label="Citizenship certificate" Variant="Variant.Outlined" Lines="2" />
+                        <MudTextField Class="mt-3" @bind-Value="Vm.Pattern.BirthCertificatePattern" Label="Birth certificate" Variant="Variant.Outlined" Lines="2" />
+                        <MudTextField Class="mt-3" @bind-Value="Vm.Pattern.MarriageCertificatePattern" Label="Marriage certificate" Variant="Variant.Outlined" Lines="2" />
+                        <MudTextField Class="mt-3" @bind-Value="Vm.Pattern.NameChangeCertificatePattern" Label="Name change certificate" Variant="Variant.Outlined" Lines="2" />
+                    </MudExpansionPanel>
+                    <MudExpansionPanel Text="Activation checklist">
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="mb-2">
+                            <MudText Typo="Typo.subtitle2">Status</MudText>
+                            <MudChip T="string" Color="@(ActivationComplete ? MudBlazor.Color.Success : MudBlazor.Color.Warning)" Variant="Variant.Filled">
+                                @(ActivationComplete ? "Ready" : "Needs setup")
+                            </MudChip>
+                        </MudStack>
+                        <MudCheckBox T="bool" @bind-Checked="Vm.ActivationBrandingComplete" Label="Branding completed" />
+                        <MudCheckBox T="bool" @bind-Checked="Vm.ActivationNamingComplete" Label="Naming patterns configured" />
+                        <MudCheckBox T="bool" @bind-Checked="Vm.ActivationTemplatesComplete" Label="Required templates present" />
+                        <MudCheckBox T="bool" @bind-Checked="Vm.ActivationAdminMembershipEstablished" Label="Admin membership established" />
+                        <MudCheckBox T="bool" @bind-Checked="Vm.ActivationFeatureFlagsReviewed" Label="Feature flags reviewed" />
+                    </MudExpansionPanel>
+                    <MudExpansionPanel Text="Document templates (Phase 5)">
+                        <MudAlert Severity="MudBlazor.Severity.Info" Class="mb-3">
+                            Optional HTML override for generated documents. Tokens:
+                            <code>{{TenantId}}</code>, <code>{{ApplicationNumber}}</code>, <code>{{FullName}}</code>,
+                            <code>{{DateOfBirth}}</code>, <code>{{IssuedAt}}</code>, <code>{{DocumentNumber}}</code>, <code>{{ExpiresAt}}</code>,
+                            <code>{{Kind}}</code>, <code>{{Variant}}</code>.
+                            Leave empty to use the built-in default template.
+                        </MudAlert>
+
+                        <MudStack Spacing="2">
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.subtitle2">Citizenship Certificate</MudText>
+                                <MudStack Row="true" Spacing="2">
+                                    <MudButton Variant="Variant.Outlined" OnClick="@(() => PreviewTemplate("CitizenshipCertificate"))">Preview</MudButton>
+                                    <MudButton Variant="Variant.Text" OnClick="@(() => PreviewTemplateRealAsync("CitizenshipCertificate", Vm.CitizenshipCertificateTemplateHtml))">Real</MudButton>
+                                </MudStack>
+                            </MudStack>
+                            <MudTextField @bind-Value="Vm.CitizenshipCertificateTemplateHtml"
+                                          Label="Template (HTML)"
+                                          Variant="Variant.Outlined"
+                                          Lines="10" />
+
+                            <MudDivider Class="my-2" />
+
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.subtitle2">Birth Certificate</MudText>
+                                <MudStack Row="true" Spacing="2">
+                                    <MudButton Variant="Variant.Outlined" OnClick="@(() => PreviewTemplate("BirthCertificate"))">Preview</MudButton>
+                                    <MudButton Variant="Variant.Text" OnClick="@(() => PreviewTemplateRealAsync("BirthCertificate", Vm.BirthCertificateTemplateHtml))">Real</MudButton>
+                                </MudStack>
+                            </MudStack>
+                            <MudTextField @bind-Value="Vm.BirthCertificateTemplateHtml"
+                                          Label="Template (HTML)"
+                                          Variant="Variant.Outlined"
+                                          Lines="10" />
+
+                            <MudDivider Class="my-2" />
+
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.subtitle2">Marriage Certificate</MudText>
+                                <MudStack Row="true" Spacing="2">
+                                    <MudButton Variant="Variant.Outlined" OnClick="@(() => PreviewTemplate("MarriageCertificate"))">Preview</MudButton>
+                                    <MudButton Variant="Variant.Text" OnClick="@(() => PreviewTemplateRealAsync("MarriageCertificate", Vm.MarriageCertificateTemplateHtml))">Real</MudButton>
+                                </MudStack>
+                            </MudStack>
+                            <MudTextField @bind-Value="Vm.MarriageCertificateTemplateHtml"
+                                          Label="Template (HTML)"
+                                          Variant="Variant.Outlined"
+                                          Lines="10" />
+
+                            <MudDivider Class="my-2" />
+
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.subtitle2">Name Change Certificate</MudText>
+                                <MudStack Row="true" Spacing="2">
+                                    <MudButton Variant="Variant.Outlined" OnClick="@(() => PreviewTemplate("NameChangeCertificate"))">Preview</MudButton>
+                                    <MudButton Variant="Variant.Text" OnClick="@(() => PreviewTemplateRealAsync("NameChangeCertificate", Vm.NameChangeCertificateTemplateHtml))">Real</MudButton>
+                                </MudStack>
+                            </MudStack>
+                            <MudTextField @bind-Value="Vm.NameChangeCertificateTemplateHtml"
+                                          Label="Template (HTML)"
+                                          Variant="Variant.Outlined"
+                                          Lines="10" />
+
+                            <MudDivider Class="my-2" />
+
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.subtitle2">Passport</MudText>
+                                <MudStack Row="true" Spacing="2">
+                                    <MudButton Variant="Variant.Outlined" OnClick="@(() => PreviewTemplate("Passport"))">Preview</MudButton>
+                                    <MudButton Variant="Variant.Text" OnClick="@(() => PreviewTemplateRealAsync("Passport", Vm.PassportTemplateHtml))">Real</MudButton>
+                                </MudStack>
+                            </MudStack>
+                            <MudTextField @bind-Value="Vm.PassportTemplateHtml"
+                                          Label="Template (HTML)"
+                                          Variant="Variant.Outlined"
+                                          Lines="10" />
+
+                            <MudDivider Class="my-2" />
+
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.subtitle2">ID Card (base)</MudText>
+                                <MudStack Row="true" Spacing="2">
+                                    <MudButton Variant="Variant.Outlined" OnClick="@(() => PreviewTemplate("IdCard"))">Preview</MudButton>
+                                    <MudButton Variant="Variant.Text" OnClick="@(() => PreviewTemplateRealAsync("IdCard", Vm.IdCardTemplateHtml))">Real</MudButton>
+                                </MudStack>
+                            </MudStack>
+                            <MudTextField @bind-Value="Vm.IdCardTemplateHtml"
+                                          Label="Template (HTML)"
+                                          Variant="Variant.Outlined"
+                                          Lines="10" />
+
+                            <MudDivider Class="my-2" />
+
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.subtitle2">Vehicle Tag (base)</MudText>
+                                <MudStack Row="true" Spacing="2">
+                                    <MudButton Variant="Variant.Outlined" OnClick="@(() => PreviewTemplate("VehicleTag"))">Preview</MudButton>
+                                    <MudButton Variant="Variant.Text" OnClick="@(() => PreviewTemplateRealAsync("VehicleTag", Vm.VehicleTagTemplateHtml))">Real</MudButton>
+                                </MudStack>
+                            </MudStack>
+                            <MudTextField @bind-Value="Vm.VehicleTagTemplateHtml"
+                                          Label="Template (HTML)"
+                                          Variant="Variant.Outlined"
+                                          Lines="10" />
+
+                            <MudDivider Class="my-4" />
+
+                            <MudText Typo="Typo.subtitle2" Class="mb-2">Variant templates</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary mb-2">
+                                Create overrides like <code>IdCard:MedicinalCannabis</code> or <code>VehicleTag:Veteran</code>.
+                                Issuance will prefer exact kind, then fall back to the base kind.
+                            </MudText>
+
+                            <MudPaper Class="pa-3 mb-3">
+                                <MudText Typo="Typo.subtitle2" Class="mb-2">Preview with real application data</MudText>
+                                <MudText Typo="Typo.body2" Class="mud-text-secondary mb-2">
+                                    Pick a recent application number (or type one) to render tokens from Postgres for this tenant.
+                                </MudText>
+
+                                <MudGrid Spacing="2">
+                                    <MudItem xs="12" md="6">
+                                        <MudSelect T="string" Label="Recent applications" Variant="Variant.Outlined" FullWidth="true"
+                                                   @bind-Value="Vm.PreviewApplicationNumber">
+                                            @foreach (var no in Vm.RecentApplicationNumbers)
+                                            {
+                                                <MudSelectItem T="string" Value="@no">@no</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField Label="Application number (manual)" Variant="Variant.Outlined" FullWidth="true"
+                                                      @bind-Value="Vm.PreviewApplicationNumber" />
+                                    </MudItem>
+                                </MudGrid>
+                            </MudPaper>
+
+                            <MudStack Row="true" Spacing="2" Class="mb-3">
+                                <MudButton Variant="Variant.Outlined" OnClick="@(() => Vm.NewVariantFromBase.Execute("IdCard").Subscribe())">New ID Card variant</MudButton>
+                                <MudButton Variant="Variant.Outlined" OnClick="@(() => Vm.NewVariantFromBase.Execute("VehicleTag").Subscribe())">New Vehicle Tag variant</MudButton>
+                            </MudStack>
+
+                            <MudGrid Spacing="2">
+                                <MudItem xs="12" md="5">
+                                    <MudPaper Class="pa-3">
+                                        <MudText Typo="Typo.subtitle2" Class="mb-2">Existing variants</MudText>
+                                        @if (Vm.VariantTemplates.Count == 0)
+                                        {
+                                            <MudText Typo="Typo.body2" Class="mud-text-secondary">No variant templates yet.</MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudList T="string" Dense="true">
+                                                @foreach (var t in Vm.VariantTemplates)
+                                                {
+                                                    <MudListItem T="string">
+                                                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Style="width: 100%;">
+                                                            <MudStack Spacing="0">
+                                                                <MudText Typo="Typo.body2"><code>@t.Kind</code></MudText>
+                                                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Updated @t.UpdatedAt.ToLocalTime().ToString("g")</MudText>
+                                                            </MudStack>
+                                                            <MudStack Row="true" Spacing="1">
+                                                                <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => Vm.EditVariantTemplate.Execute(t.Kind).Subscribe())">Edit</MudButton>
+                                                                <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Error" OnClick="@(() => Vm.DeleteVariantTemplate.Execute(t.Kind).Subscribe())">Delete</MudButton>
+                                                                <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="@(() => PreviewVariantRealAsync(t.Kind))">Real</MudButton>
+                                                            </MudStack>
+                                                        </MudStack>
+                                                    </MudListItem>
+                                                }
+                                            </MudList>
+                                        }
+                                    </MudPaper>
+                                </MudItem>
+
+                                <MudItem xs="12" md="7">
+                                    <MudPaper Class="pa-3">
+                                        <MudText Typo="Typo.subtitle2" Class="mb-2">Editor</MudText>
+                                        <MudTextField @bind-Value="Vm.CustomTemplateKind"
+                                                      Label="Kind (must include ':')"
+                                                      Variant="Variant.Outlined"
+                                                      Placeholder="IdCard:MedicinalCannabis"
+                                                      FullWidth="true" />
+
+                                        <MudTextField @bind-Value="Vm.CustomTemplateHtml"
+                                                      Label="Template (HTML)"
+                                                      Variant="Variant.Outlined"
+                                                      Lines="10"
+                                                      FullWidth="true"
+                                                      Class="mt-3" />
+
+                                        <MudStack Row="true" Spacing="2" Class="mt-3">
+                                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => Vm.SaveVariantTemplate.Execute().Subscribe())">Save variant</MudButton>
+                                            <MudButton Variant="Variant.Outlined" OnClick="@(() => PreviewTemplate(Vm.CustomTemplateKind, Vm.CustomTemplateHtml))">Preview</MudButton>
+                                            @if (!string.IsNullOrWhiteSpace(Vm.CustomTemplateKind))
+                                            {
+                                                <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="@(() => Vm.DeleteVariantTemplate.Execute(Vm.CustomTemplateKind).Subscribe())">Delete</MudButton>
+                                            }
+                                        </MudStack>
+                                    </MudPaper>
+                                </MudItem>
+                            </MudGrid>
+                        </MudStack>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@Vm.Busy" OnClick="@(() => Vm.SaveSettings.Execute().Subscribe())">
+                    Save settings
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+</MudStack>

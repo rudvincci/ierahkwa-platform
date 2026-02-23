@@ -1,0 +1,96 @@
+@page "/merchant/invoices"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumMerchantClient FutureWampumMerchantClient
+@inject ILogger<Invoices> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Invoices" Icon="fas fa-file-invoice-dollar" Subtitle="Invoice management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Invoices" Value="@_invoices.Count.ToString()" Icon="fas fa-file-invoice-dollar" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Amount" Value="@_totalAmount.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Paid" Value="@_paidCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Overdue" Value="@_overdueCount.ToString()" Icon="fas fa-exclamation-triangle" Color="#EF4444" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Invoices" Class="mt-4">
+        <MudTable T="InvoiceInfo" Items="@_invoices" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Invoice ID</MudTh>
+                <MudTh>Merchant ID</MudTh>
+                <MudTh>Customer ID</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+                <MudTh>Due Date</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.InvoiceId</MudTd>
+                <MudTd>@context.MerchantId</MudTd>
+                <MudTd>@context.CustomerId</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Paid" ? Color.Success : context.Status == "Overdue" ? Color.Error : context.Status == "Pending" ? Color.Warning : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@(context.DueDate?.ToString("yyyy-MM-dd") ?? "-")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<InvoiceInfo> _invoices = new();
+    private decimal _totalAmount;
+    private int _paidCount;
+    private int _overdueCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _invoices = await FutureWampumMerchantClient.GetInvoicesAsync();
+            _totalAmount = _invoices.Sum(i => decimal.Parse(i.Amount));
+            _paidCount = _invoices.Count(i => i.Status == "Paid");
+            _overdueCount = _invoices.Count(i => i.Status == "Overdue");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading invoices");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

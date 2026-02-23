@@ -1,0 +1,94 @@
+@page "/upg/pos"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IUPGClient UPGClient
+@inject ILogger<POS> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Point of Sale" Icon="fas fa-cash-register" Subtitle="POS transaction processing">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Transactions" Value="@_transactions.Count.ToString()" Icon="fas fa-list" Color="#14B8A6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Authorized" Value="@_authorizedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Captured" Value="@_capturedCount.ToString()" Icon="fas fa-hand-holding-usd" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Amount" Value="@_totalAmount.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="POS Transactions" Class="mt-4">
+        <MudTable T="POSTransactionInfo" Items="@_transactions" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Transaction ID</MudTh>
+                <MudTh>Merchant</MudTh>
+                <MudTh>Terminal</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.TransactionId</MudTd>
+                <MudTd>@context.MerchantId</MudTd>
+                <MudTd>@context.TerminalId</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == POSTransactionStatus.Authorized || context.Status == POSTransactionStatus.Captured ? Color.Success : context.Status == POSTransactionStatus.Declined ? Color.Error : Color.Warning)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<POSTransactionInfo> _transactions = new();
+    private int _authorizedCount;
+    private int _capturedCount;
+    private decimal _totalAmount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _transactions = await UPGClient.GetPOSTransactionsAsync();
+            _authorizedCount = _transactions.Count(t => t.Status == POSTransactionStatus.Authorized);
+            _capturedCount = _transactions.Count(t => t.Status == POSTransactionStatus.Captured);
+            _totalAmount = _transactions.Sum(t => decimal.Parse(t.Amount));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading POS transactions");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

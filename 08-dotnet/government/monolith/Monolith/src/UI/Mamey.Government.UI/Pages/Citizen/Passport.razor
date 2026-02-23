@@ -1,0 +1,98 @@
+@page "/citizen/passport"
+@layout CitizenLayout
+@attribute [Authorize]
+
+<PageTitle>My Passport - Citizen Portal</PageTitle>
+
+<PageHeader Title="My Passport" Subtitle="View and manage your passport" />
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" md="8">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.Book" Color="Color.Primary" />
+                        <MudText Typo="Typo.h6">Passport Details</MudText>
+                    </MudStack>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <StatusChip Status="Active" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudSimpleTable Dense="true" Hover="true">
+                    <tbody>
+                        <tr><td><strong>Passport Number</strong></td><td>P12345678</td></tr>
+                        <tr><td><strong>Full Name</strong></td><td>John Smith</td></tr>
+                        <tr><td><strong>Date of Birth</strong></td><td>January 15, 1990</td></tr>
+                        <tr><td><strong>Issue Date</strong></td><td>March 15, 2024</td></tr>
+                        <tr><td><strong>Expiry Date</strong></td><td>March 14, 2034</td></tr>
+                        <tr><td><strong>Issuing Authority</strong></td><td>Mamey Government</td></tr>
+                    </tbody>
+                </MudSimpleTable>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Download">
+                    Download Digital Copy
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Refresh">
+                    Request Renewal
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+
+        <MudCard Elevation="2" Class="mt-4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Passport History</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudTimeline TimelinePosition="TimelinePosition.Start">
+                    <MudTimelineItem Color="Color.Success" Size="Size.Small">
+                        <ItemContent>
+                            <MudText Typo="Typo.body2">Passport Issued</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">March 15, 2024</MudText>
+                        </ItemContent>
+                    </MudTimelineItem>
+                    <MudTimelineItem Color="Color.Info" Size="Size.Small">
+                        <ItemContent>
+                            <MudText Typo="Typo.body2">Application Approved</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">March 10, 2024</MudText>
+                        </ItemContent>
+                    </MudTimelineItem>
+                    <MudTimelineItem Color="Color.Primary" Size="Size.Small">
+                        <ItemContent>
+                            <MudText Typo="Typo.body2">Application Submitted</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">March 1, 2024</MudText>
+                        </ItemContent>
+                    </MudTimelineItem>
+                </MudTimeline>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Quick Actions</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Spacing="2">
+                    <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Report">
+                        Report Lost/Stolen
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Edit">
+                        Request Name Change
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.ContentCopy">
+                        Request Additional Pages
+                    </MudButton>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>

@@ -1,0 +1,47 @@
+@using Mamey.Types
+@using Mamey.BlazorWasm.Components.Foundation
+@using System.ComponentModel.DataAnnotations
+@using Mamey
+
+<MudSelect T="MaritalStatus?"
+           Label="@Label"
+           Placeholder="@Placeholder"
+           Value="@Value"
+           ValueChanged="@ValueChanged"
+           Required="@Required"
+           Disabled="@Disabled"
+           Variant="@Variant"
+           Dense="@Dense"
+           Class="@Class"
+           Style="@Style">
+    @if (AllowEmpty && !Required)
+    {
+        <MudSelectItem T="MaritalStatus?" Value="@((MaritalStatus?)null)">-- Select --</MudSelectItem>
+    }
+    @foreach (var status in Enum.GetValues<MaritalStatus>())
+    {
+        var displayName = status.GetEnumDisplayName() ?? status.ToString();
+        <MudSelectItem T="MaritalStatus?" Value="@status">@displayName</MudSelectItem>
+    }
+</MudSelect>
+<FieldMessages HelperText="@HelperText" />
+
+@code {
+    [Parameter] public string Label { get; set; } = "Marital Status";
+    [Parameter] public string HelperText { get; set; } = "Select your marital status";
+    [Parameter] public string Placeholder { get; set; } = "Select marital status";
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public bool Dense { get; set; } = true;
+    [Parameter] public bool AllowEmpty { get; set; } = true;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public MaritalStatus? Value { get; set; }
+    [Parameter] public EventCallback<MaritalStatus?> ValueChanged { get; set; }
+}
+
+
+
+

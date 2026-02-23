@@ -1,0 +1,11 @@
+@page "/logout"
+@using Mamey.ApplicationName.BlazorWasm.Services
+@using Mamey.ApplicationName.BlazorWasm.Services.Auth
+@inject AuthenticationService AuthenticationService
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthenticationService.LogoutAsync();
+    }
+}

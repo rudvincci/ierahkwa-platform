@@ -1,0 +1,65 @@
+@page "/rbac/hierarchy"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<Hierarchy> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Role Hierarchy" Icon="fas fa-sitemap" Subtitle="Role hierarchy configuration">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <CardContainer Title="Role Hierarchies" Class="mt-4">
+        <MudTable T="RoleHierarchyInfo" Items="@_hierarchies" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Hierarchy ID</MudTh>
+                <MudTh>Parent Role</MudTh>
+                <MudTh>Child Role</MudTh>
+                <MudTh>Level</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.HierarchyId</MudTd>
+                <MudTd>@context.ParentRoleId</MudTd>
+                <MudTd>@context.ChildRoleId</MudTd>
+                <MudTd>@context.Level</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<RoleHierarchyInfo> _hierarchies = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _hierarchies = await GovernmentClient.GetRoleHierarchiesAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading role hierarchies");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

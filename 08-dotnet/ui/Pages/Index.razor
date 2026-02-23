@@ -1,0 +1,78 @@
+@page "/"
+@inject IMetadataService MetadataService
+
+<PageTitle>Home - MameyNode UI</PageTitle>
+
+<h1>MameyNode UI</h1>
+
+<p>Welcome to the MameyNode UI. This interface allows you to interact with MameyNode via the minimal staging gRPC surface.</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Connection Status</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>gRPC Endpoint:</strong> <code>@(Configuration["MameyNode:GrpcEndpoint"] ?? "http://localhost:50051")</code></p>
+                <p><strong>Status:</strong> <span class="badge bg-success">Ready</span></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Metadata Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Correlation ID:</strong> <code>@MetadataService.GetCorrelationId()</code></p>
+                @if (!string.IsNullOrEmpty(MetadataService.GetInstitutionId()))
+                {
+                    <p><strong>Institution ID:</strong> <code>@MetadataService.GetInstitutionId()</code></p>
+                }
+                else
+                {
+                    <p><strong>Institution ID:</strong> <span class="text-muted">Not set</span></p>
+                }
+                @if (MetadataService.GetCredentialChain() != null && MetadataService.GetCredentialChain()!.Count > 0)
+                {
+                    <p><strong>Credentials:</strong> <span class="badge bg-success">@MetadataService.GetCredentialChain()!.Count credential(s)</span></p>
+                }
+                else
+                {
+                    <p><strong>Credentials:</strong> <span class="text-muted">None</span></p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Quick Navigation</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="nodeinfo" class="list-group-item list-group-item-action">
+                        <h6 class="mb-1">Node Info</h6>
+                        <p class="mb-1">View node information including version, node ID, block count, and peer count.</p>
+                    </a>
+                    <a href="version" class="list-group-item list-group-item-action">
+                        <h6 class="mb-1">RPC Version</h6>
+                        <p class="mb-1">View RPC version information including protocol version and store version.</p>
+                    </a>
+                    <a href="paymentrequest" class="list-group-item list-group-item-action">
+                        <h6 class="mb-1">Payment Request</h6>
+                        <p class="mb-1">Create and view payment requests (requires credentials for regulated operations).</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject] private IConfiguration Configuration { get; set; } = null!;
+}

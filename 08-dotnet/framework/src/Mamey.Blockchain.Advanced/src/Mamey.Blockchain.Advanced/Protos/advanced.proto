@@ -1,0 +1,395 @@
+syntax = "proto3";
+
+package mamey.advanced;
+
+// Advanced features service for MameyNode blockchain
+service AdvancedService {
+    // Asset tokenization
+    rpc TokenizeAsset(TokenizeAssetRequest) returns (TokenizeAssetResponse);
+    rpc GetTokenizedAsset(GetTokenizedAssetRequest) returns (GetTokenizedAssetResponse);
+    rpc ListTokenizedAssets(ListTokenizedAssetsRequest) returns (ListTokenizedAssetsResponse);
+    rpc TransferToken(TransferTokenRequest) returns (TransferTokenResponse);
+    
+    // Escrow smart contracts
+    rpc CreateEscrow(CreateEscrowRequest) returns (CreateEscrowResponse);
+    rpc GetEscrow(GetEscrowRequest) returns (GetEscrowResponse);
+    rpc ReleaseEscrow(ReleaseEscrowRequest) returns (ReleaseEscrowResponse);
+    rpc CancelEscrow(CancelEscrowRequest) returns (CancelEscrowResponse);
+    
+    // Insurance and risk instruments
+    rpc CreateInsurancePolicy(CreateInsurancePolicyRequest) returns (CreateInsurancePolicyResponse);
+    rpc GetInsurancePolicy(GetInsurancePolicyRequest) returns (GetInsurancePolicyResponse);
+    rpc FileClaim(FileClaimRequest) returns (FileClaimResponse);
+    rpc ProcessClaim(ProcessClaimRequest) returns (ProcessClaimResponse);
+    
+    // Offline syncable operations
+    rpc CreateOfflineTransaction(CreateOfflineTransactionRequest) returns (CreateOfflineTransactionResponse);
+    rpc SyncOfflineTransactions(SyncOfflineTransactionsRequest) returns (SyncOfflineTransactionsResponse);
+    rpc GetOfflineTransactions(GetOfflineTransactionsRequest) returns (GetOfflineTransactionsResponse);
+    
+    // Satellite banking support
+    rpc RegisterSatelliteNode(RegisterSatelliteNodeRequest) returns (RegisterSatelliteNodeResponse);
+    rpc SyncSatelliteData(SyncSatelliteDataRequest) returns (SyncSatelliteDataResponse);
+    rpc GetSatelliteNodes(GetSatelliteNodesRequest) returns (GetSatelliteNodesResponse);
+}
+
+// Tokenize asset request
+message TokenizeAssetRequest {
+    string asset_id = 1;
+    string asset_type = 2;
+    string owner_id = 3;
+    string total_supply = 4;
+    string metadata = 5;
+    map<string, string> properties = 6;
+}
+
+// Tokenize asset response
+message TokenizeAssetResponse {
+    string token_id = 1;
+    string contract_address = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get tokenized asset request
+message GetTokenizedAssetRequest {
+    string token_id = 1;
+}
+
+// Get tokenized asset response
+message GetTokenizedAssetResponse {
+    TokenizedAssetInfo asset = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// List tokenized assets request
+message ListTokenizedAssetsRequest {
+    string owner_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// List tokenized assets response
+message ListTokenizedAssetsResponse {
+    repeated TokenizedAssetInfo assets = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Transfer token request
+message TransferTokenRequest {
+    string token_id = 1;
+    string from_account = 2;
+    string to_account = 3;
+    string amount = 4;
+}
+
+// Transfer token response
+message TransferTokenResponse {
+    string transaction_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Create escrow request
+message CreateEscrowRequest {
+    string buyer_id = 1;
+    string seller_id = 2;
+    string amount = 3;
+    string currency = 4;
+    string conditions = 5;
+    uint64 expiry_date = 6;
+}
+
+// Create escrow response
+message CreateEscrowResponse {
+    string escrow_id = 1;
+    string contract_address = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get escrow request
+message GetEscrowRequest {
+    string escrow_id = 1;
+}
+
+// Get escrow response
+message GetEscrowResponse {
+    EscrowInfo escrow = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Release escrow request
+message ReleaseEscrowRequest {
+    string escrow_id = 1;
+    string released_by = 2;
+    string reason = 3;
+}
+
+// Release escrow response
+message ReleaseEscrowResponse {
+    string transaction_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Cancel escrow request
+message CancelEscrowRequest {
+    string escrow_id = 1;
+    string cancelled_by = 2;
+    string reason = 3;
+}
+
+// Cancel escrow response
+message CancelEscrowResponse {
+    string transaction_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Create insurance policy request
+message CreateInsurancePolicyRequest {
+    string policy_holder_id = 1;
+    string policy_type = 2;
+    string coverage_amount = 3;
+    string currency = 4;
+    string premium = 5;
+    uint64 start_date = 6;
+    uint64 end_date = 7;
+    map<string, string> terms = 8;
+}
+
+// Create insurance policy response
+message CreateInsurancePolicyResponse {
+    string policy_id = 1;
+    string contract_address = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get insurance policy request
+message GetInsurancePolicyRequest {
+    string policy_id = 1;
+}
+
+// Get insurance policy response
+message GetInsurancePolicyResponse {
+    InsurancePolicyInfo policy = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// File claim request
+message FileClaimRequest {
+    string policy_id = 1;
+    string claim_amount = 2;
+    string description = 3;
+    map<string, string> evidence = 4;
+}
+
+// File claim response
+message FileClaimResponse {
+    string claim_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Process claim request
+message ProcessClaimRequest {
+    string claim_id = 1;
+    string decision = 2;  // "approved", "rejected", "pending"
+    string reason = 3;
+}
+
+// Process claim response
+message ProcessClaimResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Create offline transaction request
+message CreateOfflineTransactionRequest {
+    string from_account = 1;
+    string to_account = 2;
+    string amount = 3;
+    string currency = 4;
+    bytes signature = 5;
+    uint64 timestamp = 6;
+}
+
+// Create offline transaction response
+message CreateOfflineTransactionResponse {
+    string offline_transaction_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Sync offline transactions request
+message SyncOfflineTransactionsRequest {
+    repeated OfflineTransaction transactions = 1;
+}
+
+// Sync offline transactions response
+message SyncOfflineTransactionsResponse {
+    repeated string synced_transaction_ids = 1;
+    repeated string failed_transaction_ids = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get offline transactions request
+message GetOfflineTransactionsRequest {
+    string account_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// Get offline transactions response
+message GetOfflineTransactionsResponse {
+    repeated OfflineTransaction transactions = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Register satellite node request
+message RegisterSatelliteNodeRequest {
+    string node_id = 1;
+    string location = 2;
+    string capabilities = 3;
+    map<string, string> metadata = 4;
+}
+
+// Register satellite node response
+message RegisterSatelliteNodeResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Sync satellite data request
+message SyncSatelliteDataRequest {
+    string satellite_node_id = 1;
+    repeated string transaction_ids = 2;
+}
+
+// Sync satellite data response
+message SyncSatelliteDataResponse {
+    uint32 synced_count = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get satellite nodes request
+message GetSatelliteNodesRequest {
+    string location = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// Get satellite nodes response
+message GetSatelliteNodesResponse {
+    repeated SatelliteNodeInfo nodes = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Tokenized asset info
+message TokenizedAssetInfo {
+    string token_id = 1;
+    string asset_id = 2;
+    string asset_type = 3;
+    string owner_id = 4;
+    string total_supply = 5;
+    string current_supply = 6;
+    string contract_address = 7;
+    uint64 created_at = 8;
+}
+
+// Escrow info
+message EscrowInfo {
+    string escrow_id = 1;
+    string buyer_id = 2;
+    string seller_id = 3;
+    string amount = 4;
+    string currency = 5;
+    string conditions = 6;
+    EscrowStatus status = 7;
+    uint64 created_at = 8;
+    uint64 expiry_date = 9;
+    string contract_address = 10;
+}
+
+// Insurance policy info
+message InsurancePolicyInfo {
+    string policy_id = 1;
+    string policy_holder_id = 2;
+    string policy_type = 3;
+    string coverage_amount = 4;
+    string currency = 5;
+    string premium = 6;
+    uint64 start_date = 7;
+    uint64 end_date = 8;
+    PolicyStatus status = 9;
+    string contract_address = 10;
+}
+
+// Offline transaction
+message OfflineTransaction {
+    string offline_transaction_id = 1;
+    string from_account = 2;
+    string to_account = 3;
+    string amount = 4;
+    string currency = 5;
+    bytes signature = 6;
+    uint64 timestamp = 7;
+    OfflineTransactionStatus status = 8;
+}
+
+// Satellite node info
+message SatelliteNodeInfo {
+    string node_id = 1;
+    string location = 2;
+    string capabilities = 3;
+    uint64 registered_at = 4;
+    SatelliteNodeStatus status = 5;
+}
+
+// Escrow status enum
+enum EscrowStatus {
+    ESCROW_STATUS_PENDING = 0;
+    ESCROW_STATUS_FUNDED = 1;
+    ESCROW_STATUS_RELEASED = 2;
+    ESCROW_STATUS_CANCELLED = 3;
+    ESCROW_STATUS_EXPIRED = 4;
+}
+
+// Policy status enum
+enum PolicyStatus {
+    POLICY_STATUS_ACTIVE = 0;
+    POLICY_STATUS_EXPIRED = 1;
+    POLICY_STATUS_CANCELLED = 2;
+    POLICY_STATUS_CLAIMED = 3;
+}
+
+// Offline transaction status enum
+enum OfflineTransactionStatus {
+    OFFLINE_TX_STATUS_PENDING = 0;
+    OFFLINE_TX_STATUS_SYNCED = 1;
+    OFFLINE_TX_STATUS_FAILED = 2;
+}
+
+// Satellite node status enum
+enum SatelliteNodeStatus {
+    SATELLITE_STATUS_ACTIVE = 0;
+    SATELLITE_STATUS_OFFLINE = 1;
+    SATELLITE_STATUS_SYNCING = 2;
+}
+
+
+
+

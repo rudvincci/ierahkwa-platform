@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ierahkwa Mamey FutureHead — Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-deep: #0a0b0f;
+  --bg-card: #12131a;
+  --bg-card-hover: #191a24;
+  --border: #1e2030;
+  --border-glow: #2a3060;
+  --text: #e8e9f0;
+  --text-dim: #6b7094;
+  --text-muted: #3d4268;
+  --accent-gold: #d4a853;
+  --accent-gold-dim: #8b6f2e;
+  --accent-blue: #4a7cff;
+  --accent-cyan: #38d9c4;
+  --accent-red: #ff4a6e;
+  --accent-purple: #9b6dff;
+  --accent-green: #3dd68c;
+  --accent-orange: #ff8a4a;
+  --govt: #4a7cff;
+  --finance: #d4a853;
+  --tech: #9b6dff;
+  --business: #3dd68c;
+  --infra: #38d9c4;
+  --education: #ff8a4a;
+  --core: #ff4a6e;
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Ambient background */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(74,124,255,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(212,168,83,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(155,109,255,0.03) 0%, transparent 60%);
+  z-index: 0;
+  pointer-events: none;
+  animation: drift 30s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  0% { transform: translate(0,0) rotate(0deg); }
+  100% { transform: translate(-3%,2%) rotate(2deg); }
+}
+
+/* Header */
+.header {
+  position: relative; z-index: 2;
+  padding: 40px 48px 0;
+}
+
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.eagle-icon {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dim));
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  box-shadow: 0 8px 32px rgba(212,168,83,0.2);
+}
+
+.logo-text h1 {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--text), var(--accent-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo-text .subtitle {
+  font-size: 13px;
+  color: var(--text-dim);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 12px rgba(61,214,140,0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity:1; }
+  50% { opacity:0.4; }
+}
+
+.status-dot.warn { background: var(--accent-orange); box-shadow: 0 0 12px rgba(255,138,74,0.5); }
+
+/* Stats ribbon */
+.stats-ribbon {
+  position: relative; z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 0 48px 40px;
+  border: 1px solid var(--border);
+}
+
+.stat-cell {
+  background: var(--bg-card);
+  padding: 24px 20px;
+  text-align: center;
+  transition: background 0.3s;
+}
+
+.stat-cell:hover { background: var(--bg-card-hover); }
+
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-style: italic;
+  color: var(--text);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.stat-cell .cat-color {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* Search */
+.search-area {
+  position: relative; z-index: 2;
+  padding: 0 48px 32px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 16px 24px 16px 52px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.search-input:focus {
+  border-color: var(--accent-gold-dim);
+  box-shadow: 0 0 0 3px rgba(212,168,83,0.1);
+}
+
+.search-input::placeholder { color: var(--text-muted); }
+
+.search-icon {
+  position: absolute;
+  left: 68px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+/* Tabs */
+.tabs {
+  position: relative; z-index: 2;
+  display: flex;
+  gap: 4px;
+  padding: 0 48px 32px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-dim);
+}
+
+.tab:hover { color: var(--text); background: var(--bg-card); }
+
+.tab.active {
+  background: var(--bg-card);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.tab .count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  margin-left: 6px;
+  opacity: 0.5;
+}
+
+.tab .dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* Grid */
+.platforms-grid {
+  position: relative; z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  padding: 0 48px 60px;
+}
+
+.platform-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.platform-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-glow);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.platform-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  border-radius: 3px 0 0 3px;
+  opacity: 0.8;
+}
+
+.platform-card[data-cat="government"]::before { background: var(--govt); }
+.platform-card[data-cat="finance"]::before { background: var(--finance); }
+.platform-card[data-cat="tech"]::before { background: var(--tech); }
+.platform-card[data-cat="business"]::before { background: var(--business); }
+.platform-card[data-cat="infra"]::before { background: var(--infra); }
+.platform-card[data-cat="education"]::before { background: var(--education); }
+.platform-card[data-cat="core"]::before { background: var(--core); }
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.card-name {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.card-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.platform-card[data-cat="government"] .card-badge { background: rgba(74,124,255,0.12); color: var(--govt); }
+.platform-card[data-cat="finance"] .card-badge { background: rgba(212,168,83,0.12); color: var(--finance); }
+.platform-card[data-cat="tech"] .card-badge { background: rgba(155,109,255,0.12); color: var(--tech); }
+.platform-card[data-cat="business"] .card-badge { background: rgba(61,214,140,0.12); color: var(--business); }
+.platform-card[data-cat="infra"] .card-badge { background: rgba(56,217,196,0.12); color: var(--infra); }
+.platform-card[data-cat="education"] .card-badge { background: rgba(255,138,74,0.12); color: var(--education); }
+.platform-card[data-cat="core"] .card-badge { background: rgba(255,74,110,0.12); color: var(--core); }
+
+.card-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.card-path {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 6px;
+  word-break: break-all;
+}
+
+/* Footer */
+.footer {
+  position: relative; z-index: 2;
+  text-align: center;
+  padding: 40px 48px;
+  border-top: 1px solid var(--border);
+  margin: 0 48px;
+}
+
+.footer-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.footer-text span { color: var(--accent-gold-dim); }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .stats-ribbon { grid-template-columns: repeat(3, 1fr); }
+  .header, .search-area, .tabs, .platforms-grid, .footer { padding-left: 24px; padding-right: 24px; }
+  .footer { margin: 0 24px; }
+}
+
+@media (max-width: 640px) {
+  .stats-ribbon { grid-template-columns: repeat(2, 1fr); }
+  .header-top { flex-direction: column; gap: 20px; }
+  .platforms-grid { grid-template-columns: 1fr; }
+}
+
+/* Animations */
+.platform-card {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: fadeUp 0.4s ease forwards;
+}
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo-area">
+      <div class="eagle-icon">🦅</div>
+      <div class="logo-text">
+        <h1>Ierahkwa Mamey FutureHead</h1>
+        <div class="subtitle">All-In-One Sovereign Platform &mdash; Command Center</div>
+      </div>
+    </div>
+    <div class="status-bar">
+      <div class="status-item"><div class="status-dot"></div>Systems Unified</div>
+      <div class="status-item"><div class="status-dot warn"></div>Upgrade Pending</div>
+      <div class="status-item" style="color:var(--text-muted);">2026-02-21</div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-ribbon">
+  <div class="stat-cell">
+    <div class="stat-number">108</div>
+    <div class="stat-label">Total Platforms</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">8</div>
+    <div class="stat-label"><span class="cat-color" style="background:var(--govt)"></span>Government</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">9</div>
+    <div class="stat-label"><span class="cat-color" style="background:var(--finance)"></span>Finance</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">15</div>
+    <div class="stat-label"><span class="cat-color" style="background:var(--tech)"></span>Technology</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">8</div>
+    <div class="stat-label"><span class="cat-color" style="background:var(--business)"></span>Business</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">9</div>
+    <div class="stat-label"><span class="cat-color" style="background:var(--infra)"></span>Infrastructure</div>
+  </div>
+</div>
+
+<div class="search-area">
+  <span class="search-icon">⌘</span>
+  <input type="text" class="search-input" placeholder="Search platforms, services, APIs..." id="searchInput">
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" data-filter="all">All<span class="count">108</span></div>
+  <div class="tab" data-filter="government"><span class="dot" style="background:var(--govt)"></span>Government<span class="count">8</span></div>
+  <div class="tab" data-filter="finance"><span class="dot" style="background:var(--finance)"></span>Finance<span class="count">9</span></div>
+  <div class="tab" data-filter="tech"><span class="dot" style="background:var(--tech)"></span>Tech<span class="count">15</span></div>
+  <div class="tab" data-filter="business"><span class="dot" style="background:var(--business)"></span>Business<span class="count">8</span></div>
+  <div class="tab" data-filter="infra"><span class="dot" style="background:var(--infra)"></span>Infra<span class="count">9</span></div>
+  <div class="tab" data-filter="education"><span class="dot" style="background:var(--education)"></span>Education<span class="count">1</span></div>
+  <div class="tab" data-filter="core"><span class="dot" style="background:var(--core)"></span>Core<span class="count">3</span></div>
+</div>
+
+<div class="platforms-grid" id="grid"></div>
+
+<div class="footer">
+  <div class="footer-text">
+    <span>🦅</span> Sovereign Government of Ierahkwa Ne Kanienke &mdash; Mamey-main unified &mdash; ~/Desktop/Mamey-main
+  </div>
+</div>
+
+<script>
+const platforms = [
+  // GOVERNMENT (8)
+  { name: "AdvocateOffice", cat: "government", desc: "Legal advocacy & case management for sovereign citizens", path: "platforms/government/AdvocateOffice" },
+  { name: "Akwesasne", cat: "government", desc: "Akwesasne territorial governance & services platform", path: "platforms/government/Akwesasne" },
+  { name: "CitizenCRM", cat: "government", desc: "Citizen relationship management infrastructure", path: "platforms/government/CitizenCRM" },
+  { name: "CitizenPortal", cat: "government", desc: "Public-facing portal for citizen services & documents", path: "platforms/government/CitizenPortal" },
+  { name: "ContractManager", cat: "government", desc: "Government contract lifecycle & compliance tracking", path: "platforms/government/ContractManager" },
+  { name: "MeetingHub", cat: "government", desc: "Council & committee meeting scheduler, minutes, voting", path: "platforms/government/MeetingHub" },
+  { name: "ServiceDesk", cat: "government", desc: "Internal IT & citizen service request system", path: "platforms/government/ServiceDesk" },
+  { name: "SpikeOffice", cat: "government", desc: "Sovereign office management & collaboration suite", path: "platforms/government/SpikeOffice" },
+
+  // FINANCE (9)
+  { name: "AssetTracker", cat: "finance", desc: "Sovereign asset portfolio tracking & valuation", path: "platforms/finance/AssetTracker" },
+  { name: "BancoBDET", cat: "finance", desc: "Banco BDET — sovereign banking & transactions", path: "platforms/finance/BancoBDET" },
+  { name: "BancoCentral", cat: "finance", desc: "Central bank operations, monetary policy & reserves", path: "platforms/finance/BancoCentral" },
+  { name: "BudgetControl", cat: "finance", desc: "Government budget management & expenditure tracking", path: "platforms/finance/BudgetControl" },
+  { name: "DeFiSoberano", cat: "finance", desc: "Decentralized finance for sovereign token economy", path: "platforms/finance/DeFiSoberano" },
+  { name: "IDOFactory", cat: "finance", desc: "Initial DEX offering launchpad & token distribution", path: "platforms/finance/IDOFactory" },
+  { name: "IerahkwaBankPlatform", cat: "finance", desc: "Core banking platform — accounts, transfers, ledger", path: "platforms/finance/IerahkwaBankPlatform" },
+  { name: "MultichainBridge", cat: "finance", desc: "Cross-chain bridge for sovereign token interoperability", path: "platforms/finance/MultichainBridge" },
+  { name: "TransactionCodes", cat: "finance", desc: "Transaction code registry & financial classification", path: "platforms/finance/TransactionCodes" },
+
+  // TECH (15)
+  { name: "AI", cat: "tech", desc: "AI/ML services & model integration layer", path: "platforms/tech/AI" },
+  { name: "AIFraudDetection", cat: "tech", desc: "AI-powered fraud detection for financial transactions", path: "platforms/tech/AIFraudDetection" },
+  { name: "AppBuilder", cat: "tech", desc: "Low-code application builder for sovereign services", path: "platforms/tech/AppBuilder" },
+  { name: "AppointmentHub", cat: "tech", desc: "Appointment scheduling for government services", path: "platforms/tech/AppointmentHub" },
+  { name: "AuditTrail", cat: "tech", desc: "Immutable audit trail & compliance logging", path: "platforms/tech/AuditTrail" },
+  { name: "BiometricAuth", cat: "tech", desc: "Biometric authentication — fingerprint, face, iris", path: "platforms/tech/BiometricAuth" },
+  { name: "BioMetrics", cat: "tech", desc: "Biometric data collection & identity verification", path: "platforms/tech/BioMetrics" },
+  { name: "Bodno", cat: "tech", desc: "Bodno platform — sovereign identity & document system", path: "platforms/tech/Bodno" },
+  { name: "CitizenCRM-API", cat: "tech", desc: "REST API layer for CitizenCRM services", path: "platforms/tech/CitizenCRM-API" },
+  { name: "CitizenCRM-Core", cat: "tech", desc: "Core business logic for citizen management", path: "platforms/tech/CitizenCRM-Core" },
+  { name: "CitizenCRM-Main", cat: "tech", desc: "Main web interface for CitizenCRM system", path: "platforms/tech/CitizenCRM-Main" },
+  { name: "ImageUpload", cat: "tech", desc: "Image upload, processing & CDN distribution", path: "platforms/tech/ImageUpload" },
+  { name: "MobileApp", cat: "tech", desc: "Mobile application v1 — citizen services", path: "platforms/tech/MobileApp" },
+  { name: "MobileApp2", cat: "tech", desc: "Mobile application v2 — enhanced features", path: "platforms/tech/MobileApp2" },
+  { name: "Software2026", cat: "tech", desc: "2026 software development roadmap & projects", path: "platforms/tech/Software2026" },
+
+  // BUSINESS (8)
+  { name: "Agriculture", cat: "business", desc: "Agricultural management — crops, inventory, trade", path: "platforms/business/Agriculture" },
+  { name: "ATMVending", cat: "business", desc: "ATM & vending machine network management", path: "platforms/business/ATMVending" },
+  { name: "Casino", cat: "business", desc: "Casino operations — gaming, compliance, finance", path: "platforms/business/Casino" },
+  { name: "CasinoSports", cat: "business", desc: "Sports betting platform & odds management", path: "platforms/business/CasinoSports" },
+  { name: "InventorySystem", cat: "business", desc: "Enterprise inventory & warehouse management", path: "platforms/business/InventorySystem" },
+  { name: "Products", cat: "business", desc: "Product catalog & sovereign marketplace", path: "platforms/business/Products" },
+  { name: "TravelVIP", cat: "business", desc: "VIP travel services — bookings, concierge, tours", path: "platforms/business/TravelVIP" },
+  { name: "VenturiEnergy", cat: "business", desc: "Venturi tunnel renewable energy plant operations", path: "platforms/business/VenturiEnergy" },
+
+  // INFRA (9)
+  { name: "BlockchainDeploy", cat: "infra", desc: "Blockchain node deployment & smart contract management", path: "platforms/infra/BlockchainDeploy" },
+  { name: "Config", cat: "infra", desc: "Centralized configuration management", path: "platforms/infra/Config" },
+  { name: "Configs", cat: "infra", desc: "Platform configuration templates & environment vars", path: "platforms/infra/Configs" },
+  { name: "Data", cat: "infra", desc: "Data lake & pipeline management", path: "platforms/infra/Data" },
+  { name: "Database", cat: "infra", desc: "Database administration — PostgreSQL, Redis, Mongo", path: "platforms/infra/Database" },
+  { name: "DeployServers", cat: "infra", desc: "Server provisioning & deployment automation", path: "platforms/infra/DeployServers" },
+  { name: "Go", cat: "infra", desc: "Go microservices & API gateway", path: "platforms/infra/Go" },
+  { name: "SovereignNetwork", cat: "infra", desc: "Sovereign network infrastructure — DNS, routing, VPN", path: "platforms/infra/SovereignNetwork" },
+  { name: "Systemd", cat: "infra", desc: "Systemd service files & process management", path: "platforms/infra/Systemd" },
+
+  // EDUCATION (1)
+  { name: "SmartSchool", cat: "education", desc: "Smart school platform — courses, enrollment, grading", path: "platforms/education/SmartSchool" },
+
+  // CORE PLATFORMS (3)
+  { name: "PlataformaFinal", cat: "core", desc: "Unified mega-platform — GovernanceDAO, HRM, Voting, Workflow, Reports. Production deploy scripts included.", path: "platforms/PlataformaFinal" },
+  { name: "RuddieSolution", cat: "core", desc: "IerahkwaBanking.NET10 — core banking, monitoring, audit reports, service configs. 11GB of production code.", path: "platforms/RuddieSolution" },
+  { name: "plataformas-finales", cat: "core", desc: "Final consolidated platforms — .NET10, Node, PHP, Rust, Go, compete scripts.", path: "platforms/plataformas-finales" },
+];
+
+const grid = document.getElementById('grid');
+const searchInput = document.getElementById('searchInput');
+const tabs = document.getElementById('tabs');
+let activeFilter = 'all';
+
+function renderCards(filter, search) {
+  let items = platforms;
+  if (filter !== 'all') items = items.filter(p => p.cat === filter);
+  if (search) {
+    const q = search.toLowerCase();
+    items = items.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q) ||
+      p.cat.toLowerCase().includes(q) ||
+      p.path.toLowerCase().includes(q)
+    );
+  }
+
+  grid.innerHTML = items.map((p, i) => `
+    <div class="platform-card" data-cat="${p.cat}" style="animation-delay:${i * 0.03}s">
+      <div class="card-header">
+        <div class="card-name">${p.name}</div>
+        <div class="card-badge">${p.cat}</div>
+      </div>
+      <div class="card-desc">${p.desc}</div>
+      <div class="card-path">${p.path}</div>
+    </div>
+  `).join('');
+}
+
+tabs.addEventListener('click', (e) => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  tabs.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  activeFilter = tab.dataset.filter;
+  renderCards(activeFilter, searchInput.value);
+});
+
+searchInput.addEventListener('input', (e) => {
+  renderCards(activeFilter, e.target.value);
+});
+
+renderCards('all', '');
+</script>
+</body>
+</html>

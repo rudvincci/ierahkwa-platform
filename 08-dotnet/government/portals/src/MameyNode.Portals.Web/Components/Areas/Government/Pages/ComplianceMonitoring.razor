@@ -1,0 +1,101 @@
+@page "/admin/compliance-monitoring"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<ComplianceMonitoring> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Compliance" Icon="fas fa-gavel" Subtitle="Compliance monitoring">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Checks" Value="@_checks.Count.ToString()" Icon="fas fa-clipboard-check" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Passed" Value="@_passedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Failed" Value="@_failedCount.ToString()" Icon="fas fa-times-circle" Color="#EF4444" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Pending" Value="@_pendingCount.ToString()" Icon="fas fa-clock" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Compliance Checks" Class="mt-4">
+        <MudTable T="MameyNode.Portals.Mocks.Models.ComplianceCheckInfo" Items="@_checks" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Check ID</MudTh>
+                <MudTh>Entity ID</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Check Type</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Passed</MudTh>
+                <MudTh>Result</MudTh>
+                <MudTh>Checked</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.CheckId</MudTd>
+                <MudTd>@context.EntityId</MudTd>
+                <MudTd>@context.EntityType</MudTd>
+                <MudTd>@context.CheckType</MudTd>
+                <MudTd>
+                    <MudChip T="ComplianceStatus" Size="Size.Small" Color="@(context.Status == ComplianceStatus.Approved ? Color.Success : context.Status == ComplianceStatus.Rejected ? Color.Error : Color.Warning)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Passed ? Color.Success : Color.Error)">
+                        @(context.Passed ? "Yes" : "No")
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.Result</MudTd>
+                <MudTd>@context.CheckedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<MameyNode.Portals.Mocks.Models.ComplianceCheckInfo> _checks = new();
+    private int _passedCount;
+    private int _failedCount;
+    private int _pendingCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _checks = await GovernmentClient.GetComplianceChecksAsync();
+            _passedCount = _checks.Count(c => c.Passed);
+            _failedCount = _checks.Count(c => !c.Passed);
+            _pendingCount = _checks.Count(c => c.Status == ComplianceStatus.Pending);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading compliance checks");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}

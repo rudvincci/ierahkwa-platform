@@ -1,0 +1,343 @@
+@page "/gov/applications/{ApplicationId:guid}/intake-review"
+@page "/gov/intake-review/{ApplicationId:guid}"
+@attribute [Authorize(Roles = "GovernmentAgent,Admin")]
+@using Mamey.Portal.Web.ViewModels.Citizenship
+@using Mamey.Portal.Citizenship.Application.Models
+@using Mamey.Portal.Citizenship.Application.Requests
+@using Mamey.Portal.Citizenship.Application.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@inject ICitizenshipBackofficeService Backoffice
+@inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Intake Review (CIT-001-F)</PageTitle>
+
+@code {
+    [Parameter] public Guid ApplicationId { get; set; }
+
+    private IntakeReviewViewModel Vm = new();
+    private BackofficeApplicationDetails? _app;
+    private string? _error;
+    private string? _submitError;
+    private bool _submitting;
+    private bool _approving;
+    private bool _rejecting;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _error = null;
+        _app = null;
+
+        try
+        {
+            _app = await Backoffice.GetApplicationAsync(ApplicationId);
+            if (_app is null)
+            {
+                _error = "Application not found (or not in this tenant).";
+            }
+            else
+            {
+                Vm.ApplicationId = ApplicationId;
+                var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                Vm.ReviewerName = authState.User.Identity?.Name ?? authState.User.FindFirst("email")?.Value ?? "Unknown";
+                Vm.ReviewDate = DateTime.UtcNow;
+            }
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private void Back() => Nav.NavigateTo($"/gov/applications/{ApplicationId}");
+
+    private async Task SubmitReview()
+    {
+        _submitError = null;
+        if (_submitting || !Vm.CanSubmit)
+        {
+            return;
+        }
+
+        try
+        {
+            _submitting = true;
+            var request = new SubmitIntakeReviewRequest(
+                ApplicationId: Vm.ApplicationId,
+                ReviewerName: Vm.ReviewerName,
+                ReviewDate: Vm.ReviewDate!.Value,
+                ApplicationComplete: Vm.ApplicationComplete,
+                AllDocumentsReceived: Vm.AllDocumentsReceived,
+                IdentityVerified: Vm.IdentityVerified,
+                BackgroundCheckComplete: Vm.BackgroundCheckComplete,
+                BirthCertificateVerified: Vm.BirthCertificateVerified,
+                PhotoIdVerified: Vm.PhotoIdVerified,
+                ProofOfResidenceVerified: Vm.ProofOfResidenceVerified,
+                PassportPhotoVerified: Vm.PassportPhotoVerified,
+                SignatureVerified: Vm.SignatureVerified,
+                CompletenessNotes: string.IsNullOrWhiteSpace(Vm.CompletenessNotes) ? null : Vm.CompletenessNotes,
+                DocumentNotes: string.IsNullOrWhiteSpace(Vm.DocumentNotes) ? null : Vm.DocumentNotes,
+                AdditionalNotes: string.IsNullOrWhiteSpace(Vm.AdditionalNotes) ? null : Vm.AdditionalNotes,
+                Recommendation: Vm.Recommendation,
+                RecommendationReason: string.IsNullOrWhiteSpace(Vm.RecommendationReason) ? null : Vm.RecommendationReason);
+
+            await Backoffice.SubmitIntakeReviewAsync(request);
+            
+            Nav.NavigateTo($"/gov/applications/{ApplicationId}");
+        }
+        catch (Exception ex)
+        {
+            _submitError = ex.Message;
+        }
+        finally
+        {
+            _submitting = false;
+        }
+    }
+
+    private async Task ApproveApplication()
+    {
+        _submitError = null;
+        if (_approving)
+        {
+            return;
+        }
+
+        try
+        {
+            _approving = true;
+            await Backoffice.ApproveApplicationAsync(ApplicationId);
+            Nav.NavigateTo($"/gov/applications/{ApplicationId}");
+        }
+        catch (Exception ex)
+        {
+            _submitError = ex.Message;
+        }
+        finally
+        {
+            _approving = false;
+        }
+    }
+
+    private async Task RejectApplication()
+    {
+        _submitError = null;
+        if (_rejecting || string.IsNullOrWhiteSpace(Vm.RecommendationReason))
+        {
+            return;
+        }
+
+        try
+        {
+            _rejecting = true;
+            await Backoffice.RejectApplicationAsync(ApplicationId, Vm.RecommendationReason);
+            Nav.NavigateTo($"/gov/applications/{ApplicationId}");
+        }
+        catch (Exception ex)
+        {
+            _submitError = ex.Message;
+        }
+        finally
+        {
+            _rejecting = false;
+        }
+    }
+}
+
+<MudStack Spacing="3">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+        <MudButton Variant="Variant.Text" OnClick="Back" StartIcon="@Icons.Material.Filled.ArrowBack">Back</MudButton>
+        <MudText Typo="Typo.h4">Intake Review Form (CIT-001-F)</MudText>
+    </MudStack>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+
+    @if (_app is not null)
+    {
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6" Class="mb-4">Application Information</MudText>
+            <MudGrid Spacing="2">
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body2"><strong>Application #:</strong> @_app.ApplicationNumber</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body2"><strong>Applicant:</strong> @_app.FirstName @_app.LastName</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body2"><strong>Date of Birth:</strong> @_app.DateOfBirth</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body2"><strong>Email:</strong> @(_app.Email ?? "-")</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body2"><strong>Status:</strong> @_app.Status</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body2"><strong>Submitted:</strong> @_app.CreatedAt.LocalDateTime</MudText>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6" Class="mb-4">Reviewer Information</MudText>
+            <MudGrid Spacing="2">
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="Vm.ReviewerName" 
+                                 Label="Reviewer Name" 
+                                 Variant="Variant.Outlined" 
+                                 Required="true" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudDatePicker @bind-Date="Vm.ReviewDate" 
+                                  Label="Review Date" 
+                                  Variant="Variant.Outlined" 
+                                  Required="true" />
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6" Class="mb-4">Application Completeness</MudText>
+            <MudStack Spacing="2">
+                <MudCheckBox T="bool" @bind-Selected="Vm.ApplicationComplete" 
+                            Label="Application form is complete and all required fields are filled" />
+                <MudCheckBox T="bool" @bind-Selected="Vm.AllDocumentsReceived" 
+                            Label="All required documents have been received" />
+                <MudCheckBox T="bool" @bind-Selected="Vm.IdentityVerified" 
+                            Label="Applicant identity has been verified" />
+                <MudCheckBox T="bool" @bind-Selected="Vm.BackgroundCheckComplete" 
+                            Label="Background check has been completed (if applicable)" />
+            </MudStack>
+
+            <MudItem xs="12" Class="mt-4">
+                <MudTextField @bind-Value="Vm.CompletenessNotes" 
+                             Label="Completeness Notes" 
+                             Variant="Variant.Outlined" 
+                             Lines="3" 
+                             HelperText="Any notes about application completeness" />
+            </MudItem>
+        </MudPaper>
+
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6" Class="mb-4">Document Verification</MudText>
+            <MudStack Spacing="2">
+                <MudCheckBox T="bool" @bind-Selected="Vm.BirthCertificateVerified" 
+                            Label="Birth certificate verified" />
+                <MudCheckBox T="bool" @bind-Selected="Vm.PhotoIdVerified" 
+                            Label="Government-issued photo ID verified" />
+                <MudCheckBox T="bool" @bind-Selected="Vm.ProofOfResidenceVerified" 
+                            Label="Proof of residence verified" />
+                <MudCheckBox T="bool" @bind-Selected="Vm.PassportPhotoVerified" 
+                            Label="Passport photo meets requirements" />
+                <MudCheckBox T="bool" @bind-Selected="Vm.SignatureVerified" 
+                            Label="Signature verified" />
+            </MudStack>
+
+            <MudItem xs="12" Class="mt-4">
+                <MudTextField @bind-Value="Vm.DocumentNotes" 
+                             Label="Document Verification Notes" 
+                             Variant="Variant.Outlined" 
+                             Lines="3" 
+                             HelperText="Any notes about document verification" />
+            </MudItem>
+        </MudPaper>
+
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6" Class="mb-4">Review Recommendation</MudText>
+            <MudGrid Spacing="2">
+                <MudItem xs="12" md="6">
+                    <MudSelect T="string" @bind-Value="Vm.Recommendation" 
+                              Label="Recommendation" 
+                              Variant="Variant.Outlined" 
+                              Required="true">
+                        <MudSelectItem Value="@((string?)null)">Select...</MudSelectItem>
+                        <MudSelectItem Value="@("Approve")">Approve for Processing</MudSelectItem>
+                        <MudSelectItem Value="@("RequestAdditionalInfo")">Request Additional Information</MudSelectItem>
+                        <MudSelectItem Value="@("Pending")">Pending Review</MudSelectItem>
+                        <MudSelectItem Value="@("Reject")">Reject Application</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Vm.RecommendationReason" 
+                                 Label="Recommendation Reason" 
+                                 Variant="Variant.Outlined" 
+                                 Lines="3" 
+                                 Required="true"
+                                 HelperText="Please provide a detailed reason for your recommendation" />
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6" Class="mb-4">Additional Notes</MudText>
+            <MudTextField @bind-Value="Vm.AdditionalNotes" 
+                         Label="Additional Notes" 
+                         Variant="Variant.Outlined" 
+                         Lines="5" 
+                         HelperText="Any additional observations or notes" />
+        </MudPaper>
+
+        @if (!string.IsNullOrWhiteSpace(_submitError))
+        {
+            <MudAlert Severity="Severity.Error">@_submitError</MudAlert>
+        }
+
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudButton Variant="Variant.Text" OnClick="Back">Cancel</MudButton>
+            <MudStack Row="true" Spacing="2">
+                <MudButton Variant="Variant.Filled" 
+                          Color="Color.Primary" 
+                          Disabled="@(!Vm.CanSubmit || _submitting || _approving || _rejecting)"
+                          OnClick="SubmitReview">
+                    @if (_submitting)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Submitting...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Submit Review</MudText>
+                    }
+                </MudButton>
+                @if (Vm.Recommendation == "Approve")
+                {
+                    <MudButton Variant="Variant.Filled" 
+                              Color="Color.Success" 
+                              Disabled="@(_submitting || _approving || _rejecting)"
+                              OnClick="ApproveApplication">
+                        @if (_approving)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Approving...</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Approve Application</MudText>
+                        }
+                    </MudButton>
+                }
+                @if (Vm.Recommendation == "Reject")
+                {
+                    <MudButton Variant="Variant.Filled" 
+                              Color="Color.Error" 
+                              Disabled="@(_submitting || _approving || _rejecting || string.IsNullOrWhiteSpace(Vm.RecommendationReason))"
+                              OnClick="RejectApplication">
+                        @if (_rejecting)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Rejecting...</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Reject Application</MudText>
+                        }
+                    </MudButton>
+                }
+            </MudStack>
+        </MudStack>
+    }
+</MudStack>
+

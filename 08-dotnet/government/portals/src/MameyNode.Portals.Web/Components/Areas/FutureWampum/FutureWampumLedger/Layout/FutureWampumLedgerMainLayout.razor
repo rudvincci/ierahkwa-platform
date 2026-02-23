@@ -1,0 +1,51 @@
+@* FutureWampumLedgerMainLayout.razor *@
+@using MameyNode.Portals.Web.Components.Areas.FutureWampum.FutureWampumLedger.Layout
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_theme" IsDarkMode="true" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudBreakpointProvider>
+<MudLayout>
+    <MudAppBar Elevation="0" Class="mud-appbar-glass">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h6" Class="ml-3">FutureWampumLedger</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/Mamey-io/Mamey" Target="_blank" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Always" Class="mud-drawer-glass">
+        <FutureWampumLedgerNavLayout DrawerOpen="_drawerOpen" />
+    </MudDrawer>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+</MudBreakpointProvider>
+
+@code {
+    bool _drawerOpen = true;
+    private MudTheme _theme = new MudTheme()
+    {
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#10B981", // Emerald - for ledger/blockchain theme
+            Secondary = "#06B6D4", // Cyan
+            Tertiary = "#3B82F6", // Blue
+            AppbarBackground = "rgba(5, 150, 105, 0.8)", // Emerald glass
+            Background = "#065F46", // Emerald 800
+            Surface = "rgba(16, 185, 129, 0.6)", // Emerald glass
+            DrawerBackground = "rgba(5, 150, 105, 0.9)", // Dark glass
+            DrawerText = "#D1FAE5", // Emerald 100
+            TextPrimary = "#F8FAFC",
+            TextSecondary = "#6EE7B7",
+        }
+    };
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

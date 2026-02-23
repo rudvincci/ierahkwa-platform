@@ -1,0 +1,26 @@
+
+
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword  # Use a secure password
+      MYSQL_DATABASE: ink_bodno        # Name of the database to be created
+      MYSQL_USER: admin                  # Username you will use for your app
+      MYSQL_PASSWORD: superSecret!     # Password for the user
+    ports:
+      - "3307:3306"
+    volumes:
+      - ink-bodno-db:/var/lib/mysql
+      - ./mysql/mysql.config.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+    networks:
+      - mamey
+
+volumes:
+  ink-bodno-db:
+  
+networks:
+  mamey: # Custom network definition
+    name: mamey
+    external: true

@@ -1,0 +1,358 @@
+@page "/become-a-citizen"
+@using Mamey.Portal.Web.ViewModels.Citizenship
+@using Mamey.Portal.Citizenship.Application.Requests
+@using Mamey.Portal.Citizenship.Application.Services
+@using Mamey.Portal.Web.Components.Citizenship
+@using System.Text.Json
+@inject BecomeCitizenViewModel Vm
+@inject ICitizenshipApplicationService AppService
+
+<PageTitle>Become a Citizen</PageTitle>
+
+@code {
+    private string? _applicationNumber;
+    private string? _submitError;
+
+    private static UploadFile SignatureFromDataUrl(string dataUrl)
+    {
+        // data:image/png;base64,....
+        var comma = dataUrl.IndexOf(',', StringComparison.Ordinal);
+        if (comma < 0)
+        {
+            throw new ArgumentException("Invalid signature data.");
+        }
+
+        var meta = dataUrl[..comma];
+        var b64 = dataUrl[(comma + 1)..];
+        var contentType = meta.Contains("image/png", StringComparison.OrdinalIgnoreCase) ? "image/png" : "image/png";
+        var bytes = Convert.FromBase64String(b64);
+        return new UploadFile("signature.png", contentType, bytes.Length, new MemoryStream(bytes));
+    }
+
+    private string? SerializeExtendedData()
+    {
+        var extendedData = new
+        {
+            EmergencyContact = new
+            {
+                Name = Vm.EmergencyContactName,
+                Relationship = Vm.EmergencyContactRelationship,
+                Phone = Vm.EmergencyContactPhone,
+                Email = Vm.EmergencyContactEmail,
+                Address = Vm.EmergencyContactAddress
+            },
+            Employment = new
+            {
+                Occupation = Vm.Occupation,
+                EmployerName = Vm.EmployerName,
+                EmployerAddress = Vm.EmployerAddress,
+                EmploymentStartDate = Vm.EmploymentStartDate
+            },
+            Education = new
+            {
+                HighestEducationLevel = Vm.HighestEducationLevel,
+                SchoolName = Vm.SchoolName,
+                SchoolLocation = Vm.SchoolLocation,
+                GraduationYear = Vm.GraduationYear
+            },
+            Family = new
+            {
+                SpouseName = Vm.SpouseName,
+                SpouseDateOfBirth = Vm.SpouseDateOfBirth,
+                SpouseCitizenshipStatus = Vm.SpouseCitizenshipStatus,
+                NumberOfChildren = Vm.NumberOfChildren,
+                Parent1Name = Vm.Parent1Name,
+                Parent1CitizenshipStatus = Vm.Parent1CitizenshipStatus,
+                Parent2Name = Vm.Parent2Name,
+                Parent2CitizenshipStatus = Vm.Parent2CitizenshipStatus
+            },
+            AdditionalIdentification = new
+            {
+                PassportNumber = Vm.PassportNumber,
+                PassportIssuingCountry = Vm.PassportIssuingCountry,
+                PassportExpiryDate = Vm.PassportExpiryDate,
+                NationalIdNumber = Vm.NationalIdNumber,
+                NationalIdIssuingCountry = Vm.NationalIdIssuingCountry
+            },
+            PreviousAddresses = new
+            {
+                PreviousAddress1 = Vm.PreviousAddress1,
+                PreviousAddress1Dates = Vm.PreviousAddress1Dates,
+                PreviousAddress2 = Vm.PreviousAddress2,
+                PreviousAddress2Dates = Vm.PreviousAddress2Dates
+            },
+            References = new
+            {
+                Reference1 = new
+                {
+                    Name = Vm.Reference1Name,
+                    Relationship = Vm.Reference1Relationship,
+                    Phone = Vm.Reference1Phone,
+                    Address = Vm.Reference1Address
+                },
+                Reference2 = new
+                {
+                    Name = Vm.Reference2Name,
+                    Relationship = Vm.Reference2Relationship,
+                    Phone = Vm.Reference2Phone,
+                    Address = Vm.Reference2Address
+                }
+            },
+            CriminalHistory = new
+            {
+                HasCriminalRecord = Vm.HasCriminalRecord,
+                CriminalRecordDetails = Vm.CriminalRecordDetails
+            },
+            TravelHistory = new
+            {
+                HasTraveledOutsideCountry = Vm.HasTraveledOutsideCountry,
+                TravelHistoryDetails = Vm.TravelHistoryDetails
+            }
+        };
+
+        // Only serialize if there's at least one non-empty field
+        var json = JsonSerializer.Serialize(extendedData);
+        var emptyJson = JsonSerializer.Serialize(new { EmergencyContact = new { }, Employment = new { }, Education = new { }, Family = new { }, AdditionalIdentification = new { }, PreviousAddresses = new { }, References = new { }, CriminalHistory = new { }, TravelHistory = new { } });
+        
+        return json == emptyJson ? null : json;
+    }
+
+    private async Task Submit()
+    {
+        _submitError = null;
+        _applicationNumber = null;
+
+        try
+        {
+            if (!Vm.CanSubmit || Vm.DateOfBirth is null || Vm.PersonalDocuments is null || Vm.PassportPhoto is null)
+            {
+                return;
+            }
+
+            var request = new SubmitCitizenshipApplicationRequest(
+                FirstName: Vm.FirstName,
+                LastName: Vm.LastName,
+                DateOfBirth: DateOnly.FromDateTime(Vm.DateOfBirth.Value),
+                Email: Vm.Email,
+                AddressLine1: string.IsNullOrWhiteSpace(Vm.AddressLine1) ? null : Vm.AddressLine1,
+                City: string.IsNullOrWhiteSpace(Vm.City) ? null : Vm.City,
+                Region: string.IsNullOrWhiteSpace(Vm.Region) ? null : Vm.Region,
+                PostalCode: string.IsNullOrWhiteSpace(Vm.PostalCode) ? null : Vm.PostalCode,
+                MiddleName: string.IsNullOrWhiteSpace(Vm.MiddleName) ? null : Vm.MiddleName,
+                Height: string.IsNullOrWhiteSpace(Vm.Height) ? null : Vm.Height,
+                EyeColor: string.IsNullOrWhiteSpace(Vm.EyeColor) ? null : Vm.EyeColor,
+                HairColor: string.IsNullOrWhiteSpace(Vm.HairColor) ? null : Vm.HairColor,
+                Sex: string.IsNullOrWhiteSpace(Vm.Sex) ? null : Vm.Sex,
+                PhoneNumber: string.IsNullOrWhiteSpace(Vm.PhoneNumber) ? null : Vm.PhoneNumber,
+                PlaceOfBirth: string.IsNullOrWhiteSpace(Vm.PlaceOfBirth) ? null : Vm.PlaceOfBirth,
+                CountryOfOrigin: string.IsNullOrWhiteSpace(Vm.CountryOfOrigin) ? null : Vm.CountryOfOrigin,
+                MaritalStatus: string.IsNullOrWhiteSpace(Vm.MaritalStatus) ? null : Vm.MaritalStatus,
+                PreviousNames: string.IsNullOrWhiteSpace(Vm.PreviousNames) ? null : Vm.PreviousNames,
+                AcknowledgeTreaty: Vm.AcknowledgeTreaty,
+                SwearAllegiance: Vm.SwearAllegiance,
+                AffidavitDate: Vm.AffidavitDate,
+                HasBirthCertificate: Vm.HasBirthCertificate,
+                HasPhotoId: Vm.HasPhotoId,
+                HasProofOfResidence: Vm.HasProofOfResidence,
+                HasBackgroundCheck: Vm.HasBackgroundCheck,
+                AuthorizeBiometricEnrollment: Vm.AuthorizeBiometricEnrollment,
+                DeclareUnderstanding: Vm.DeclareUnderstanding,
+                ConsentToVerification: Vm.ConsentToVerification,
+                ConsentToDataProcessing: Vm.ConsentToDataProcessing,
+                ExtendedDataJson: SerializeExtendedData());
+
+            var docs = new List<UploadFile>();
+            foreach (var d in Vm.PersonalDocuments)
+            {
+                docs.Add(new UploadFile(d.Name, d.ContentType, d.Size, d.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024)));
+            }
+
+            var passport = Vm.PassportPhoto.Single();
+            UploadFile signatureUpload;
+            if (Vm.UseSignaturePad)
+            {
+                if (string.IsNullOrWhiteSpace(Vm.SignatureDataUrl))
+                {
+                    return;
+                }
+                signatureUpload = SignatureFromDataUrl(Vm.SignatureDataUrl);
+            }
+            else
+            {
+                if (Vm.SignatureImage is null || Vm.SignatureImage.Count == 0)
+                {
+                    return;
+                }
+                var signature = Vm.SignatureImage.Single();
+                signatureUpload = new UploadFile(signature.Name, signature.ContentType, signature.Size, signature.OpenReadStream(maxAllowedSize: 2 * 1024 * 1024));
+            }
+
+            _applicationNumber = await AppService.SubmitAsync(
+                request,
+                docs,
+                new UploadFile(passport.Name, passport.ContentType, passport.Size, passport.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024)),
+                signatureUpload);
+
+            Vm.Submit.Execute().Subscribe();
+        }
+        catch (Exception ex)
+        {
+            _submitError = ex.Message;
+        }
+    }
+}
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h4">Become a Citizen</MudText>
+    <MudText Typo="Typo.body1" Class="mb-3">
+        Complete the citizenship application form below. The application consists of multiple steps. 
+        Please fill out all required fields and upload the necessary documents.
+    </MudText>
+    <MudAlert Severity="Severity.Info" Class="mb-4">
+        <MudText Typo="Typo.body2">
+            <strong>Application Process:</strong> Complete all 9 steps of the application form. 
+            You can navigate between steps using the stepper above. All required fields must be completed before submission.
+        </MudText>
+    </MudAlert>
+
+    @if (Vm.Submitted)
+    {
+        <MudAlert Severity="Severity.Success">
+            Application submitted. Application number: <strong>@_applicationNumber</strong>
+        </MudAlert>
+    }
+    @if (!string.IsNullOrWhiteSpace(_submitError))
+    {
+        <MudAlert Severity="Severity.Error">@_submitError</MudAlert>
+    }
+
+    <MudPaper Class="pa-4">
+        <MudStepper Linear="false" Elevation="0">
+            <MudStep Label="CIT-001-A: Application">
+                <Cit001AForm ViewModel="Vm" />
+            </MudStep>
+
+            <MudStep Label="CIT-001-B: Treaty">
+                <Cit001BForm ViewModel="Vm" />
+            </MudStep>
+
+            <MudStep Label="CIT-001-C: Affidavit">
+                <Cit001CForm ViewModel="Vm" />
+            </MudStep>
+
+            <MudStep Label="CIT-001-D: Documents">
+                <Cit001DForm ViewModel="Vm" />
+            </MudStep>
+
+            <MudStep Label="CIT-001-E: Biometric">
+                <Cit001EForm ViewModel="Vm" />
+            </MudStep>
+
+            <MudStep Label="CIT-001-F: Intake Review">
+                <Cit001FForm />
+            </MudStep>
+
+            <MudStep Label="CIT-001-G: Declaration">
+                <Cit001GForm ViewModel="Vm" />
+            </MudStep>
+
+            <MudStep Label="CIT-001-H: Consent">
+                <Cit001HForm ViewModel="Vm" />
+            </MudStep>
+
+            <MudStep Label="Review & Submit">
+                <MudStack Spacing="3">
+                    <MudText Typo="Typo.h6">Review Your Application</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">
+                        Please review all information before submitting. You can go back to any step to make changes.
+                    </MudText>
+
+                    <MudExpansionPanels Elevation="0" Class="mt-4">
+                        <MudExpansionPanel Text="Personal Information (CIT-001-A)">
+                            <MudStack Spacing="2">
+                                <MudText Typo="Typo.body2"><strong>Name:</strong> @Vm.FirstName @(string.IsNullOrWhiteSpace(Vm.MiddleName) ? "" : Vm.MiddleName + " ")@Vm.LastName</MudText>
+                                <MudText Typo="Typo.body2"><strong>Date of Birth:</strong> @(Vm.DateOfBirth?.ToShortDateString() ?? "Not provided")</MudText>
+                                <MudText Typo="Typo.body2"><strong>Place of Birth:</strong> @(string.IsNullOrWhiteSpace(Vm.PlaceOfBirth) ? "Not provided" : Vm.PlaceOfBirth)</MudText>
+                                <MudText Typo="Typo.body2"><strong>Country of Origin:</strong> @(string.IsNullOrWhiteSpace(Vm.CountryOfOrigin) ? "Not provided" : Vm.CountryOfOrigin)</MudText>
+                                <MudText Typo="Typo.body2"><strong>Sex:</strong> @(string.IsNullOrWhiteSpace(Vm.Sex) ? "Not provided" : Vm.Sex)</MudText>
+                                <MudText Typo="Typo.body2"><strong>Height:</strong> @(string.IsNullOrWhiteSpace(Vm.Height) ? "Not provided" : Vm.Height)</MudText>
+                                <MudText Typo="Typo.body2"><strong>Eye Color:</strong> @(string.IsNullOrWhiteSpace(Vm.EyeColor) ? "Not provided" : Vm.EyeColor)</MudText>
+                                <MudText Typo="Typo.body2"><strong>Hair Color:</strong> @(string.IsNullOrWhiteSpace(Vm.HairColor) ? "Not provided" : Vm.HairColor)</MudText>
+                                <MudText Typo="Typo.body2"><strong>Marital Status:</strong> @(string.IsNullOrWhiteSpace(Vm.MaritalStatus) ? "Not provided" : Vm.MaritalStatus)</MudText>
+                                @if (!string.IsNullOrWhiteSpace(Vm.PreviousNames))
+                                {
+                                    <MudText Typo="Typo.body2"><strong>Previous Names:</strong> @Vm.PreviousNames</MudText>
+                                }
+                            </MudStack>
+                        </MudExpansionPanel>
+
+                        <MudExpansionPanel Text="Contact Information">
+                            <MudStack Spacing="2">
+                                <MudText Typo="Typo.body2"><strong>Email:</strong> @Vm.Email</MudText>
+                                <MudText Typo="Typo.body2"><strong>Phone:</strong> @(string.IsNullOrWhiteSpace(Vm.PhoneNumber) ? "Not provided" : Vm.PhoneNumber)</MudText>
+                                <MudText Typo="Typo.body2"><strong>Address:</strong> @(string.IsNullOrWhiteSpace(Vm.AddressLine1) ? "Not provided" : $"{Vm.AddressLine1}, {Vm.City}, {Vm.Region} {Vm.PostalCode}")</MudText>
+                            </MudStack>
+                        </MudExpansionPanel>
+
+                        <MudExpansionPanel Text="Supporting Documents Checklist (CIT-001-D)">
+                            <MudStack Spacing="2">
+                                <MudText Typo="Typo.body2"><strong>Birth Certificate:</strong> @(Vm.HasBirthCertificate ? "✓ Provided" : "✗ Not provided")</MudText>
+                                <MudText Typo="Typo.body2"><strong>Photo ID:</strong> @(Vm.HasPhotoId ? "✓ Provided" : "✗ Not provided")</MudText>
+                                <MudText Typo="Typo.body2"><strong>Proof of Residence:</strong> @(Vm.HasProofOfResidence ? "✓ Provided" : "✗ Not provided")</MudText>
+                                <MudText Typo="Typo.body2"><strong>Background Check:</strong> @(Vm.HasBackgroundCheck ? "✓ Provided" : "✗ Not provided")</MudText>
+                                <MudDivider Class="my-2" />
+                                <MudText Typo="Typo.body2"><strong>Personal Documents Uploaded:</strong> @(Vm.PersonalDocuments?.Count ?? 0) file(s)</MudText>
+                                <MudText Typo="Typo.body2"><strong>Passport Photo:</strong> @(Vm.PassportPhoto?.Count ?? 0) file(s)</MudText>
+                                <MudText Typo="Typo.body2"><strong>Signature:</strong> @(Vm.UseSignaturePad ? (string.IsNullOrWhiteSpace(Vm.SignatureDataUrl) ? "Not provided" : "Provided (drawn)") : (Vm.SignatureImage?.Count > 0 ? "Provided (uploaded)" : "Not provided"))</MudText>
+                            </MudStack>
+                        </MudExpansionPanel>
+
+                        <MudExpansionPanel Text="Acknowledgments & Consents">
+                            <MudStack Spacing="2">
+                                <MudText Typo="Typo.body2"><strong>Treaty Acknowledgment (CIT-001-B):</strong> @(Vm.AcknowledgeTreaty ? "✓ Acknowledged" : "✗ Not acknowledged")</MudText>
+                                <MudText Typo="Typo.body2"><strong>Affidavit of Allegiance (CIT-001-C):</strong> @(Vm.SwearAllegiance ? $"✓ Sworn (Date: {Vm.AffidavitDate?.ToShortDateString() ?? "Not set"})" : "✗ Not sworn")</MudText>
+                                <MudText Typo="Typo.body2"><strong>Biometric Authorization (CIT-001-E):</strong> @(Vm.AuthorizeBiometricEnrollment ? "✓ Authorized" : "✗ Not authorized")</MudText>
+                                <MudText Typo="Typo.body2"><strong>Declaration of Understanding (CIT-001-G):</strong> @(Vm.DeclareUnderstanding ? "✓ Declared" : "✗ Not declared")</MudText>
+                                <MudText Typo="Typo.body2"><strong>Consent to Verification (CIT-001-H):</strong> @(Vm.ConsentToVerification ? "✓ Consented" : "✗ Not consented")</MudText>
+                                <MudText Typo="Typo.body2"><strong>Consent to Data Processing (CIT-001-H):</strong> @(Vm.ConsentToDataProcessing ? "✓ Consented" : "✗ Not consented")</MudText>
+                            </MudStack>
+                        </MudExpansionPanel>
+
+                        <MudExpansionPanel Text="Intake Review (CIT-001-F)">
+                            <MudText Typo="Typo.body2">
+                                This section is completed by government reviewers during intake after submission.
+                            </MudText>
+                        </MudExpansionPanel>
+
+                        <MudExpansionPanel Text="Document Checklist (CIT-001-D)">
+                            <MudStack Spacing="2">
+                                <MudText Typo="Typo.body2"><strong>Birth Certificate:</strong> @(Vm.HasBirthCertificate ? "✓" : "✗")</MudText>
+                                <MudText Typo="Typo.body2"><strong>Photo ID:</strong> @(Vm.HasPhotoId ? "✓" : "✗")</MudText>
+                                <MudText Typo="Typo.body2"><strong>Proof of Residence:</strong> @(Vm.HasProofOfResidence ? "✓" : "✗")</MudText>
+                                <MudText Typo="Typo.body2"><strong>Background Check:</strong> @(Vm.HasBackgroundCheck ? "✓" : "✗")</MudText>
+                            </MudStack>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+
+                    <MudAlert Severity="Severity.Info" Class="mt-4">
+                        <MudText Typo="Typo.body2">
+                            By submitting this application, you confirm that all information provided is accurate and complete.
+                            You will receive an application number upon successful submission.
+                        </MudText>
+                    </MudAlert>
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Size="Size.Large"
+                               Disabled="@(!Vm.CanSubmit)"
+                               OnClick="Submit"
+                               Class="mt-4"
+                               FullWidth="true">
+                        Submit Application
+                    </MudButton>
+                </MudStack>
+            </MudStep>
+        </MudStepper>
+    </MudPaper>
+</MudStack>
+

@@ -1,0 +1,10 @@
+﻿global using System;
+global using System.Text.Json.Serialization;
+global using System.Threading.Tasks;
+global using Mamey;
+global using System.ComponentModel.DataAnnotations;
+global using System.Collections.Generic;
+global using System.ComponentModel;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using System.Linq;

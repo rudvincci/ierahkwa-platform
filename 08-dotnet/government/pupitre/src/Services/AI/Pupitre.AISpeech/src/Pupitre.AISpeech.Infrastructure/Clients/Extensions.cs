@@ -1,0 +1,16 @@
+﻿using System;
+using Pupitre.AISpeech.Application.Clients;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Pupitre.AISpeech.Infrastructure.Clients
+{
+    internal static class Extensions
+    {
+        public static IServiceCollection AddServiceClients(this IServiceCollection services)
+        {
+            services.AddScoped<ISamplesServiceClient, SamplesServiceClient>();
+            return services;
+        }
+    }
+}
+

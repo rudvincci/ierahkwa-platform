@@ -1,0 +1,84 @@
+@page "/sicb/citizen-tools"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject ISICBClient SICBClient
+@inject ILogger<CitizenTools> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Citizen Tools" Icon="fas fa-users" Subtitle="Citizen governance tools">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Tools" Value="@_tools.Count.ToString()" Icon="fas fa-tools" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Active Tools" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Usage" Value="@_totalUsage.ToString("N0")" Icon="fas fa-chart-bar" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Citizen Tools" Class="mt-4">
+        <MudGrid Spacing="3">
+            @foreach (var tool in _tools)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="2">
+                        <MudCardContent>
+                            <MudStack>
+                                <MudText Typo="Typo.h6">@tool.ToolName</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">@tool.Description</MudText>
+                                <MudText Typo="Typo.caption">Type: @tool.ToolType</MudText>
+                                <MudText Typo="Typo.caption">Usage: @tool.UsageCount.ToString("N0")</MudText>
+                                <MudChip T="string" Size="Size.Small" Color="@(tool.IsActive ? Color.Success : Color.Default)">
+                                    @(tool.IsActive ? "Active" : "Inactive")
+                                </MudChip>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<CitizenToolInfo> _tools = new();
+    private int _activeCount;
+    private int _totalUsage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _tools = await SICBClient.GetCitizenToolsAsync();
+            _activeCount = _tools.Count(t => t.IsActive);
+            _totalUsage = _tools.Sum(t => t.UsageCount);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading citizen tools");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

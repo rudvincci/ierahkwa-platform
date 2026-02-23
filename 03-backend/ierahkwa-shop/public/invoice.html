@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice - Ierahkwa Futurehead Shop</title>
+  <style>
+    body { font-family: sans-serif; max-width: 400px; margin: 1rem auto; padding: 1rem; }
+    h1 { font-size: 1.2rem; border-bottom: 2px solid #ffd700; padding-bottom: 0.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { text-align: left; padding: 0.4rem; border-bottom: 1px solid #ddd; }
+    .right { text-align: right; }
+    .total { font-weight: bold; font-size: 1.1rem; }
+    @media print { body { margin: 0; } .no-print { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="no-print" style="margin-bottom:1rem"><button onclick="window.print()">Print</button> <button onclick="window.close()">Close</button></div>
+  <h1>Ierahkwa Futurehead Shop</h1>
+  <p><strong>Sovereign Government of Ierahkwa Ne Kanienke</strong><br>Ierahkwa Futurehead Mamey Node • IGT-MARKET</p>
+  <div id="content"><p>Loading...</p></div>
+  <script>
+    var p = new URLSearchParams(window.location.search).get('order');
+    if (!p) { document.getElementById('content').innerHTML = '<p>Order not found.</p>'; } else {
+      fetch('/api/orders/' + encodeURIComponent(p)).then(function(r) { return r.json(); }).then(function(o) {
+        var html = '<p><strong>Order:</strong> ' + (o.order_number||'') + '<br><strong>Date:</strong> ' + (o.created_at||'') + '<br><strong>Branch:</strong> ' + (o.branch_name||'') + '</p>';
+        html += '<table><thead><tr><th>Item</th><th class="right">Qty</th><th class="right">Price</th><th class="right">Total</th></tr></thead><tbody>';
+        (o.items||[]).forEach(function(i) {
+          html += '<tr><td>' + (i.product_name||'') + '</td><td class="right">' + (i.quantity||0) + '</td><td class="right">' + (i.unit_price||0).toFixed(2) + '</td><td class="right">' + (i.total||0).toFixed(2) + '</td></tr>';
+        });
+        html += '</tbody></table>';
+        html += '<p class="right">Subtotal: ' + (o.subtotal||0).toFixed(2) + '</p>';
+        if (o.vat_amount) html += '<p class="right">VAT: ' + (o.vat_amount||0).toFixed(2) + '</p>';
+        html += '<p class="right total">Total: ' + (o.total||0).toFixed(2) + ' ' + (o.currency||'USD') + '</p>';
+        document.getElementById('content').innerHTML = html;
+      }).catch(function() { document.getElementById('content').innerHTML = '<p>Order not found.</p>'; });
+    }
+  </script>
+</body>
+</html>

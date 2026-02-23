@@ -1,0 +1,133 @@
+name: INK Government
+# ingress:
+#   - name: ingress
+#     bindings:
+#       - port: 8080
+#     rules:
+#       - path: /A
+#         service: app-a
+#       - path: /B
+#         service: app-b
+#       - host: a.example.com
+#         service: app-a
+#       - host: b.example.com
+#         service: app-b
+# extensions:
+# - name: seq
+#   logPath: ./.logs
+
+services:
+######################################################################
+#                         Client Applications
+######################################################################
+  - name: inkg-web-internal
+    project: Ink.Web.Internal/src/Server/Ink.Web.Internal.Server.csproj
+    # dockerFile: MoviesApp/Dockerfile
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: https
+        protocol: https
+        port: 7196
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  # - name: inkg-external
+  #   project: Mamey.Bank.Gateway/src/Mamey.Bank.Gateway/Mamey.Bank.Gateway.csproj
+  #   bindings:
+  #     - port: 5000
+  #   env:
+  #     - name: ASPNETCORE_ENVIRONMENT
+  #       value: local
+  # - name: inkg-web-archives
+  #   project: Ink.Web.Archives/src/Ink.Web.Archives/Server/Ink.Web.Archives.csproj
+  #   bindings:
+  #     - port: 7224
+  #   env:
+  #     - name: ASPNETCORE_ENVIRONMENT
+  #       value: local
+
+
+######################################################################
+#                         API Gateways
+######################################################################
+  - name: inkg-api-internal-gateway
+    project: Mamey.Government.CitizenPortal.ApiGataway/src/Mamey.Government.CitizenPortal.ApiGataway/Mamey.Government.CitizenPortal.ApiGataway.csproj
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: https
+        protocol: https
+        port: 6000
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+  # - name: inkg-api-external-gateway
+  #   project: Mamey.Government.CitizenPortal.ApiGataway/src/Mamey.Government.CitizenPortal.ApiGataway/Mamey.Government.CitizenPortal.ApiGataway.csproj
+  #   buildProperties:
+  #     - name: TargetFramework
+  #       value: net7.0
+  #   bindings:
+  #     - name: https
+  #       protocol: https
+  #       port: 6000
+  #   env:
+  #     - name: ASPNETCORE_ENVIRONMENT
+  #       value: local
+  #   # liveness:
+  #   #   http:
+  #   #     path: /lively
+  #   #   initialDelay: 1
+  #   # readiness:
+  #   #   http:
+  #   #     path: /ready
+  #   #   initialDelay: 1
+######################################################################
+#                         Core Microservices
+######################################################################
+
+######################################################################
+#                         Government Microservices
+######################################################################
+  - name: mamey-government-ministries-internal-affairs-citizens
+    project: Mamey.Government.Citizens/src/Mamey.Government.Citizens//Mamey.Government.Citizens.csproj
+    buildProperties:
+      - name: TargetFramework
+        value: net7.0
+    bindings:
+      - name: http
+        protocol: http
+        port: 15003
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: local
+    # liveness:
+    #   http:
+    #     path: /lively
+    #   initialDelay: 1
+    # readiness:
+    #   http:
+    #     path: /ready
+    #   initialDelay: 1
+
+######################################################################
+#                         END
+######################################################################

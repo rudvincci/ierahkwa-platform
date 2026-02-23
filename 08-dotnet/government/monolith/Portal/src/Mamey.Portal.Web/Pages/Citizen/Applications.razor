@@ -1,0 +1,84 @@
+@page "/citizen/applications"
+@implements IAsyncDisposable
+@attribute [Authorize(Roles = "Citizen")]
+@using Mamey.Portal.Citizenship.Application.Models
+@using Mamey.Portal.Citizenship.Application.Services
+@using Mamey.Portal.Shared.Tenancy
+@using Mamey.Portal.Shared.Auth
+@using Mamey.Portal.Web.Realtime
+@inject ICitizenPortalService CitizenPortal
+@inject NavigationManager Nav
+@inject ITenantContext Tenant
+@inject ICurrentUserContext CurrentUser
+@inject ICitizenshipRealtimeClient Realtime
+
+<PageTitle>Applications</PageTitle>
+
+@code {
+    private IReadOnlyList<CitizenApplicationDto> _apps = Array.Empty<CitizenApplicationDto>();
+    private string? _error;
+    private IDisposable? _sub;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _apps = await CitizenPortal.GetApplicationsAsync();
+
+            var baseUri = Nav.ToAbsoluteUri("/");
+            await Realtime.StartAsync(baseUri, Tenant.TenantId, CurrentUser.UserName);
+
+            _sub = Realtime.ApplicationUpdated.Subscribe(async _ =>
+            {
+                try
+                {
+                    _apps = await CitizenPortal.GetApplicationsAsync();
+                    await InvokeAsync(StateHasChanged);
+                }
+                catch
+                {
+                    // ignore refresh errors
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _sub?.Dispose();
+        await Realtime.DisposeAsync();
+    }
+}
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h4">My Applications</MudText>
+    <MudText Typo="Typo.body2">Tenant-scoped list for the current citizen (by email).</MudText>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+
+    <MudTable Items="_apps" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Application</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Created</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Application">@context.ApplicationNumber</MudTd>
+            <MudTd DataLabel="Status">@context.Status</MudTd>
+            <MudTd DataLabel="Created">@context.CreatedAt.LocalDateTime</MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/become-a-citizen">
+        Start a new application
+    </MudButton>
+</MudStack>
+
+

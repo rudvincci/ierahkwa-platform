@@ -1,0 +1,111 @@
+TRUST CERTIFICATE INSTRUCTIONS
+================================
+
+The CA certificate (ca.crt) has been added to your keychain/certificate store, 
+but it needs to be manually trusted for full system trust.
+
+Once the CA certificate is trusted, all certificates signed by it (like localhost.crt) 
+will automatically be trusted.
+
+------------------------------------------------------------------------------
+macOS (Keychain Access)
+------------------------------------------------------------------------------
+
+1. Open Keychain Access (Applications > Utilities > Keychain Access)
+2. Search for "mamey.io" in the login or System keychain
+3. Double-click on the "mamey.io" certificate
+4. Expand the "Trust" section
+5. Set "When using this certificate" to "Always Trust"
+6. Close the window and enter your password when prompted
+
+Command Line (macOS):
+  sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ca.crt
+
+------------------------------------------------------------------------------
+Windows (Certificate Manager)
+------------------------------------------------------------------------------
+
+1. Open Certificate Manager (certmgr.msc):
+   - Press Windows + R
+   - Type: certmgr.msc
+   - Press Enter
+
+2. Expand "Trusted Root Certification Authorities"
+3. Right-click on "Certificates" folder
+4. Select "All Tasks" > "Import"
+5. Browse to the ca.crt file
+6. Click "Next" through the wizard
+7. Select "Place all certificates in the following store"
+8. Verify "Trusted Root Certification Authorities" is selected
+9. Click "Finish"
+
+Command Line (Windows - Run as Administrator):
+  certutil -addstore -f "Root" ca.crt
+
+PowerShell (Run as Administrator):
+  Import-Certificate -FilePath ca.crt -CertStoreLocation Cert:\LocalMachine\Root
+
+------------------------------------------------------------------------------
+Linux (Ubuntu/Debian)
+------------------------------------------------------------------------------
+
+1. Copy the certificate to the system CA store:
+   sudo cp ca.crt /usr/local/share/ca-certificates/mamey-ca.crt
+
+2. Update the CA certificate store:
+   sudo update-ca-certificates
+
+Note: The certificate should be in PEM format (which ca.crt already is)
+
+Verify trust:
+   openssl verify -CAfile /usr/local/share/ca-certificates/mamey-ca.crt localhost.crt
+
+Alternative (Fedora/RHEL/CentOS):
+   sudo cp ca.crt /etc/pki/ca-trust/source/anchors/mamey-ca.crt
+   sudo update-ca-trust
+
+------------------------------------------------------------------------------
+Docker / Container Trust
+------------------------------------------------------------------------------
+
+For containerized applications, mount the certificate and configure trust:
+
+Docker:
+  docker run -v $(pwd)/certs:/etc/ssl/certs your-image
+
+Or add to image:
+  COPY certs/ca.crt /usr/local/share/ca-certificates/mamey-ca.crt
+  RUN update-ca-certificates
+
+------------------------------------------------------------------------------
+Browser Trust
+------------------------------------------------------------------------------
+
+Some browsers may need the certificate installed separately:
+
+Chrome/Edge: Follow Windows/Linux system trust instructions
+Firefox: 
+  1. Open Firefox Preferences
+  2. Privacy & Security > Certificates > View Certificates
+  3. Authorities tab > Import
+  4. Select ca.crt
+  5. Check "Trust this CA to identify websites"
+
+Safari: Uses macOS Keychain (follow macOS instructions above)
+
+------------------------------------------------------------------------------
+Verification
+------------------------------------------------------------------------------
+
+After installing, verify trust:
+
+macOS:
+  security verify-cert -c localhost.crt
+
+Linux:
+  openssl verify -CAfile ca.crt localhost.crt
+
+Windows:
+  certutil -verify localhost.crt
+
+------------------------------------------------------------------------------

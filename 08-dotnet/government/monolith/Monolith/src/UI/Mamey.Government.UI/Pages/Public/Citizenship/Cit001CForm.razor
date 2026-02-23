@@ -1,0 +1,44 @@
+@* CIT-001-C: Affidavit of Allegiance *@
+@using Mamey.Government.UI.ViewModels.Citizenship
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h6">CIT-001-C: Affidavit of Allegiance</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary">
+        Affidavit of allegiance. This section will be populated with all fields from CIT-001-C Affidavit of Allegiance.pdf
+    </MudText>
+
+    <MudPaper Class="pa-4">
+        <MudAlert Severity="Severity.Warning" Class="mb-4">
+            <MudText Typo="Typo.body2">
+                <strong>Legal Affidavit:</strong> This is a legally binding statement. Please read carefully before swearing or affirming.
+            </MudText>
+        </MudAlert>
+
+        <MudText Typo="Typo.body1" Class="mb-4">
+            I, <strong>@ViewModel.FirstName @ViewModel.LastName</strong>, do solemnly swear (or affirm) that I will support 
+            and defend the Constitution and laws of this jurisdiction against all enemies, foreign and domestic; that I will 
+            bear true faith and allegiance to the same; and that I take this obligation freely, without any mental reservation 
+            or purpose of evasion.
+        </MudText>
+
+        <MudCheckBox T="bool" @bind-Selected="ViewModel.SwearAllegiance" 
+                    Label="I swear (or affirm) allegiance as stated above" 
+                    Required="true" 
+                    Class="mb-4" />
+
+        <MudItem xs="12" md="6">
+            <MudDatePicker @bind-Date="ViewModel.AffidavitDate" 
+                          Label="Date of affidavit" 
+                          Variant="Variant.Outlined" 
+                          Required="true"
+                          HelperText="Enter the date you are making this affidavit (typically today's date)" />
+        </MudItem>
+    </MudPaper>
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public BecomeCitizenViewModel ViewModel { get; set; } = null!;
+}
+
+

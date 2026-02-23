@@ -1,0 +1,52 @@
+@page "/gov/user-tenant-mappings"
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>User Tenant Mappings - Administration</PageTitle>
+
+<MudPaper Elevation="0" Class="pa-6">
+    <MudStack Spacing="4">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h4" Color="Color.Primary">User Tenant Mappings</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+                Add Mapping
+            </MudButton>
+        </MudStack>
+
+        <MudAlert Severity="Severity.Info">
+            User tenant mappings link OIDC identities to specific tenants. This is used when the tenant claim is not available in the OIDC token.
+        </MudAlert>
+
+        <MudTable Items="@_mappings" Hover="true" Striped="true" Dense="true" Elevation="2">
+            <HeaderContent>
+                <MudTh>Issuer</MudTh>
+                <MudTh>Subject</MudTh>
+                <MudTh>Tenant</MudTh>
+                <MudTh>Created</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd><MudText Typo="Typo.body2" Style="font-family: monospace; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">@context.Issuer</MudText></MudTd>
+                <MudTd><MudText Typo="Typo.body2" Style="font-family: monospace;">@context.Subject</MudText></MudTd>
+                <MudTd><MudChip T="string" Color="Color.Primary" Size="Size.Small">@context.Tenant</MudChip></MudTd>
+                <MudTd>@context.Created.ToString("MMM dd, yyyy")</MudTd>
+                <MudTd>
+                    <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
+                        <MudButton Color="Color.Primary">Edit</MudButton>
+                        <MudButton Color="Color.Error">Delete</MudButton>
+                    </MudButtonGroup>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudStack>
+</MudPaper>
+
+@code {
+    private record UserMapping(string Issuer, string Subject, string Tenant, DateTime Created);
+
+    private readonly List<UserMapping> _mappings = new()
+    {
+        new("http://localhost:9100/application/o/mamey-government/", "user-001", "default", DateTime.Now.AddMonths(-2)),
+        new("http://localhost:9100/application/o/mamey-government/", "user-002", "demo", DateTime.Now.AddMonths(-1)),
+        new("https://auth.mamey.gov/", "admin-001", "default", DateTime.Now.AddDays(-15))
+    };
+}

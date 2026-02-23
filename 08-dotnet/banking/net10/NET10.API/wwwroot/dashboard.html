@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NET10 Dashboard - Real-time Analytics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --border: #1e1e2e;
+            --text: #e0e0e0;
+            --text-dim: #888;
+            --neon-green: #00FF41;
+            --neon-cyan: #00FFFF;
+            --neon-purple: #9D4EDD;
+            --gold: #FFD700;
+            --red: #FF1744;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--bg-card), #1a1a2e);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+        
+        .logo-text {
+            font-size: 1.5em;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .status-badge {
+            background: rgba(0,255,65,0.15);
+            color: var(--neon-green);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            border-color: var(--neon-cyan);
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon.green { background: rgba(0,255,65,0.15); color: var(--neon-green); }
+        .stat-icon.cyan { background: rgba(0,255,255,0.15); color: var(--neon-cyan); }
+        .stat-icon.purple { background: rgba(157,78,221,0.15); color: var(--neon-purple); }
+        .stat-icon.gold { background: rgba(255,215,0,0.15); color: var(--gold); }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--text-dim);
+            font-size: 0.9em;
+        }
+        
+        .stat-change {
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+        
+        .stat-change.positive { color: var(--neon-green); }
+        .stat-change.negative { color: var(--red); }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 1024px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .service-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .service-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+        }
+        
+        .service-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .service-info > div {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .service-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .service-dot.online { background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
+        .service-dot.offline { background: var(--red); box-shadow: 0 0 10px var(--red); }
+        
+        .service-name { 
+            font-weight: 500; 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .service-module { 
+            color: var(--text-dim); 
+            font-size: 0.85em; 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .service-latency { 
+            color: var(--neon-cyan); 
+            font-size: 0.9em; 
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+        
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .activity-icon.swap { background: rgba(0,255,255,0.15); color: var(--neon-cyan); }
+        .activity-icon.liquidity { background: rgba(0,255,65,0.15); color: var(--neon-green); }
+        .activity-icon.farm { background: rgba(255,215,0,0.15); color: var(--gold); }
+        .activity-icon.harvest { background: rgba(157,78,221,0.15); color: var(--neon-purple); }
+        
+        .activity-content { flex: 1; }
+        .activity-desc { margin-bottom: 5px; }
+        .activity-meta { color: var(--text-dim); font-size: 0.85em; }
+        
+        .token-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .token-table th, .token-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .token-table th {
+            color: var(--text-dim);
+            font-weight: 500;
+            font-size: 0.85em;
+        }
+        
+        .token-table tr:hover td {
+            background: rgba(0,255,255,0.05);
+        }
+        
+        .token-symbol {
+            font-weight: 600;
+            color: var(--neon-cyan);
+        }
+        
+        .change-positive { color: var(--neon-green); }
+        .change-negative { color: var(--red); }
+        
+        .refresh-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+        
+        .refresh-btn.spinning i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            color: var(--text-dim);
+        }
+        
+        .system-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .info-value {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--neon-green);
+            margin-bottom: 5px;
+        }
+        
+        .info-label {
+            color: var(--text-dim);
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📊</div>
+            <div>
+                <div class="logo-text">NET10 Dashboard</div>
+                <div style="color: var(--text-dim); font-size: 0.85em;">Real-time Analytics</div>
+            </div>
+        </div>
+        <div class="status-badge">
+            <span class="status-dot"></span>
+            <span id="systemStatus">Connecting...</span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Stats Overview -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="bi bi-safe2"></i></div>
+                <div class="stat-value" id="tvl">$0</div>
+                <div class="stat-label">Total Value Locked</div>
+                <div class="stat-change positive" id="tvlChange">+0%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon cyan"><i class="bi bi-graph-up"></i></div>
+                <div class="stat-value" id="volume24h">$0</div>
+                <div class="stat-label">24h Volume</div>
+                <div class="stat-change positive">+12.5%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="bi bi-people"></i></div>
+                <div class="stat-value" id="activeUsers">0</div>
+                <div class="stat-label">Active Users</div>
+                <div class="stat-change positive">+8.3%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon gold"><i class="bi bi-lightning-charge"></i></div>
+                <div class="stat-value" id="transactions">0</div>
+                <div class="stat-label">Transactions Today</div>
+                <div class="stat-change positive">+15.2%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="bi bi-coin"></i></div>
+                <div class="stat-value" id="totalTokens">0</div>
+                <div class="stat-label">Tokens Listed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon cyan"><i class="bi bi-droplet"></i></div>
+                <div class="stat-value" id="totalPools">0</div>
+                <div class="stat-label">Active Pools</div>
+            </div>
+        </div>
+        
+        <!-- Main Content Grid -->
+        <div class="grid-2">
+            <!-- Services Status -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="bi bi-heart-pulse"></i>
+                        Service Health
+                    </div>
+                    <button class="refresh-btn" onclick="loadServices()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="service-list" id="servicesList">
+                        <div class="loading"><i class="bi bi-hourglass-split"></i> Loading services...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="bi bi-activity"></i>
+                        Recent Activity
+                    </div>
+                    <button class="refresh-btn" onclick="loadDashboard()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="activity-list" id="activityList">
+                        <div class="loading"><i class="bi bi-hourglass-split"></i> Loading activity...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Info -->
+        <div class="card" style="margin-bottom: 30px;">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="bi bi-cpu"></i>
+                    System Information
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="system-info" id="systemInfo">
+                    <div class="loading"><i class="bi bi-hourglass-split"></i> Loading...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Tokens Table -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="bi bi-currency-exchange"></i>
+                    Top Tokens
+                </div>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <table class="token-table">
+                    <thead>
+                        <tr>
+                            <th>Token</th>
+                            <th>Price</th>
+                            <th>24h Change</th>
+                            <th>Volume</th>
+                            <th>Market Cap</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tokenTable">
+                        <tr><td colspan="5" class="loading">Loading tokens...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        
+        // Format currency
+        function formatCurrency(value) {
+            if (value >= 1e9) return '$' + (value / 1e9).toFixed(2) + 'B';
+            if (value >= 1e6) return '$' + (value / 1e6).toFixed(2) + 'M';
+            if (value >= 1e3) return '$' + (value / 1e3).toFixed(2) + 'K';
+            return '$' + value.toFixed(2);
+        }
+        
+        // Format number
+        function formatNumber(value) {
+            return new Intl.NumberFormat().format(value);
+        }
+        
+        // Load Dashboard Data
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`${API_BASE}/dashboard`);
+                const data = await response.json();
+                
+                // Update stats
+                document.getElementById('tvl').textContent = formatCurrency(data.overview.totalValueLocked);
+                document.getElementById('volume24h').textContent = formatCurrency(data.overview.volume24h);
+                document.getElementById('activeUsers').textContent = formatNumber(data.overview.activeUsers);
+                document.getElementById('transactions').textContent = formatNumber(data.overview.transactionsToday);
+                document.getElementById('totalTokens').textContent = data.overview.totalTokens;
+                document.getElementById('totalPools').textContent = data.overview.totalPools;
+                
+                // Update activity
+                const activityHtml = data.recentActivity.map(a => `
+                    <div class="activity-item">
+                        <div class="activity-icon ${a.type}">
+                            <i class="bi bi-${getActivityIcon(a.type)}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-desc">${a.description}</div>
+                            <div class="activity-meta">${a.user} • ${timeAgo(a.timestamp)}</div>
+                        </div>
+                    </div>
+                `).join('');
+                document.getElementById('activityList').innerHTML = activityHtml;
+                
+                // Update tokens table
+                const tokenHtml = data.topTokens.map(t => `
+                    <tr>
+                        <td>
+                            <span class="token-symbol">${t.symbol}</span>
+                            <span style="color: var(--text-dim); margin-left: 8px;">${t.name}</span>
+                        </td>
+                        <td>$${t.price.toFixed(4)}</td>
+                        <td class="${t.change24h >= 0 ? 'change-positive' : 'change-negative'}">
+                            ${t.change24h >= 0 ? '+' : ''}${t.change24h.toFixed(2)}%
+                        </td>
+                        <td>${formatCurrency(t.volume24h)}</td>
+                        <td>${formatCurrency(t.marketCap)}</td>
+                    </tr>
+                `).join('');
+                document.getElementById('tokenTable').innerHTML = tokenHtml;
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+        
+        // Load Services Health
+        async function loadServices() {
+            try {
+                const response = await fetch(`${API_BASE}/health/services`);
+                const services = await response.json();
+                
+                const html = services.map(s => `
+                    <div class="service-item">
+                        <div class="service-info">
+                            <span class="service-dot ${s.status}"></span>
+                            <div>
+                                <div class="service-name">${s.name}</div>
+                                <div class="service-module">${s.module}</div>
+                            </div>
+                        </div>
+                        <div class="service-latency">${s.latency}ms</div>
+                    </div>
+                `).join('');
+                document.getElementById('servicesList').innerHTML = html;
+                document.getElementById('systemStatus').textContent = 'All Systems Operational';
+                
+            } catch (error) {
+                console.error('Error loading services:', error);
+                document.getElementById('systemStatus').textContent = 'Connection Error';
+            }
+        }
+        
+        // Load System Info
+        async function loadSystemInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/health/detailed`);
+                const data = await response.json();
+                
+                const html = `
+                    <div class="info-item">
+                        <div class="info-value">${data.system.processorCount}</div>
+                        <div class="info-label">CPU Cores</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value">${data.memory.workingSetFormatted}</div>
+                        <div class="info-label">Memory Used</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value">${data.performance.threadCount}</div>
+                        <div class="info-label">Threads</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value">${formatNumber(data.performance.totalRequests)}</div>
+                        <div class="info-label">Total Requests</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value">${formatUptime(data.uptime)}</div>
+                        <div class="info-label">Uptime</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value">${data.version}</div>
+                        <div class="info-label">Version</div>
+                    </div>
+                `;
+                document.getElementById('systemInfo').innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error loading system info:', error);
+            }
+        }
+        
+        function getActivityIcon(type) {
+            const icons = {
+                swap: 'arrow-left-right',
+                liquidity: 'droplet-half',
+                farm: 'flower1',
+                harvest: 'gift',
+                withdraw: 'box-arrow-up',
+                bridge: 'link-45deg'
+            };
+            return icons[type] || 'circle';
+        }
+        
+        function timeAgo(timestamp) {
+            const diff = Date.now() - new Date(timestamp).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hours = Math.floor(mins / 60);
+            if (hours < 24) return `${hours}h ago`;
+            return `${Math.floor(hours / 24)}d ago`;
+        }
+        
+        function formatUptime(uptime) {
+            const parts = uptime.split(':');
+            const hours = parseInt(parts[0]);
+            const mins = parseInt(parts[1]);
+            if (hours > 24) return `${Math.floor(hours/24)}d ${hours%24}h`;
+            return `${hours}h ${mins}m`;
+        }
+        
+        // Initial load
+        loadDashboard();
+        loadServices();
+        loadSystemInfo();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            loadDashboard();
+            loadServices();
+            loadSystemInfo();
+        }, 30000);
+    </script>
+</body>
+</html>

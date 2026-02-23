@@ -1,0 +1,50 @@
+@if (IsVisible)
+{
+    <div class="loading-overlay" style="@GetOverlayStyle()">
+        <div class="loading-content">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+            @if (!string.IsNullOrEmpty(Message))
+            {
+                <MudText Typo="Typo.body1" Class="mt-3">@Message</MudText>
+            }
+        </div>
+    </div>
+}
+
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    
+    .loading-content {
+        background-color: var(--mud-palette-surface);
+        padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+</style>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public bool FullScreen { get; set; } = true;
+
+    private string GetOverlayStyle()
+    {
+        if (!FullScreen)
+        {
+            return "position: absolute;";
+        }
+        return string.Empty;
+    }
+}

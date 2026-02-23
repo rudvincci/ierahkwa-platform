@@ -1,0 +1,271 @@
+@* This file is excluded and should not be compiled. Route disabled. *@
+@* @page "/identity/admin/biometrics" - REMOVED to prevent duplicate route *@
+@attribute [Authorize(Roles = "Admin,IdentityAdmin")]
+@inject IIdentityService IdentityService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<PageTitle>Biometric Review - Admin - FutureWampumID</PageTitle>
+
+<MudGrid>
+    <MudItem xs="12">
+        <div class="d-flex align-center mb-4">
+            <MudText Typo="Typo.h4">Biometric Review Queue</MudText>
+            <MudSpacer />
+            <MudChip T="string" Color="Color.Warning" Size="Size.Medium">
+                @_pendingReviews Pending Reviews
+            </MudChip>
+        </div>
+    </MudItem>
+</MudGrid>
+
+<!-- Filter Tabs -->
+<MudTabs Elevation="2" Rounded="true" Class="mb-4" @bind-ActivePanelIndex="_activeTab">
+    <MudTabPanel Text="Pending" BadgeData="@_pendingReviews" BadgeColor="Color.Warning" Icon="@Icons.Material.Filled.HourglassEmpty" />
+    <MudTabPanel Text="Approved" Icon="@Icons.Material.Filled.CheckCircle" />
+    <MudTabPanel Text="Rejected" Icon="@Icons.Material.Filled.Cancel" />
+    <MudTabPanel Text="All" Icon="@Icons.Material.Filled.List" />
+</MudTabs>
+
+@if (_isLoading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mb-4" />
+}
+else if (!_reviewItems.Any())
+{
+    <MudCard Elevation="2" Class="pa-8 text-center">
+        <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Large" Color="Color.Success" Style="font-size: 4rem;" />
+        <MudText Typo="Typo.h5" Class="mt-4">All Caught Up!</MudText>
+        <MudText Typo="Typo.body1" Class="mud-text-secondary mt-2">
+            There are no pending biometric reviews at this time.
+        </MudText>
+    </MudCard>
+}
+else
+{
+    <MudGrid>
+        @foreach (var item in _reviewItems)
+        {
+            <MudItem xs="12" md="6">
+                <MudCard Elevation="2">
+                    <MudCardHeader>
+                        <CardHeaderAvatar>
+                            <MudAvatar Color="@GetStatusColor(item.Status)">
+                                <MudIcon Icon="@GetModalityIcon(item.Modality)" />
+                            </MudAvatar>
+                        </CardHeaderAvatar>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@item.IdentityName</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">@item.Modality Enrollment</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(item.Status)">
+                                @item.Status
+                            </MudChip>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudGrid>
+                            <MudItem xs="6">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Identity ID</MudText>
+                                <MudText Typo="Typo.body2" Class="text-truncate">@item.IdentityId</MudText>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Submitted</MudText>
+                                <MudText Typo="Typo.body2">@item.SubmittedAt.ToLocalTime().ToString("g")</MudText>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Quality Score</MudText>
+                                <MudProgressLinear Color="@GetQualityColor(item.QualityScore)" 
+                                                   Value="@item.QualityScore" 
+                                                   Class="my-2" />
+                                <MudText Typo="Typo.caption">@item.QualityScore%</MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardContent>
+                    <MudCardActions>
+                        @if (item.Status == "Pending")
+                        {
+                            <MudButton Color="Color.Success" 
+                                       Variant="Variant.Filled" 
+                                       Size="Size.Small"
+                                       OnClick="@(() => ApproveEnrollment(item))">
+                                <MudIcon Icon="@Icons.Material.Filled.Check" Class="mr-1" />
+                                Approve
+                            </MudButton>
+                            <MudButton Color="Color.Error" 
+                                       Variant="Variant.Outlined" 
+                                       Size="Size.Small"
+                                       OnClick="@(() => RejectEnrollment(item))">
+                                <MudIcon Icon="@Icons.Material.Filled.Close" Class="mr-1" />
+                                Reject
+                            </MudButton>
+                        }
+                        <MudButton Color="Color.Primary" 
+                                   Variant="Variant.Text" 
+                                   Size="Size.Small"
+                                   OnClick="@(() => ViewDetails(item))">
+                            <MudIcon Icon="@Icons.Material.Filled.Visibility" Class="mr-1" />
+                            Details
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+    private bool _isLoading = true;
+    private int _activeTab = 0;
+    private int _pendingReviews = 0;
+    private List<BiometricReviewItem> _reviewItems = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReviewItemsAsync();
+    }
+
+    private async Task LoadReviewItemsAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            // Mock data - in production, this would come from API
+            await Task.Delay(500);
+            _reviewItems = new List<BiometricReviewItem>
+            {
+                new BiometricReviewItem
+                {
+                    Id = Guid.NewGuid(),
+                    IdentityId = Guid.NewGuid(),
+                    IdentityName = "John Doe",
+                    Modality = "Fingerprint",
+                    Status = "Pending",
+                    QualityScore = 92,
+                    SubmittedAt = DateTime.UtcNow.AddHours(-2)
+                },
+                new BiometricReviewItem
+                {
+                    Id = Guid.NewGuid(),
+                    IdentityId = Guid.NewGuid(),
+                    IdentityName = "Jane Smith",
+                    Modality = "Face",
+                    Status = "Pending",
+                    QualityScore = 87,
+                    SubmittedAt = DateTime.UtcNow.AddHours(-5)
+                },
+                new BiometricReviewItem
+                {
+                    Id = Guid.NewGuid(),
+                    IdentityId = Guid.NewGuid(),
+                    IdentityName = "Bob Johnson",
+                    Modality = "Voice",
+                    Status = "Approved",
+                    QualityScore = 95,
+                    SubmittedAt = DateTime.UtcNow.AddDays(-1)
+                }
+            };
+
+            _pendingReviews = _reviewItems.Count(i => i.Status == "Pending");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private string GetModalityIcon(string modality)
+    {
+        return modality?.ToLower() switch
+        {
+            "fingerprint" => Icons.Material.Filled.Fingerprint,
+            "face" => Icons.Material.Filled.Face,
+            "voice" => Icons.Material.Filled.Mic,
+            "iris" => Icons.Material.Filled.RemoveRedEye,
+            _ => Icons.Material.Filled.Security
+        };
+    }
+
+    private Color GetStatusColor(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "pending" => Color.Warning,
+            "approved" => Color.Success,
+            "rejected" => Color.Error,
+            _ => Color.Default
+        };
+    }
+
+    private Color GetQualityColor(int score)
+    {
+        return score switch
+        {
+            >= 90 => Color.Success,
+            >= 70 => Color.Warning,
+            _ => Color.Error
+        };
+    }
+
+    private async Task ApproveEnrollment(BiometricReviewItem item)
+    {
+        try
+        {
+            // In production, call API to approve
+            item.Status = "Approved";
+            _pendingReviews--;
+            Snackbar.Add($"Biometric enrollment approved for {item.IdentityName}", Severity.Success);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error approving enrollment: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task RejectEnrollment(BiometricReviewItem item)
+    {
+        var parameters = new DialogParameters
+        {
+            ["ContentText"] = $"Are you sure you want to reject the {item.Modality} enrollment for {item.IdentityName}?",
+            ["ButtonText"] = "Reject",
+            ["ButtonColor"] = Color.Error
+        };
+
+        var dialog = await DialogService.ShowAsync<ConfirmationDialog>("Reject Enrollment", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            try
+            {
+                item.Status = "Rejected";
+                _pendingReviews--;
+                Snackbar.Add($"Biometric enrollment rejected for {item.IdentityName}", Severity.Warning);
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error rejecting enrollment: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private void ViewDetails(BiometricReviewItem item)
+    {
+        Navigation.NavigateTo($"/identity/admin/{item.IdentityId}/biometrics/{item.Id}");
+    }
+
+    public class BiometricReviewItem
+    {
+        public Guid Id { get; set; }
+        public Guid IdentityId { get; set; }
+        public string IdentityName { get; set; } = string.Empty;
+        public string Modality { get; set; } = string.Empty;
+        public string Status { get; set; } = "Pending";
+        public int QualityScore { get; set; }
+        public DateTime SubmittedAt { get; set; }
+    }
+}

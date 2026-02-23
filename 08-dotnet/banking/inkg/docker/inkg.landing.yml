@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  futurebdetbank-landing:
+    build:
+      context: ../../../
+      dockerfile: FHG/UI/FutureBDETBank.UI.Web.External/FutureBDETBank.UI.Web.External.Landing/src/FutureBDETBank.UI.Web.External.Landing/Dockerfile
+    container_name: futurebdetbank-landing
+    env_file: 
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=${Certificates__Default__Path}
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${Certificates__Default__Password}
+    restart: unless-stopped
+    ports:
+      - 4100:80
+    networks:
+      - futurebdet
+      - fhg-landings
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
+networks:
+  fhg-landings:
+    name: fhg-landings
+  futurebdet:
+    name: futurebdet

@@ -1,0 +1,28 @@
+<MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="pa-8" Style="min-height: 300px;">
+    <MudIcon Icon="@Icon" Size="Size.Large" Class="mud-text-secondary" Style="font-size: 4rem;" />
+    <MudText Typo="Typo.h6" Class="mud-text-secondary">@Title</MudText>
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <MudText Typo="Typo.body2" Class="mud-text-secondary" Align="Align.Center">@Description</MudText>
+    }
+    @if (Action != null)
+    {
+        <div class="mt-4">
+            @Action
+        </div>
+    }
+</MudStack>
+
+@code {
+    [Parameter]
+    public string Icon { get; set; } = Icons.Material.Filled.Inbox;
+
+    [Parameter]
+    public string Title { get; set; } = "No data found";
+
+    [Parameter]
+    public string? Description { get; set; }
+
+    [Parameter]
+    public RenderFragment? Action { get; set; }
+}

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HospedajeSoberano — Turismo Indígena | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;800&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0e;--bg2:#12121a;--bg3:#1a1a24;--bg4:#22222e;--gold:#d4a853;--gold-d:rgba(212,168,83,0.1);--tq:#2dd4a8;--tq-d:rgba(45,212,168,0.08);--wp:#9b6dff;--red:#ff4d6a;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:12px;--warm:#e8c9a0}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--brd);padding:12px 28px;display:flex;align-items:center;gap:16px}
+.nav-brand{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
+.nav-brand span{font-size:22px}
+.nav-brand h1{font-family:'Fraunces',serif;font-size:18px;color:var(--warm)}
+
+.nav-search{flex:1;max-width:600px;display:flex;background:var(--bg2);border:1px solid var(--brd);border-radius:28px;overflow:hidden;transition:border-color 0.2s}
+.nav-search:focus-within{border-color:var(--gold)}
+.ns-field{flex:1;display:flex;align-items:center;padding:8px 16px;border-right:1px solid var(--brd);cursor:pointer}
+.ns-field:last-child{border-right:none}
+.ns-field .ns-label{font-size:10px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:0.5px}
+.ns-field .ns-val{font-size:12px;color:var(--txt2)}
+.ns-go{width:36px;height:36px;border-radius:50%;background:var(--gold);border:none;color:#0a0a0e;cursor:pointer;margin:4px;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:filter 0.15s}
+.ns-go:hover{filter:brightness(1.15)}
+
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.nb{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.nb:hover{background:var(--bg3);color:var(--txt)}
+.nb.host{border-color:var(--warm);color:var(--warm)}
+.nb.host:hover{background:var(--warm);color:#0a0a0e}
+
+/* FILTERS */
+.filters{display:flex;gap:6px;padding:12px 28px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--brd)}
+.filters::-webkit-scrollbar{display:none}
+.fil{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 14px;border-radius:10px;cursor:pointer;font-size:11px;color:var(--txt3);transition:all 0.15s;white-space:nowrap;border:1px solid transparent;min-width:70px}
+.fil:hover{color:var(--txt);background:var(--bg2)}
+.fil.active{color:var(--warm);border-color:var(--warm);background:rgba(232,201,160,0.06)}
+.fil span{font-size:20px}
+
+/* CONTENT */
+.content{padding:20px 28px}
+
+/* LISTING GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;margin-bottom:32px}
+.listing{border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform 0.2s}
+.listing:hover{transform:translateY(-3px)}
+.l-img{width:100%;aspect-ratio:4/3;position:relative;overflow:hidden}
+.l-img .thumb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;position:relative}
+.l-img .thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 60%,rgba(0,0,0,0.5))}
+.l-badge{position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;z-index:2;backdrop-filter:blur(8px)}
+.l-badge.super{background:rgba(212,168,83,0.8);color:#0a0a0e}
+.l-badge.new{background:rgba(45,212,168,0.8);color:#0a0a0e}
+.l-badge.eco{background:rgba(52,211,153,0.8);color:#0a0a0e}
+.l-fav{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.5);border:none;color:#fff;cursor:pointer;font-size:14px;z-index:2;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:all 0.15s}
+.l-fav:hover{background:rgba(255,77,106,0.6)}
+.l-info{padding:12px 0}
+.l-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.l-loc{font-size:12px;color:var(--txt2);font-weight:600}
+.l-rating{font-size:12px;display:flex;align-items:center;gap:3px;color:var(--txt)}
+.l-title{font-size:15px;font-weight:600;margin-bottom:4px;line-height:1.3}
+.l-desc{font-size:12px;color:var(--txt3);margin-bottom:6px}
+.l-price{display:flex;align-items:baseline;gap:4px}
+.l-price .amt{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;color:var(--gold)}
+.l-price .per{font-size:12px;color:var(--txt3)}
+.l-tags{display:flex;gap:4px;margin-top:6px}
+.lt{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600;letter-spacing:0.5px}
+.lt-bdet{background:rgba(155,109,255,0.1);color:var(--wp)}
+.lt-eco{background:rgba(52,211,153,0.1);color:#34d399}
+.lt-com{background:rgba(212,168,83,0.1);color:var(--gold)}
+.lt-ver{background:rgba(45,212,168,0.1);color:var(--tq)}
+
+/* SECTION */
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sec-h h2{font-family:'Fraunces',serif;font-size:22px;color:var(--warm)}
+.sec-h a{font-size:12px;color:var(--txt3);cursor:pointer;text-decoration:underline}
+
+/* CTA BANNER */
+.cta{background:linear-gradient(135deg,rgba(232,201,160,0.06),rgba(45,212,168,0.04));border:1px solid rgba(232,201,160,0.15);border-radius:var(--r);padding:24px;display:flex;align-items:center;gap:20px;margin-bottom:32px}
+.cta-icon{font-size:40px}
+.cta-text h3{font-size:16px;color:var(--warm);margin-bottom:4px}
+.cta-text p{font-size:13px;color:var(--txt2)}
+.cta-btn{margin-left:auto;padding:10px 24px;border-radius:24px;background:var(--warm);border:none;color:#0a0a0e;font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:filter 0.15s}
+.cta-btn:hover{filter:brightness(1.1)}
+
+/* EXPERIENCES */
+.exp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:32px}
+.exp{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all 0.2s}
+.exp:hover{border-color:rgba(232,201,160,0.3);transform:translateY(-2px)}
+.exp-img{width:100%;aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;font-size:36px}
+.exp-body{padding:12px}
+.exp-type{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--tq);letter-spacing:0.8px;margin-bottom:4px}
+.exp-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.exp-detail{font-size:11px;color:var(--txt3)}
+.exp-price{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--gold);margin-top:6px}
+
+@media(max-width:768px){.nav-search{display:none}.grid{grid-template-columns:1fr 1fr}.content{padding:12px}}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-brand"><span>🏠</span><h1>HospedajeSoberano</h1></div>
+  <div class="nav-search">
+    <div class="ns-field" style="flex:1.5"><div><div class="ns-label">Destino</div><div class="ns-val">Buscar comunidades...</div></div></div>
+    <div class="ns-field"><div><div class="ns-label">Llegada</div><div class="ns-val">15 Mar</div></div></div>
+    <div class="ns-field"><div><div class="ns-label">Salida</div><div class="ns-val">20 Mar</div></div></div>
+    <div class="ns-field"><div><div class="ns-label">Huéspedes</div><div class="ns-val">2 adultos</div></div></div>
+    <button class="ns-go">⌕</button>
+  </div>
+  <div class="nav-right">
+    <button class="nb host">🏠 Sé Anfitrión</button>
+    <button class="nb">🌐</button>
+    <button class="nb">💎</button>
+    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--tq));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;cursor:pointer">CA</div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <div class="fil active"><span>🏠</span>Todos</div>
+  <div class="fil"><span>🏡</span>Comunidad</div>
+  <div class="fil"><span>🌳</span>Eco-Lodge</div>
+  <div class="fil"><span>🏔</span>Montaña</div>
+  <div class="fil"><span>🌊</span>Playa</div>
+  <div class="fil"><span>🌴</span>Selva</div>
+  <div class="fil"><span>🏜</span>Desierto</div>
+  <div class="fil"><span>🛶</span>Río</div>
+  <div class="fil"><span>🏕</span>Camping</div>
+  <div class="fil"><span>🪵</span>Cabaña</div>
+  <div class="fil"><span>🎨</span>Artesanal</div>
+  <div class="fil"><span>🌾</span>Granja</div>
+  <div class="fil"><span>🧘</span>Retiro</div>
+  <div class="fil"><span>📚</span>Cultural</div>
+  <div class="fil"><span>🩺</span>Wellness</div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-icon">🌍</div>
+    <div class="cta-text">
+      <h3>Turismo que Fortalece Comunidades</h3>
+      <p>90% del pago va directo al anfitrión indígena via BDET Bank. Sin intermediarios. Sin comisiones abusivas. Soberanía económica real.</p>
+    </div>
+    <button class="cta-btn">Explorar Destinos</button>
+  </div>
+
+  <!-- Featured Listings -->
+  <div class="sec-h"><h2>✨ Destacados de la Semana</h2><a>Ver todos</a></div>
+  <div class="grid">
+
+    <div class="listing">
+      <div class="l-img"><div class="thumb" style="background:linear-gradient(135deg,#1a2510,#0a2015)">🌳🏡🌿</div><span class="l-badge super">⭐ Superanfitrión</span><button class="l-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="l-info">
+        <div class="l-top"><span class="l-loc">📍 Amazonía, Ecuador</span><span class="l-rating">⭐ 4.97 (142)</span></div>
+        <div class="l-title">Eco-Lodge Achuar — Dormir en la Selva Ancestral</div>
+        <div class="l-desc">Cabaña elevada sobre río · Vista a canopy · Guía Achuar incluido</div>
+        <div class="l-price"><span class="amt">Ⓦ 85</span><span class="per">/ noche</span></div>
+        <div class="l-tags"><span class="lt lt-eco">Eco</span><span class="lt lt-bdet">BDET</span><span class="lt lt-ver">Verificado</span></div>
+      </div>
+    </div>
+
+    <div class="listing">
+      <div class="l-img"><div class="thumb" style="background:linear-gradient(135deg,#201510,#1a200a)">🏔🪵❄</div><span class="l-badge super">⭐ Superanfitrión</span><button class="l-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="l-info">
+        <div class="l-top"><span class="l-loc">📍 Altiplano, Bolivia</span><span class="l-rating">⭐ 4.93 (98)</span></div>
+        <div class="l-title">Cabaña Aymara en el Lago Titicaca</div>
+        <div class="l-desc">Casa tradicional de totora · Vista al lago · Ceremonia de bienvenida</div>
+        <div class="l-price"><span class="amt">Ⓦ 62</span><span class="per">/ noche</span></div>
+        <div class="l-tags"><span class="lt lt-com">Comunidad</span><span class="lt lt-bdet">BDET</span></div>
+      </div>
+    </div>
+
+    <div class="listing">
+      <div class="l-img"><div class="thumb" style="background:linear-gradient(135deg,#0a1a25,#15200a)">🌊🌴🏖</div><span class="l-badge new">Nuevo</span><button class="l-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="l-info">
+        <div class="l-top"><span class="l-loc">📍 Dominica, Caribe</span><span class="l-rating">⭐ 5.0 (23)</span></div>
+        <div class="l-title">Casa Kalinago frente al Mar Caribe</div>
+        <div class="l-desc">Territorio Kalinago · Playa privada · Cocina tradicional incluida</div>
+        <div class="l-price"><span class="amt">Ⓦ 110</span><span class="per">/ noche</span></div>
+        <div class="l-tags"><span class="lt lt-eco">Eco</span><span class="lt lt-com">Indígena</span><span class="lt lt-ver">Verificado</span></div>
+      </div>
+    </div>
+
+    <div class="listing">
+      <div class="l-img"><div class="thumb" style="background:linear-gradient(135deg,#201020,#100a20)">🏔🌌🪶</div><span class="l-badge super">⭐ Superanfitrión</span><button class="l-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="l-info">
+        <div class="l-top"><span class="l-loc">📍 Navajo Nation, Arizona</span><span class="l-rating">⭐ 4.95 (267)</span></div>
+        <div class="l-title">Hogan Tradicional bajo las Estrellas</div>
+        <div class="l-desc">Experiencia Diné auténtica · Tour Monument Valley · Storytelling nocturno</div>
+        <div class="l-price"><span class="amt">Ⓦ 95</span><span class="per">/ noche</span></div>
+        <div class="l-tags"><span class="lt lt-com">Cultural</span><span class="lt lt-bdet">BDET</span><span class="lt lt-ver">Verificado</span></div>
+      </div>
+    </div>
+
+    <div class="listing">
+      <div class="l-img"><div class="thumb" style="background:linear-gradient(135deg,#1a1a0a,#0a2010)">🌾🏘🌄</div><span class="l-badge eco">🌿 Eco-Turismo</span><button class="l-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="l-info">
+        <div class="l-top"><span class="l-loc">📍 Chiapas, México</span><span class="l-rating">⭐ 4.91 (156)</span></div>
+        <div class="l-title">Comunidad Maya Lacandón — Inmersión Total</div>
+        <div class="l-desc">5 días con familia Maya · Milpa · Cacao · Selva · Ruinas</div>
+        <div class="l-price"><span class="amt">Ⓦ 180</span><span class="per">/ 5 noches</span></div>
+        <div class="l-tags"><span class="lt lt-com">Inmersión</span><span class="lt lt-eco">Eco</span><span class="lt lt-bdet">BDET</span></div>
+      </div>
+    </div>
+
+    <div class="listing">
+      <div class="l-img"><div class="thumb" style="background:linear-gradient(135deg,#200a15,#0a1520)">🛶🌊🌳</div><span class="l-badge new">Nuevo</span><button class="l-fav" onclick="this.textContent='❤️'">🤍</button></div>
+      <div class="l-info">
+        <div class="l-top"><span class="l-loc">📍 Kuna Yala, Panamá</span><span class="l-rating">⭐ 4.88 (34)</span></div>
+        <div class="l-title">Isla Kuna — Cabaña sobre el Agua Cristalina</div>
+        <div class="l-desc">Isla privada · Snorkel · Molas artesanales · Cocina del mar</div>
+        <div class="l-price"><span class="amt">Ⓦ 130</span><span class="per">/ noche</span></div>
+        <div class="l-tags"><span class="lt lt-eco">Isla</span><span class="lt lt-com">Indígena</span><span class="lt lt-ver">Verificado</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Experiences -->
+  <div class="sec-h"><h2>🌟 Experiencias Soberanas</h2><a>Ver todas</a></div>
+  <div class="exp-grid">
+    <div class="exp">
+      <div class="exp-img" style="background:linear-gradient(135deg,#201510,#0a2015)">🏺🔥</div>
+      <div class="exp-body">
+        <div class="exp-type">Artesanía</div>
+        <div class="exp-name">Taller de Cerámica Lenca</div>
+        <div class="exp-detail">3 horas · Honduras · Ana Lenca</div>
+        <div class="exp-price">Ⓦ 25 / persona</div>
+      </div>
+    </div>
+    <div class="exp">
+      <div class="exp-img" style="background:linear-gradient(135deg,#0a1520,#15200a)">🌿🧘</div>
+      <div class="exp-body">
+        <div class="exp-type">Wellness</div>
+        <div class="exp-name">Ceremonia de Plantas Medicinales</div>
+        <div class="exp-detail">Día completo · Amazonía · Curandero Shipibo</div>
+        <div class="exp-price">Ⓦ 75 / persona</div>
+      </div>
+    </div>
+    <div class="exp">
+      <div class="exp-img" style="background:linear-gradient(135deg,#1a0a20,#200a10)">🪘🎶</div>
+      <div class="exp-body">
+        <div class="exp-type">Música</div>
+        <div class="exp-name">Noche de Tambores Garifuna</div>
+        <div class="exp-detail">4 horas · Belice · Garifuna Collective</div>
+        <div class="exp-price">Ⓦ 30 / persona</div>
+      </div>
+    </div>
+    <div class="exp">
+      <div class="exp-img" style="background:linear-gradient(135deg,#15200a,#0a1a20)">🌾🍫</div>
+      <div class="exp-body">
+        <div class="exp-type">Gastronomía</div>
+        <div class="exp-name">Del Cacao al Chocolate Maya</div>
+        <div class="exp-detail">5 horas · Guatemala · Finca comunitaria</div>
+        <div class="exp-price">Ⓦ 35 / persona</div>
+      </div>
+    </div>
+    <div class="exp">
+      <div class="exp-img" style="background:linear-gradient(135deg,#0a1a15,#1a250a)">🛶🐊</div>
+      <div class="exp-body">
+        <div class="exp-type">Aventura</div>
+        <div class="exp-name">Expedición Nocturna en Canoa</div>
+        <div class="exp-detail">3 horas · Amazonía, Perú · Guía Asháninka</div>
+        <div class="exp-price">Ⓦ 40 / persona</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div style="background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:20px;display:flex;justify-content:space-around;text-align:center;margin-bottom:20px">
+    <div><div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:var(--gold)">2,847</div><div style="font-size:11px;color:var(--txt3)">Hospedajes</div></div>
+    <div><div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:var(--tq)">19</div><div style="font-size:11px;color:var(--txt3)">Países</div></div>
+    <div><div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:var(--wp)">90%</div><div style="font-size:11px;color:var(--txt3)">Para Anfitrión</div></div>
+    <div><div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:var(--warm)">4.94</div><div style="font-size:11px;color:var(--txt3)">Rating Promedio</div></div>
+    <div><div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:var(--txt)">Ⓦ 0</div><div style="font-size:11px;color:var(--txt3)">Comisión Oculta</div></div>
+  </div>
+
+</div>
+</body>
+</html>

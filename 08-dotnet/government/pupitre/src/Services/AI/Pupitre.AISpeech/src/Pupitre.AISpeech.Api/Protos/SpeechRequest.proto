@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.AISpeech.Api.Protos";
+
+package Pupitre.AISpeech;
+
+// gRPC service for SpeechRequest operations
+service SpeechRequestService {
+    // Get a single SpeechRequest by ID
+    rpc GetSpeechRequest (GetSpeechRequestRequest) returns (SpeechRequestResponse) {};
+    
+    // List all SpeechRequests with pagination
+    rpc ListSpeechRequests (ListSpeechRequestsRequest) returns (ListSpeechRequestsResponse) {};
+    
+    // Stream SpeechRequest updates
+    rpc StreamSpeechRequestUpdates (StreamSpeechRequestUpdatesRequest) returns (stream SpeechRequestResponse) {};
+}
+
+message GetSpeechRequestRequest {
+    string id = 1;
+}
+
+message ListSpeechRequestsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListSpeechRequestsResponse {
+    repeated SpeechRequestResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message SpeechRequestResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamSpeechRequestUpdatesRequest {
+    string filter = 1;
+}

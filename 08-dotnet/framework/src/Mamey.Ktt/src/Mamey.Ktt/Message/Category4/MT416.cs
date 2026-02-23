@@ -1,0 +1,25 @@
+using System.ComponentModel.DataAnnotations;
+using Mamey.Ktt.Attributes;
+
+namespace Mamey.Ktt.Message.Category4;
+
+public class MT416
+{
+    [FieldTag("20")]
+    [RegularExpression(@"^[A-Z0-9]{16}$")]
+    public string TransactionReference { get; set; }
+
+    [FieldTag("21")]
+    public string RelatedReference { get; set; }
+
+    [FieldTag("30")]
+    [RegularExpression(@"^\d{6}$")]
+    public string DateOfAdvice { get; set; }
+
+    [FieldTag("32A")]
+    [RegularExpression(@"^\d{6}[A-Z]{3}[0-9,]{1,15}$")]
+    public string CurrencyAmount { get; set; }
+
+    [FieldTag("72")]
+    public string SenderToReceiverInfo { get; set; }
+}

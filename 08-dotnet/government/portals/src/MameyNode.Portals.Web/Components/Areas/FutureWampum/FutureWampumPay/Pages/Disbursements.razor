@@ -1,0 +1,96 @@
+@page "/payments/disbursements"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumPayClient FutureWampumPayClient
+@inject ILogger<Disbursements> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Disbursements" Icon="fas fa-hand-holding-usd" Subtitle="Disbursement management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Disbursements" Value="@_disbursements.Count.ToString()" Icon="fas fa-hand-holding-usd" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Amount" Value="@_totalAmount.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Completed" Value="@_completedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Programs" Value="@_programCount.ToString()" Icon="fas fa-folder" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Disbursements" Class="mt-4">
+        <MudTable T="DisbursementInfo" Items="@_disbursements" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Disbursement ID</MudTh>
+                <MudTh>Program ID</MudTh>
+                <MudTh>Recipient ID</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Purpose</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.DisbursementId</MudTd>
+                <MudTd>@context.ProgramId</MudTd>
+                <MudTd>@context.RecipientId</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>@context.Purpose</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == PaymentStatus.Completed ? Color.Success : context.Status == PaymentStatus.Pending ? Color.Warning : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<DisbursementInfo> _disbursements = new();
+    private decimal _totalAmount;
+    private int _completedCount;
+    private int _programCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _disbursements = await FutureWampumPayClient.GetDisbursementsAsync(100);
+            _totalAmount = _disbursements.Where(d => d.Status == PaymentStatus.Completed).Sum(d => decimal.Parse(d.Amount));
+            _completedCount = _disbursements.Count(d => d.Status == PaymentStatus.Completed);
+            _programCount = _disbursements.Select(d => d.ProgramId).Distinct().Count();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading disbursements");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

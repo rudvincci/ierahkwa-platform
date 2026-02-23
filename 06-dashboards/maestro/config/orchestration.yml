@@ -1,0 +1,474 @@
+roles:
+  Architect:
+    name: Architect
+    description: System design, architecture decisions, DDD patterns, microservice design
+    promptHints: |
+      You are an expert software architect specializing in the Mamey Framework.
+      Focus on:
+      - Domain-Driven Design (DDD) patterns
+      - CQRS architecture
+      - Event-driven microservices
+      - Service boundaries and contracts
+      - Scalability and maintainability
+    defaultFilePatterns:
+      - "**/*.md"
+      - "**/TDD*.md"
+      - "**/designs/**/*.md"
+    domainKnowledge:
+      - Government
+      - Banking
+      - FutureWampum
+      - HolisticMedicine
+      - RedWebNetwork
+
+  Backend:
+    name: Backend
+    description: .NET microservice implementation, CQRS, domain logic, handlers
+    promptHints: |
+      You are a backend developer specializing in .NET microservices using the Mamey Framework.
+      Focus on:
+      - CQRS command/query handlers
+      - Domain entities and aggregates
+      - Event handlers
+      - Repository patterns
+      - Following Mamey.TemplateEngine patterns
+    defaultFilePatterns:
+      - "**/*.cs"
+      - "**/Application/**"
+      - "**/Domain/**"
+      - "**/Infrastructure/**"
+    defaultDirectories:
+      - "src"
+      - "Application"
+      - "Domain"
+
+  Frontend:
+    name: Frontend
+    description: Blazor/Razor components, UI/UX implementation, client-side logic
+    promptHints: |
+      You are a frontend developer specializing in Blazor and Razor components.
+      Focus on:
+      - Blazor Server and Blazor WebAssembly
+      - Razor component architecture
+      - UI/UX best practices
+      - Client-side state management
+    defaultFilePatterns:
+      - "**/*.razor"
+      - "**/*.cshtml"
+      - "**/Blazor/**"
+    defaultDirectories:
+      - "Components"
+      - "Pages"
+      - "wwwroot"
+
+  Rust:
+    name: Rust
+    description: Rust code implementation for MameyNode, performance-critical systems
+    promptHints: |
+      You are a Rust developer specializing in high-performance systems.
+      Focus on:
+      - Memory safety and performance
+      - Async/await patterns
+      - Error handling
+      - MameyNode architecture
+    defaultFilePatterns:
+      - "**/*.rs"
+      - "**/Cargo.toml"
+    defaultDirectories:
+      - "MameyNode"
+      - "crates"
+
+  Tests:
+    name: Tests
+    description: Unit, integration, and E2E tests, test coverage
+    promptHints: |
+      You are a test engineer specializing in comprehensive test coverage.
+      Focus on:
+      - Unit tests for domain logic
+      - Integration tests for services
+      - E2E tests for workflows
+      - Test data builders
+    defaultFilePatterns:
+      - "**/*.Tests/**"
+      - "**/*Test*.cs"
+      - "**/*.spec.ts"
+    defaultDirectories:
+      - "tests"
+      - "Tests"
+
+  Docs:
+    name: Docs
+    description: Quick documentation, README updates, inline comments
+    promptHints: |
+      You are a documentation specialist focusing on quick updates and inline documentation.
+      Focus on:
+      - README files
+      - Inline code comments
+      - Quick reference guides
+    defaultFilePatterns:
+      - "**/README.md"
+      - "**/*.md"
+    defaultDirectories:
+      - "docs"
+
+  TechnicalWriter:
+    name: TechnicalWriter
+    description: Comprehensive technical documentation, architecture docs, guides, comprehensive documentation
+    promptHints: |
+      You are a technical writer specializing in comprehensive documentation.
+      Focus on:
+      - Architecture documentation
+      - API documentation
+      - Comprehensive guides
+      - Maintaining documentation standards
+      - Detailed technical specifications
+    defaultFilePatterns:
+      - "**/docs/**/*.md"
+      - "**/ARCHITECTURE.md"
+      - "**/API.md"
+    defaultDirectories:
+      - "docs"
+      - ".cursor/rules"
+
+  Infrastructure:
+    name: Infrastructure
+    description: Docker, Kubernetes, deployment configs, CI/CD
+    promptHints: |
+      You are an infrastructure engineer specializing in deployment and DevOps.
+      Focus on:
+      - Docker and Docker Compose
+      - Kubernetes manifests
+      - CI/CD pipelines
+      - Deployment configurations
+    defaultFilePatterns:
+      - "**/Dockerfile"
+      - "**/docker-compose*.yml"
+      - "**/k8s/**"
+      - "**/.github/workflows/**"
+    defaultDirectories:
+      - "docker"
+      - "k8s"
+      - "helm"
+
+  Contracts:
+    name: Contracts
+    description: API contracts, DTOs, shared interfaces, message definitions
+    promptHints: |
+      You are a contracts specialist focusing on API design and message contracts.
+      Focus on:
+      - API contracts and DTOs
+      - Shared interfaces
+      - Message definitions
+      - Contract versioning
+    defaultFilePatterns:
+      - "**/Contracts/**"
+      - "**/*Contract*.cs"
+      - "**/*Dto*.cs"
+    defaultDirectories:
+      - "Contracts"
+      - "Shared"
+
+  Events:
+    name: Events
+    description: Event definitions, handlers, saga orchestration, event sourcing
+    promptHints: |
+      You are an event specialist focusing on event-driven architecture.
+      Focus on:
+      - Event definitions
+      - Event handlers
+      - Saga orchestration
+      - Event sourcing patterns
+    defaultFilePatterns:
+      - "**/Events/**"
+      - "**/*Event*.cs"
+      - "**/*Saga*.cs"
+    defaultDirectories:
+      - "Events"
+      - "Sagas"
+
+  Database:
+    name: Database
+    description: Database migrations, schema changes, persistence patterns
+    promptHints: |
+      You are a database specialist focusing on data persistence.
+      Focus on:
+      - Database migrations
+      - Schema design
+      - Persistence patterns
+      - Query optimization
+    defaultFilePatterns:
+      - "**/Migrations/**"
+      - "**/Persistence/**"
+      - "**/*DbContext*.cs"
+    defaultDirectories:
+      - "Migrations"
+      - "Persistence"
+
+  Security:
+    name: Security
+    description: Authentication, authorization, compliance, security best practices
+    promptHints: |
+      You are a security specialist focusing on application security.
+      Focus on:
+      - Authentication and authorization
+      - Security best practices
+      - Compliance requirements
+      - Vulnerability prevention
+    defaultFilePatterns:
+      - "**/Auth/**"
+      - "**/Security/**"
+      - "**/*Policy*.cs"
+    defaultDirectories:
+      - "Auth"
+      - "Security"
+
+  Integration:
+    name: Integration
+    description: Service integration, message brokers, external APIs, third-party services
+    promptHints: |
+      You are an integration specialist focusing on service connectivity.
+      Focus on:
+      - Service integration
+      - Message brokers (RabbitMQ, Kafka)
+      - External API integration
+      - Third-party service integration
+    defaultFilePatterns:
+      - "**/Integration/**"
+      - "**/MessageBrokers/**"
+      - "**/*Client*.cs"
+    defaultDirectories:
+      - "Integration"
+      - "External"
+
+flows:
+  feature_implementation:
+    name: feature_implementation
+    description: Complete feature implementation workflow
+    steps:
+      - name: ArchitecturePlan
+        agent: Architect
+        description: |
+          Analyze requirements and propose architecture & changes.
+          Consider DDD patterns, service boundaries, and integration points.
+        dependsOn: []
+
+      - name: BackendImplementation
+        agent: Backend
+        description: |
+          Implement backend logic & contracts.
+          Create domain entities, handlers, and follow CQRS patterns.
+        dependsOn:
+          - ArchitecturePlan
+
+      - name: Contracts
+        agent: Contracts
+        description: |
+          Define API contracts, DTOs, and shared interfaces.
+          Ensure contracts are versioned and documented.
+        dependsOn:
+          - ArchitecturePlan
+
+      - name: FrontendImplementation
+        agent: Frontend
+        description: |
+          Implement UI and integration.
+          Create Blazor components and integrate with backend APIs.
+        dependsOn:
+          - BackendImplementation
+          - Contracts
+
+      - name: Events
+        agent: Events
+        description: |
+          Define events and event handlers.
+          Implement saga orchestration if needed.
+        dependsOn:
+          - BackendImplementation
+
+      - name: Database
+        agent: Database
+        description: |
+          Create database migrations and update schemas.
+          Ensure persistence patterns are followed.
+        dependsOn:
+          - BackendImplementation
+
+      - name: Tests
+        agent: Tests
+        description: |
+          Add/update tests.
+          Ensure comprehensive test coverage for all components.
+        dependsOn:
+          - BackendImplementation
+          - FrontendImplementation
+
+      - name: Documentation
+        agent: TechnicalWriter
+        description: |
+          Create comprehensive documentation.
+          Update architecture docs, API docs, and guides.
+        dependsOn:
+          - BackendImplementation
+          - FrontendImplementation
+          - Events
+
+      - name: Infrastructure
+        agent: Infrastructure
+        description: |
+          Update deployment configurations.
+          Ensure Docker, Kubernetes, and CI/CD are configured.
+        dependsOn:
+          - BackendImplementation
+          - FrontendImplementation
+
+  fwid-compliance:
+    name: FutureWampumId TDD Compliance & Mamey.Blockchain Integration
+    description: |
+      Comprehensive workflow to ensure all FutureWampumId microservices comply with TDD specifications 
+      and integrate with Mamey.Blockchain libraries for MameyNode connectivity.
+      
+      Services Location: /Volumes/Barracuda/mamey-io/code-final/FutureWampum/FutureWampumId/
+      TDD Document: .designs/TDD/FutureWampum/FutureWampumID TDD.md
+      Plans Directory: .cursor/plans/FutureWampum/FutureWampumId/
+    steps:
+      - name: analyze_tdd_and_plans
+        agent: Architect
+        description: |
+          Read and analyze the TDD document at .designs/TDD/FutureWampum/FutureWampumID TDD.md
+          and all plan files from .cursor/plans/FutureWampum/FutureWampumId/.
+          Extract aggregates, domain entities, commands, queries, events, and integration points.
+          Identify Mamey.Blockchain requirements for MameyNode connectivity.
+        dependsOn: []
+
+      - name: inventory_existing_services
+        agent: Architect
+        description: |
+          List all existing microservices in /Volumes/Barracuda/mamey-io/code-final/FutureWampum/FutureWampumId/:
+          - Mamey.FWID.Identities
+          - Mamey.FWID.DIDs
+          - Mamey.FWID.ZKPs
+          - Mamey.FWID.AccessControls
+          - Mamey.FWID.Credentials
+          - Mamey.FWID.ApiGateway
+          Map service names (pluralized vs singular) to TDD/Plan names.
+        dependsOn: []
+
+      - name: check_blockchain_references
+        agent: Integration
+        description: |
+          Search for Mamey.Blockchain.* references in all FutureWampumId microservices.
+          Identify which services already have blockchain integration.
+          List available Mamey.Blockchain.* libraries in Mamey/src/.
+        dependsOn: []
+
+      - name: check_identities_compliance
+        agent: Backend
+        description: |
+          For Mamey.FWID.Identities service:
+          1. Verify domain layer matches TDD Lines 354-477 and Identity.plan.md
+          2. Check all commands from TDD Section 3 (Identity-related)
+          3. Check all queries from TDD Section 4 (Identity-related)
+          4. Check all events from TDD Section 5 (Identity-related)
+          5. Verify API endpoints match TDD Lines 940-962
+          6. Check Mamey.Blockchain.* integration for MameyNode connectivity
+          7. Verify all layers: Domain, Application, Infrastructure, Contracts, API
+        dependsOn:
+          - analyze_tdd_and_plans
+          - inventory_existing_services
+
+      - name: check_dids_compliance
+        agent: Backend
+        description: |
+          For Mamey.FWID.DIDs service:
+          1. Verify domain layer matches TDD Lines 2218-2247 and DID.plan.md
+          2. Check all commands, queries, and events from TDD
+          3. Verify API endpoints match TDD Lines 2310-2314
+          4. Check Mamey.Blockchain.* integration for DID anchoring
+          5. Verify all layers: Domain, Application, Infrastructure, Contracts, API
+        dependsOn:
+          - analyze_tdd_and_plans
+          - inventory_existing_services
+
+      - name: check_zkps_compliance
+        agent: Backend
+        description: |
+          For Mamey.FWID.ZKPs service:
+          1. Verify domain layer matches TDD Lines 2941-2998 and ZKP.plan.md
+          2. Check all commands, queries, and events from TDD
+          3. Verify API endpoints match TDD Lines 3051-3054
+          4. Check Mamey.Blockchain.* integration for proof verification
+          5. Verify all layers: Domain, Application, Infrastructure, Contracts, API
+        dependsOn:
+          - analyze_tdd_and_plans
+          - inventory_existing_services
+
+      - name: check_accesscontrols_compliance
+        agent: Backend
+        description: |
+          For Mamey.FWID.AccessControls service:
+          1. Verify domain layer matches TDD Lines 3612-3645 and AccessControl.plan.md
+          2. Check all commands, queries, and events from TDD
+          3. Verify API endpoints match TDD Lines 3721-3725
+          4. Check Mamey.Blockchain.* integration for zone policy enforcement
+          5. Verify all layers: Domain, Application, Infrastructure, Contracts, API
+        dependsOn:
+          - analyze_tdd_and_plans
+          - inventory_existing_services
+
+      - name: check_credentials_compliance
+        agent: Backend
+        description: |
+          For Mamey.FWID.Credentials service:
+          1. Verify domain layer matches TDD Lines 4230-4282 and Credential.plan.md
+          2. Check all commands, queries, and events from TDD
+          3. Verify API endpoints match TDD Lines 4353-4358
+          4. Check Mamey.Blockchain.* integration for credential anchoring
+          5. Verify all layers: Domain, Application, Infrastructure, Contracts, API
+        dependsOn:
+          - analyze_tdd_and_plans
+          - inventory_existing_services
+
+      - name: check_apigateway_compliance
+        agent: Backend
+        description: |
+          For Mamey.FWID.ApiGateway service:
+          1. Verify matches API.plan.md requirements
+          2. Check routing to all microservices
+          3. Check authentication/authorization
+          4. Check Mamey.Blockchain.* integration for API security
+          5. Verify all endpoints are properly exposed
+        dependsOn:
+          - analyze_tdd_and_plans
+          - inventory_existing_services
+
+      - name: analyze_blockchain_integration
+        agent: Integration
+        description: |
+          Based on TDD and service requirements, identify which Mamey.Blockchain.* libraries are needed:
+          - Mamey.Blockchain.Node (for MameyNode connectivity)
+          - Mamey.Blockchain.Crypto (for cryptographic operations)
+          - Mamey.Blockchain.LedgerIntegration (for ledger operations)
+          - Others as needed per service.
+          Analyze MameyNode/ structure to identify gRPC endpoints and integration patterns.
+        dependsOn:
+          - check_identities_compliance
+          - check_dids_compliance
+          - check_zkps_compliance
+          - check_accesscontrols_compliance
+          - check_credentials_compliance
+          - check_apigateway_compliance
+
+      - name: generate_compliance_report
+        agent: Architect
+        description: |
+          Compile all compliance findings into a comprehensive report:
+          - Services that are compliant
+          - Services with gaps
+          - Missing layers per service
+          - Missing Mamey.Blockchain.* integrations
+          - Naming discrepancies (pluralized vs singular)
+          - Missing TDD requirements
+          Generate a prioritized remediation plan with specific file paths and line references from TDD.
+        dependsOn:
+          - analyze_blockchain_integration
+

@@ -1,0 +1,85 @@
+@page "/gov/tenant-invites"
+@attribute [Authorize(Roles = "Admin")]
+@using Mamey.Portal.Tenant.Application.Models
+@using Mamey.Portal.Web.ViewModels.Gov
+@inject TenantInvitesViewModel Vm
+
+<PageTitle>Tenant Invites</PageTitle>
+
+<MudText Typo="Typo.h5" Class="mb-2">Tenant Invites</MudText>
+<MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
+    Create or revoke email-based invites that map users to a tenant on first OIDC login.
+</MudText>
+
+@if (!string.IsNullOrWhiteSpace(Vm.Error))
+{
+    <MudAlert Severity="Severity.Error" Dense="true" Class="mb-4">@Vm.Error</MudAlert>
+}
+
+<MudPaper Class="pa-4 mb-4" Elevation="1">
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudText Typo="Typo.subtitle1">Create / Update</MudText>
+            <MudTextField Label="Issuer" Variant="Variant.Outlined" FullWidth="true" @bind-Value="Vm.Issuer" />
+            <MudTextField Label="Invite Email" Variant="Variant.Outlined" FullWidth="true" @bind-Value="Vm.Email" />
+            <MudSelect T="string" Label="Tenant" Variant="Variant.Outlined" FullWidth="true" @bind-Value="Vm.TenantId">
+                @foreach (var t in Vm.TenantsList)
+                {
+                    <MudSelectItem T="string" Value="@t.TenantId">@t.TenantId (@t.DisplayName)</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudStack Row="true" Spacing="2" Class="mt-3">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@Vm.Busy" OnClick="@(() => Vm.Save.Execute().Subscribe())">Save Invite</MudButton>
+                <MudButton Variant="Variant.Text" Disabled="@Vm.Busy" OnClick="@(() => Vm.Reload.Execute().Subscribe())">Reload</MudButton>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudText Typo="Typo.subtitle1">Notes</MudText>
+            <MudList T="string" Dense="true">
+                <MudListItem T="string">Issuer defaults to the configured OIDC Authority.</MudListItem>
+                <MudListItem T="string">Email is normalized to lowercase for matching.</MudListItem>
+                <MudListItem T="string">Used invites are auto-marked when a user logs in.</MudListItem>
+            </MudList>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+<MudPaper Class="pa-4" Elevation="1">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-2">
+        <MudText Typo="Typo.subtitle1">Invites for tenant</MudText>
+        <MudTextField Placeholder="Filter…" Variant="Variant.Outlined" Margin="Margin.Dense" @bind-Value="Vm.Filter" />
+    </MudStack>
+
+    <MudTable Items="Vm.FilteredInvites" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Email</MudTh>
+            <MudTh>Tenant</MudTh>
+            <MudTh>Issuer</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Created</MudTh>
+            <MudTh>Used</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+            <MudTd DataLabel="Tenant">@context.TenantId</MudTd>
+            <MudTd DataLabel="Issuer">@context.Issuer</MudTd>
+            <MudTd DataLabel="Status">@((context.UsedAt is null) ? "Unused" : "Used")</MudTd>
+            <MudTd DataLabel="Created">@context.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</MudTd>
+            <MudTd DataLabel="Used">@((context.UsedAt?.ToLocalTime().ToString("yyyy-MM-dd")) ?? "-")</MudTd>
+            <MudTd>
+                <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="@(() => Vm.LoadIntoForm(context))">Edit</MudButton>
+                <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Error" OnClick="@(() => Vm.Delete.Execute(context).Subscribe())">Revoke</MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        Vm.Reload.Execute().Subscribe();
+        return Task.CompletedTask;
+    }
+}

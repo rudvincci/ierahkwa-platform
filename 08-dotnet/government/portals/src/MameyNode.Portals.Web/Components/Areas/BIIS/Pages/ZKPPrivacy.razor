@@ -1,0 +1,89 @@
+@page "/biis/zkp-privacy"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IBIISClient BIISClient
+@inject ILogger<ZKPPrivacy> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="ZKP Privacy" Icon="fas fa-lock" Subtitle="Zero-knowledge proof privacy operations">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Proofs" Value="@_proofs.Count.ToString()" Icon="fas fa-key" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Verified" Value="@_verifiedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Verification Rate" Value="@_verificationRate.ToString("P1")" Icon="fas fa-percentage" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="ZKP Proofs" Class="mt-4">
+        <MudTable T="ZKPPrivacyInfo" Items="@_proofs" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Proof ID</MudTh>
+                <MudTh>Transaction ID</MudTh>
+                <MudTh>Proof Type</MudTh>
+                <MudTh>Verified</MudTh>
+                <MudTh>Public Input</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.ProofId</MudTd>
+                <MudTd>@context.TransactionId</MudTd>
+                <MudTd>@context.ProofType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.IsVerified ? Color.Success : Color.Warning)">
+                        @(context.IsVerified ? "Verified" : "Pending")
+                    </MudChip>
+                </MudTd>
+                <MudTd><MudText Typo="Typo.caption">@context.PublicInput.Substring(0, Math.Min(20, context.PublicInput.Length))...</MudText></MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<ZKPPrivacyInfo> _proofs = new();
+    private int _verifiedCount;
+    private decimal _verificationRate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _proofs = await BIISClient.GetZKPProofsAsync();
+            _verifiedCount = _proofs.Count(p => p.IsVerified);
+            _verificationRate = _proofs.Any() ? (decimal)_verifiedCount / _proofs.Count : 0;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading ZKP proofs");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

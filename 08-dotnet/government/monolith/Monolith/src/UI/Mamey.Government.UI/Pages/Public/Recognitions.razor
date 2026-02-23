@@ -1,0 +1,67 @@
+@page "/recognitions"
+
+<PageTitle>Recognitions - Mamey Government Portal</PageTitle>
+
+<MudPaper Elevation="0" Class="pa-6">
+    <MudStack Spacing="4">
+        <MudText Typo="Typo.h4" Color="Color.Primary">Recognitions & Partnerships</MudText>
+        
+        <MudText Typo="Typo.body1">
+            Our nation has established diplomatic relations and received recognition from various international
+            organizations and sovereign entities, strengthening our position in the global community.
+        </MudText>
+
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="Typo.h5" Color="Color.Primary">International Recognition</MudText>
+        
+        <MudGrid>
+            @foreach (var recognition in _recognitions)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="2">
+                        <MudCardContent>
+                            <MudStack Spacing="2">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Verified" Color="Color.Success" />
+                                    <MudText Typo="Typo.h6">@recognition.Entity</MudText>
+                                </MudStack>
+                                <MudText Typo="Typo.body2">@recognition.Description</MudText>
+                                <MudChip T="string" Color="Color.Primary" Size="Size.Small" Variant="Variant.Outlined">@recognition.Year</MudChip>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="Typo.h5" Color="Color.Primary">Strategic Partnerships</MudText>
+        <MudText Typo="Typo.body1">
+            We maintain active partnerships with various organizations to promote economic development,
+            cultural exchange, and technological advancement.
+        </MudText>
+
+        <MudList T="string" Dense="true">
+            <MudListItem Icon="@Icons.Material.Filled.Handshake">Technology & Innovation Partners</MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.School">Educational Institutions</MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.AccountBalance">Financial Institutions</MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.VolunteerActivism">Non-Governmental Organizations</MudListItem>
+        </MudList>
+    </MudStack>
+</MudPaper>
+
+@code {
+    private record Recognition(string Entity, string Description, string Year);
+
+    private readonly List<Recognition> _recognitions = new()
+    {
+        new("United Nations Observer", "Granted observer status at the United Nations", "2023"),
+        new("Regional Alliance", "Full membership in regional cooperation alliance", "2022"),
+        new("Trade Agreement", "Free trade agreement with partner nations", "2021"),
+        new("Cultural Heritage", "UNESCO cultural heritage recognition", "2020"),
+        new("Environmental Award", "International environmental protection award", "2023"),
+        new("Digital Government", "Recognition for digital government excellence", "2024")
+    };
+}

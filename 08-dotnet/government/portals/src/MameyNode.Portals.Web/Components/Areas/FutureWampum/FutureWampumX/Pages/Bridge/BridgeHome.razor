@@ -1,0 +1,93 @@
+@page "/bridge"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<BridgeHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Bridge" Icon="fas fa-bridge" Subtitle="Cross-chain bridge services">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Transactions" Value="@_transactions.Count.ToString()" Icon="fas fa-exchange-alt" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Account Mappings" Value="@_accountMappings.Count.ToString()" Icon="fas fa-users" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Bridged Identities" Value="@_bridgedIdentities.Count.ToString()" Icon="fas fa-id-card" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Bridge Transactions" Elevation="2">
+                <MudText Typo="Typo.body2">Cross-chain bridge transactions</MudText>
+                <MudButton Href="/bridge/transactions" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Transactions
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Account Mappings" Elevation="2">
+                <MudText Typo="Typo.body2">Account mapping management</MudText>
+                <MudButton Href="/bridge/account-mappings" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Mappings
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Bridged Identities" Elevation="2">
+                <MudText Typo="Typo.body2">Bridged identity management</MudText>
+                <MudButton Href="/bridge/bridged-identities" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Identities
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private List<BridgedTransactionInfo> _transactions = new();
+    private List<AccountMappingInfo> _accountMappings = new();
+    private List<BridgedIdentityInfo> _bridgedIdentities = new();
+    private decimal _totalVolume;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _transactions = await FutureWampumXClient.GetBridgedTransactionsAsync();
+            _accountMappings = await FutureWampumXClient.GetAccountMappingsAsync();
+            _bridgedIdentities = await FutureWampumXClient.GetBridgedIdentitiesAsync();
+            _totalVolume = _transactions.Sum(t => decimal.Parse(t.Amount ?? "0"));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading bridge data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

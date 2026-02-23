@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Ministries.Api.Protos";
+
+package Pupitre.Ministries;
+
+// gRPC service for MinistryData operations
+service MinistryDataService {
+    // Get a single MinistryData by ID
+    rpc GetMinistryData (GetMinistryDataRequest) returns (MinistryDataResponse) {};
+    
+    // List all MinistryDatas with pagination
+    rpc ListMinistryDatas (ListMinistryDatasRequest) returns (ListMinistryDatasResponse) {};
+    
+    // Stream MinistryData updates
+    rpc StreamMinistryDataUpdates (StreamMinistryDataUpdatesRequest) returns (stream MinistryDataResponse) {};
+}
+
+message GetMinistryDataRequest {
+    string id = 1;
+}
+
+message ListMinistryDatasRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListMinistryDatasResponse {
+    repeated MinistryDataResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message MinistryDataResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamMinistryDataUpdatesRequest {
+    string filter = 1;
+}

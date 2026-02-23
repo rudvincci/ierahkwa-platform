@@ -1,0 +1,72 @@
+@page "/admin/user-roles"
+@using Mamey.ApplicationName.BlazorWasm.Services.Roles
+@using Mamey.ApplicationName.BlazorWasm.ViewModels.Roles
+@using Mamey.ApplicationName.BlazorWasm.Models.Roles
+@inject RoleService RoleService
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="m-auto p-6">
+    <!-- Create New Role Section -->
+    <MudPaper Class="p-4 mb-4" Elevation="3">
+        <MudText Typo="Typo.h4">Create New Role</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowCreateRoleDialog">Create Role</MudButton>
+    </MudPaper>
+
+    <!-- Role List Section -->
+    <MudPaper Class="p-4 mb-4" Elevation="3">
+        <MudText Typo="Typo.h5">Roles & Permissions</MudText>
+        <RoleList Roles="ViewModel.Roles" />
+    </MudPaper>
+
+    <!-- Assign Roles to Users Section -->
+    <MudPaper Class="p-4 mb-4" Elevation="3">
+        <MudText Typo="Typo.h5">Assign Roles to Users</MudText>
+        @if (ViewModel.Users.Any() && ViewModel.Roles.Any())
+        {
+            <AssignRoleDialog Users="ViewModel.Users" Roles="ViewModel.Roles" 
+                              OnRoleAssigned="(tuple) => ViewModel.AssignRoleToUser(tuple.User, tuple.Role)" />
+        }
+        else
+        {
+            <MudText Typo="Typo.body1">No users or roles available.</MudText>
+        }
+    </MudPaper>
+
+    <!-- User Activity Log Section -->
+    <MudPaper Class="p-4 mt-4">
+        <MudText Typo="Typo.h5">User Activity Log</MudText>
+        @if (ViewModel.UserActivities.Any())
+        {
+            <UserActivityLog Activities="ViewModel.UserActivities" />
+        }
+        else
+        {
+            <MudText Typo="Typo.body1">No activity logs available.</MudText>
+        }
+    </MudPaper>
+</MudContainer>
+
+<MudDialog @bind-IsVisible="IsCreateRoleDialogVisible" MaxWidth="MaxWidth.Small">
+    <CreateRoleDialog OnRoleCreated="HandleRoleCreated" />
+</MudDialog>
+
+@code {
+    private RoleViewModel ViewModel;
+    private bool IsCreateRoleDialogVisible;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new RoleViewModel(RoleService);
+        await Task.CompletedTask;
+    }
+
+    private void ShowCreateRoleDialog()
+    {
+        IsCreateRoleDialogVisible = true;
+    }
+
+    private void HandleRoleCreated(Role newRole)
+    {
+        IsCreateRoleDialogVisible = false; // Close the dialog
+        ViewModel.AddRole(newRole); // Add the new role to the ViewModel
+    }
+}

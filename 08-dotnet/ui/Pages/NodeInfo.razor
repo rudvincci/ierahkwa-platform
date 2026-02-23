@@ -1,0 +1,128 @@
+@page "/nodeinfo"
+@inject IMameyNodeClient NodeClient
+@inject IMetadataService MetadataService
+@inject ILogger<NodeInfo> Logger
+
+<PageTitle>Node Info - MameyNode UI</PageTitle>
+
+<h1>Node Information</h1>
+
+<ErrorDisplay HasError="@hasError" ErrorMessage="@errorMessage" ErrorDetails="@errorDetails" OnDismiss="ClearError" />
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Node Details</h5>
+                <button class="btn btn-primary" @onclick="LoadNodeInfo" disabled="@isLoading">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <text>Loading...</text>
+                    }
+                    else
+                    {
+                        <text>Refresh</text>
+                    }
+                </button>
+            </div>
+            <div class="card-body">
+                @if (nodeInfo == null && !isLoading)
+                {
+                    <p class="text-muted">Click "Refresh" to load node information.</p>
+                }
+                else if (isLoading)
+                {
+                    <p class="text-muted">Loading node information...</p>
+                }
+                else if (nodeInfo != null)
+                {
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3">Version:</dt>
+                        <dd class="col-sm-9"><code>@nodeInfo.Version</code></dd>
+
+                        <dt class="col-sm-3">Node ID:</dt>
+                        <dd class="col-sm-9"><code>@nodeInfo.NodeId</code></dd>
+
+                        <dt class="col-sm-3">Block Count:</dt>
+                        <dd class="col-sm-9">@nodeInfo.BlockCount.ToString("N0")</dd>
+
+                        <dt class="col-sm-3">Account Count:</dt>
+                        <dd class="col-sm-9">@nodeInfo.AccountCount.ToString("N0")</dd>
+
+                        <dt class="col-sm-3">Peer Count:</dt>
+                        <dd class="col-sm-9">@nodeInfo.PeerCount.ToString("N0")</dd>
+
+                        <dt class="col-sm-3">Confirmation Height:</dt>
+                        <dd class="col-sm-9">@nodeInfo.ConfirmationHeight.ToString("N0")</dd>
+                    </dl>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<MetadataDisplay />
+
+@code {
+    private Mamey.Node.GetNodeInfoResponse? nodeInfo;
+    private bool isLoading = false;
+    private bool hasError = false;
+    private string? errorMessage;
+    private string? errorDetails;
+    private string? correlationId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNodeInfo();
+    }
+
+    private async Task LoadNodeInfo()
+    {
+        isLoading = true;
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+        StateHasChanged();
+
+        try
+        {
+            correlationId = MetadataService.GetCorrelationId();
+            Logger.LogInformation("Loading node info with correlation ID: {CorrelationId}", correlationId);
+
+            var credentialProvider = new Mamey.Blockchain.Node.CredentialProvider
+            {
+                InstitutionId = MetadataService.GetInstitutionId(),
+                CredentialChain = MetadataService.GetCredentialChain(),
+                CorrelationIdGenerator = () => correlationId
+            };
+
+            nodeInfo = await NodeClient.GetNodeInfoAsync(
+                request: null,
+                credentialProvider: credentialProvider,
+                correlationId: correlationId);
+
+            Logger.LogInformation("Node info loaded successfully: Version={Version}, NodeId={NodeId}", 
+                nodeInfo.Version, nodeInfo.NodeId);
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = "Failed to load node information.";
+            errorDetails = $"{ex.GetType().Name}: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            Logger.LogError(ex, "Failed to load node info with correlation ID: {CorrelationId}", correlationId);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearError()
+    {
+        hasError = false;
+        errorMessage = null;
+        errorDetails = null;
+    }
+}

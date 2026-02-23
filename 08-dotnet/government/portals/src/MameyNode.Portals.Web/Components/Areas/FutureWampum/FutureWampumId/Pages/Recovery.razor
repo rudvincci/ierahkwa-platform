@@ -1,0 +1,94 @@
+@page "/futurewampum/identity/recovery"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumIdClient FutureWampumIdClient
+@inject ILogger<Recovery> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Recovery" Icon="fas fa-key" Subtitle="Identity recovery management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Recoveries" Value="@_recoveries.Count.ToString()" Icon="fas fa-key" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Completed" Value="@_completedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="In Progress" Value="@_inProgressCount.ToString()" Icon="fas fa-spinner" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Failed" Value="@_failedCount.ToString()" Icon="fas fa-times-circle" Color="#EF4444" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Recoveries" Class="mt-4">
+        <MudTable T="RecoveryInfo" Items="@_recoveries" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Recovery ID</MudTh>
+                <MudTh>Identity ID</MudTh>
+                <MudTh>Recovery Type</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Requested</MudTh>
+                <MudTh>Completed</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.RecoveryId</MudTd>
+                <MudTd>@context.IdentityId</MudTd>
+                <MudTd>@context.RecoveryType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Completed" ? Color.Success : context.Status == "InProgress" ? Color.Warning : context.Status == "Failed" ? Color.Error : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.RequestedAt.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@(context.CompletedAt?.ToString("yyyy-MM-dd") ?? "-")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<RecoveryInfo> _recoveries = new();
+    private int _completedCount;
+    private int _inProgressCount;
+    private int _failedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _recoveries = await FutureWampumIdClient.GetRecoveriesAsync();
+            _completedCount = _recoveries.Count(r => r.Status == "Completed");
+            _inProgressCount = _recoveries.Count(r => r.Status == "InProgress");
+            _failedCount = _recoveries.Count(r => r.Status == "Failed");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading recoveries");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

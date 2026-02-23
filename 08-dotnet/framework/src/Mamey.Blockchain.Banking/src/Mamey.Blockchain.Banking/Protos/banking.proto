@@ -1,0 +1,2641 @@
+syntax = "proto3";
+
+package mamey.banking;
+
+// Banking service for MameyNode blockchain
+service BankingService {
+    // Send a transaction
+    rpc SendTransaction(SendTransactionRequest) returns (SendTransactionResponse);
+    
+    // Get account balance
+    rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
+    
+    // Get account information
+    rpc GetAccountInfo(GetAccountInfoRequest) returns (GetAccountInfoResponse);
+    
+    // Get transaction status
+    rpc GetTransactionStatus(GetTransactionStatusRequest) returns (GetTransactionStatusResponse);
+    
+    // Create a new banking account
+    rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse);
+    
+    // List transactions for an account
+    rpc ListTransactions(ListTransactionsRequest) returns (ListTransactionsResponse);
+
+    // --- Account Management ---
+    rpc UpdateAccount(UpdateAccountRequest) returns (UpdateAccountResponse);
+    rpc CloseAccount(CloseAccountRequest) returns (CloseAccountResponse);
+    rpc FreezeAccount(FreezeAccountRequest) returns (FreezeAccountResponse);
+    rpc UnfreezeAccount(UnfreezeAccountRequest) returns (UnfreezeAccountResponse);
+    rpc GetAccountLimits(GetAccountLimitsRequest) returns (GetAccountLimitsResponse);
+    rpc SetAccountLimits(SetAccountLimitsRequest) returns (SetAccountLimitsResponse);
+    rpc GetAccountHistoryExtended(GetAccountHistoryExtendedRequest) returns (GetAccountHistoryExtendedResponse);
+
+    // --- Settlement Operations ---
+    rpc InitiateSettlement(InitiateSettlementRequest) returns (InitiateSettlementResponse);
+    rpc ProcessSettlement(ProcessSettlementRequest) returns (ProcessSettlementResponse);
+    rpc GetSettlementStatus(GetSettlementStatusRequest) returns (GetSettlementStatusResponse);
+    rpc ListSettlements(ListSettlementsRequest) returns (ListSettlementsResponse);
+
+    // --- Custody Operations ---
+    rpc CreateCustodyWallet(CreateCustodyWalletRequest) returns (CreateCustodyWalletResponse);
+    rpc DepositToCustody(DepositToCustodyRequest) returns (DepositToCustodyResponse);
+    rpc WithdrawFromCustody(WithdrawFromCustodyRequest) returns (WithdrawFromCustodyResponse);
+    rpc GetCustodyBalance(GetCustodyBalanceRequest) returns (GetCustodyBalanceResponse);
+
+    // --- Treasury Operations ---
+    rpc IssueCurrency(IssueCurrencyRequest) returns (IssueCurrencyResponse);
+    rpc MintCurrency(MintCurrencyRequest) returns (MintCurrencyResponse);
+    rpc BurnCurrency(BurnCurrencyRequest) returns (BurnCurrencyResponse);
+    rpc GetTreasuryBalance(GetTreasuryBalanceRequest) returns (GetTreasuryBalanceResponse);
+
+    // --- Advanced Transactions ---
+    rpc ScheduleTransaction(ScheduleTransactionRequest) returns (ScheduleTransactionResponse);
+    rpc CancelScheduledTransaction(CancelScheduledTransactionRequest) returns (CancelScheduledTransactionResponse);
+    rpc CreateEscrow(CreateEscrowRequest) returns (CreateEscrowResponse);
+    rpc ReleaseEscrow(ReleaseEscrowRequest) returns (ReleaseEscrowResponse);
+    rpc RefundEscrow(RefundEscrowRequest) returns (RefundEscrowResponse);
+
+    // --- Privacy Operations ---
+    rpc GetPrivateBalance(GetPrivateBalanceRequest) returns (GetPrivateBalanceResponse);
+    rpc CheckPrivateBalance(CheckPrivateBalanceRequest) returns (CheckPrivateBalanceResponse);
+    rpc CreatePrivateNotes(CreatePrivateNotesRequest) returns (CreatePrivateNotesResponse);
+    rpc ExecutePrivateTransfer(ExecutePrivateTransferRequest) returns (ExecutePrivateTransferResponse);
+
+    // --- Payment Requests ---
+    rpc CreatePaymentRequest(CreatePaymentRequestRequest) returns (CreatePaymentRequestResponse);
+    rpc ApprovePaymentRequest(ApprovePaymentRequestRequest) returns (ApprovePaymentRequestResponse);
+    rpc RejectPaymentRequest(RejectPaymentRequestRequest) returns (RejectPaymentRequestResponse);
+    rpc CompletePaymentRequest(CompletePaymentRequestRequest) returns (CompletePaymentRequestResponse);
+    rpc CancelPaymentRequest(CancelPaymentRequestRequest) returns (CancelPaymentRequestResponse);
+    rpc GetPaymentRequest(GetPaymentRequestRequest) returns (GetPaymentRequestResponse);
+    rpc ListPaymentRequests(ListPaymentRequestsRequest) returns (ListPaymentRequestsResponse);
+
+    // --- ODL Operations ---
+    rpc ValidateOdlPayment(ValidateOdlPaymentRequest) returns (ValidateOdlPaymentResponse);
+    rpc GetOdlQuote(GetOdlQuoteRequest) returns (GetOdlQuoteResponse);
+    rpc ExecuteOdlPayment(ExecuteOdlPaymentRequest) returns (ExecuteOdlPaymentResponse);
+    rpc GetOdlPayment(GetOdlPaymentRequest) returns (GetOdlPaymentResponse);
+    rpc ListOdlPayments(ListOdlPaymentsRequest) returns (ListOdlPaymentsResponse);
+    rpc GetOdlLiquidityStatus(GetOdlLiquidityStatusRequest) returns (GetOdlLiquidityStatusResponse);
+    rpc GetOdlStats(GetOdlStatsRequest) returns (GetOdlStatsResponse);
+    rpc CancelOdlPayment(CancelOdlPaymentRequest) returns (CancelOdlPaymentResponse);
+
+    // --- Pathfinding ---
+    rpc FindPaymentPath(FindPaymentPathRequest) returns (FindPaymentPathResponse);
+    rpc ExecutePaymentPath(ExecutePaymentPathRequest) returns (ExecutePaymentPathResponse);
+    rpc GetPathExecutionStatus(GetPathExecutionStatusRequest) returns (GetPathExecutionStatusResponse);
+
+    // --- Payment Splitting ---
+    rpc CreateSplitByAmount(CreateSplitByAmountRequest) returns (CreateSplitByAmountResponse);
+    rpc CreateSplitByPercentage(CreateSplitByPercentageRequest) returns (CreateSplitByPercentageResponse);
+    rpc CreateEqualSplit(CreateEqualSplitRequest) returns (CreateEqualSplitResponse);
+    rpc CreateSplitFromTemplate(CreateSplitFromTemplateRequest) returns (CreateSplitFromTemplateResponse);
+    rpc CreateRecurringSplit(CreateRecurringSplitRequest) returns (CreateRecurringSplitResponse);
+    rpc MarkRecipientCompleted(MarkRecipientCompletedRequest) returns (MarkRecipientCompletedResponse);
+    rpc GetSplitPayment(GetSplitPaymentRequest) returns (GetSplitPaymentResponse);
+    rpc ListSplitPayments(ListSplitPaymentsRequest) returns (ListSplitPaymentsResponse);
+    rpc GetDueRecurringSplits(GetDueRecurringSplitsRequest) returns (GetDueRecurringSplitsResponse);
+    rpc ExecuteRecurringSplit(ExecuteRecurringSplitRequest) returns (ExecuteRecurringSplitResponse);
+    rpc CreateSplitTemplate(CreateSplitTemplateRequest) returns (CreateSplitTemplateResponse);
+    rpc GetSplitTemplate(GetSplitTemplateRequest) returns (GetSplitTemplateResponse);
+
+    // --- Trade Finance ---
+    rpc IssueLetterOfCredit(IssueLetterOfCreditRequest) returns (IssueLetterOfCreditResponse);
+    rpc ProcessBillOfLading(ProcessBillOfLadingRequest) returns (ProcessBillOfLadingResponse);
+    rpc FinanceInvoice(FinanceInvoiceRequest) returns (FinanceInvoiceResponse);
+    rpc GetLetterOfCredit(GetLetterOfCreditRequest) returns (GetLetterOfCreditResponse);
+    rpc GetBillOfLading(GetBillOfLadingRequest) returns (GetBillOfLadingResponse);
+    rpc UpdateBolStatus(UpdateBolStatusRequest) returns (UpdateBolStatusResponse);
+    rpc IssueStandbyLetterOfCredit(IssueStandbyLetterOfCreditRequest) returns (IssueStandbyLetterOfCreditResponse);
+    rpc AmendStandbyLetterOfCredit(AmendStandbyLetterOfCreditRequest) returns (AmendStandbyLetterOfCreditResponse);
+    rpc ClaimStandbyLetterOfCredit(ClaimStandbyLetterOfCreditRequest) returns (ClaimStandbyLetterOfCreditResponse);
+    rpc PayStandbyLetterOfCreditClaim(PayStandbyLetterOfCreditClaimRequest) returns (PayStandbyLetterOfCreditClaimResponse);
+    rpc GetStandbyLetterOfCredit(GetStandbyLetterOfCreditRequest) returns (GetStandbyLetterOfCreditResponse);
+    rpc IssueBankGuarantee(IssueBankGuaranteeRequest) returns (IssueBankGuaranteeResponse);
+    rpc ActivateBankGuarantee(ActivateBankGuaranteeRequest) returns (ActivateBankGuaranteeResponse);
+    rpc ClaimBankGuarantee(ClaimBankGuaranteeRequest) returns (ClaimBankGuaranteeResponse);
+    rpc PayBankGuaranteeClaim(PayBankGuaranteeClaimRequest) returns (PayBankGuaranteeClaimResponse);
+    rpc ReleaseBankGuarantee(ReleaseBankGuaranteeRequest) returns (ReleaseBankGuaranteeResponse);
+    rpc GetBankGuarantee(GetBankGuaranteeRequest) returns (GetBankGuaranteeResponse);
+    rpc IssueDocumentaryLetterOfCredit(IssueDocumentaryLetterOfCreditRequest) returns (IssueDocumentaryLetterOfCreditResponse);
+    rpc PresentDocuments(PresentDocumentsRequest) returns (PresentDocumentsResponse);
+    rpc GetDocumentaryLetterOfCredit(GetDocumentaryLetterOfCreditRequest) returns (GetDocumentaryLetterOfCreditResponse);
+    rpc IssueBankDraft(IssueBankDraftRequest) returns (IssueBankDraftResponse);
+    rpc PresentBankDraft(PresentBankDraftRequest) returns (PresentBankDraftResponse);
+    rpc PayBankDraft(PayBankDraftRequest) returns (PayBankDraftResponse);
+    rpc GetBankDraft(GetBankDraftRequest) returns (GetBankDraftResponse);
+
+    // --- Wealth Management ---
+    rpc CreateTrust(CreateTrustRequest) returns (CreateTrustResponse);
+    rpc RebalancePortfolio(RebalancePortfolioRequest) returns (RebalancePortfolioResponse);
+    rpc OptimizeTaxes(OptimizeTaxesRequest) returns (OptimizeTaxesResponse);
+    rpc GetTrust(GetTrustRequest) returns (GetTrustResponse);
+    rpc GetRebalanceResult(GetRebalanceResultRequest) returns (GetRebalanceResultResponse);
+
+    // --- Securities Services ---
+    rpc ProvideCustody(ProvideCustodyRequest) returns (ProvideCustodyResponse);
+    rpc LendSecurities(LendSecuritiesRequest) returns (LendSecuritiesResponse);
+    rpc ProcessCorporateAction(ProcessCorporateActionRequest) returns (ProcessCorporateActionResponse);
+    rpc GetCustodyAccount(GetCustodyAccountRequest) returns (GetCustodyAccountResponse);
+    rpc GetLendingTransaction(GetLendingTransactionRequest) returns (GetLendingTransactionResponse);
+    rpc ListSecurityActions(ListSecurityActionsRequest) returns (ListSecurityActionsResponse);
+    rpc CreateDtcSettlement(CreateDtcSettlementRequest) returns (CreateDtcSettlementResponse);
+    rpc MatchDtcSettlement(MatchDtcSettlementRequest) returns (MatchDtcSettlementResponse);
+    rpc SettleDtcTransaction(SettleDtcTransactionRequest) returns (SettleDtcTransactionResponse);
+    rpc ProcessCnsNetting(ProcessCnsNettingRequest) returns (ProcessCnsNettingResponse);
+    rpc GetDtcSettlement(GetDtcSettlementRequest) returns (GetDtcSettlementResponse);
+    rpc InitiateAcatsTransfer(InitiateAcatsTransferRequest) returns (InitiateAcatsTransferResponse);
+    rpc ProcessAcatsTransfer(ProcessAcatsTransferRequest) returns (ProcessAcatsTransferResponse);
+    rpc CompleteAcatsTransfer(CompleteAcatsTransferRequest) returns (CompleteAcatsTransferResponse);
+    rpc RejectAcatsTransfer(RejectAcatsTransferRequest) returns (RejectAcatsTransferResponse);
+    rpc GetAcatsTransfer(GetAcatsTransferRequest) returns (GetAcatsTransferResponse);
+    rpc GetSecuritiesPosition(GetSecuritiesPositionRequest) returns (GetSecuritiesPositionResponse);
+    rpc UpdateSecuritiesPosition(UpdateSecuritiesPositionRequest) returns (UpdateSecuritiesPositionResponse);
+    rpc ProcessCnsNettingWithPositions(ProcessCnsNettingWithPositionsRequest) returns (ProcessCnsNettingWithPositionsResponse);
+    rpc ProcessDividendAction(ProcessDividendActionRequest) returns (ProcessDividendActionResponse);
+    rpc ProcessStockSplit(ProcessStockSplitRequest) returns (ProcessStockSplitResponse);
+    rpc ExecuteDividendPayment(ExecuteDividendPaymentRequest) returns (ExecuteDividendPaymentResponse);
+
+    // --- Foreign Exchange ---
+    rpc SetExchangeRate(SetExchangeRateRequest) returns (SetExchangeRateResponse);
+    rpc GetExchangeRate(GetExchangeRateRequest) returns (GetExchangeRateResponse);
+    rpc ExecuteSpotFx(ExecuteSpotFxRequest) returns (ExecuteSpotFxResponse);
+    rpc CreateForwardContract(CreateForwardContractRequest) returns (CreateForwardContractResponse);
+    rpc HedgeCurrencyRisk(HedgeCurrencyRiskRequest) returns (HedgeCurrencyRiskResponse);
+    rpc GetFxTrade(GetFxTradeRequest) returns (GetFxTradeResponse);
+    rpc ListFxTrades(ListFxTradesRequest) returns (ListFxTradesResponse);
+
+    // --- Cash Management ---
+    rpc CreateSweepAccount(CreateSweepAccountRequest) returns (CreateSweepAccountResponse);
+    rpc ProcessLockbox(ProcessLockboxRequest) returns (ProcessLockboxResponse);
+    rpc OptimizeLiquidity(OptimizeLiquidityRequest) returns (OptimizeLiquidityResponse);
+    rpc GetSweepAccount(GetSweepAccountRequest) returns (GetSweepAccountResponse);
+    rpc ListSweepAccounts(ListSweepAccountsRequest) returns (ListSweepAccountsResponse);
+
+    // --- Risk Management ---
+    rpc AssessCreditRisk(AssessCreditRiskRequest) returns (AssessCreditRiskResponse);
+    rpc CalculateVar(CalculateVarRequest) returns (CalculateVarResponse);
+    rpc PerformStressTest(PerformStressTestRequest) returns (PerformStressTestResponse);
+    rpc GetCreditAssessment(GetCreditAssessmentRequest) returns (GetCreditAssessmentResponse);
+    rpc GetVarCalculation(GetVarCalculationRequest) returns (GetVarCalculationResponse);
+
+    // --- Extended Custody Operations ---
+    rpc GetCustodyWallet(GetCustodyWalletRequest) returns (GetCustodyWalletResponse);
+    rpc LockCustodyWallet(LockCustodyWalletRequest) returns (LockCustodyWalletResponse);
+    rpc UnlockCustodyWallet(UnlockCustodyWalletRequest) returns (UnlockCustodyWalletResponse);
+    rpc ArchiveCustodyWallet(ArchiveCustodyWalletRequest) returns (ArchiveCustodyWalletResponse);
+    rpc ListCustodyWallets(ListCustodyWalletsRequest) returns (ListCustodyWalletsResponse);
+    rpc GetCustodyWalletsByType(GetCustodyWalletsByTypeRequest) returns (GetCustodyWalletsByTypeResponse);
+    rpc RotateWalletKey(RotateWalletKeyRequest) returns (RotateWalletKeyResponse);
+    rpc GetPrivateKey(GetPrivateKeyRequest) returns (GetPrivateKeyResponse);
+    rpc GenerateKey(GenerateKeyRequest) returns (GenerateKeyResponse);
+    rpc GetKey(GetKeyRequest) returns (GetKeyResponse);
+    rpc RotateKey(RotateKeyRequest) returns (RotateKeyResponse);
+
+    // --- Correspondent Banking ---
+    rpc ManageNostroAccount(ManageNostroAccountRequest) returns (ManageNostroAccountResponse);
+    rpc SendSwiftMessage(SendSwiftMessageRequest) returns (SendSwiftMessageResponse);
+    rpc ProcessCrossBorder(ProcessCrossBorderRequest) returns (ProcessCrossBorderResponse);
+    rpc GetNostroAccount(GetNostroAccountRequest) returns (GetNostroAccountResponse);
+    rpc GetSwiftMessage(GetSwiftMessageRequest) returns (GetSwiftMessageResponse);
+    rpc GetCrossBorderPayment(GetCrossBorderPaymentRequest) returns (GetCrossBorderPaymentResponse);
+
+    // --- Investment Banking ---
+    rpc ManageIpo(ManageIpoRequest) returns (ManageIpoResponse);
+    rpc IssueBond(IssueBondRequest) returns (IssueBondResponse);
+    rpc CreateDerivative(CreateDerivativeRequest) returns (CreateDerivativeResponse);
+    rpc GetIpoOffering(GetIpoOfferingRequest) returns (GetIpoOfferingResponse);
+    rpc GetBondIssue(GetBondIssueRequest) returns (GetBondIssueResponse);
+    rpc GetDerivative(GetDerivativeRequest) returns (GetDerivativeResponse);
+
+    // --- Supply Chain Finance ---
+    rpc TokenizeInvoice(TokenizeInvoiceRequest) returns (TokenizeInvoiceResponse);
+    rpc FinancePurchaseOrder(FinancePurchaseOrderRequest) returns (FinancePurchaseOrderResponse);
+    rpc TokenizeInventory(TokenizeInventoryRequest) returns (TokenizeInventoryResponse);
+    rpc TrackProvenance(TrackProvenanceRequest) returns (TrackProvenanceResponse);
+    rpc GetProvenanceChain(GetProvenanceChainRequest) returns (GetProvenanceChainResponse);
+    rpc ApproveInvoiceFinancing(ApproveInvoiceFinancingRequest) returns (ApproveInvoiceFinancingResponse);
+    rpc GetInvoice(GetInvoiceRequest) returns (GetInvoiceResponse);
+}
+
+// Send transaction request
+message SendTransactionRequest {
+    string from_account = 1;
+    string to_account = 2;
+    string amount = 3;  // Amount as string to handle large numbers
+    string currency = 4;
+}
+
+// Send transaction response
+message SendTransactionResponse {
+    string transaction_id = 1;
+    TransactionStatus status = 2;
+    string block_hash = 3;  // Blockchain block hash if confirmed
+    string error_message = 4;
+}
+
+// Get balance request
+message GetBalanceRequest {
+    string account_id = 1;
+}
+
+// Get balance response
+message GetBalanceResponse {
+    string balance = 1;  // Balance as string
+    string currency = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get account info request
+message GetAccountInfoRequest {
+    string account_id = 1;
+}
+
+// Get account info response
+message GetAccountInfoResponse {
+    string account_id = 1;
+    string blockchain_account = 2;  // Hex-encoded blockchain account
+    string balance = 3;
+    string currency = 4;
+    AccountStatus status = 5;
+    bool success = 6;
+    string error_message = 7;
+}
+
+// Get transaction status request
+message GetTransactionStatusRequest {
+    string transaction_id = 1;
+}
+
+// Get transaction status response
+message GetTransactionStatusResponse {
+    string transaction_id = 1;
+    TransactionStatus status = 2;
+    string from_account = 3;
+    string to_account = 4;
+    string amount = 5;
+    string currency = 6;
+    string block_hash = 7;  // Blockchain block hash if confirmed
+    bool success = 8;
+    string error_message = 9;
+}
+
+// Create account request
+message CreateAccountRequest {
+    string account_id = 1;
+    string currency = 2;
+}
+
+// Create account response
+message CreateAccountResponse {
+    string account_id = 1;
+    string blockchain_account = 2;  // Hex-encoded blockchain account
+    bool success = 3;
+    string error_message = 4;
+}
+
+// List transactions request
+message ListTransactionsRequest {
+    string account_id = 1;
+    uint32 limit = 2;  // Maximum number of transactions to return
+    uint32 offset = 3;  // Offset for pagination
+}
+
+// List transactions response
+message ListTransactionsResponse {
+    repeated TransactionInfo transactions = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Transaction info
+message TransactionInfo {
+    string transaction_id = 1;
+    string from_account = 2;
+    string to_account = 3;
+    string amount = 4;
+    string currency = 5;
+    TransactionStatus status = 6;
+    string block_hash = 7;
+    uint64 timestamp = 8;
+}
+
+// Transaction status enum
+enum TransactionStatus {
+    TRANSACTION_STATUS_UNSPECIFIED = 0;
+    TRANSACTION_STATUS_PENDING = 1;
+    TRANSACTION_STATUS_PROCESSING = 2;
+    TRANSACTION_STATUS_CONFIRMED = 3;
+    TRANSACTION_STATUS_FAILED = 4;
+}
+
+// Account status enum
+enum AccountStatus {
+    ACCOUNT_STATUS_UNSPECIFIED = 0;
+    ACCOUNT_STATUS_ACTIVE = 1;
+    ACCOUNT_STATUS_SUSPENDED = 2;
+    ACCOUNT_STATUS_CLOSED = 3;
+    ACCOUNT_STATUS_FROZEN = 4;
+}
+
+// --- Account Management Messages ---
+
+message UpdateAccountRequest {
+    string account_id = 1;
+    string name = 2;
+    string email = 3;
+    // Add other updatable fields
+}
+
+message UpdateAccountResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message CloseAccountRequest {
+    string account_id = 1;
+    string reason = 2;
+}
+
+message CloseAccountResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message FreezeAccountRequest {
+    string account_id = 1;
+    string reason = 2;
+}
+
+message FreezeAccountResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message UnfreezeAccountRequest {
+    string account_id = 1;
+    string reason = 2;
+}
+
+message UnfreezeAccountResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetAccountLimitsRequest {
+    string account_id = 1;
+}
+
+message GetAccountLimitsResponse {
+    string daily_limit = 1;
+    string transaction_limit = 2;
+    string monthly_limit = 3;
+    bool success = 4;
+    string error_message = 5;
+}
+
+message SetAccountLimitsRequest {
+    string account_id = 1;
+    string daily_limit = 2;
+    string transaction_limit = 3;
+    string monthly_limit = 4;
+}
+
+message SetAccountLimitsResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetAccountHistoryExtendedRequest {
+    string account_id = 1;
+    uint64 start_time = 2;
+    uint64 end_time = 3;
+    uint32 limit = 4;
+    uint32 offset = 5;
+}
+
+message GetAccountHistoryExtendedResponse {
+    repeated TransactionInfo transactions = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// --- Settlement Operations Messages ---
+
+message InitiateSettlementRequest {
+    string settlement_id = 1;
+    string source_bank = 2;
+    string target_bank = 3;
+    string amount = 4;
+    string currency = 5;
+}
+
+message InitiateSettlementResponse {
+    string settlement_id = 1;
+    string status = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message ProcessSettlementRequest {
+    string settlement_id = 1;
+    bool approve = 2;
+}
+
+message ProcessSettlementResponse {
+    string status = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetSettlementStatusRequest {
+    string settlement_id = 1;
+}
+
+message GetSettlementStatusResponse {
+    string settlement_id = 1;
+    string status = 2;
+    uint64 timestamp = 3;
+    bool success = 4;
+    string error_message = 5;
+}
+
+message ListSettlementsRequest {
+    string bank_id = 1; // Optional filter
+    uint64 start_time = 2;
+    uint64 end_time = 3;
+    uint32 limit = 4;
+    uint32 offset = 5;
+}
+
+message ListSettlementsResponse {
+    repeated SettlementInfo settlements = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message SettlementInfo {
+    string settlement_id = 1;
+    string source_bank = 2;
+    string target_bank = 3;
+    string amount = 4;
+    string currency = 5;
+    string status = 6;
+    uint64 created_at = 7;
+    uint64 updated_at = 8;
+}
+
+// --- Custody Operations Messages ---
+
+message CreateCustodyWalletRequest {
+    string owner_id = 1;
+    string wallet_type = 2; // "Hot", "Warm", "Cold"
+    string currency = 3;
+}
+
+message CreateCustodyWalletResponse {
+    string wallet_id = 1;
+    string address = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message DepositToCustodyRequest {
+    string wallet_id = 1;
+    string amount = 2;
+    string source_address = 3;
+    string tx_hash = 4; // External transaction hash if applicable
+}
+
+message DepositToCustodyResponse {
+    string transaction_id = 1;
+    string new_balance = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message WithdrawFromCustodyRequest {
+    string wallet_id = 1;
+    string amount = 2;
+    string destination_address = 3;
+}
+
+message WithdrawFromCustodyResponse {
+    string transaction_id = 1;
+    string new_balance = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message GetCustodyBalanceRequest {
+    string wallet_id = 1;
+}
+
+message GetCustodyBalanceResponse {
+    string balance = 1;
+    string currency = 2;
+    string pending_balance = 3;
+    bool success = 4;
+    string error_message = 5;
+}
+
+// --- Treasury Operations Messages ---
+
+message IssueCurrencyRequest {
+    string currency_code = 1;
+    string name = 2;
+    string initial_supply = 3;
+    uint32 decimals = 4;
+}
+
+message IssueCurrencyResponse {
+    string currency_code = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message MintCurrencyRequest {
+    string currency_code = 1;
+    string amount = 2;
+    string destination_account = 3;
+}
+
+message MintCurrencyResponse {
+    string new_supply = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message BurnCurrencyRequest {
+    string currency_code = 1;
+    string amount = 2;
+    string source_account = 3;
+}
+
+message BurnCurrencyResponse {
+    string new_supply = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetTreasuryBalanceRequest {
+    string currency_code = 1;
+}
+
+message GetTreasuryBalanceResponse {
+    string total_supply = 1;
+    string circulating_supply = 2;
+    string treasury_balance = 3;
+    bool success = 4;
+    string error_message = 5;
+}
+
+// --- Advanced Transactions Messages ---
+
+message ScheduleTransactionRequest {
+    string from_account = 1;
+    string to_account = 2;
+    string amount = 3;
+    string currency = 4;
+    uint64 execution_time = 5; // Unix timestamp
+    string recurrence = 6; // Optional: cron expression or similar
+}
+
+message ScheduleTransactionResponse {
+    string schedule_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message CancelScheduledTransactionRequest {
+    string schedule_id = 1;
+}
+
+message CancelScheduledTransactionResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message CreateEscrowRequest {
+    string buyer_account = 1;
+    string seller_account = 2;
+    string amount = 3;
+    string currency = 4;
+    string condition = 5; // Description or code
+    uint64 expiry_time = 6;
+}
+
+message CreateEscrowResponse {
+    string escrow_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ReleaseEscrowRequest {
+    string escrow_id = 1;
+}
+
+message ReleaseEscrowResponse {
+    string transaction_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message RefundEscrowRequest {
+    string escrow_id = 1;
+}
+
+message RefundEscrowResponse {
+    string transaction_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// --- Privacy Operations ---
+
+// Get private balance request
+message GetPrivateBalanceRequest {
+    string account_id = 1;
+}
+
+// Get private balance response
+message GetPrivateBalanceResponse {
+    PrivateBalance balance = 1;
+    bool exists = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message PrivateBalance {
+    string account_id = 1;
+    string total_balance = 2;  // Total private balance as string
+    string currency = 3;
+    uint32 note_count = 4;     // Number of private notes
+    uint64 last_updated = 5;
+}
+
+// Check private balance request
+message CheckPrivateBalanceRequest {
+    string account_id = 1;
+    string required_amount = 2;  // Required amount as string
+    string currency = 3;
+}
+
+// Check private balance response
+message CheckPrivateBalanceResponse {
+    bool sufficient = 1;
+    string available_balance = 2;
+    string required_amount = 3;
+    bool success = 4;
+    string error_message = 5;
+}
+
+// Create private notes request
+message CreatePrivateNotesRequest {
+    string account_id = 1;
+    bytes owner_pubkey = 2;      // 32-byte public key
+    repeated string amounts = 3; // Amounts as strings
+    string currency = 4;
+}
+
+// Create private notes response
+message CreatePrivateNotesResponse {
+    repeated PrivateNote notes = 1;
+    uint32 note_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message PrivateNote {
+    string note_id = 1;
+    string amount = 2;
+    string currency = 3;
+    bytes commitment = 4;        // Commitment hash
+    uint64 created_at = 5;
+}
+
+// Execute private transfer request
+message ExecutePrivateTransferRequest {
+    string from_account_id = 1;
+    bytes from_pubkey = 2;       // 32-byte public key
+    bytes from_secret = 3;       // 32-byte secret key
+    string to_account_id = 4;
+    bytes to_pubkey = 5;          // 32-byte public key
+    string amount = 6;           // Amount as string
+    string fee = 7;               // Fee as string
+    string currency = 8;
+}
+
+// Execute private transfer response
+message ExecutePrivateTransferResponse {
+    string transfer_id = 1;
+    string transaction_id = 2;
+    string from_balance = 3;     // New balance after transfer
+    string to_balance = 4;       // New balance after transfer
+    bool success = 5;
+    string error_message = 6;
+}
+
+// --- Payment Request Messages ---
+message CreatePaymentRequestRequest {
+    string requester = 1;
+    string payer = 2;
+    string amount = 3;
+    string currency = 4;
+    string description = 5;
+    uint64 expires_at = 6;  // 0 = no expiration
+}
+
+message CreatePaymentRequestResponse {
+    string request_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ApprovePaymentRequestRequest {
+    string request_id = 1;
+}
+
+message ApprovePaymentRequestResponse {
+    bool success = 2;
+    string error_message = 3;
+}
+
+message RejectPaymentRequestRequest {
+    string request_id = 1;
+    string reason = 2;
+}
+
+message RejectPaymentRequestResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message CompletePaymentRequestRequest {
+    string request_id = 1;
+    string transaction_id = 2;
+}
+
+message CompletePaymentRequestResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message CancelPaymentRequestRequest {
+    string request_id = 1;
+}
+
+message CancelPaymentRequestResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetPaymentRequestRequest {
+    string request_id = 1;
+}
+
+message GetPaymentRequestResponse {
+    PaymentRequestInfo request = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message ListPaymentRequestsRequest {
+    string account = 1;  // Requester or payer account
+    bool as_requester = 2;  // true = as requester, false = as payer
+    uint32 limit = 3;
+    uint32 offset = 4;
+}
+
+message ListPaymentRequestsResponse {
+    repeated PaymentRequestInfo requests = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message PaymentRequestInfo {
+    string request_id = 1;
+    string requester = 2;
+    string payer = 3;
+    string amount = 4;
+    string currency = 5;
+    string description = 6;
+    PaymentRequestStatus status = 7;
+    uint64 expires_at = 8;
+    uint64 created_at = 9;
+    uint64 approved_at = 10;
+    uint64 completed_at = 11;
+    string transaction_id = 12;
+}
+
+enum PaymentRequestStatus {
+    PAYMENT_REQUEST_STATUS_UNKNOWN = 0;
+    PAYMENT_REQUEST_STATUS_PENDING = 1;
+    PAYMENT_REQUEST_STATUS_APPROVED = 2;
+    PAYMENT_REQUEST_STATUS_REJECTED = 3;
+    PAYMENT_REQUEST_STATUS_CANCELLED = 4;
+    PAYMENT_REQUEST_STATUS_COMPLETED = 5;
+    PAYMENT_REQUEST_STATUS_EXPIRED = 6;
+}
+
+// --- ODL Messages ---
+message ValidateOdlPaymentRequest {
+    string source_account = 1;
+    string destination_account = 2;
+    string amount = 3;
+    string currency = 4;
+}
+
+message ValidateOdlPaymentResponse {
+    bool valid = 1;
+    repeated string errors = 2;
+    repeated string warnings = 3;
+    string error_message = 4;
+}
+
+message GetOdlQuoteRequest {
+    string source_account = 1;
+    string destination_account = 2;
+    string amount = 3;
+    string source_currency = 4;
+    string destination_currency = 5;
+}
+
+message GetOdlQuoteResponse {
+    string quote_id = 1;
+    string source_amount = 2;
+    string destination_amount = 3;
+    string exchange_rate = 4;
+    uint64 expires_at = 5;
+    bool success = 6;
+    string error_message = 7;
+}
+
+message ExecuteOdlPaymentRequest {
+    string quote_id = 1;
+    string source_account = 2;
+    string destination_account = 3;
+}
+
+message ExecuteOdlPaymentResponse {
+    string payment_id = 1;
+    string transaction_id = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message GetOdlPaymentRequest {
+    string payment_id = 1;
+}
+
+message GetOdlPaymentResponse {
+    OdlPaymentInfo payment = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message ListOdlPaymentsRequest {
+    string account_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+message ListOdlPaymentsResponse {
+    repeated OdlPaymentInfo payments = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message GetOdlLiquidityStatusRequest {
+    string account_id = 1;
+}
+
+message GetOdlLiquidityStatusResponse {
+    string available_liquidity = 1;
+    string reserved_liquidity = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message GetOdlStatsRequest {
+}
+
+message GetOdlStatsResponse {
+    uint64 total_payments = 1;
+    uint64 successful_payments = 2;
+    uint64 failed_payments = 3;
+    string total_volume = 4;
+    bool success = 5;
+    string error_message = 6;
+}
+
+message CancelOdlPaymentRequest {
+    string payment_id = 1;
+}
+
+message CancelOdlPaymentResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message OdlPaymentInfo {
+    string payment_id = 1;
+    string quote_id = 2;
+    string source_account = 3;
+    string destination_account = 4;
+    string source_amount = 5;
+    string destination_amount = 6;
+    string exchange_rate = 7;
+    OdlPaymentStatus status = 8;
+    uint64 created_at = 9;
+    string transaction_id = 10;
+}
+
+enum OdlPaymentStatus {
+    ODL_PAYMENT_STATUS_UNKNOWN = 0;
+    ODL_PAYMENT_STATUS_PENDING = 1;
+    ODL_PAYMENT_STATUS_PROCESSING = 2;
+    ODL_PAYMENT_STATUS_COMPLETED = 3;
+    ODL_PAYMENT_STATUS_FAILED = 4;
+    ODL_PAYMENT_STATUS_CANCELLED = 5;
+}
+
+// --- Pathfinding Messages ---
+message FindPaymentPathRequest {
+    string source_account = 1;
+    string destination_account = 2;
+    string amount = 3;
+    string currency = 4;
+    string strategy = 5;  // "cost", "speed", "reliability"
+}
+
+message FindPaymentPathResponse {
+    string path_id = 1;
+    repeated PathHop hops = 2;
+    string total_cost = 3;
+    uint32 hop_count = 4;
+    bool success = 5;
+    string error_message = 6;
+}
+
+message ExecutePaymentPathRequest {
+    string path_id = 1;
+}
+
+message ExecutePaymentPathResponse {
+    string execution_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetPathExecutionStatusRequest {
+    string execution_id = 1;
+}
+
+message GetPathExecutionStatusResponse {
+    string execution_id = 1;
+    PathExecutionStatus status = 2;
+    uint32 completed_hops = 3;
+    uint32 total_hops = 4;
+    string transaction_id = 5;
+    bool success = 6;
+    string error_message = 7;
+}
+
+message PathHop {
+    string from_account = 1;
+    string to_account = 2;
+    string amount = 3;
+    string currency = 4;
+    string cost = 5;
+}
+
+enum PathExecutionStatus {
+    PATH_EXECUTION_STATUS_UNKNOWN = 0;
+    PATH_EXECUTION_STATUS_PENDING = 1;
+    PATH_EXECUTION_STATUS_IN_PROGRESS = 2;
+    PATH_EXECUTION_STATUS_COMPLETED = 3;
+    PATH_EXECUTION_STATUS_FAILED = 4;
+}
+
+// --- Payment Splitting Messages ---
+message CreateSplitByAmountRequest {
+    string payer = 1;
+    string total_amount = 2;
+    string currency = 3;
+    repeated SplitRecipient recipients = 4;
+    string description = 5;
+}
+
+message CreateSplitByAmountResponse {
+    string split_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message CreateSplitByPercentageRequest {
+    string payer = 1;
+    string total_amount = 2;
+    string currency = 3;
+    repeated SplitRecipient recipients = 4;
+    string description = 5;
+}
+
+message CreateSplitByPercentageResponse {
+    string split_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message CreateEqualSplitRequest {
+    string payer = 1;
+    string total_amount = 2;
+    string currency = 3;
+    repeated string recipients = 4;
+    string description = 5;
+}
+
+message CreateEqualSplitResponse {
+    string split_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message CreateSplitFromTemplateRequest {
+    string template_id = 1;
+    string payer = 2;
+    string total_amount = 3;
+    string currency = 4;
+}
+
+message CreateSplitFromTemplateResponse {
+    string split_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message CreateRecurringSplitRequest {
+    string payer = 1;
+    string amount = 2;
+    string currency = 3;
+    repeated SplitRecipient recipients = 4;
+    string recurrence_pattern = 5;
+    string description = 6;
+}
+
+message CreateRecurringSplitResponse {
+    string recurring_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message MarkRecipientCompletedRequest {
+    string split_id = 1;
+    string recipient = 2;
+    string transaction_id = 3;
+}
+
+message MarkRecipientCompletedResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetSplitPaymentRequest {
+    string split_id = 1;
+}
+
+message GetSplitPaymentResponse {
+    SplitPaymentInfo split = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message ListSplitPaymentsRequest {
+    string payer = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+message ListSplitPaymentsResponse {
+    repeated SplitPaymentInfo splits = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message GetDueRecurringSplitsRequest {
+}
+
+message GetDueRecurringSplitsResponse {
+    repeated RecurringSplitInfo splits = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message ExecuteRecurringSplitRequest {
+    string recurring_id = 1;
+}
+
+message ExecuteRecurringSplitResponse {
+    string split_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message CreateSplitTemplateRequest {
+    string name = 1;
+    repeated SplitRecipient recipients = 2;
+    string description = 3;
+}
+
+message CreateSplitTemplateResponse {
+    string template_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetSplitTemplateRequest {
+    string template_id = 1;
+}
+
+message GetSplitTemplateResponse {
+    SplitTemplateInfo template = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message SplitRecipient {
+    string account = 1;
+    string amount = 2;  // For amount-based splits
+    double percentage = 3;  // For percentage-based splits (0.0-1.0)
+}
+
+message SplitPaymentInfo {
+    string split_id = 1;
+    string payer = 2;
+    string total_amount = 3;
+    string currency = 4;
+    repeated SplitRecipientInfo recipients = 5;
+    SplitPaymentStatus status = 6;
+    uint64 created_at = 7;
+    uint64 completed_at = 8;
+}
+
+message SplitRecipientInfo {
+    string account = 1;
+    string amount = 2;
+    bool completed = 3;
+    string transaction_id = 4;
+}
+
+enum SplitPaymentStatus {
+    SPLIT_PAYMENT_STATUS_UNKNOWN = 0;
+    SPLIT_PAYMENT_STATUS_PENDING = 1;
+    SPLIT_PAYMENT_STATUS_PARTIAL = 2;
+    SPLIT_PAYMENT_STATUS_COMPLETED = 3;
+    SPLIT_PAYMENT_STATUS_CANCELLED = 4;
+}
+
+message RecurringSplitInfo {
+    string recurring_id = 1;
+    string payer = 2;
+    string amount = 3;
+    string currency = 4;
+    string recurrence_pattern = 5;
+    uint64 next_execution = 6;
+    uint64 created_at = 7;
+}
+
+message SplitTemplateInfo {
+    string template_id = 1;
+    string name = 2;
+    repeated SplitRecipient recipients = 3;
+    string description = 4;
+    uint64 created_at = 5;
+}
+
+// --- Trade Finance Messages ---
+message IssueLetterOfCreditRequest {
+    string applicant = 1;
+    string beneficiary = 2;
+    string amount = 3;
+    string currency = 4;
+    string expiry_date = 5;
+    string description = 6;
+}
+
+message IssueLetterOfCreditResponse {
+    string lc_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ProcessBillOfLadingRequest {
+    string bol_id = 1;
+    string lc_id = 2;
+    string shipper = 3;
+    string consignee = 4;
+    string goods_description = 5;
+}
+
+message ProcessBillOfLadingResponse {
+    string bol_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message FinanceInvoiceRequest {
+    string invoice_id = 1;
+    string supplier = 2;
+    string buyer = 3;
+    string amount = 4;
+    string currency = 5;
+    uint64 due_date = 6;
+}
+
+message FinanceInvoiceResponse {
+    string financing_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetLetterOfCreditRequest {
+    string lc_id = 1;
+}
+
+message GetLetterOfCreditResponse {
+    LetterOfCreditInfo lc = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message GetBillOfLadingRequest {
+    string bol_id = 1;
+}
+
+message GetBillOfLadingResponse {
+    BillOfLadingInfo bol = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message UpdateBolStatusRequest {
+    string bol_id = 1;
+    string status = 2;
+}
+
+message UpdateBolStatusResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message IssueStandbyLetterOfCreditRequest {
+    string applicant = 1;
+    string beneficiary = 2;
+    string amount = 3;
+    string currency = 4;
+    string expiry_date = 5;
+    string purpose = 6;
+}
+
+message IssueStandbyLetterOfCreditResponse {
+    string sblc_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message AmendStandbyLetterOfCreditRequest {
+    string sblc_id = 1;
+    string new_amount = 2;
+    string new_expiry_date = 3;
+}
+
+message AmendStandbyLetterOfCreditResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message ClaimStandbyLetterOfCreditRequest {
+    string sblc_id = 1;
+    string claim_amount = 2;
+    string reason = 3;
+}
+
+message ClaimStandbyLetterOfCreditResponse {
+    string claim_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message PayStandbyLetterOfCreditClaimRequest {
+    string sblc_id = 1;
+    string claim_id = 2;
+}
+
+message PayStandbyLetterOfCreditClaimResponse {
+    bool success = 1;
+    string transaction_id = 2;
+    string error_message = 3;
+}
+
+message GetStandbyLetterOfCreditRequest {
+    string sblc_id = 1;
+}
+
+message GetStandbyLetterOfCreditResponse {
+    StandbyLetterOfCreditInfo sblc = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message IssueBankGuaranteeRequest {
+    string applicant = 1;
+    string beneficiary = 2;
+    string amount = 3;
+    string currency = 4;
+    string purpose = 5;
+    uint64 expiry_date = 6;
+}
+
+message IssueBankGuaranteeResponse {
+    string bg_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ActivateBankGuaranteeRequest {
+    string bg_id = 1;
+}
+
+message ActivateBankGuaranteeResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message ClaimBankGuaranteeRequest {
+    string bg_id = 1;
+    string claim_amount = 2;
+    string reason = 3;
+}
+
+message ClaimBankGuaranteeResponse {
+    string claim_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message PayBankGuaranteeClaimRequest {
+    string bg_id = 1;
+    string claim_id = 2;
+}
+
+message PayBankGuaranteeClaimResponse {
+    bool success = 1;
+    string transaction_id = 2;
+    string error_message = 3;
+}
+
+message ReleaseBankGuaranteeRequest {
+    string bg_id = 1;
+}
+
+message ReleaseBankGuaranteeResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetBankGuaranteeRequest {
+    string bg_id = 1;
+}
+
+message GetBankGuaranteeResponse {
+    BankGuaranteeInfo bg = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message IssueDocumentaryLetterOfCreditRequest {
+    string applicant = 1;
+    string beneficiary = 2;
+    string amount = 3;
+    string currency = 4;
+    string expiry_date = 5;
+    repeated string required_documents = 6;
+}
+
+message IssueDocumentaryLetterOfCreditResponse {
+    string dlc_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message PresentDocumentsRequest {
+    string dlc_id = 1;
+    repeated string document_ids = 2;
+}
+
+message PresentDocumentsResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetDocumentaryLetterOfCreditRequest {
+    string dlc_id = 1;
+}
+
+message GetDocumentaryLetterOfCreditResponse {
+    DocumentaryLetterOfCreditInfo dlc = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message IssueBankDraftRequest {
+    string drawer = 1;
+    string payee = 2;
+    string amount = 3;
+    string currency = 4;
+    uint64 expiry_date = 5;
+}
+
+message IssueBankDraftResponse {
+    string draft_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message PresentBankDraftRequest {
+    string draft_id = 1;
+}
+
+message PresentBankDraftResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message PayBankDraftRequest {
+    string draft_id = 1;
+}
+
+message PayBankDraftResponse {
+    bool success = 1;
+    string transaction_id = 2;
+    string error_message = 3;
+}
+
+message GetBankDraftRequest {
+    string draft_id = 1;
+}
+
+message GetBankDraftResponse {
+    BankDraftInfo draft = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message LetterOfCreditInfo {
+    string lc_id = 1;
+    string applicant = 2;
+    string beneficiary = 3;
+    string amount = 4;
+    string currency = 5;
+    string status = 6;
+    string expiry_date = 7;
+    uint64 created_at = 8;
+}
+
+message BillOfLadingInfo {
+    string bol_id = 1;
+    string lc_id = 2;
+    string shipper = 3;
+    string consignee = 4;
+    string status = 5;
+    string goods_description = 6;
+    uint64 created_at = 7;
+}
+
+message StandbyLetterOfCreditInfo {
+    string sblc_id = 1;
+    string applicant = 2;
+    string beneficiary = 3;
+    string amount = 4;
+    string currency = 5;
+    string status = 6;
+    string expiry_date = 7;
+    uint64 created_at = 8;
+}
+
+message BankGuaranteeInfo {
+    string bg_id = 1;
+    string applicant = 2;
+    string beneficiary = 3;
+    string amount = 4;
+    string currency = 5;
+    string status = 6;
+    uint64 expiry_date = 7;
+    uint64 created_at = 8;
+}
+
+message DocumentaryLetterOfCreditInfo {
+    string dlc_id = 1;
+    string applicant = 2;
+    string beneficiary = 3;
+    string amount = 4;
+    string currency = 5;
+    string status = 6;
+    string expiry_date = 7;
+    repeated string required_documents = 8;
+    uint64 created_at = 9;
+}
+
+message BankDraftInfo {
+    string draft_id = 1;
+    string drawer = 2;
+    string payee = 3;
+    string amount = 4;
+    string currency = 5;
+    string status = 6;
+    uint64 expiry_date = 7;
+    uint64 created_at = 8;
+}
+
+// --- Wealth Management Messages ---
+message CreateTrustRequest {
+    string settlor = 1;
+    repeated string beneficiaries = 2;
+    string initial_amount = 3;
+    string currency = 4;
+    string trust_type = 5;
+}
+
+message CreateTrustResponse {
+    string trust_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message RebalancePortfolioRequest {
+    string account_id = 1;
+    map<string, double> target_allocations = 2;
+}
+
+message RebalancePortfolioResponse {
+    string rebalance_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message OptimizeTaxesRequest {
+    string account_id = 1;
+    uint32 tax_year = 2;
+}
+
+message OptimizeTaxesResponse {
+    string optimization_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetTrustRequest {
+    string trust_id = 1;
+}
+
+message GetTrustResponse {
+    TrustInfo trust = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message GetRebalanceResultRequest {
+    string rebalance_id = 1;
+}
+
+message GetRebalanceResultResponse {
+    RebalanceResultInfo result = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message TrustInfo {
+    string trust_id = 1;
+    string settlor = 2;
+    repeated string beneficiaries = 3;
+    string current_value = 4;
+    string currency = 5;
+    string trust_type = 6;
+    uint64 created_at = 7;
+}
+
+message RebalanceResultInfo {
+    string rebalance_id = 1;
+    string account_id = 2;
+    repeated RebalanceTransaction transactions = 3;
+    string status = 4;
+    uint64 created_at = 5;
+}
+
+message RebalanceTransaction {
+    string from_asset = 1;
+    string to_asset = 2;
+    string amount = 3;
+}
+
+// --- Securities Services Messages ---
+message ProvideCustodyRequest {
+    string account_id = 1;
+    string security_type = 2;
+    string quantity = 3;
+    string security_id = 4;
+}
+
+message ProvideCustodyResponse {
+    string custody_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message LendSecuritiesRequest {
+    string lender = 1;
+    string borrower = 2;
+    string security_id = 3;
+    string quantity = 4;
+    string rate = 5;
+    uint64 term_days = 6;
+}
+
+message LendSecuritiesResponse {
+    string lending_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ProcessCorporateActionRequest {
+    string security_id = 1;
+    string action_type = 2;
+    string action_details = 3;
+    uint64 record_date = 4;
+}
+
+message ProcessCorporateActionResponse {
+    string action_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetCustodyAccountRequest {
+    string account_id = 1;
+}
+
+message GetCustodyAccountResponse {
+    CustodyAccountInfo account = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message GetLendingTransactionRequest {
+    string transaction_id = 1;
+}
+
+message GetLendingTransactionResponse {
+    LendingTransactionInfo transaction = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message ListSecurityActionsRequest {
+    string security_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+message ListSecurityActionsResponse {
+    repeated CorporateActionInfo actions = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message CreateDtcSettlementRequest {
+    string buyer = 1;
+    string seller = 2;
+    string security_id = 3;
+    string quantity = 4;
+    string price = 5;
+    uint64 settlement_date = 6;
+}
+
+message CreateDtcSettlementResponse {
+    string settlement_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message MatchDtcSettlementRequest {
+    string settlement_id = 1;
+}
+
+message MatchDtcSettlementResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message SettleDtcTransactionRequest {
+    string settlement_id = 1;
+}
+
+message SettleDtcTransactionResponse {
+    bool success = 1;
+    string transaction_id = 2;
+    string error_message = 3;
+}
+
+message ProcessCnsNettingRequest {
+    repeated string settlement_ids = 1;
+}
+
+message ProcessCnsNettingResponse {
+    string netting_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetDtcSettlementRequest {
+    string settlement_id = 1;
+}
+
+message GetDtcSettlementResponse {
+    DtcSettlementInfo settlement = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message InitiateAcatsTransferRequest {
+    string from_account = 1;
+    string to_account = 2;
+    repeated string security_ids = 3;
+}
+
+message InitiateAcatsTransferResponse {
+    string transfer_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ProcessAcatsTransferRequest {
+    string transfer_id = 1;
+}
+
+message ProcessAcatsTransferResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message CompleteAcatsTransferRequest {
+    string transfer_id = 1;
+}
+
+message CompleteAcatsTransferResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message RejectAcatsTransferRequest {
+    string transfer_id = 1;
+    string reason = 2;
+}
+
+message RejectAcatsTransferResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetAcatsTransferRequest {
+    string transfer_id = 1;
+}
+
+message GetAcatsTransferResponse {
+    AcatsTransferInfo transfer = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message GetSecuritiesPositionRequest {
+    string account_id = 1;
+    string security_id = 2;
+}
+
+message GetSecuritiesPositionResponse {
+    SecuritiesPositionInfo position = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message UpdateSecuritiesPositionRequest {
+    string account_id = 1;
+    string security_id = 2;
+    string quantity = 3;
+    string reason = 4;
+}
+
+message UpdateSecuritiesPositionResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message ProcessCnsNettingWithPositionsRequest {
+    string account_id = 1;
+    repeated string security_ids = 2;
+}
+
+message ProcessCnsNettingWithPositionsResponse {
+    string netting_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ProcessDividendActionRequest {
+    string security_id = 1;
+    string dividend_per_share = 2;
+    uint64 ex_dividend_date = 3;
+    uint64 payment_date = 4;
+}
+
+message ProcessDividendActionResponse {
+    string action_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ProcessStockSplitRequest {
+    string security_id = 1;
+    uint32 split_ratio_numerator = 2;
+    uint32 split_ratio_denominator = 3;
+    uint64 effective_date = 4;
+}
+
+message ProcessStockSplitResponse {
+    string action_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ExecuteDividendPaymentRequest {
+    string action_id = 1;
+    string account_id = 2;
+}
+
+message ExecuteDividendPaymentResponse {
+    string payment_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message CustodyAccountInfo {
+    string account_id = 1;
+    repeated SecurityHolding holdings = 2;
+    uint64 created_at = 3;
+}
+
+message SecurityHolding {
+    string security_id = 1;
+    string security_type = 2;
+    string quantity = 3;
+    string value = 4;
+}
+
+message LendingTransactionInfo {
+    string transaction_id = 1;
+    string lender = 2;
+    string borrower = 3;
+    string security_id = 4;
+    string quantity = 5;
+    string rate = 6;
+    string status = 7;
+    uint64 created_at = 8;
+}
+
+message CorporateActionInfo {
+    string action_id = 1;
+    string security_id = 2;
+    string action_type = 3;
+    string status = 4;
+    uint64 record_date = 5;
+    uint64 created_at = 6;
+}
+
+message DtcSettlementInfo {
+    string settlement_id = 1;
+    string buyer = 2;
+    string seller = 3;
+    string security_id = 4;
+    string quantity = 5;
+    string price = 6;
+    string status = 7;
+    uint64 settlement_date = 8;
+    uint64 created_at = 9;
+}
+
+message AcatsTransferInfo {
+    string transfer_id = 1;
+    string from_account = 2;
+    string to_account = 3;
+    repeated string security_ids = 4;
+    string status = 5;
+    uint64 created_at = 6;
+}
+
+message SecuritiesPositionInfo {
+    string account_id = 1;
+    string security_id = 2;
+    string quantity = 3;
+    string value = 4;
+    uint64 last_updated = 5;
+}
+
+// --- Foreign Exchange Messages ---
+message SetExchangeRateRequest {
+    string base_currency = 1;
+    string quote_currency = 2;
+    double rate = 3;
+}
+
+message SetExchangeRateResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetExchangeRateRequest {
+    string base_currency = 1;
+    string quote_currency = 2;
+}
+
+message GetExchangeRateResponse {
+    double rate = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ExecuteSpotFxRequest {
+    string buyer_account = 1;
+    string seller_account = 2;
+    string base_currency = 3;
+    string quote_currency = 4;
+    string base_amount = 5;
+}
+
+message ExecuteSpotFxResponse {
+    string trade_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message CreateForwardContractRequest {
+    string buyer_account = 1;
+    string seller_account = 2;
+    string base_currency = 3;
+    string quote_currency = 4;
+    string base_amount = 5;
+    double forward_rate = 6;
+    uint64 settlement_date = 7;
+}
+
+message CreateForwardContractResponse {
+    string contract_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message HedgeCurrencyRiskRequest {
+    string account_id = 1;
+    string currency = 2;
+    string exposure_amount = 3;
+    string hedge_type = 4;
+}
+
+message HedgeCurrencyRiskResponse {
+    string hedge_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetFxTradeRequest {
+    string trade_id = 1;
+}
+
+message GetFxTradeResponse {
+    FxTradeInfo trade = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message ListFxTradesRequest {
+    string account_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+message ListFxTradesResponse {
+    repeated FxTradeInfo trades = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message FxTradeInfo {
+    string trade_id = 1;
+    string buyer_account = 2;
+    string seller_account = 3;
+    string base_currency = 4;
+    string quote_currency = 5;
+    string base_amount = 6;
+    string quote_amount = 7;
+    double rate = 8;
+    string trade_type = 9;
+    string status = 10;
+    uint64 created_at = 11;
+}
+
+// --- Cash Management Messages ---
+message CreateSweepAccountRequest {
+    string account_id = 1;
+    string target_account = 2;
+    string threshold = 3;
+    string sweep_type = 4;
+}
+
+message CreateSweepAccountResponse {
+    string sweep_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ProcessLockboxRequest {
+    string account_id = 1;
+    repeated LockboxItem items = 2;
+}
+
+message ProcessLockboxResponse {
+    string batch_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message OptimizeLiquidityRequest {
+    string account_id = 1;
+    string target_balance = 2;
+}
+
+message OptimizeLiquidityResponse {
+    string optimization_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetSweepAccountRequest {
+    string sweep_id = 1;
+}
+
+message GetSweepAccountResponse {
+    SweepAccountInfo sweep = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message ListSweepAccountsRequest {
+    string account_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+message ListSweepAccountsResponse {
+    repeated SweepAccountInfo sweeps = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message LockboxItem {
+    string payer = 1;
+    string amount = 2;
+    string currency = 3;
+    string check_number = 4;
+}
+
+message SweepAccountInfo {
+    string sweep_id = 1;
+    string account_id = 2;
+    string target_account = 3;
+    string threshold = 4;
+    string sweep_type = 5;
+    string status = 6;
+    uint64 created_at = 7;
+}
+
+// --- Risk Management Messages ---
+message AssessCreditRiskRequest {
+    string account_id = 1;
+    string amount = 2;
+    string currency = 3;
+}
+
+message AssessCreditRiskResponse {
+    string assessment_id = 1;
+    string risk_score = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message CalculateVarRequest {
+    string account_id = 1;
+    double confidence_level = 2;
+    uint32 time_horizon_days = 3;
+}
+
+message CalculateVarResponse {
+    string var_id = 1;
+    string var_value = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message PerformStressTestRequest {
+    string account_id = 1;
+    string scenario = 2;
+}
+
+message PerformStressTestResponse {
+    string test_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetCreditAssessmentRequest {
+    string assessment_id = 1;
+}
+
+message GetCreditAssessmentResponse {
+    CreditRiskAssessmentInfo assessment = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message GetVarCalculationRequest {
+    string var_id = 1;
+}
+
+message GetVarCalculationResponse {
+    VarCalculationInfo calculation = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message CreditRiskAssessmentInfo {
+    string assessment_id = 1;
+    string account_id = 2;
+    string risk_score = 3;
+    string risk_level = 4;
+    uint64 created_at = 5;
+}
+
+message VarCalculationInfo {
+    string var_id = 1;
+    string account_id = 2;
+    string var_value = 3;
+    double confidence_level = 4;
+    uint64 created_at = 5;
+}
+
+// --- Extended Custody Operations Messages ---
+message GetCustodyWalletRequest {
+    string wallet_id = 1;
+}
+
+message GetCustodyWalletResponse {
+    CustodyWalletInfo wallet = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message LockCustodyWalletRequest {
+    string wallet_id = 1;
+}
+
+message LockCustodyWalletResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message UnlockCustodyWalletRequest {
+    string wallet_id = 1;
+}
+
+message UnlockCustodyWalletResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message ArchiveCustodyWalletRequest {
+    string wallet_id = 1;
+}
+
+message ArchiveCustodyWalletResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message ListCustodyWalletsRequest {
+    uint32 limit = 1;
+    uint32 offset = 2;
+}
+
+message ListCustodyWalletsResponse {
+    repeated CustodyWalletInfo wallets = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message GetCustodyWalletsByTypeRequest {
+    string wallet_type = 1;  // "hot", "warm", "cold"
+}
+
+message GetCustodyWalletsByTypeResponse {
+    repeated CustodyWalletInfo wallets = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+message RotateWalletKeyRequest {
+    string wallet_id = 1;
+}
+
+message RotateWalletKeyResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetPrivateKeyRequest {
+    string wallet_id = 1;
+}
+
+message GetPrivateKeyResponse {
+    bytes private_key = 1;  // 32 bytes
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GenerateKeyRequest {
+    string key_id = 1;
+}
+
+message GenerateKeyResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message GetKeyRequest {
+    string key_id = 1;
+}
+
+message GetKeyResponse {
+    bytes public_key = 1;  // 32 bytes
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message RotateKeyRequest {
+    string key_id = 1;
+}
+
+message RotateKeyResponse {
+    string new_key_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message CustodyWalletInfo {
+    string wallet_id = 1;
+    string name = 2;
+    string wallet_type = 3;
+    string status = 4;
+    string account = 5;
+    uint64 created_at = 6;
+    uint64 last_accessed_at = 7;
+}
+
+// --- Correspondent Banking Messages ---
+message ManageNostroAccountRequest {
+    string account_id = 1;
+    string currency = 2;
+    string balance = 3;
+}
+
+message ManageNostroAccountResponse {
+    string nostro_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message SendSwiftMessageRequest {
+    string sender = 1;
+    string receiver = 2;
+    string message_type = 3;
+    string content = 4;
+}
+
+message SendSwiftMessageResponse {
+    string message_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ProcessCrossBorderRequest {
+    string from_account = 1;
+    string to_account = 2;
+    string amount = 3;
+    string currency = 4;
+    string destination_country = 5;
+}
+
+message ProcessCrossBorderResponse {
+    string payment_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetNostroAccountRequest {
+    string account_id = 1;
+}
+
+message GetNostroAccountResponse {
+    NostroAccountInfo account = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message GetSwiftMessageRequest {
+    string message_id = 1;
+}
+
+message GetSwiftMessageResponse {
+    SwiftMessageInfo message = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message GetCrossBorderPaymentRequest {
+    string payment_id = 1;
+}
+
+message GetCrossBorderPaymentResponse {
+    CrossBorderPaymentInfo payment = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message NostroAccountInfo {
+    string account_id = 1;
+    string currency = 2;
+    string balance = 3;
+    uint64 created_at = 4;
+}
+
+message SwiftMessageInfo {
+    string message_id = 1;
+    string sender = 2;
+    string receiver = 3;
+    string message_type = 4;
+    string content = 5;
+    uint64 created_at = 6;
+}
+
+message CrossBorderPaymentInfo {
+    string payment_id = 1;
+    string from_account = 2;
+    string to_account = 3;
+    string amount = 4;
+    string currency = 5;
+    string destination_country = 6;
+    string status = 7;
+    uint64 created_at = 8;
+}
+
+// --- Investment Banking Messages ---
+message ManageIpoRequest {
+    string company = 1;
+    string security_type = 2;
+    string total_shares = 3;
+    string price_per_share = 4;
+    uint64 offering_date = 5;
+}
+
+message ManageIpoResponse {
+    string ipo_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message IssueBondRequest {
+    string issuer = 1;
+    string principal = 2;
+    string currency = 3;
+    double interest_rate = 4;
+    uint64 maturity_date = 5;
+}
+
+message IssueBondResponse {
+    string bond_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message CreateDerivativeRequest {
+    string underlying_asset = 1;
+    string derivative_type = 2;
+    string notional_value = 3;
+    uint64 expiry_date = 4;
+}
+
+message CreateDerivativeResponse {
+    string derivative_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetIpoOfferingRequest {
+    string ipo_id = 1;
+}
+
+message GetIpoOfferingResponse {
+    IpoOfferingInfo ipo = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message GetBondIssueRequest {
+    string bond_id = 1;
+}
+
+message GetBondIssueResponse {
+    BondIssueInfo bond = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message GetDerivativeRequest {
+    string derivative_id = 1;
+}
+
+message GetDerivativeResponse {
+    DerivativeInfo derivative = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message IpoOfferingInfo {
+    string ipo_id = 1;
+    string company = 2;
+    string security_type = 3;
+    string total_shares = 4;
+    string price_per_share = 5;
+    string status = 6;
+    uint64 offering_date = 7;
+    uint64 created_at = 8;
+}
+
+message BondIssueInfo {
+    string bond_id = 1;
+    string issuer = 2;
+    string principal = 3;
+    string currency = 4;
+    double interest_rate = 5;
+    uint64 maturity_date = 6;
+    uint64 created_at = 7;
+}
+
+message DerivativeInfo {
+    string derivative_id = 1;
+    string underlying_asset = 2;
+    string derivative_type = 3;
+    string notional_value = 4;
+    uint64 expiry_date = 5;
+    uint64 created_at = 6;
+}
+
+// --- Supply Chain Finance Messages ---
+message TokenizeInvoiceRequest {
+    string invoice_id = 1;
+    string supplier = 2;
+    string buyer = 3;
+    string amount = 4;
+    string currency = 5;
+    uint64 due_date = 6;
+}
+
+message TokenizeInvoiceResponse {
+    string token_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message FinancePurchaseOrderRequest {
+    string po_id = 1;
+    string buyer = 2;
+    string supplier = 3;
+    string amount = 4;
+    string currency = 5;
+}
+
+message FinancePurchaseOrderResponse {
+    string financing_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message TokenizeInventoryRequest {
+    string inventory_id = 1;
+    string owner = 2;
+    string description = 3;
+    string value = 4;
+}
+
+message TokenizeInventoryResponse {
+    string token_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message TrackProvenanceRequest {
+    string asset_id = 1;
+    string event_type = 2;
+    string location = 3;
+    string timestamp = 4;
+}
+
+message TrackProvenanceResponse {
+    string provenance_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetProvenanceChainRequest {
+    string asset_id = 1;
+}
+
+message GetProvenanceChainResponse {
+    repeated ProvenanceEvent events = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message ApproveInvoiceFinancingRequest {
+    string invoice_id = 1;
+    string financier = 2;
+    string financing_amount = 3;
+}
+
+message ApproveInvoiceFinancingResponse {
+    string financing_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+message GetInvoiceRequest {
+    string invoice_id = 1;
+}
+
+message GetInvoiceResponse {
+    TokenizedInvoiceInfo invoice = 1;
+    bool exists = 2;
+    string error_message = 3;
+}
+
+message ProvenanceEvent {
+    string event_id = 1;
+    string event_type = 2;
+    string location = 3;
+    string timestamp = 4;
+    string actor = 5;
+}
+
+message TokenizedInvoiceInfo {
+    string invoice_id = 1;
+    string token_id = 2;
+    string supplier = 3;
+    string buyer = 4;
+    string amount = 5;
+    string currency = 6;
+    string status = 7;
+    uint64 due_date = 8;
+    uint64 created_at = 9;
+}
+
+

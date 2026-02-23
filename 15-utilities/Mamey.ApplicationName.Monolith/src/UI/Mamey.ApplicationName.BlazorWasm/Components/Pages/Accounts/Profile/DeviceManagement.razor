@@ -1,0 +1,28 @@
+@using System.Collections.ObjectModel
+@using Mamey.ApplicationName.BlazorWasm.Models.Profile
+<MudPaper Class="p-4 mb-4" Elevation="3">
+    <MudText Typo="Typo.h5">Trusted Devices</MudText>
+
+    @foreach (var device in Devices)
+    {
+        <MudCard Class="mb-2">
+            <MudCardContent>
+                <MudText Typo="Typo.body1">@device.DeviceName</MudText>
+                <MudText Typo="Typo.body2">IP Address: @device.IPAddress</MudText>
+                <MudSwitch T="bool" Label="Trusted" @bind-Checked="device.IsTrusted" />
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="@(() => RemoveDevice(device))">Remove Device</MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public ObservableCollection<UserDevice> Devices { get; set; }
+
+    private void RemoveDevice(UserDevice device)
+    {
+        Devices.Remove(device);
+    }
+}

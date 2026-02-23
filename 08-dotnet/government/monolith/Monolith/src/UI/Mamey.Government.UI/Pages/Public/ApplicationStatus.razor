@@ -1,0 +1,103 @@
+@page "/public/application-status"
+
+<PageTitle>Check Application Status - Mamey Government Portal</PageTitle>
+
+<MudPaper Elevation="0" Class="pa-6">
+    <MudStack Spacing="4">
+        <MudText Typo="Typo.h4" Color="Color.Primary">Check Application Status</MudText>
+        
+        <MudText Typo="Typo.body1">
+            Enter your application number to check the current status of your citizenship application.
+        </MudText>
+
+        <MudCard Elevation="2">
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" md="8">
+                        <MudTextField @bind-Value="_applicationNumber" Label="Application Number" 
+                                      Variant="Variant.Outlined" Required="true"
+                                      Placeholder="e.g., APP-2024-0001" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
+                                   OnClick="CheckStatus" Style="height: 56px;">
+                            Check Status
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+
+        @if (_showResult)
+        {
+            <MudCard Elevation="2">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Application Status</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudSimpleTable Dense="true" Hover="true">
+                        <tbody>
+                            <tr><td><strong>Application Number</strong></td><td>@_applicationNumber</td></tr>
+                            <tr><td><strong>Applicant</strong></td><td>John S***</td></tr>
+                            <tr><td><strong>Submitted</strong></td><td>January 10, 2026</td></tr>
+                            <tr><td><strong>Status</strong></td><td><MudChip T="string" Color="Color.Warning" Size="Size.Small">In Review</MudChip></td></tr>
+                            <tr><td><strong>Last Updated</strong></td><td>January 12, 2026</td></tr>
+                        </tbody>
+                    </MudSimpleTable>
+
+                    <MudDivider Class="my-4" />
+
+                    <MudText Typo="Typo.h6" Class="mb-2">Processing Timeline</MudText>
+                    <MudTimeline TimelinePosition="TimelinePosition.Start">
+                        <MudTimelineItem Color="Color.Success" Size="Size.Small">
+                            <ItemContent>
+                                <MudText Typo="Typo.body2">Application Submitted</MudText>
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">January 10, 2026</MudText>
+                            </ItemContent>
+                        </MudTimelineItem>
+                        <MudTimelineItem Color="Color.Success" Size="Size.Small">
+                            <ItemContent>
+                                <MudText Typo="Typo.body2">Documents Verified</MudText>
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">January 11, 2026</MudText>
+                            </ItemContent>
+                        </MudTimelineItem>
+                        <MudTimelineItem Color="Color.Warning" Size="Size.Small">
+                            <ItemContent>
+                                <MudText Typo="Typo.body2">Under Review</MudText>
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">In Progress</MudText>
+                            </ItemContent>
+                        </MudTimelineItem>
+                        <MudTimelineItem Color="Color.Default" Size="Size.Small">
+                            <ItemContent>
+                                <MudText Typo="Typo.body2">Decision</MudText>
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">Pending</MudText>
+                            </ItemContent>
+                        </MudTimelineItem>
+                    </MudTimeline>
+                </MudCardContent>
+            </MudCard>
+        }
+
+        <MudAlert Severity="Severity.Info">
+            <MudText Typo="Typo.body2">
+                If you have any questions about your application, please contact us at 
+                <MudLink Href="mailto:support@mamey.gov">support@mamey.gov</MudLink>
+            </MudText>
+        </MudAlert>
+    </MudStack>
+</MudPaper>
+
+@code {
+    private string? _applicationNumber;
+    private bool _showResult;
+
+    private void CheckStatus()
+    {
+        if (!string.IsNullOrWhiteSpace(_applicationNumber))
+        {
+            _showResult = true;
+        }
+    }
+}

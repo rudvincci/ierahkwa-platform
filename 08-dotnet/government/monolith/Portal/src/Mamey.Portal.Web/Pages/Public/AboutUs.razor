@@ -1,0 +1,78 @@
+@page "/about-us"
+@using Mamey.Portal.Cms.Application.Models
+@using Mamey.Portal.Cms.Application.Services
+@inject ICmsPageService CmsPages
+
+<PageTitle>About Us</PageTitle>
+
+@code {
+    private PageItem? _page;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _page = await CmsPages.GetPublishedPageBySlugAsync("about-us");
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private static MarkupString AsMarkup(string html) => new(html ?? string.Empty);
+}
+
+<MudStack Spacing="3">
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+
+    @if (_page is not null)
+    {
+        <MudText Typo="Typo.h4">@_page.Title (CMS)</MudText>
+        <MudPaper Class="pa-4">
+            <div class="cms-news-body">
+                @AsMarkup(_page.BodyHtml)
+            </div>
+        </MudPaper>
+    }
+    else
+    {
+        <MudText Typo="Typo.h4">About Us</MudText>
+        <MudText Typo="Typo.body1">
+            UI-first placeholder content. This page will be tenant-driven via CMS (mission, governance structure, contact links).
+        </MudText>
+
+        <MudGrid Spacing="2">
+            <MudItem xs="12" md="4">
+                <MudCard>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">Sovereignty</MudText>
+                        <MudText Typo="Typo.body2">Tenant-defined public statements, recognitions, and legal foundations.</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudCard>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">Citizenship</MudText>
+                        <MudText Typo="Typo.body2">Online applications, manual entry by agents, and full lifecycle workflows.</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudCard>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">Documents</MudText>
+                        <MudText Typo="Typo.body2">Template-based certificates and issued IDs, stored securely and tenant-scoped.</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    }
+</MudStack>
+
+

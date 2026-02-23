@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Análisis DAO Widget (CodeCanyon) — Ierahkwa Sovereign Platform</title>
+  <style>
+    :root { --primary: #1a237e; --gold: #ffd700; --dark: #0d1117; --card: #161b22; --border: #30363d; --success: #3fb950; --warn: #d29922; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--dark); color: #e6e6e6; min-height: 100vh; padding: 2rem; line-height: 1.6; max-width: 900px; margin: 0 auto; }
+    .back { margin-bottom: 1.5rem; }
+    .back a { color: #58a6ff; text-decoration: none; }
+    .back a:hover { text-decoration: underline; }
+    h1 { color: var(--gold); margin-bottom: 0.5rem; font-size: 1.6rem; }
+    .meta { color: #8b949e; font-size: 0.9rem; margin-bottom: 2rem; }
+    h2 { color: var(--gold); font-size: 1.15rem; margin: 2rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    h3 { color: #c9d1d9; font-size: 1rem; margin: 1.5rem 0 0.5rem; }
+    p { margin-bottom: 0.8rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: var(--card); color: var(--gold); }
+    ul { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    a { color: #58a6ff; }
+    a:hover { text-decoration: underline; }
+    .badge { font-size: 0.7rem; padding: 0.15rem 0.4rem; border-radius: 4px; }
+    .badge-ok { background: rgba(63,185,80,0.2); color: var(--success); }
+    .badge-partial { background: rgba(210,153,34,0.2); color: var(--warn); }
+    .badge-no { background: rgba(248,81,73,0.2); color: #f85149; }
+    code { background: var(--card); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+    pre { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; font-size: 0.85rem; }
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: #8b949e; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div class="back"><a href="index.html">← Volver a Documentación</a></div>
+
+  <h1>Análisis: DAO Widget (CodeCanyon) y su aporte al nodo Ierahkwa</h1>
+  <p class="meta">Sovereign Government of Ierahkwa Ne Kanienke • Office of the Prime Minister • Referencia: Dao widget — Governance and proposals (CodeCanyon / OnOut)</p>
+
+  <h2>1. Resumen del widget (CodeCanyon)</h2>
+  <table>
+    <tr><th>Aspecto</th><th>Detalle</th></tr>
+    <tr><td>Funciones</td><td>Crear propuestas, votar, listar votos</td></tr>
+    <tr><td>Wallet</td><td>Metamask</td></tr>
+    <tr><td>Gas</td><td>Votación <strong>sin gas</strong> (usa Snapshot.org)</td></tr>
+    <tr><td>Backend</td><td>API de Snapshot.org (off-chain)</td></tr>
+    <tr><td>Redes</td><td>ERC20, BEP20, EVM en general</td></tr>
+    <tr><td>Temas</td><td>Light / Dark</td></tr>
+  </table>
+
+  <h2>2. Estado actual en nuestro proyecto</h2>
+
+  <h3>2.1 Tokens y plataformas</h3>
+  <table>
+    <tr><th>Token</th><th>Descripción</th><th>URL</th><th>Estado real</th></tr>
+    <tr><td>IGT-DAO (98)</td><td>DAO Platform</td><td>dao.ierahkwa.gov</td><td><span class="badge badge-partial">API DAO parcial (GET; POST 501)</span></td></tr>
+    <tr><td>IGT-VOTE (92)</td><td>Voting Platform</td><td>vote.ierahkwa.gov</td><td><span class="badge badge-ok">Implementado: /voting, /governance</span></td></tr>
+    <tr><td>IGT-GOV (43)</td><td>Governance Token</td><td>—</td><td>Metadata; peso en voting</td></tr>
+  </table>
+
+  <h3>2.2 Nodo (Ierahkwa Futurehead Mamey Node)</h3>
+  <ul>
+    <li><strong>RPC:</strong> <code>eth_*</code>, <code>igt_*</code> (chainId 77777, ISB).</li>
+    <li><strong>APIs REST:</strong> <code>/api/v1/tokens</code>, <code>/api/v1/accounts/:address</code>, <code>/api/v1/blocks</code>, <code>/api/v1/transactions</code>, etc.</li>
+    <li><strong>Voting (Governance) <span class="badge badge-ok">ACTIVO</span>:</strong>
+      <ul>
+        <li><code>POST /api/v1/voting/proposals</code> — Crear propuesta</li>
+        <li><code>GET /api/v1/voting/proposals</code> — Listar propuestas</li>
+        <li><code>GET /api/v1/voting/proposals/:id</code> — Detalle + votos</li>
+        <li><code>POST /api/v1/voting/vote</code> — Emitir voto (votingPower, gas-free)</li>
+      </ul>
+    </li>
+    <li><strong>DAO <span class="badge badge-partial">PARCIAL</span>:</strong>
+      <ul>
+        <li><code>GET /api/v1/dao/proposals</code>, <code>GET /api/v1/dao/proposals/:id</code>, <code>GET /api/v1/dao/votes</code> — OK</li>
+        <li><code>POST /api/v1/dao/proposals</code>, <code>POST /api/v1/dao/votes</code> — 501 (planned IGT-DAO)</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>2.3 UI de gobernanza</h3>
+  <ul>
+    <li><strong>Voting / Governance:</strong> <code>platform/voting.html</code> — Rutas <code>/voting</code>, <code>/governance</code>. Crear propuesta, votar, listar, múltiples opciones, duración, peso por tier.</li>
+    <li><strong>DAO (IGT-DAO):</strong> Sin UI propia; el análisis y plan están en este documento.</li>
+  </ul>
+
+  <h2>3. ¿Qué aporta el DAO widget a nuestro nodo?</h2>
+
+  <h3>3.1 Lo que SÍ encaja</h3>
+  <ul>
+    <li><strong>Complemento a IGT-DAO:</strong> El widget ofrece Create / Vote / List. Nos sirve como referencia; tenemos ya Voting nativo y DAO (GET) en el nodo.</li>
+    <li><strong>Votación sin gas:</strong> Alineado con ISB. Nuestro <code>/api/v1/voting/vote</code> ya es gas-free.</li>
+    <li><strong>Metamask + RPC:</strong> ISB (chainId 77777) se puede añadir en Metamask. <code>platform/voting.html</code> puede integrar firma/verificación con balance vía RPC.</li>
+    <li><strong>Tema dark:</strong> Coincide con el dashboard y la plataforma.</li>
+  </ul>
+
+  <h3>3.2 Limitaciones (Snapshot + ISB)</h3>
+  <ul>
+    <li><strong>Snapshot.org no conoce ISB:</strong> El widget tal cual (100 % Snapshot) no usa IGT ni el nodo ISB directamente.</li>
+    <li><strong>Uso directo solo en redes EVM soportadas:</strong> Si IGT (o wrapped) se emite en Ethereum/BSC/Polygon, el widget podría usarse allí; no en ISB nativo.</li>
+  </ul>
+
+  <h2>4. Opciones de integración</h2>
+
+  <h3>A) Comprar el widget para redes EVM estándar</h3>
+  <p>Si IGT (o wrapped) se emite en Ethereum, BSC, Polygon, etc. UI y flujo listos; no conecta con ISB de forma nativa.</p>
+
+  <h3>B) DAO Ierahkwa propio (recomendado para ISB)</h3>
+  <p>Completar en el nodo:</p>
+  <ul>
+    <li><code>POST /api/v1/dao/proposals</code> y <code>POST /api/v1/dao/votes</code> con lógica (peso por <code>eth_getBalance</code> o <code>/api/v1/accounts/:address</code> o <code>balanceOf</code> por token).</li>
+    <li>UI tipo Create / Vote / List (similar a <code>voting.html</code> o al widget) con Metamask apuntando al RPC del nodo (chainId 77777).</li>
+  </ul>
+
+  <h3>C) Híbrido</h3>
+  <p>DAO nativo ISB (B) + opcional Space en Snapshot para una red EVM donde IGT exista; mostrar ambos en la misma plataforma si se desea.</p>
+
+  <h2>5. Recomendaciones</h2>
+
+  <h3>Corto plazo</h3>
+  <ul>
+    <li><strong>platform-services.json:</strong> Incluir servicios <strong>voting</strong> (activo, <code>/voting</code>, <code>/governance</code>) y <strong>dao</strong> (en desarrollo, <code>/api/v1/dao/*</code>).</li>
+    <li><strong>Nodo:</strong> Implementar <code>POST /api/v1/dao/proposals</code> y <code>POST /api/v1/dao/votes</code> cuando se priorice IGT-DAO.</li>
+    <li><strong>Documentar:</strong> En DOCUMENTACION-TECNICA o PLANO-DAO-01: flujo Create → Voting Period → Vote (off-chain) → Count por balance; cómo añadir ISB en Metamask (chainId 77777, RPC URL).</li>
+  </ul>
+
+  <h3>Si se compra el widget CodeCanyon</h3>
+  <p>Revisar si OnOut permite custom network / custom strategy. Si solo Snapshot: usar en una red EVM con IGT y/o reutilizar HTML/JS como referencia para el DAO nativo ISB.</p>
+
+  <h2>6. Conclusión</h2>
+  <table>
+    <tr><th>Pregunta</th><th>Respuesta</th></tr>
+    <tr><td>¿El DAO widget suma al nodo?</td><td><strong>Sí</strong> como referencia (Create/Vote/List, gas-free, token-weighted). Como plug-and-play con Snapshot, <strong>no</strong> se conecta a ISB tal cual.</td></tr>
+    <tr><td>¿Vale la pena comprarlo?</td><td>Si emiten IGT en Ethereum/BSC/Polygon y quieren Snapshot, puede ahorrar trabajo. Para <strong>ISB y el nodo Mamey</strong>, lo más útil es inspirarse en el diseño y completar el backend DAO propio + UI similar.</td></tr>
+    <tr><td>Qué hay ya en el nodo</td><td>Voting completo (API + UI). DAO: GET OK; POST en roadmap. IGT-DAO e IGT-VOTE con metadata y rutas documentadas.</td></tr>
+  </table>
+
+  <footer>
+    <p>Ierahkwa Sovereign Platform — Sovereign Government of Ierahkwa Ne Kanienke — Office of the Prime Minister</p>
+    <p style="margin-top:0.5rem">Documento actualizado para reflejar el estado real de las APIs de Voting y DAO en el nodo. Versión HTML para correcta visualización en navegador.</p>
+  </footer>
+</body>
+</html>

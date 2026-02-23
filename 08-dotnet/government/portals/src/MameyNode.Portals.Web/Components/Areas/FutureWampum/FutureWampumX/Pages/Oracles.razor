@@ -1,0 +1,90 @@
+@page "/dex/oracles"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<Oracles> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Oracles" Icon="fas fa-database" Subtitle="Price oracle management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Oracles" Value="@_oracles.Count.ToString()" Icon="fas fa-database" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Price Feeds" Value="@_priceFeedsCount.ToString()" Icon="fas fa-rss" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Last Update" Value="@_lastUpdate.ToString("HH:mm")" Icon="fas fa-clock" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Oracles" Class="mt-4">
+        <MudTable T="ExchangeRateOracleInfo" Items="@_oracles" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Oracle ID</MudTh>
+                <MudTh>From Currency</MudTh>
+                <MudTh>To Currency</MudTh>
+                <MudTh>Exchange Rate</MudTh>
+                <MudTh>Source</MudTh>
+                <MudTh>Updated</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.OracleId</MudTd>
+                <MudTd>@context.FromCurrency</MudTd>
+                <MudTd>@context.ToCurrency</MudTd>
+                <MudTd>@decimal.Parse(context.ExchangeRate).ToString("F4")</MudTd>
+                <MudTd>@context.Source</MudTd>
+                <MudTd>@context.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<ExchangeRateOracleInfo> _oracles = new();
+    private int _activeCount;
+    private int _priceFeedsCount;
+    private DateTime _lastUpdate = DateTime.Now;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _oracles = await FutureWampumXClient.GetExchangeRateOraclesAsync();
+            _activeCount = _oracles.Count;
+            _priceFeedsCount = _oracles.Select(o => o.Source).Distinct().Count();
+            _lastUpdate = _oracles.Any() ? _oracles.Max(o => o.UpdatedAt) : DateTime.Now;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading oracles");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

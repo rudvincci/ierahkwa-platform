@@ -1,0 +1,97 @@
+@page "/payments"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumPayClient FutureWampumPayClient
+@inject ILogger<FutureWampumPayHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="FutureWampumPay" Icon="fas fa-credit-card" Subtitle="Payment services and management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Wallets" Value="@_wallets.Count.ToString()" Icon="fas fa-wallet" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="P2P Payments" Value="@_p2pCount.ToString()" Icon="fas fa-user-friends" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Merchant Payments" Value="@_merchantCount.ToString()" Icon="fas fa-store" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Multisig Payments" Value="@_multisigCount.ToString()" Icon="fas fa-key" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Wallet" Elevation="2">
+                <MudText Typo="Typo.body2">Manage payment wallets</MudText>
+                <MudButton Href="/payments/wallet" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Wallets
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="P2P Payments" Elevation="2">
+                <MudText Typo="Typo.body2">Peer-to-peer payments</MudText>
+                <MudButton Href="/payments/p2p" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View P2P
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Merchant Payments" Elevation="2">
+                <MudText Typo="Typo.body2">Merchant payment processing</MudText>
+                <MudButton Href="/payments/merchant" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Merchant
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private List<PaymentWalletInfo> _wallets = new();
+    private int _p2pCount;
+    private int _merchantCount;
+    private int _multisigCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _wallets = await FutureWampumPayClient.GetWalletsAsync();
+            var p2p = await FutureWampumPayClient.GetP2PPaymentsAsync(100);
+            var merchant = await FutureWampumPayClient.GetMerchantPaymentsAsync(100);
+            var multisig = await FutureWampumPayClient.GetMultisigPaymentsAsync(100);
+            
+            _p2pCount = p2p.Count;
+            _merchantCount = merchant.Count;
+            _multisigCount = multisig.Count;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading payment data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

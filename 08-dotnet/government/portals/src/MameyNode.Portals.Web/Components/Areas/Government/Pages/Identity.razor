@@ -1,0 +1,94 @@
+@page "/admin/identity"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<Identity> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Identity Management" Icon="fas fa-id-badge" Subtitle="Digital identity management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Identities" Value="@_identities.Count.ToString()" Icon="fas fa-id-badge" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Verified" Value="@_verifiedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="DIDs" Value="@_dids.Count.ToString()" Icon="fas fa-key" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Documents" Value="@_documents.Count.ToString()" Icon="fas fa-file-alt" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Identities" Class="mt-4">
+        <MudTable T="IdentityInfo" Items="@_identities" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Identity ID</MudTh>
+                <MudTh>Citizen ID</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Nationality</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.IdentityId</MudTd>
+                <MudTd>@context.CitizenId</MudTd>
+                <MudTd>@context.FirstName @context.LastName</MudTd>
+                <MudTd>@context.Nationality</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == IdentityStatus.Verified ? Color.Success : context.Status == IdentityStatus.Pending ? Color.Warning : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<IdentityInfo> _identities = new();
+    private List<DIDInfo> _dids = new();
+    private List<DocumentInfo> _documents = new();
+    private int _verifiedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _identities = await GovernmentClient.GetIdentitiesAsync();
+            _dids = await GovernmentClient.GetDIDsAsync();
+            _documents = await GovernmentClient.GetDocumentsAsync();
+            _verifiedCount = _identities.Count(i => i.Status == IdentityStatus.Verified);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading identities");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

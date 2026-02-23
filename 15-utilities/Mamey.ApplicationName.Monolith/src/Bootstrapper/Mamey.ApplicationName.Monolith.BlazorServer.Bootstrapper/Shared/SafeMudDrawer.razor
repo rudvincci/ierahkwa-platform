@@ -1,0 +1,45 @@
+@* @using Microsoft.JSInterop *@
+@* @using MudBlazor *@
+@* @inject IJSRuntime JS *@
+@* *@
+@* <MudDrawer @ref="_drawer" *@
+@*            @bind-Open="Open" *@
+@*            Elevation="@Elevation" *@
+@*            ClipMode="@ClipMode" *@
+@*            Variant="@Variant" *@
+@*            OpenMiniOnHover="@OpenMiniOnHover" *@
+@*            Anchor="@Anchor"> *@
+@*     @ChildContent *@
+@* </MudDrawer> *@
+@* *@
+@* @code { *@
+@*     private MudDrawer _drawer; *@
+@* *@
+@*     [Parameter] public bool Open { get; set; } *@
+@*     [Parameter] public EventCallback<bool> OpenChanged { get; set; } *@
+@* *@
+@*     [Parameter] public DrawerClipMode ClipMode { get; set; } = DrawerClipMode.Never; *@
+@*     [Parameter] public DrawerVariant Variant { get; set; } = DrawerVariant.Temporary; *@
+@*     [Parameter] public Anchor Anchor { get; set; } = Anchor.Left; *@
+@*     [Parameter] public int Elevation { get; set; } = 1; *@
+@*     [Parameter] public bool OpenMiniOnHover { get; set; } = false; *@
+@* *@
+@*     [Parameter] public RenderFragment ChildContent { get; set; } *@
+@* *@
+@*     protected override async Task OnAfterRenderAsync(bool firstRender) *@
+@*     { *@
+@*         if (firstRender) *@
+@*         { *@
+@*             try *@
+@*             { *@
+@*                 // Ensures DOM element is mounted before accessing *@
+@*                 await Task.Delay(50); *@
+@*                  *@
+@*             } *@
+@*             catch (JSException ex) *@
+@*             { *@
+@*                 Console.WriteLine($"[SafeMudDrawer] JSInterop error: {ex.Message}"); *@
+@*             } *@
+@*         } *@
+@*     } *@
+@* } *@

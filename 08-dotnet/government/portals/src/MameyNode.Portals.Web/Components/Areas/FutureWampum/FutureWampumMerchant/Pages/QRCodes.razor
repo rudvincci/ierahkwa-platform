@@ -1,0 +1,100 @@
+@page "/merchant/qrcodes"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumMerchantClient FutureWampumMerchantClient
+@inject ILogger<QRCodes> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="QR Codes" Icon="fas fa-qrcode" Subtitle="QR code payment management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total QR Codes" Value="@_qrcodes.Count.ToString()" Icon="fas fa-qrcode" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Used" Value="@_usedCount.ToString()" Icon="fas fa-hand-holding-usd" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Expired" Value="@_expiredCount.ToString()" Icon="fas fa-exclamation-triangle" Color="#EF4444" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="QR Codes" Class="mt-4">
+        <MudTable T="QRCodeInfo" Items="@_qrcodes" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>QR Code ID</MudTh>
+                <MudTh>Merchant ID</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Used</MudTh>
+                <MudTh>Created</MudTh>
+                <MudTh>Expires</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.QRCodeId</MudTd>
+                <MudTd>@context.MerchantId</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : context.Status == "Used" ? Color.Info : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.IsUsed ? Color.Info : Color.Default)">
+                        @(context.IsUsed ? "Yes" : "No")
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+                <MudTd>@(context.ExpiresAt?.ToString("yyyy-MM-dd HH:mm") ?? "-")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<QRCodeInfo> _qrcodes = new();
+    private int _activeCount;
+    private int _usedCount;
+    private int _expiredCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _qrcodes = await FutureWampumMerchantClient.GetQRCodesAsync();
+            _activeCount = _qrcodes.Count(q => q.Status == "Active");
+            _usedCount = _qrcodes.Count(q => q.IsUsed);
+            _expiredCount = _qrcodes.Count(q => q.Status == "Expired" || q.ExpiresAt < DateTime.Now);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading QR codes");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

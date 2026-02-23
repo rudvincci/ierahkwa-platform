@@ -1,0 +1,127 @@
+# Mamey/docker/Dockerfile.mameynode
+# Multi-stage Dockerfile for MameyNode with Post-Quantum Cryptography (liboqs) support
+# Supports amd64 and arm64 architectures
+#
+# Build:
+#   docker build -t mameynode:pqc -f docker/Dockerfile.mameynode .
+#   docker buildx build --platform linux/amd64,linux/arm64 -t mameynode:pqc -f docker/Dockerfile.mameynode .
+#
+# Run:
+#   docker run -e MAMEY_PQC_ENABLED=true mameynode:pqc
+
+# ==============================================================================
+# Stage 1: Build liboqs from source
+# ==============================================================================
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS liboqs-builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cmake \
+    ninja-build \
+    git \
+    libssl-dev \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clone and build liboqs (Open Quantum Safe)
+# Pin to a specific release for reproducibility
+ARG LIBOQS_VERSION=0.10.0
+RUN git clone --depth 1 --branch ${LIBOQS_VERSION} https://github.com/open-quantum-safe/liboqs.git /liboqs \
+    && cd /liboqs \
+    && mkdir build \
+    && cd build \
+    && cmake -GNinja \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DBUILD_SHARED_LIBS=ON \
+        -DOQS_BUILD_ONLY_LIB=ON \
+        -DOQS_USE_OPENSSL=ON \
+        .. \
+    && ninja \
+    && ninja install
+
+# ==============================================================================
+# Stage 2: Build MameyNode application
+# ==============================================================================
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+
+WORKDIR /src
+
+# Copy liboqs from builder stage
+COPY --from=liboqs-builder /usr/local/lib/liboqs* /usr/local/lib/
+COPY --from=liboqs-builder /usr/local/include/oqs /usr/local/include/oqs
+
+# Set library path for liboqs
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+
+# Copy solution and project files first for better layer caching
+COPY *.sln ./
+COPY src/*/src/*/*.csproj ./
+RUN for file in $(ls *.csproj); do \
+    dir=$(basename $file .csproj); \
+    mkdir -p src/$dir/src/$dir && mv $file src/$dir/src/$dir/; \
+    done
+
+# Restore dependencies
+RUN dotnet restore
+
+# Copy source code
+COPY . .
+
+# Build the application
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet build -c $BUILD_CONFIGURATION --no-restore
+
+# ==============================================================================
+# Stage 3: Publish application
+# ==============================================================================
+FROM build AS publish
+
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish src/Mamey.Blockchain.Node/src/Mamey.Blockchain.Node/Mamey.Blockchain.Node.csproj \
+    -c $BUILD_CONFIGURATION \
+    -o /app/publish \
+    --no-build \
+    /p:UseAppHost=false
+
+# ==============================================================================
+# Stage 4: Final runtime image
+# ==============================================================================
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+
+# Install runtime dependencies for liboqs
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy liboqs shared library
+COPY --from=liboqs-builder /usr/local/lib/liboqs.so* /usr/local/lib/
+RUN ldconfig
+
+# Set environment variables for PQC configuration
+ENV MAMEY_PQC_ENABLED=true
+ENV MAMEY_PQC_ALGORITHM=ML-DSA-65
+ENV MAMEY_PQC_HYBRID_MODE=true
+ENV MAMEY_PQC_MANDATORY_HEIGHT=0
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+
+# Set up non-root user for security
+RUN groupadd --gid 1000 mamey \
+    && useradd --uid 1000 --gid mamey --shell /bin/bash --create-home mamey
+
+WORKDIR /app
+COPY --from=publish /app/publish .
+RUN chown -R mamey:mamey /app
+
+USER mamey
+
+# Expose default ports
+EXPOSE 8080
+EXPOSE 8443
+
+# Health check endpoint
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+ENTRYPOINT ["dotnet", "Mamey.Blockchain.Node.dll"]
+
+

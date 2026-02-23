@@ -1,0 +1,111 @@
+@page "/notifications"
+@using Mamey.ApplicationName.BlazorWasm.Models
+@using Mamey.ApplicationName.BlazorWasm.Services
+@using Variant = MudBlazor.Variant
+@inject NotificationService NotificationService
+@implements IAsyncDisposable
+
+<div class="d-flex justify-center align-center">
+    <!-- Notification Bell Icon -->
+    
+
+    <!-- Notifications Dropdown -->
+    @* <MudPopover Open="@_openNotifications"  *@
+    @*             Id="notificationPopover"  *@
+    @*             OverflowBehavior="OverflowBehavior.FlipOnOpen"  *@
+    @*             AnchorOrigin="Origin.BottomCenter"  *@
+    @*             TransformOrigin="Origin.BottomLeft" *@
+    @*             Fixed="true"  *@
+    @*             Class="notification-popover"> *@
+        <MudList T="Notification">
+            @if (_currentNotifications?.Count > 0)
+            {
+                @foreach (var notification in _currentNotifications)
+                {
+                    <MudListItem T="Notification" Class="notification-item">
+                        <div class="d-flex align-center">
+                            <!-- Render the icon based on the string from the API -->
+                            <MudIcon Icon="@GetMudIcon(notification.Icon)" Color="Color.Warning" Class="mr-2" />
+                            <div class="notification-content">
+                                <h4 class="notification-title">@notification.Title</h4>
+                                <p class="notification-description">@notification.Message</p>
+                                <small class="notification-time">@notification.Timestamp.ToString("g")</small>
+                            </div>
+                            <MudIconButton Icon="@Icons.Material.Filled.Done" 
+                                           Color="Color.Success" />
+                        </div>
+                    </MudListItem>
+                    <MudDivider />
+                }
+                <MudButton Variant="Variant.Outlined" Color="Color.Error" 
+                           OnClick="@ClearNotifications" Class="mt-2">
+                    Clear All Notifications
+                </MudButton>
+            }
+            else
+            {
+                <MudText>No notifications available</MudText>
+            }
+        </MudList>
+    @* </MudPopover> *@
+</div>
+
+@code {
+    private bool _openNotifications;
+    private List<Notification>? _currentNotifications = new();
+    private IDisposable? _subscription;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await NotificationService.LoadInitialNotifications();
+        _currentNotifications = NotificationService.Notifications.ToList();
+
+        // Commented out SignalR subscription for real-time updates
+        /*
+        _subscription = NotificationService.NotificationStream.Subscribe(notification =>
+        {
+            _currentNotifications.Insert(0, notification);
+            InvokeAsync(StateHasChanged);
+        });
+        */
+    }
+
+    private void ClearNotifications()
+    {
+        NotificationService.ClearAllNotifications();
+        _currentNotifications.Clear();
+    }
+
+    private async Task ToggleNotificationsAsync()
+    {
+        _openNotifications = !_openNotifications;
+        await JS.InvokeVoidAsync("togglePopover", "notificationPopover", _openNotifications);
+    }
+
+    [Inject]
+    private IJSRuntime JS { get; set; }
+
+    public async ValueTask DisposeAsync()
+    {
+        // Ensure subscription disposal is commented out
+        //_subscription?.Dispose();
+    }
+
+    // Map the string icon from the API to a MudBlazor icon
+    private string GetMudIcon(string icon)
+    {
+        return icon.ToLower() switch
+        {
+            "notifications" => Icons.Material.Filled.Notifications,
+            "done" => Icons.Material.Filled.Done,
+            "warning" => Icons.Material.Filled.Warning,
+            "message" => Icons.Material.Filled.Message,
+            "error" => Icons.Material.Filled.Error,
+            "update" => Icons.Material.Filled.Update,
+            "star" => Icons.Material.Filled.Star,
+            "lock" => Icons.Material.Filled.Lock,
+            "comment" => Icons.Material.Filled.Comment,
+            _ => Icons.Material.Filled.Info // default icon
+        };
+    }
+}

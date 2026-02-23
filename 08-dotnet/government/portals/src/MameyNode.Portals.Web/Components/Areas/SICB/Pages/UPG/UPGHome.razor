@@ -1,0 +1,93 @@
+@page "/upg"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IUPGClient UPGClient
+@inject ILogger<UPGHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Universal Protocol Gateway" Icon="fas fa-globe" Subtitle="Multi-protocol payment gateway">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Protocol Adapters" Value="@_adapters.Count.ToString()" Icon="fas fa-plug" Color="#14B8A6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="POS Transactions" Value="@_posTransactions.Count.ToString()" Icon="fas fa-cash-register" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Settlements" Value="@_settlements.Count.ToString()" Icon="fas fa-handshake" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active Adapters" Value="@_activeAdapters.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Protocol Support" Elevation="2">
+                <MudText Typo="Typo.body2">View supported protocols</MudText>
+                <MudButton Href="/upg/protocol-support" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Protocols
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Adapters" Elevation="2">
+                <MudText Typo="Typo.body2">Manage protocol adapters</MudText>
+                <MudButton Href="/upg/adapters" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Manage Adapters
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Multi-Rail Routing" Elevation="2">
+                <MudText Typo="Typo.body2">Configure routing options</MudText>
+                <MudButton Href="/upg/multi-rail" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Configure Routing
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private List<ProtocolAdapterInfo> _adapters = new();
+    private List<POSTransactionInfo> _posTransactions = new();
+    private List<MerchantSettlementInfo> _settlements = new();
+    private int _activeAdapters;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _adapters = await UPGClient.GetProtocolAdaptersAsync();
+            _posTransactions = await UPGClient.GetPOSTransactionsAsync();
+            _settlements = await UPGClient.GetMerchantSettlementsAsync();
+            _activeAdapters = _adapters.Count(a => a.Status == AdapterStatus.Active);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading UPG data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

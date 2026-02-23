@@ -1,0 +1,98 @@
+@page "/ledger-integration/transaction-logging"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumLedgerClient FutureWampumLedgerClient
+@inject ILogger<TransactionLogging> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Transaction Logging" Icon="fas fa-file-alt" Subtitle="Transaction log management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Logs" Value="@_logs.Count.ToString()" Icon="fas fa-file-alt" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Confirmed" Value="@_confirmedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Volume" Value="@_totalVolume.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Compliant" Value="@_compliantCount.ToString()" Icon="fas fa-shield-alt" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Transaction Logs" Class="mt-4">
+        <MudTable T="TransactionLogInfo" Items="@_logs" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Log ID</MudTh>
+                <MudTh>Transaction ID</MudTh>
+                <MudTh>Event Type</MudTh>
+                <MudTh>From</MudTh>
+                <MudTh>To</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Compliance</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.LogId</MudTd>
+                <MudTd>@context.TransactionId</MudTd>
+                <MudTd>@context.EventType</MudTd>
+                <MudTd>@context.FromAccount</MudTd>
+                <MudTd>@context.ToAccount</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="ComplianceStatus" Size="Size.Small" Color="@(context.ComplianceStatus == ComplianceStatus.Approved ? Color.Success : context.ComplianceStatus == ComplianceStatus.Rejected ? Color.Error : Color.Warning)">
+                        @context.ComplianceStatus
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<TransactionLogInfo> _logs = new();
+    private int _confirmedCount;
+    private decimal _totalVolume;
+    private int _compliantCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _logs = await FutureWampumLedgerClient.GetTransactionLogsAsync();
+            _confirmedCount = _logs.Count(l => l.ConfirmedAt.HasValue);
+            _totalVolume = _logs.Sum(l => decimal.Parse(l.Amount));
+            _compliantCount = _logs.Count(l => l.ComplianceStatus == ComplianceStatus.Approved);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading transaction logs");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

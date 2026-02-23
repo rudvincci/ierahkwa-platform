@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Operations.Api.Protos";
+
+package Pupitre.Operations;
+
+// gRPC service for OperationMetric operations
+service OperationMetricService {
+    // Get a single OperationMetric by ID
+    rpc GetOperationMetric (GetOperationMetricRequest) returns (OperationMetricResponse) {};
+    
+    // List all OperationMetrics with pagination
+    rpc ListOperationMetrics (ListOperationMetricsRequest) returns (ListOperationMetricsResponse) {};
+    
+    // Stream OperationMetric updates
+    rpc StreamOperationMetricUpdates (StreamOperationMetricUpdatesRequest) returns (stream OperationMetricResponse) {};
+}
+
+message GetOperationMetricRequest {
+    string id = 1;
+}
+
+message ListOperationMetricsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListOperationMetricsResponse {
+    repeated OperationMetricResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message OperationMetricResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamOperationMetricUpdatesRequest {
+    string filter = 1;
+}

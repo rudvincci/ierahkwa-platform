@@ -1,0 +1,53 @@
+@page "/citizen/certificates"
+@layout CitizenLayout
+@attribute [Authorize]
+
+<PageTitle>My Certificates - Citizen Portal</PageTitle>
+
+<PageHeader Title="My Certificates" Subtitle="View and download your official certificates" />
+
+<MudCard Elevation="2">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Issued Certificates</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+                Request Certificate
+            </MudButton>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTable Items="@_certificates" Hover="true" Striped="true" Dense="true">
+            <HeaderContent>
+                <MudTh>Certificate #</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Issue Date</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Number</MudTd>
+                <MudTd><MudChip T="string" Color="Color.Primary" Size="Size.Small">@context.Type</MudChip></MudTd>
+                <MudTd>@context.IssueDate.ToString("MMM dd, yyyy")</MudTd>
+                <MudTd><StatusChip Status="@context.Status" /></MudTd>
+                <MudTd>
+                    <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
+                        <MudButton Color="Color.Primary">View</MudButton>
+                        <MudButton Color="Color.Secondary">Download</MudButton>
+                    </MudButtonGroup>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private record Certificate(string Number, string Type, DateTime IssueDate, string Status);
+
+    private readonly List<Certificate> _certificates = new()
+    {
+        new("CERT-2024-001", "Citizenship", DateTime.Now.AddMonths(-3), "Active"),
+        new("CERT-2024-002", "Good Standing", DateTime.Now.AddMonths(-1), "Active")
+    };
+}

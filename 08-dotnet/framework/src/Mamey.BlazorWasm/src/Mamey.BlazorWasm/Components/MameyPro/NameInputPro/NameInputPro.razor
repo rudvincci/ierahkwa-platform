@@ -1,0 +1,140 @@
+@using Mamey.Types
+@using Mamey.BlazorWasm.Components.Foundation
+
+<MudPaper Class="@PaperClass" Style="@Style">
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudTextField T="string"
+                         Label="First Name"
+                         Placeholder="@FirstNamePlaceholder"
+                         @bind-Value="_firstName"
+                         Immediate="true"
+                         OnBlur="@(() => Validate())"
+                         Required="@Required"
+                         Disabled="@Disabled"
+                         Variant="@Variant"
+                         Error="_error"
+                         ErrorText="@_errorText"
+                         Class="@Class" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField T="string"
+                         Label="Last Name"
+                         Placeholder="@LastNamePlaceholder"
+                         @bind-Value="_lastName"
+                         Immediate="true"
+                         OnBlur="@(() => Validate())"
+                         Required="@Required"
+                         Disabled="@Disabled"
+                         Variant="@Variant"
+                         Error="_error"
+                         ErrorText="@_errorText" />
+        </MudItem>
+        @if (ShowMiddleName)
+        {
+            <MudItem xs="12" sm="6">
+                <MudTextField T="string"
+                             Label="Middle Name"
+                             Placeholder="@MiddleNamePlaceholder"
+                             @bind-Value="_middleName"
+                             Immediate="true"
+                             OnBlur="@(() => Validate())"
+                             Disabled="@Disabled"
+                             Variant="@Variant" />
+            </MudItem>
+        }
+        @if (ShowNickname)
+        {
+            <MudItem xs="12" sm="6">
+                <MudTextField T="string"
+                             Label="Nickname"
+                             Placeholder="@NicknamePlaceholder"
+                             @bind-Value="_nickname"
+                             Immediate="true"
+                             OnBlur="@(() => Validate())"
+                             Disabled="@Disabled"
+                             Variant="@Variant" />
+            </MudItem>
+        }
+    </MudGrid>
+    <FieldMessages HelperText="@HelperText" />
+</MudPaper>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Name";
+    [Parameter] public string HelperText { get; set; } = "Enter your full name";
+    [Parameter] public string FirstNamePlaceholder { get; set; } = "First name";
+    [Parameter] public string LastNamePlaceholder { get; set; } = "Last name";
+    [Parameter] public string MiddleNamePlaceholder { get; set; } = "Middle name (optional)";
+    [Parameter] public string NicknamePlaceholder { get; set; } = "Nickname (optional)";
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public bool ShowMiddleName { get; set; } = true;
+    [Parameter] public bool ShowNickname { get; set; } = true;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public Name? Value { get; set; }
+    [Parameter] public EventCallback<Name?> ValueChanged { get; set; }
+
+    private string _firstName = "";
+    private string _lastName = "";
+    private string? _middleName;
+    private string? _nickname;
+    private bool _error = false;
+    private string _errorText = "";
+
+    protected override void OnParametersSet()
+    {
+        if (Value is not null)
+        {
+            _firstName = Value.FirstName ?? "";
+            _lastName = Value.LastName ?? "";
+            _middleName = Value.MiddleName;
+            _nickname = Value.Nickname;
+        }
+    }
+
+    private async Task Validate()
+    {
+        _error = false;
+        _errorText = "";
+        
+        if (Required && (string.IsNullOrWhiteSpace(_firstName) || string.IsNullOrWhiteSpace(_lastName)))
+        {
+            _error = true;
+            _errorText = "First name and last name are required.";
+            await ValueChanged.InvokeAsync(null);
+            StateHasChanged();
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_firstName) && string.IsNullOrWhiteSpace(_lastName))
+        {
+            await ValueChanged.InvokeAsync(null);
+            StateHasChanged();
+            return;
+        }
+
+        try
+        {
+            var name = new Name(_firstName, _lastName, _middleName, _nickname);
+            await ValueChanged.InvokeAsync(name);
+        }
+        catch (Exception ex)
+        {
+            _error = true;
+            _errorText = ex.Message;
+            await ValueChanged.InvokeAsync(null);
+        }
+        StateHasChanged();
+    }
+
+    private string PaperClass => $"pa-4 {Class}";
+}
+
+
+
+
+

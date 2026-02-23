@@ -1,0 +1,377 @@
+version: '3.8'
+
+name: pupitre-services
+
+services:
+  # =============================================================================
+  # API GATEWAY
+  # =============================================================================
+  api-gateway:
+    build:
+      context: ../..
+      dockerfile: src/Infrastructure/Pupitre.ApiGateway/Dockerfile
+    container_name: pupitre-api-gateway
+    ports:
+      - "60000:60000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - users
+      - gles
+      - curricula
+    networks:
+      - pupitre-network
+
+  # =============================================================================
+  # FOUNDATION SERVICES
+  # =============================================================================
+  users:
+    build:
+      context: ../..
+      dockerfile: src/Services/Foundation/Pupitre.Users/src/Pupitre.Users.Api/Dockerfile
+    container_name: pupitre-users
+    ports:
+      - "60001:60001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__PostgreSQL=Host=postgres;Database=pupitre_users;Username=pupitre;Password=pupitre_dev_password
+      - ConnectionStrings__MongoDB=mongodb://pupitre:pupitre_dev_password@mongodb:27017
+      - ConnectionStrings__Redis=redis:6379
+      - RabbitMQ__HostName=rabbitmq
+    networks:
+      - pupitre-network
+
+  gles:
+    build:
+      context: ../..
+      dockerfile: src/Services/Foundation/Pupitre.GLEs/src/Pupitre.GLEs.Api/Dockerfile
+    container_name: pupitre-gles
+    ports:
+      - "60002:60002"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  curricula:
+    build:
+      context: ../..
+      dockerfile: src/Services/Foundation/Pupitre.Curricula/src/Pupitre.Curricula.Api/Dockerfile
+    container_name: pupitre-curricula
+    ports:
+      - "60003:60003"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  lessons:
+    build:
+      context: ../..
+      dockerfile: src/Services/Foundation/Pupitre.Lessons/src/Pupitre.Lessons.Api/Dockerfile
+    container_name: pupitre-lessons
+    ports:
+      - "60004:60004"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  assessments:
+    build:
+      context: ../..
+      dockerfile: src/Services/Foundation/Pupitre.Assessments/src/Pupitre.Assessments.Api/Dockerfile
+    container_name: pupitre-assessments
+    ports:
+      - "60005:60005"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  progress:
+    build:
+      context: ../..
+      dockerfile: src/Services/Foundation/Pupitre.Progress/src/Pupitre.Progress.Api/Dockerfile
+    container_name: pupitre-progress
+    ports:
+      - "60006:60006"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  rewards:
+    build:
+      context: ../..
+      dockerfile: src/Services/Foundation/Pupitre.Rewards/src/Pupitre.Rewards.Api/Dockerfile
+    container_name: pupitre-rewards
+    ports:
+      - "60007:60007"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  notifications:
+    build:
+      context: ../..
+      dockerfile: src/Services/Foundation/Pupitre.Notifications/src/Pupitre.Notifications.Api/Dockerfile
+    container_name: pupitre-notifications
+    ports:
+      - "60008:60008"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  parents:
+    build:
+      context: ../..
+      dockerfile: src/Services/Foundation/Pupitre.Parents/src/Pupitre.Parents.Api/Dockerfile
+    container_name: pupitre-parents
+    ports:
+      - "60009:60009"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  analytics:
+    build:
+      context: ../..
+      dockerfile: src/Services/Foundation/Pupitre.Analytics/src/Pupitre.Analytics.Api/Dockerfile
+    container_name: pupitre-analytics
+    ports:
+      - "60010:60010"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  # =============================================================================
+  # AI SERVICES
+  # =============================================================================
+  ai-tutors:
+    build:
+      context: ../..
+      dockerfile: src/Services/AI/Pupitre.AITutors/src/Pupitre.AITutors.Api/Dockerfile
+    container_name: pupitre-ai-tutors
+    ports:
+      - "60101:60101"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  ai-assessments:
+    build:
+      context: ../..
+      dockerfile: src/Services/AI/Pupitre.AIAssessments/src/Pupitre.AIAssessments.Api/Dockerfile
+    container_name: pupitre-ai-assessments
+    ports:
+      - "60102:60102"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  ai-content:
+    build:
+      context: ../..
+      dockerfile: src/Services/AI/Pupitre.AIContent/src/Pupitre.AIContent.Api/Dockerfile
+    container_name: pupitre-ai-content
+    ports:
+      - "60103:60103"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  ai-speech:
+    build:
+      context: ../..
+      dockerfile: src/Services/AI/Pupitre.AISpeech/src/Pupitre.AISpeech.Api/Dockerfile
+    container_name: pupitre-ai-speech
+    ports:
+      - "60104:60104"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  ai-adaptive:
+    build:
+      context: ../..
+      dockerfile: src/Services/AI/Pupitre.AIAdaptive/src/Pupitre.AIAdaptive.Api/Dockerfile
+    container_name: pupitre-ai-adaptive
+    ports:
+      - "60105:60105"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  ai-behavior:
+    build:
+      context: ../..
+      dockerfile: src/Services/AI/Pupitre.AIBehavior/src/Pupitre.AIBehavior.Api/Dockerfile
+    container_name: pupitre-ai-behavior
+    ports:
+      - "60106:60106"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  ai-safety:
+    build:
+      context: ../..
+      dockerfile: src/Services/AI/Pupitre.AISafety/src/Pupitre.AISafety.Api/Dockerfile
+    container_name: pupitre-ai-safety
+    ports:
+      - "60107:60107"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  ai-recommendations:
+    build:
+      context: ../..
+      dockerfile: src/Services/AI/Pupitre.AIRecommendations/src/Pupitre.AIRecommendations.Api/Dockerfile
+    container_name: pupitre-ai-recommendations
+    ports:
+      - "60108:60108"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  ai-translation:
+    build:
+      context: ../..
+      dockerfile: src/Services/AI/Pupitre.AITranslation/src/Pupitre.AITranslation.Api/Dockerfile
+    container_name: pupitre-ai-translation
+    ports:
+      - "60109:60109"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  ai-vision:
+    build:
+      context: ../..
+      dockerfile: src/Services/AI/Pupitre.AIVision/src/Pupitre.AIVision.Api/Dockerfile
+    container_name: pupitre-ai-vision
+    ports:
+      - "60110:60110"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  # =============================================================================
+  # SUPPORT SERVICES
+  # =============================================================================
+  educators:
+    build:
+      context: ../..
+      dockerfile: src/Services/Support/Pupitre.Educators/src/Pupitre.Educators.Api/Dockerfile
+    container_name: pupitre-educators
+    ports:
+      - "60022:60022"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  fundraising:
+    build:
+      context: ../..
+      dockerfile: src/Services/Support/Pupitre.Fundraising/src/Pupitre.Fundraising.Api/Dockerfile
+    container_name: pupitre-fundraising
+    ports:
+      - "60023:60023"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  bookstore:
+    build:
+      context: ../..
+      dockerfile: src/Services/Support/Pupitre.Bookstore/src/Pupitre.Bookstore.Api/Dockerfile
+    container_name: pupitre-bookstore
+    ports:
+      - "60024:60024"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  aftercare:
+    build:
+      context: ../..
+      dockerfile: src/Services/Support/Pupitre.Aftercare/src/Pupitre.Aftercare.Api/Dockerfile
+    container_name: pupitre-aftercare
+    ports:
+      - "60025:60025"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  accessibility:
+    build:
+      context: ../..
+      dockerfile: src/Services/Support/Pupitre.Accessibility/src/Pupitre.Accessibility.Api/Dockerfile
+    container_name: pupitre-accessibility
+    ports:
+      - "60026:60026"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  compliance:
+    build:
+      context: ../..
+      dockerfile: src/Services/Support/Pupitre.Compliance/src/Pupitre.Compliance.Api/Dockerfile
+    container_name: pupitre-compliance
+    ports:
+      - "60027:60027"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  ministries:
+    build:
+      context: ../..
+      dockerfile: src/Services/Support/Pupitre.Ministries/src/Pupitre.Ministries.Api/Dockerfile
+    container_name: pupitre-ministries
+    ports:
+      - "60028:60028"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+  operations:
+    build:
+      context: ../..
+      dockerfile: src/Services/Support/Pupitre.Operations/src/Pupitre.Operations.Api/Dockerfile
+    container_name: pupitre-operations
+    ports:
+      - "60029:60029"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - pupitre-network
+
+networks:
+  pupitre-network:
+    external: true
+    name: pupitre_pupitre-network

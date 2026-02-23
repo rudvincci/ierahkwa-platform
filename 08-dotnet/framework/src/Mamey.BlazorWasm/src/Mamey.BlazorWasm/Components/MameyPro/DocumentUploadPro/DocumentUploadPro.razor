@@ -1,0 +1,158 @@
+@using Mamey.BlazorWasm.Components.Foundation
+@using Microsoft.AspNetCore.Components.Forms
+@using System.IO
+
+<MudPaper Elevation="1" Class="@PaperClass" Style="@Style">
+    <MudStack Spacing="2">
+        <MudText Typo="Typo.subtitle2">@Label</MudText>
+        
+        <MudFileUpload T="IReadOnlyList<IBrowserFile>"
+                       Accept="@DocumentAccept"
+                       Multiple="@Multiple"
+                       OnFilesChanged="OnInputFilesChanged"
+                       Hidden="@false">
+            <ActivatorContent>
+                <MudPaper Height="@DropZoneHeight"
+                          Outlined="true"
+                          Class="@_dragClass">
+                    <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="2" Style="height: 100%;">
+                        <MudIcon Icon="@Icons.Material.Filled.Description" Size="Size.Large" />
+                        <MudText Typo="Typo.body1">@DropZoneText</MudText>
+                        @if (_files.Count > 0)
+                        {
+                            <MudText Typo="Typo.caption">@_files.Count document(s) selected</MudText>
+                        }
+                    </MudStack>
+                </MudPaper>
+            </ActivatorContent>
+        </MudFileUpload>
+
+        @if (_files.Count > 0)
+        {
+            <MudStack Spacing="1">
+                @foreach (var file in _files)
+                {
+                    <MudChip T="string" Color="Color.Primary" 
+                             OnClose="@(() => RemoveFile(file))"
+                             CloseIcon="@Icons.Material.Filled.Close">
+                        @file.Name (@FormatFileSize(file.Size))
+                    </MudChip>
+                }
+            </MudStack>
+        }
+
+        @if (_error)
+        {
+            <MudAlert Severity="Severity.Error" Variant="Variant.Text">@_errorText</MudAlert>
+        }
+    </MudStack>
+    <FieldMessages HelperText="@HelperText" />
+</MudPaper>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Document Upload";
+    [Parameter] public string HelperText { get; set; } = "Upload PDF, Word, or other document files";
+    [Parameter] public string DocumentAccept { get; set; } = ".pdf,.doc,.docx,.txt,.rtf";
+    [Parameter] public long MaxAllowedSize { get; set; } = 10 * 1024 * 1024; // 10MB
+    [Parameter] public bool Multiple { get; set; } = false;
+    [Parameter] public string DropZoneText { get; set; } = "Drag and drop documents here or click to browse";
+    [Parameter] public string DropZoneHeight { get; set; } = "200px";
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public IReadOnlyList<IBrowserFile>? Files { get; set; }
+    [Parameter] public EventCallback<IReadOnlyList<IBrowserFile>?> FilesChanged { get; set; }
+
+    private List<IBrowserFile> _files = new();
+    private bool _error = false;
+    private string _errorText = "";
+    private string _dragClass = "relative rounded-lg border-2 border-dashed pa-4 mud-width-full mud-height-full";
+
+    protected override void OnParametersSet()
+    {
+        if (Files is not null)
+        {
+            _files = Files.ToList();
+        }
+    }
+
+    private async Task OnInputFilesChanged(InputFileChangeEventArgs e)
+    {
+        var files = e.GetMultipleFiles(int.MaxValue);
+        await ProcessFiles(files);
+    }
+
+    private async Task ProcessFiles(IReadOnlyList<IBrowserFile>? files)
+    {
+        _error = false;
+        _errorText = "";
+
+        if (files is null || files.Count == 0)
+        {
+            _files.Clear();
+            await FilesChanged.InvokeAsync(null);
+            StateHasChanged();
+            return;
+        }
+
+        var validFiles = new List<IBrowserFile>();
+        foreach (var file in files)
+        {
+            if (file.Size > MaxAllowedSize)
+            {
+                _error = true;
+                _errorText = $"File {file.Name} exceeds maximum size of {FormatFileSize(MaxAllowedSize)}";
+                continue;
+            }
+
+            if (!IsValidDocumentType(file))
+            {
+                _error = true;
+                _errorText = $"File {file.Name} is not a valid document type";
+                continue;
+            }
+
+            validFiles.Add(file);
+        }
+
+        _files = validFiles;
+        await FilesChanged.InvokeAsync(_files);
+        StateHasChanged();
+    }
+
+    private bool IsValidDocumentType(IBrowserFile file)
+    {
+        var extension = Path.GetExtension(file.Name).ToLowerInvariant();
+        var validExtensions = DocumentAccept.Split(',').Select(e => e.TrimStart('.').ToLowerInvariant());
+        return validExtensions.Contains(extension);
+    }
+
+    private async Task RemoveFile(IBrowserFile file)
+    {
+        _files.Remove(file);
+        if (_files.Count == 0)
+        {
+            await FilesChanged.InvokeAsync(null);
+        }
+        else
+        {
+            await FilesChanged.InvokeAsync(_files);
+        }
+        StateHasChanged();
+    }
+
+    private static string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    private string PaperClass => $"pa-4 mamey-document-upload-pro {Class}";
+}

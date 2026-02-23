@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POS - Ierahkwa Futurehead Shop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #3498db;
+      --success: #27ae60;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --dark: #2c3e50;
+      --sidebar-width: 60px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f6fa; overflow: hidden; height: 100vh; }
+    
+    /* Sidebar */
+    .pos-sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0;
+      width: var(--sidebar-width); background: var(--dark);
+      display: flex; flex-direction: column; z-index: 100;
+    }
+    .pos-sidebar .nav-btn {
+      width: 100%; padding: 15px 0; border: none; background: none;
+      color: #95a5a6; font-size: 1.3rem; cursor: pointer; transition: all 0.2s;
+    }
+    .pos-sidebar .nav-btn:hover, .pos-sidebar .nav-btn.active { background: rgba(255,255,255,0.1); color: var(--primary); }
+    .pos-sidebar .nav-btn.logout { margin-top: auto; color: var(--danger); }
+    
+    /* Main Content */
+    .pos-main { margin-left: var(--sidebar-width); height: 100vh; display: flex; }
+    
+    /* Items Panel */
+    .items-panel { flex: 1; display: flex; flex-direction: column; background: #fff; }
+    .categories-bar { display: flex; gap: 8px; padding: 10px 15px; background: #f8f9fa; overflow-x: auto; flex-shrink: 0; }
+    .cat-btn { padding: 8px 16px; border: none; border-radius: 20px; background: #e9ecef; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+    .cat-btn:hover { background: #dee2e6; }
+    .cat-btn.active { background: var(--primary); color: #fff; }
+    .search-box { padding: 10px 15px; border-bottom: 1px solid #e9ecef; }
+    .search-box input { width: 100%; padding: 10px 15px; border: 1px solid #dee2e6; border-radius: 8px; }
+    .items-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; padding: 15px; overflow-y: auto; align-content: start; }
+    .item-card { background: #fff; border: 2px solid #e9ecef; border-radius: 10px; padding: 12px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .item-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .item-card .icon { font-size: 1.8rem; margin-bottom: 5px; color: var(--primary); }
+    .item-card .name { font-size: 0.85rem; font-weight: 500; margin-bottom: 3px; }
+    .item-card .price { font-size: 0.9rem; font-weight: 700; color: var(--primary); }
+    
+    /* Cart Panel */
+    .cart-panel { width: 360px; display: flex; flex-direction: column; background: #fff; border-left: 1px solid #e9ecef; }
+    .cart-header { padding: 15px; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
+    .cart-header h5 { margin: 0; }
+    .cart-table { padding: 8px 15px; background: #17a2b8; color: #fff; font-weight: 500; display: none; }
+    .cart-items { flex: 1; overflow-y: auto; padding: 10px; }
+    .cart-empty { text-align: center; padding: 40px 20px; color: #adb5bd; }
+    .cart-empty i { font-size: 3rem; margin-bottom: 10px; }
+    .cart-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #f1f1f1; gap: 10px; }
+    .cart-item-info { flex: 1; }
+    .cart-item-name { font-weight: 500; font-size: 0.9rem; }
+    .cart-item-price { font-size: 0.8rem; color: #6c757d; }
+    .cart-item-qty { display: flex; align-items: center; gap: 5px; }
+    .cart-item-qty button { width: 26px; height: 26px; border: none; border-radius: 50%; background: #e9ecef; cursor: pointer; }
+    .cart-item-qty button:hover { background: var(--primary); color: #fff; }
+    .cart-item-total { font-weight: 600; min-width: 60px; text-align: right; }
+    .cart-item-remove { color: var(--danger); cursor: pointer; padding: 5px; }
+    .cart-totals { padding: 15px; background: #f8f9fa; border-top: 1px solid #e9ecef; }
+    .total-row { display: flex; justify-content: space-between; padding: 5px 0; }
+    .total-row.final { font-size: 1.2rem; font-weight: 700; padding-top: 10px; margin-top: 10px; border-top: 2px solid #dee2e6; }
+    .cart-actions { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 10px; padding: 15px; border-top: 1px solid #e9ecef; }
+    
+    /* Tables View */
+    .tables-view { display: none; flex: 1; padding: 20px; overflow: auto; }
+    .tables-view.active { display: block; }
+    .tables-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .tables-legend { display: flex; gap: 15px; margin-bottom: 15px; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.85rem; }
+    .status-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .status-dot.available { background: var(--success); }
+    .status-dot.occupied { background: var(--danger); }
+    .status-dot.reserved { background: var(--warning); }
+    .tables-canvas { position: relative; background: #fff; border-radius: 10px; min-height: 500px; background-image: linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px); background-size: 20px 20px; }
+    .table-item { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: grab; border: 3px solid; font-weight: 600; transition: box-shadow 0.2s; }
+    .table-item.rectangle { border-radius: 8px; }
+    .table-item.circle { border-radius: 50%; }
+    .table-item.available { background: rgba(39, 174, 96, 0.15); border-color: var(--success); color: var(--success); }
+    .table-item.occupied { background: rgba(231, 76, 60, 0.15); border-color: var(--danger); color: var(--danger); }
+    .table-item.reserved { background: rgba(243, 156, 18, 0.15); border-color: var(--warning); color: var(--warning); }
+    .table-item:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    .table-item .t-name { font-size: 0.85rem; }
+    .table-item .t-cap { font-size: 0.7rem; opacity: 0.8; }
+    .table-item .t-amount { font-size: 0.75rem; background: rgba(0,0,0,0.1); padding: 2px 8px; border-radius: 10px; margin-top: 3px; }
+    
+    /* Orders View */
+    .orders-view { display: none; flex: 1; padding: 20px; overflow: auto; }
+    .orders-view.active { display: block; }
+    .order-card { background: #fff; border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .order-info h6 { margin: 0 0 5px 0; }
+    .order-info small { color: #6c757d; }
+    .order-status { padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .order-status.pending { background: var(--warning); }
+    .order-status.completed { background: var(--success); color: #fff; }
+    .order-status.cancelled { background: var(--danger); color: #fff; }
+    .order-total { font-size: 1.1rem; font-weight: 700; margin-left: auto; }
+    
+    /* Reports View */
+    .reports-view { display: none; flex: 1; padding: 20px; overflow: auto; }
+    .reports-view.active { display: block; }
+    .stat-card { background: #fff; border-radius: 10px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+    .stat-card .label { color: #6c757d; margin-top: 5px; }
+    
+    /* Modal */
+    .pos-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+    .pos-modal.active { display: flex; }
+    .pos-modal-content { background: #fff; border-radius: 12px; width: 90%; max-width: 450px; max-height: 90vh; overflow: hidden; }
+    .pos-modal-header { padding: 15px 20px; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; }
+    .pos-modal-header h5 { margin: 0; }
+    .pos-modal-body { padding: 20px; max-height: 60vh; overflow-y: auto; }
+    .pos-modal-footer { padding: 15px 20px; border-top: 1px solid #e9ecef; display: flex; justify-content: flex-end; gap: 10px; }
+    
+    /* Payment */
+    .payment-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .pay-method { padding: 15px; border: 2px solid #dee2e6; border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .pay-method:hover { border-color: var(--primary); }
+    .pay-method.active { border-color: var(--primary); background: rgba(52, 152, 219, 0.1); }
+    .pay-method i { font-size: 1.5rem; display: block; margin-bottom: 5px; }
+    .payment-total { text-align: center; padding: 20px; background: #f8f9fa; border-radius: 10px; margin-bottom: 20px; }
+    .payment-total .amount { font-size: 2rem; font-weight: 700; }
+    
+    /* Table Selection */
+    .table-select-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .table-select-item { padding: 15px; border: 2px solid #dee2e6; border-radius: 10px; text-align: center; cursor: pointer; }
+    .table-select-item:not(.occupied):hover { border-color: var(--primary); }
+    .table-select-item.available { border-color: var(--success); }
+    .table-select-item.occupied { border-color: var(--danger); opacity: 0.5; cursor: not-allowed; }
+    .table-select-item .name { font-weight: 600; }
+    .table-select-item .cap { font-size: 0.8rem; color: #6c757d; }
+    
+    /* Hide inactive views */
+    .sale-view { display: flex; flex: 1; }
+    .sale-view.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="pos-sidebar">
+    <button class="nav-btn active" data-view="sale" title="Sale"><i class="bi bi-cart3"></i></button>
+    <button class="nav-btn" data-view="tables" title="Tables"><i class="bi bi-grid-3x3"></i></button>
+    <button class="nav-btn" data-view="orders" title="Orders"><i class="bi bi-receipt"></i></button>
+    <button class="nav-btn" data-view="reports" title="Reports"><i class="bi bi-bar-chart"></i></button>
+    <button class="nav-btn" onclick="window.location.href='/admin'" title="Admin"><i class="bi bi-gear"></i></button>
+    <button class="nav-btn logout" onclick="logout()" title="Logout"><i class="bi bi-box-arrow-left"></i></button>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="pos-main">
+    <!-- Sale View -->
+    <div class="sale-view" id="sale-view">
+      <div class="items-panel">
+        <div class="categories-bar" id="categories-bar">
+          <button class="cat-btn active" data-cat="1"><i class="bi bi-grid"></i> All</button>
+        </div>
+        <div class="search-box">
+          <input type="text" id="item-search" placeholder="Search items or scan barcode...">
+        </div>
+        <div class="items-grid" id="items-grid"></div>
+      </div>
+      
+      <div class="cart-panel">
+        <div class="cart-header">
+          <h5><i class="bi bi-basket"></i> Current Order</h5>
+          <button class="btn btn-sm btn-outline-primary" onclick="showTableSelect()"><i class="bi bi-grid-3x3"></i> Table</button>
+        </div>
+        <div class="cart-table" id="cart-table"></div>
+        <div class="cart-items" id="cart-items">
+          <div class="cart-empty"><i class="bi bi-basket"></i><p>Cart is empty</p></div>
+        </div>
+        <div class="cart-totals">
+          <div class="total-row"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+          <div class="total-row"><span>Tax</span><span id="cart-tax">$0.00</span></div>
+          <div class="total-row discount-row" style="display:none;"><span>Discount</span><span id="cart-discount">-$0.00</span></div>
+          <div class="total-row final"><span>Total</span><span id="cart-total">$0.00</span></div>
+        </div>
+        <div class="cart-actions">
+          <button class="btn btn-danger" onclick="clearCart()"><i class="bi bi-trash"></i></button>
+          <button class="btn btn-secondary" onclick="showDiscountModal()"><i class="bi bi-percent"></i></button>
+          <button class="btn btn-primary btn-lg" id="btn-pay" onclick="showPayment()" disabled><i class="bi bi-credit-card"></i> Pay</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tables View -->
+    <div class="tables-view" id="tables-view">
+      <div class="tables-header">
+        <h4><i class="bi bi-grid-3x3"></i> Table Management</h4>
+        <button class="btn btn-primary btn-sm" onclick="showAddTable()"><i class="bi bi-plus"></i> Add Table</button>
+      </div>
+      <div class="tables-legend">
+        <span class="legend-item"><span class="status-dot available"></span> Available</span>
+        <span class="legend-item"><span class="status-dot occupied"></span> Occupied</span>
+        <span class="legend-item"><span class="status-dot reserved"></span> Reserved</span>
+      </div>
+      <div class="tables-canvas" id="tables-canvas"></div>
+    </div>
+
+    <!-- Orders View -->
+    <div class="orders-view" id="orders-view">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4><i class="bi bi-receipt"></i> Orders</h4>
+        <div class="d-flex gap-2">
+          <input type="date" id="orders-date" class="form-control form-control-sm" style="width:auto;">
+          <select id="orders-status" class="form-select form-select-sm" style="width:auto;">
+            <option value="">All</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+      </div>
+      <div id="orders-list"></div>
+    </div>
+
+    <!-- Reports View -->
+    <div class="reports-view" id="reports-view">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4><i class="bi bi-bar-chart"></i> Daily Report</h4>
+        <input type="date" id="report-date" class="form-control form-control-sm" style="width:auto;">
+      </div>
+      <div class="row g-3 mb-4" id="report-stats"></div>
+      <div class="card"><div class="card-body"><h6>Top Selling Items</h6><div id="report-items"></div></div></div>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div class="pos-modal" id="modal">
+    <div class="pos-modal-content">
+      <div class="pos-modal-header">
+        <h5 id="modal-title">Modal</h5>
+        <button class="btn-close" onclick="closeModal()"></button>
+      </div>
+      <div class="pos-modal-body" id="modal-body"></div>
+      <div class="pos-modal-footer" id="modal-footer"></div>
+    </div>
+  </div>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+    const API = path => fetch(`/api/pos${path}`).then(r => r.json());
+    const POST = (path, data) => fetch(`/api/pos${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(r => r.json());
+    
+    let cart = [];
+    let items = [];
+    let categories = [];
+    let tables = [];
+    let selectedTable = null;
+    let discount = { amount: 0, type: 'fixed' };
+    const currency = '$';
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check auth
+      const auth = await fetch('/api/admin/login', { method: 'HEAD' }).catch(() => null);
+      
+      // Set today's date
+      const today = new Date().toISOString().slice(0, 10);
+      $('#orders-date').value = today;
+      $('#report-date').value = today;
+      
+      // Load data
+      await loadCategories();
+      await loadItems();
+      
+      // Event listeners
+      setupEvents();
+    });
+
+    function setupEvents() {
+      // Navigation
+      $$('.nav-btn[data-view]').forEach(btn => {
+        btn.onclick = () => {
+          $$('.nav-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          showView(btn.dataset.view);
+        };
+      });
+      
+      // Categories
+      $('#categories-bar').onclick = e => {
+        const btn = e.target.closest('.cat-btn');
+        if (btn) {
+          $$('.cat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          filterItems(btn.dataset.cat);
+        }
+      };
+      
+      // Items
+      $('#items-grid').onclick = e => {
+        const card = e.target.closest('.item-card');
+        if (card) addToCart(parseInt(card.dataset.id));
+      };
+      
+      // Search
+      $('#item-search').oninput = e => searchItems(e.target.value);
+      
+      // Cart
+      $('#cart-items').onclick = e => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const item = btn.closest('.cart-item');
+        if (!item) return;
+        const idx = parseInt(item.dataset.idx);
+        if (btn.classList.contains('qty-minus')) updateQty(idx, -1);
+        else if (btn.classList.contains('qty-plus')) updateQty(idx, 1);
+        else if (btn.classList.contains('remove')) removeFromCart(idx);
+      };
+      
+      // Orders filter
+      $('#orders-date').onchange = loadOrders;
+      $('#orders-status').onchange = loadOrders;
+      
+      // Report date
+      $('#report-date').onchange = loadReport;
+    }
+
+    function showView(view) {
+      $('#sale-view').classList.toggle('hidden', view !== 'sale');
+      $('#tables-view').classList.toggle('active', view === 'tables');
+      $('#orders-view').classList.toggle('active', view === 'orders');
+      $('#reports-view').classList.toggle('active', view === 'reports');
+      
+      if (view === 'tables') loadTables();
+      if (view === 'orders') loadOrders();
+      if (view === 'reports') loadReport();
+    }
+
+    async function loadCategories() {
+      categories = await API('/categories');
+      const bar = $('#categories-bar');
+      bar.innerHTML = '<button class="cat-btn active" data-cat="1"><i class="bi bi-grid"></i> All</button>';
+      categories.filter(c => c.id !== 1).forEach(c => {
+        bar.innerHTML += `<button class="cat-btn" data-cat="${c.id}"><i class="bi bi-${c.icon || 'tag'}"></i> ${c.name}</button>`;
+      });
+    }
+
+    async function loadItems() {
+      items = await API('/items');
+      renderItems();
+    }
+
+    function renderItems(list = items) {
+      const grid = $('#items-grid');
+      if (!list.length) {
+        grid.innerHTML = '<p class="text-muted text-center" style="grid-column:1/-1">No items found</p>';
+        return;
+      }
+      grid.innerHTML = list.map(i => `
+        <div class="item-card" data-id="${i.id}">
+          <div class="icon"><i class="bi bi-box"></i></div>
+          <div class="name">${i.name}</div>
+          <div class="price">${currency}${i.price.toFixed(2)}</div>
+        </div>
+      `).join('');
+    }
+
+    function filterItems(catId) {
+      if (catId == 1) renderItems();
+      else renderItems(items.filter(i => i.pos_category_id == catId));
+    }
+
+    function searchItems(q) {
+      if (!q.trim()) return renderItems();
+      const lower = q.toLowerCase();
+      renderItems(items.filter(i => i.name.toLowerCase().includes(lower) || i.barcode?.includes(q)));
+    }
+
+    function addToCart(itemId) {
+      const item = items.find(i => i.id === itemId);
+      if (!item) return;
+      const existing = cart.findIndex(i => i.id === itemId);
+      if (existing >= 0) cart[existing].quantity++;
+      else cart.push({ ...item, quantity: 1 });
+      renderCart();
+    }
+
+    function updateQty(idx, delta) {
+      cart[idx].quantity += delta;
+      if (cart[idx].quantity <= 0) cart.splice(idx, 1);
+      renderCart();
+    }
+
+    function removeFromCart(idx) {
+      cart.splice(idx, 1);
+      renderCart();
+    }
+
+    function clearCart() {
+      cart = [];
+      selectedTable = null;
+      discount = { amount: 0, type: 'fixed' };
+      $('#cart-table').style.display = 'none';
+      renderCart();
+    }
+
+    function renderCart() {
+      const container = $('#cart-items');
+      const payBtn = $('#btn-pay');
+      
+      if (!cart.length) {
+        container.innerHTML = '<div class="cart-empty"><i class="bi bi-basket"></i><p>Cart is empty</p></div>';
+        payBtn.disabled = true;
+        updateTotals();
+        return;
+      }
+      
+      container.innerHTML = cart.map((item, idx) => `
+        <div class="cart-item" data-idx="${idx}">
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-price">${currency}${item.price.toFixed(2)}</div>
+          </div>
+          <div class="cart-item-qty">
+            <button class="qty-minus">-</button>
+            <span>${item.quantity}</span>
+            <button class="qty-plus">+</button>
+          </div>
+          <div class="cart-item-total">${currency}${(item.price * item.quantity).toFixed(2)}</div>
+          <button class="cart-item-remove remove"><i class="bi bi-trash"></i></button>
+        </div>
+      `).join('');
+      
+      payBtn.disabled = false;
+      updateTotals();
+    }
+
+    function updateTotals() {
+      const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+      const tax = cart.reduce((s, i) => s + i.price * i.quantity * (i.tax_rate || 0), 0);
+      let discountAmt = discount.type === 'percentage' ? subtotal * discount.amount / 100 : discount.amount;
+      const total = subtotal + tax - discountAmt;
+      
+      $('#cart-subtotal').textContent = `${currency}${subtotal.toFixed(2)}`;
+      $('#cart-tax').textContent = `${currency}${tax.toFixed(2)}`;
+      $('#cart-total').textContent = `${currency}${total.toFixed(2)}`;
+      
+      const discRow = $('.discount-row');
+      if (discountAmt > 0) {
+        discRow.style.display = 'flex';
+        $('#cart-discount').textContent = `-${currency}${discountAmt.toFixed(2)}`;
+      } else {
+        discRow.style.display = 'none';
+      }
+    }
+
+    function getTotal() {
+      const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+      const tax = cart.reduce((s, i) => s + i.price * i.quantity * (i.tax_rate || 0), 0);
+      const discountAmt = discount.type === 'percentage' ? subtotal * discount.amount / 100 : discount.amount;
+      return subtotal + tax - discountAmt;
+    }
+
+    // Tables
+    async function loadTables() {
+      tables = await API('/tables');
+      const canvas = $('#tables-canvas');
+      canvas.innerHTML = tables.map(t => `
+        <div class="table-item ${t.shape} ${t.status}" data-id="${t.id}" style="left:${t.pos_x}px;top:${t.pos_y}px;width:${t.width}px;height:${t.height}px;">
+          <div class="t-name">${t.name}</div>
+          <div class="t-cap"><i class="bi bi-person"></i> ${t.capacity}</div>
+          ${t.order_total ? `<div class="t-amount">${currency}${t.order_total.toFixed(2)}</div>` : ''}
+        </div>
+      `).join('');
+      
+      // Make draggable
+      canvas.querySelectorAll('.table-item').forEach(makeTableDraggable);
+    }
+
+    function makeTableDraggable(el) {
+      let dragging = false, startX, startY, origX, origY;
+      el.onmousedown = e => {
+        if (e.button !== 0) return;
+        dragging = true;
+        startX = e.clientX; startY = e.clientY;
+        origX = parseInt(el.style.left); origY = parseInt(el.style.top);
+      };
+      document.onmousemove = e => {
+        if (!dragging) return;
+        el.style.left = (origX + e.clientX - startX) + 'px';
+        el.style.top = (origY + e.clientY - startY) + 'px';
+      };
+      document.onmouseup = async () => {
+        if (!dragging) return;
+        dragging = false;
+        const id = el.dataset.id;
+        await fetch(`/api/pos/tables/${id}/position`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pos_x: parseInt(el.style.left), pos_y: parseInt(el.style.top) })
+        });
+      };
+    }
+
+    // Orders
+    async function loadOrders() {
+      const date = $('#orders-date').value;
+      const status = $('#orders-status').value;
+      let url = `/orders?date=${date}`;
+      if (status) url += `&status=${status}`;
+      const orders = await API(url);
+      
+      const container = $('#orders-list');
+      if (!orders.length) {
+        container.innerHTML = '<p class="text-muted text-center">No orders found</p>';
+        return;
+      }
+      
+      container.innerHTML = orders.map(o => `
+        <div class="order-card">
+          <div class="order-info">
+            <h6>${o.order_number}</h6>
+            <small>${o.table_name || 'No table'} • ${new Date(o.created_at).toLocaleTimeString()}</small>
+          </div>
+          <span class="order-status ${o.status}">${o.status}</span>
+          <div class="order-total">${currency}${o.total.toFixed(2)}</div>
+        </div>
+      `).join('');
+    }
+
+    // Reports
+    async function loadReport() {
+      const date = $('#report-date').value;
+      const data = await API(`/reports/daily?date=${date}`);
+      
+      $('#report-stats').innerHTML = `
+        <div class="col-md-3"><div class="stat-card"><div class="value">${data.summary.total_orders}</div><div class="label">Orders</div></div></div>
+        <div class="col-md-3"><div class="stat-card"><div class="value">${currency}${data.summary.revenue.toFixed(2)}</div><div class="label">Revenue</div></div></div>
+        <div class="col-md-3"><div class="stat-card"><div class="value">${currency}${data.summary.tax_total.toFixed(2)}</div><div class="label">Tax</div></div></div>
+        <div class="col-md-3"><div class="stat-card"><div class="value">${currency}${(data.summary.revenue / (data.summary.total_orders || 1)).toFixed(2)}</div><div class="label">Avg Order</div></div></div>
+      `;
+      
+      $('#report-items').innerHTML = data.top_items.length ? `
+        <table class="table table-sm">
+          <thead><tr><th>Item</th><th>Qty</th><th>Revenue</th></tr></thead>
+          <tbody>${data.top_items.map(i => `<tr><td>${i.item_name}</td><td>${i.quantity}</td><td>${currency}${i.revenue.toFixed(2)}</td></tr>`).join('')}</tbody>
+        </table>
+      ` : '<p class="text-muted">No sales data</p>';
+    }
+
+    // Modals
+    function showModal(title, body, footer = '') {
+      $('#modal-title').textContent = title;
+      $('#modal-body').innerHTML = body;
+      $('#modal-footer').innerHTML = footer;
+      $('#modal').classList.add('active');
+    }
+    function closeModal() { $('#modal').classList.remove('active'); }
+
+    function showTableSelect() {
+      loadTables().then(() => {
+        const body = `<div class="table-select-grid">${tables.map(t => `
+          <div class="table-select-item ${t.status}" data-id="${t.id}" ${t.status === 'occupied' ? 'disabled' : ''}>
+            <div class="name">${t.name}</div>
+            <div class="cap"><i class="bi bi-person"></i> ${t.capacity}</div>
+          </div>
+        `).join('')}</div>`;
+        showModal('Select Table', body);
+        
+        $$('.table-select-item:not(.occupied)').forEach(el => {
+          el.onclick = () => {
+            selectedTable = tables.find(t => t.id == el.dataset.id);
+            $('#cart-table').textContent = selectedTable.name;
+            $('#cart-table').style.display = 'block';
+            closeModal();
+          };
+        });
+      });
+    }
+
+    function showDiscountModal() {
+      const body = `
+        <div class="mb-3">
+          <label class="form-label">Type</label>
+          <select class="form-select" id="disc-type">
+            <option value="fixed">Fixed Amount</option>
+            <option value="percentage">Percentage</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Amount</label>
+          <input type="number" class="form-control" id="disc-amount" min="0" step="0.01" value="${discount.amount}">
+        </div>
+      `;
+      const footer = `
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="applyDiscount()">Apply</button>
+      `;
+      showModal('Discount', body, footer);
+    }
+
+    function applyDiscount() {
+      discount = {
+        type: $('#disc-type').value,
+        amount: parseFloat($('#disc-amount').value) || 0
+      };
+      updateTotals();
+      closeModal();
+    }
+
+    function showPayment() {
+      if (!cart.length) return;
+      const total = getTotal();
+      const body = `
+        <div class="payment-total">
+          <p class="mb-1">Total</p>
+          <div class="amount">${currency}${total.toFixed(2)}</div>
+        </div>
+        <div class="payment-methods">
+          <div class="pay-method active" data-method="cash"><i class="bi bi-cash"></i> Cash</div>
+          <div class="pay-method" data-method="card"><i class="bi bi-credit-card"></i> Card</div>
+          <div class="pay-method" data-method="igt"><i class="bi bi-currency-exchange"></i> IGT</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Amount Paid</label>
+          <input type="number" class="form-control" id="pay-amount" min="${total}" step="0.01" value="${total.toFixed(2)}">
+        </div>
+        <div id="pay-change" style="display:none;text-align:center;font-size:1.1rem;">
+          <strong>Change:</strong> <span id="change-amt">${currency}0.00</span>
+        </div>
+      `;
+      const footer = `
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-success btn-lg" onclick="processPayment()"><i class="bi bi-check-lg"></i> Complete</button>
+      `;
+      showModal('Payment', body, footer);
+      
+      $$('.pay-method').forEach(m => {
+        m.onclick = () => {
+          $$('.pay-method').forEach(x => x.classList.remove('active'));
+          m.classList.add('active');
+        };
+      });
+      
+      $('#pay-amount').oninput = e => {
+        const paid = parseFloat(e.target.value) || 0;
+        const change = paid - total;
+        if (change > 0) {
+          $('#pay-change').style.display = 'block';
+          $('#change-amt').textContent = `${currency}${change.toFixed(2)}`;
+        } else {
+          $('#pay-change').style.display = 'none';
+        }
+      };
+    }
+
+    async function processPayment() {
+      const method = $('.pay-method.active').dataset.method;
+      const amount = parseFloat($('#pay-amount').value);
+      const total = getTotal();
+      
+      if (amount < total) {
+        alert('Insufficient payment');
+        return;
+      }
+      
+      // Create order
+      const orderResult = await POST('/orders', {
+        table_id: selectedTable?.id,
+        items: cart.map(i => ({
+          id: i.id,
+          name: i.name,
+          price: i.price,
+          tax_rate: i.tax_rate,
+          quantity: i.quantity
+        }))
+      });
+      
+      if (orderResult.error) {
+        alert(orderResult.error);
+        return;
+      }
+      
+      // Process payment
+      await POST(`/orders/${orderResult.id}/pay`, { method, amount });
+      
+      closeModal();
+      clearCart();
+      
+      // Show success
+      const change = amount - total;
+      showModal('Order Complete', `
+        <div class="text-center">
+          <i class="bi bi-check-circle text-success" style="font-size:4rem;"></i>
+          <h4 class="mt-3">Order Completed!</h4>
+          <p class="text-muted">${orderResult.order_number}</p>
+          <div class="bg-light p-3 rounded mt-3">
+            <p class="mb-1"><strong>Total:</strong> ${currency}${total.toFixed(2)}</p>
+            <p class="mb-1"><strong>Paid:</strong> ${currency}${amount.toFixed(2)}</p>
+            ${change > 0 ? `<p class="mb-0"><strong>Change:</strong> ${currency}${change.toFixed(2)}</p>` : ''}
+          </div>
+        </div>
+      `, `<button class="btn btn-primary" onclick="closeModal()">New Order</button>`);
+    }
+
+    function showAddTable() {
+      const body = `
+        <div class="mb-3"><label class="form-label">Name</label><input type="text" class="form-control" id="tbl-name" required></div>
+        <div class="row">
+          <div class="col-6 mb-3"><label class="form-label">Capacity</label><input type="number" class="form-control" id="tbl-cap" value="4" min="1"></div>
+          <div class="col-6 mb-3"><label class="form-label">Shape</label>
+            <select class="form-select" id="tbl-shape"><option value="rectangle">Rectangle</option><option value="circle">Circle</option></select>
+          </div>
+        </div>
+      `;
+      const footer = `
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveTable()">Save</button>
+      `;
+      showModal('Add Table', body, footer);
+    }
+
+    async function saveTable() {
+      const data = {
+        name: $('#tbl-name').value,
+        capacity: parseInt($('#tbl-cap').value) || 4,
+        shape: $('#tbl-shape').value,
+        pos_x: 50,
+        pos_y: 50,
+        width: 100,
+        height: 100,
+        floor: 'main'
+      };
+      await POST('/tables', data);
+      closeModal();
+      loadTables();
+    }
+
+    function logout() {
+      window.location.href = '/admin';
+    }
+  </script>
+</body>
+</html>

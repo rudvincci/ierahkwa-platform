@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backup System | Ierahkwa Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root { --bg-dark: #0f172a; --bg-card: #1e293b; --bg-input: #334155; --border: #475569; --text: #f1f5f9; --text-muted: #94a3b8; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-dark); color: var(--text); min-height: 100vh; }
+    .navbar { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 1px solid var(--border); }
+    .navbar-brand { font-weight: 700; color: #f59e0b !important; }
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; }
+    .card-header { background: transparent; border-bottom: 1px solid var(--border); }
+    .table { color: var(--text); font-size: 0.85rem; }
+    .table th { color: var(--text-muted); border-color: var(--border); }
+    .table td { border-color: rgba(255,255,255,0.05); }
+    .backup-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: all 0.2s; }
+    .backup-card:hover { border-color: #f59e0b; transform: translateY(-2px); }
+    .backup-card .icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .stat-card { background: linear-gradient(135deg, var(--bg-card) 0%, rgba(245,158,11,0.1) 100%); border-radius: 12px; padding: 1.25rem; border: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-dark sticky-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="/backup"><i class="bi bi-hdd-stack me-2"></i>Backup System</a>
+      <div class="d-flex gap-2">
+        <a href="/global-banking" class="btn btn-outline-success btn-sm"><i class="bi bi-globe2"></i></a>
+        <a href="/trading" class="btn btn-outline-primary btn-sm"><i class="bi bi-graph-up"></i></a>
+        <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-shop"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid px-4 py-4">
+    <div class="row g-3 mb-4">
+      <div class="col-md-2"><div class="stat-card"><div class="h3 mb-0" id="totalBackups">0</div><div class="text-muted small">Total Backups</div></div></div>
+      <div class="col-md-2"><div class="stat-card"><div class="h3 mb-0" id="totalSize">0 MB</div><div class="text-muted small">Total Size</div></div></div>
+      <div class="col-md-2"><div class="stat-card"><div class="h3 mb-0" id="lastBackup">Never</div><div class="text-muted small">Last Backup</div></div></div>
+      <div class="col-md-2"><button class="btn btn-warning w-100 h-100" onclick="backupAll()"><i class="bi bi-download me-2"></i>All Categories</button></div>
+      <div class="col-md-2"><button class="btn btn-info w-100 h-100" onclick="backupDepartments()"><i class="bi bi-building me-2"></i>All Departments</button></div>
+      <div class="col-md-2"><button class="btn btn-danger w-100 h-100" onclick="completeBackup()"><i class="bi bi-shield-check me-2"></i>Complete System</button></div>
+    </div>
+
+    <h5 class="mb-3">Backup Categories</h5>
+    <div class="row g-3 mb-4" id="categories"></div>
+
+    <div class="row g-4">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">All Backups</h5>
+            <select class="form-select w-auto" id="filterCategory" onchange="loadBackups()" style="background:var(--bg-input);color:var(--text);border-color:var(--border)">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive" style="max-height:400px;overflow-y:auto">
+              <table class="table table-hover mb-0">
+                <thead><tr><th>Filename</th><th>Category</th><th>Size</th><th>Date</th><th>Actions</th></tr></thead>
+                <tbody id="backupsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-building me-1"></i>Department Backups</h6>
+            <span class="badge bg-info" id="deptCount">0</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="list-group list-group-flush" id="departmentsList" style="max-height:200px;overflow-y:auto"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h6 class="mb-0"><i class="bi bi-code-slash me-1"></i>Source Code Backup</h6></div>
+          <div class="card-body">
+            <button class="btn btn-outline-primary w-100 mb-2" onclick="backupSourceCode()"><i class="bi bi-file-code me-1"></i>Backup Source Code</button>
+            <div id="sourceCodeBackups" class="small"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const categoryColors = { node: '#6366f1', bank: '#10b981', 'global-banks': '#0ea5e9', clearinghouse: '#14b8a6', exchange: '#f59e0b', trading: '#ef4444', monetary: '#8b5cf6', humanitarian: '#ec4899', tokens: '#06b6d4', shop: '#84cc16', users: '#a855f7', full: '#3b82f6' };
+    const categoryIcons = { node: 'hdd-network', bank: 'bank', 'global-banks': 'globe2', clearinghouse: 'arrow-left-right', exchange: 'currency-exchange', trading: 'graph-up-arrow', monetary: 'stack', humanitarian: 'heart', tokens: 'coin', shop: 'shop', users: 'people', full: 'archive' };
+
+    document.addEventListener('DOMContentLoaded', () => { loadCategories(); loadStats(); loadBackups(); loadDepartments(); loadSourceCodeBackups(); });
+
+    async function api(url, method = 'GET', data = null) {
+      const opts = { method, headers: { 'Content-Type': 'application/json' } };
+      if (data) opts.body = JSON.stringify(data);
+      return (await fetch(url, opts)).json();
+    }
+
+    function formatSize(bytes) {
+      if (bytes >= 1e9) return (bytes / 1e9).toFixed(2) + ' GB';
+      if (bytes >= 1e6) return (bytes / 1e6).toFixed(2) + ' MB';
+      if (bytes >= 1e3) return (bytes / 1e3).toFixed(2) + ' KB';
+      return bytes + ' B';
+    }
+
+    async function loadCategories() {
+      const cats = await api('/api/backup/categories');
+      document.getElementById('categories').innerHTML = cats.map(c => `
+        <div class="col-md-3">
+          <div class="backup-card" onclick="createBackup('${c.id}')">
+            <div class="d-flex align-items-center gap-3">
+              <div class="icon" style="background:${categoryColors[c.id] || '#666'}20;color:${categoryColors[c.id] || '#666'}">
+                <i class="bi bi-${categoryIcons[c.id] || 'folder'}"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">${c.name}</h6>
+                <small class="text-muted">${c.backup_count} backups</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+      document.getElementById('filterCategory').innerHTML = '<option value="">All Categories</option>' + 
+        cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('') +
+        '<option value="full">Full Platform</option>';
+    }
+
+    async function loadStats() {
+      const stats = await api('/api/backup/stats');
+      document.getElementById('totalBackups').textContent = stats.total_backups || 0;
+      document.getElementById('totalSize').textContent = formatSize(stats.total_size || 0);
+      document.getElementById('lastBackup').textContent = stats.latest_backup ? new Date(stats.latest_backup.created_at).toLocaleDateString() : 'Never';
+    }
+
+    async function loadBackups() {
+      const category = document.getElementById('filterCategory').value;
+      const backups = await api('/api/backup/list' + (category ? `/${category}` : ''));
+      document.getElementById('backupsTable').innerHTML = backups.slice(0, 50).map(b => `
+        <tr>
+          <td><code class="small">${b.filename.substring(0, 35)}...</code></td>
+          <td><span class="badge" style="background:${categoryColors[b.category] || '#666'}">${b.category}</span></td>
+          <td>${formatSize(b.size)}</td>
+          <td class="small">${new Date(b.created_at).toLocaleString()}</td>
+          <td>
+            <a href="/api/backup/download/${b.category}/${b.filename}" class="btn btn-sm btn-outline-info"><i class="bi bi-download"></i></a>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteBackup('${b.category}','${b.filename}')"><i class="bi bi-trash"></i></button>
+          </td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" class="text-center text-muted">No backups</td></tr>';
+    }
+
+    async function loadDepartments() {
+      const depts = await api('/api/backup/departments');
+      document.getElementById('deptCount').textContent = depts.length;
+      document.getElementById('departmentsList').innerHTML = depts.slice(0, 15).map(d => `
+        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between" onclick="backupDepartment(${d.id})" style="background:transparent;color:var(--text);border-color:var(--border)">
+          <span class="small">${d.symbol}</span>
+          <span class="badge bg-secondary">${d.backup_count}</span>
+        </a>
+      `).join('') || '<div class="p-2 text-muted small">No departments</div>';
+    }
+
+    async function loadSourceCodeBackups() {
+      const backups = await api('/api/backup/source-code/list');
+      document.getElementById('sourceCodeBackups').innerHTML = backups.slice(0, 3).map(b => `
+        <div class="d-flex justify-content-between text-muted mb-1">
+          <span>${new Date(b.created_at).toLocaleDateString()}</span>
+          <span>${formatSize(b.size)}</span>
+        </div>
+      `).join('') || '<span class="text-muted">No backups yet</span>';
+    }
+
+    async function createBackup(category) {
+      const res = await api(`/api/backup/create/${category}`, 'POST', { type: 'manual' });
+      if (res.ok) { alert('Backup created: ' + res.backup.filename); loadStats(); loadBackups(); loadCategories(); }
+      else alert(res.error || 'Failed');
+    }
+
+    async function backupAll() {
+      const res = await api('/api/backup/create-all', 'POST', { type: 'manual' });
+      if (res.ok) { alert(`Created ${res.count} backups successfully!`); loadStats(); loadBackups(); loadCategories(); }
+      else alert(res.error || 'Failed');
+    }
+
+    async function backupDepartments() {
+      const res = await api('/api/backup/departments/all', 'POST');
+      if (res.ok) { alert(`Backed up ${res.backed_up} departments!`); loadDepartments(); }
+      else alert(res.error || 'Failed');
+    }
+
+    async function backupDepartment(id) {
+      const res = await api(`/api/backup/departments/${id}`, 'POST');
+      if (res.ok) { alert(`Department backup created!\n${res.department}\n${res.filename}`); loadDepartments(); }
+      else alert(res.error || 'Failed');
+    }
+
+    async function backupSourceCode() {
+      const res = await api('/api/backup/source-code', 'POST');
+      if (res.ok) { alert(`Source code backed up!\n${res.filename}\nRoutes: ${res.files_backed_up.routes}`); loadSourceCodeBackups(); }
+      else alert(res.error || 'Failed');
+    }
+
+    async function completeBackup() {
+      if (!confirm('This will create a complete backup of ALL systems, departments, and source code. Continue?')) return;
+      const res = await api('/api/backup/complete-system', 'POST');
+      if (res.ok) { 
+        alert(`Complete System Backup Finished!\n\nCategories: ${res.summary.categories_backed_up}\nDepartments: ${res.summary.departments_backed_up}\nSource Code: ${res.summary.source_code_backed_up ? 'Yes' : 'No'}\nFull Backup: ${res.summary.full_backup_created ? 'Yes' : 'No'}`);
+        loadStats(); loadBackups(); loadCategories(); loadDepartments(); loadSourceCodeBackups();
+      } else alert(res.error || 'Failed');
+    }
+
+    async function restoreBackup(category, filename) {
+      if (!confirm('Restore from this backup? Current data will be backed up first.')) return;
+      const res = await api(`/api/backup/restore/${category}/${filename}`, 'POST');
+      if (res.ok) { alert('Restored successfully!'); loadStats(); }
+      else alert(res.error || 'Failed');
+    }
+
+    async function deleteBackup(category, filename) {
+      if (!confirm('Delete this backup?')) return;
+      const res = await api(`/api/backup/${category}/${filename}`, 'DELETE');
+      if (res.ok) { loadStats(); loadBackups(); loadCategories(); }
+      else alert(res.error || 'Failed');
+    }
+  </script>
+</body>
+</html>

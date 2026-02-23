@@ -1,0 +1,123 @@
+@page "/biis"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IBIISClient BIISClient
+@inject ILogger<BIISHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="BIIS" Icon="fas fa-globe-americas" Subtitle="Bank of International Indigenous Settlements">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <!-- Dashboard Metrics -->
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Liquidity Pools" Value="@_totalPools.ToString()" Icon="fas fa-swimming-pool" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Total Liquidity" Value="@_totalLiquidity.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Settlements" Value="@_totalSettlements.ToString()" Icon="fas fa-exchange-alt" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Active Channels" Value="@_activeChannels.ToString()" Icon="fas fa-network-wired" Color="#8B5CF6" />
+        </MudItem>
+    </MudGrid>
+
+    <!-- Navigation Cards -->
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Treaty Liquidity Pool" Elevation="2">
+                <MudText Typo="Typo.body2">Manage treaty-based liquidity pools</MudText>
+                <MudButton Href="/biis/liquidity-pool" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Liquidity Pool
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Currency Exchange" Elevation="2">
+                <MudText Typo="Typo.body2">Cross-border currency exchange services</MudText>
+                <MudButton Href="/biis/currency-exchange" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Exchange
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Cross-Border Settlement" Elevation="2">
+                <MudText Typo="Typo.body2">International settlement operations</MudText>
+                <MudButton Href="/biis/cross-border" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Settlement
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Interbank Channels" Elevation="2">
+                <MudText Typo="Typo.body2">Manage interbank communication channels</MudText>
+                <MudButton Href="/biis/interbank" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Channels
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Blockchain Transparency" Elevation="2">
+                <MudText Typo="Typo.body2">View transparent blockchain records</MudText>
+                <MudButton Href="/biis/transparency" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Transparency
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Identity & Compliance" Elevation="2">
+                <MudText Typo="Typo.body2">Identity verification and treaty compliance</MudText>
+                <MudButton Href="/biis/identity-compliance" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Compliance
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private int _totalPools;
+    private decimal _totalLiquidity;
+    private int _totalSettlements;
+    private int _activeChannels;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            var pools = await BIISClient.GetLiquidityPoolsAsync();
+            _totalPools = pools.Count;
+            _totalLiquidity = pools.Sum(p => decimal.Parse(p.TotalLiquidity ?? "0"));
+
+            var settlements = await BIISClient.GetCrossBorderSettlementsAsync();
+            _totalSettlements = settlements.Count;
+
+            var channels = await BIISClient.GetInterbankChannelsAsync();
+            _activeChannels = channels.Count; // All channels are considered active
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading BIIS dashboard data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}

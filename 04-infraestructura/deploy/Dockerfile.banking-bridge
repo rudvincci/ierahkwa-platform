@@ -1,0 +1,9 @@
+# Banking Bridge - para Fly.io / builds desde raíz
+FROM node:20-alpine
+WORKDIR /app
+COPY node/package*.json ./
+RUN npm install --production
+COPY node/ ./
+ENV BRIDGE_PORT=3001
+EXPOSE 3001
+CMD ["node", "banking-bridge.js"]

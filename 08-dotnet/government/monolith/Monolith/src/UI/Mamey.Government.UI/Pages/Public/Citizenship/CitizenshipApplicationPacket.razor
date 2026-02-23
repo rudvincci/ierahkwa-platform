@@ -1,0 +1,247 @@
+@using Mamey.Government.UI.ViewModels.Citizenship
+@using Microsoft.AspNetCore.Components.Forms
+@using MudBlazor
+<MudStepper @ref="_stepper" @bind-ActiveIndex="_index" Linear="true" CompletedStepColor="Color.Success" CurrentStepColor="Color.Primary">
+       
+    <TitleTemplate>@*This empty template prevents rendering the title*@</TitleTemplate>
+    <ConnectorTemplate Context="step">
+        <div class="mud-stepper-nav-connector">
+            @{
+                int value = step.Completed ? 100 : 0;
+                <MudProgressLinear Indeterminate="@(step.IsActive)" Striped Value="value" Min="0" Max="100" Color="Color.Success" Style="height: 2px; background-color: #d4ddeb; border-radius: 2px;" />
+            }
+        </div>
+    </ConnectorTemplate>
+    <LabelTemplate>
+        @if (context.IsActive) {
+            <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="context.Completed ? Color.Success : Color.Primary"></MudIcon>
+        }
+        else if (context.Completed) {
+            <div style="height: 10px; width:10px; background-color: #3dcb6c; border-radius: 50%;"></div>
+        }
+        else {
+            <div style="height: 10px; width:10px; background-color: #d4ddeb; border-radius: 50%;"></div>
+        }
+    </LabelTemplate>
+    <ChildContent>
+        @* Step 1: Personal Information *@
+        <MudStep Title="CIT-001A" Icon="@Icons.Material.Filled.Person">
+            <MudPaper Class="pa-4">
+                <Cit001AForm ViewModel="ViewModel" />
+            </MudPaper>
+        </MudStep>
+
+        <MudStep Title="CIT001B Form" Icon="@Icons.Material.Filled.Payment">
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6" Class="mb-3">CIT001B Form</MudText>
+                    <Cit001BForm ViewModel="ViewModel" />
+                </MudCardContent>
+            </MudCard>
+        </MudStep>
+        <MudStep Title="CIT001C Form" Icon="@Icons.Material.Filled.Payment">
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6" Class="mb-3">CIT001C Form</MudText>
+                    <Cit001CForm ViewModel="ViewModel" />
+                </MudCardContent>
+            </MudCard>
+        </MudStep>
+        <MudStep Title="CIT001D Form" Icon="@Icons.Material.Filled.Payment">
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6" Class="mb-3">CIT001D Form</MudText>
+                    <Cit001DForm ViewModel="ViewModel" />
+                </MudCardContent>
+            </MudCard>
+        </MudStep>
+        <MudStep Title="CIT001E Form" Icon="@Icons.Material.Filled.Payment">
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6" Class="mb-3">CIT001E Form</MudText>
+                    <Cit001EForm ViewModel="ViewModel" />
+                </MudCardContent>
+            </MudCard>
+        </MudStep>
+        <MudStep Title="CIT001F Form" Icon="@Icons.Material.Filled.Payment">
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6" Class="mb-3">CIT001F Form</MudText>
+                    <Cit001FForm  />
+                </MudCardContent>
+            </MudCard>
+        </MudStep>
+        <MudStep Title="CIT001G Form" Icon="@Icons.Material.Filled.Payment">
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6" Class="mb-3">CIT001G Form</MudText>
+                    <Cit001GForm ViewModel="ViewModel" />
+                </MudCardContent>
+            </MudCard>
+        </MudStep>
+        <MudStep Title="CIT001H Form" Icon="@Icons.Material.Filled.Payment">
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6" Class="mb-3">CIT001H Form</MudText>
+                    <Cit001HForm ViewModel="ViewModel" />
+                </MudCardContent>
+            </MudCard>
+        </MudStep>
+
+        @* Step 4: Review & Submit *@
+        <MudStep Title="Review" @bind-Completed="_completed" Icon="@Icons.Material.Filled.RateReview">
+            <MudPaper Class="pa-4">
+                <MudText Typo="Typo.h6" Class="mb-3">Application Summary</MudText>
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <MudText Typo="Typo.caption">Full Name</MudText>
+                        <MudText Typo="Typo.body1">@ViewModel.FirstName</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudText Typo="Typo.caption">Date of Birth</MudText>
+                        <MudText Typo="Typo.body1">@ViewModel.DateOfBirth?.ToString("MMMM dd, yyyy")</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudText Typo="Typo.caption">Email</MudText>
+                        <MudText Typo="Typo.body1">@ViewModel.Email</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudText Typo="Typo.caption">Phone</MudText>
+                        <MudText Typo="Typo.body1">@ViewModel.PhoneNumber</MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.caption">Address</MudText>
+                        <MudText Typo="Typo.body1">@ViewModel.AddressLine1 </MudText>
+                        <MudText Typo="Typo.body1">@ViewModel.City</MudText>
+                    </MudItem>
+                </MudGrid>
+
+                <MudDivider Class="my-4" />
+
+                <MudText Typo="Typo.h6" Class="mb-3">Documents</MudText>
+                <MudChipSet T="string">
+                    @if (_idDocument != null)
+                    {
+                        <MudChip T="string" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">ID Document</MudChip>
+                    }
+                    @if (_addressProof != null)
+                    {
+                        <MudChip T="string" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Proof of Address</MudChip>
+                    }
+                    @if (_photo != null)
+                    {
+                        <MudChip T="string" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">Photo</MudChip>
+                    }
+                </MudChipSet>
+            </MudPaper>
+        </MudStep>
+    </ChildContent>
+    <CompletedContent>
+        <MudStack Row Class="ma-3">
+            <MudIcon Icon="@Icons.Material.Filled.Done" Color="Color.Success"/>
+            <MudText>
+                Your citizenship application as been submitted.
+            </MudText>
+        </MudStack>
+    </CompletedContent>
+    <ActionContent Context="stepper">
+        <MudButton OnClick="@(() => stepper.ResetAsync())">Reset</MudButton>
+        @if (!_completed) {
+            <MudIconButton OnClick="@(() => stepper.PreviousStepAsync())" Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Primary" Disabled="@(_index <= 0)" />
+            <MudSpacer />
+            @if (stepper.Steps[_index].Skippable == true)
+            {
+                <MudIconButton OnClick="@(() => stepper.SkipCurrentStepAsync())" Icon="@stepper.SkipButtonIcon" Color="Color.Primary" />
+            }
+            @if (_index == stepper.Steps.Count - 1)
+            {
+                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="SubmitApplication" Disabled="_isSubmitting">
+                    @if (_isSubmitting)
+                    {
+                        <MudProgressCircular Indeterminate="true" Size="Size.Small" Class="mr-2" />
+                    }
+                    Submit Application
+                </MudButton>
+            }
+            else
+            {
+                <MudIconButton OnClick="@(() => stepper.NextStepAsync())" Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Primary" />
+            }
+        }
+    </ActionContent>
+</MudStepper>
+@code {
+    private readonly List<BreadcrumbItem> _breadcrumbs = new()
+    {
+        new("Home", "/", false, Icons.Material.Filled.Home),
+        new("Become a Citizen", "/become-a-citizen", true, Icons.Material.Filled.AssignmentInd)
+    };
+
+
+    private bool _isSubmitting;
+    private int _index;
+    private bool _completed;
+
+    // Documents
+    private IBrowserFile? _idDocument;
+    private IBrowserFile? _addressProof;
+    private IBrowserFile? _photo;
+    private MudStepper _stepper = new MudStepper();
+    
+    [Parameter, EditorRequired]
+    public BecomeCitizenViewModel ViewModel { get; set; } = null!;
+    
+    private bool OnPreventStepChange(int direction, int targetIndex)
+    {
+        // Validate current step before allowing navigation
+        // direction: -1 = previous, 1 = next
+        return false; // Allow navigation
+    }
+
+    private void NextStep()
+    {
+        if (_index < 3)
+        {
+            _index++;
+        }
+    }
+
+    private void PreviousStep()
+    {
+        if (_index > 0)
+        {
+            _index--;
+        }
+    }
+
+    private void OnIdDocumentChanged(InputFileChangeEventArgs e)
+    {
+        _idDocument = e.File;
+    }
+
+    private void OnAddressProofChanged(InputFileChangeEventArgs e)
+    {
+        _addressProof = e.File;
+    }
+
+    private void OnPhotoChanged(InputFileChangeEventArgs e)
+    {
+        _photo = e.File;
+    }
+
+    private async Task SubmitApplication()
+    {
+        _isSubmitting = true;
+        try
+        {
+            // TODO: Submit to API
+            await Task.Delay(2000); // Simulate API call
+            // Navigate to success page or applications list
+            await _stepper.NextStepAsync();
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

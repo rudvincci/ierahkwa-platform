@@ -1,0 +1,64 @@
+﻿@using Mamey.ApplicationName.BlazorWasm.Services
+@using MudBlazor;
+@inject MameyAuthStateProvider AuthStateProvider
+@namespace Mamey.ApplicationName.BlazorWasm
+<HeadContent>
+    <title>@siteTitle</title>
+</HeadContent>
+<MudPopoverProvider />
+<MudDialogProvider
+    FullWidth="true"
+    MaxWidth="MaxWidth.ExtraSmall"
+    CloseButton="true"
+    BackdropClick="false"
+    NoHeader="false"
+    Position="DialogPosition.Center"
+    CloseOnEscapeKey="true"/>
+<MudSnackbarProvider />
+<CascadingAuthenticationState>
+    <CascadingValue Value="GlobalSettings" IsFixed="true">
+        <CascadingMudHtmlToolbarOptions InsertImage="true" >
+        <Router AppAssembly="@typeof(Program).Assembly">
+            <Found Context="routeData">
+                <AuthorizeRouteView RouteData="@routeData"
+                                    DefaultLayout="@typeof(LandingLayout)">
+                    <NotAuthorized>
+                        <RedirectToLogin/>
+                    </NotAuthorized>
+                    <Authorizing>
+                        <LayoutView Layout="@typeof(LandingLayout)">
+                            <MudPaper Class="pa-4">
+                                <h3>Authorizing...</h3>
+                            </MudPaper>
+                        </LayoutView>
+                    </Authorizing>
+                </AuthorizeRouteView>
+                
+            </Found>
+            <NotFound>
+                <LayoutView Layout="@typeof(LandingLayout)">
+                    <h3>Page Not Found</h3>
+                    <p>Sorry, there's nothing at this address.</p>
+                </LayoutView>
+            </NotFound>
+        </Router>
+        </CascadingMudHtmlToolbarOptions>
+    </CascadingValue>
+</CascadingAuthenticationState>
+
+
+@code {
+    [Inject] GlobalSettings GlobalSettings { get; set; }
+    private bool isAuthenticationResolved = false;
+    private string siteTitle = "Loading...";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GlobalSettings.InitializeAsync();
+        Console.WriteLine("Initializing App.razor");
+        var authState = await ((MameyAuthStateProvider)AuthStateProvider).GetAuthenticationStateAsync();
+        isAuthenticationResolved = true;
+        Console.WriteLine("Authentication state resolved");
+        siteTitle = GlobalSettings.SiteTitle;
+    }
+}

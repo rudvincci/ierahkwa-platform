@@ -1,0 +1,725 @@
+openapi: 3.0.3
+info:
+  title: Ierahkwa Sovereign Platform API
+  description: |
+    # Ierahkwa Sovereign Platform API
+    
+    Complete API documentation for the Ierahkwa Ne Kanienke Sovereign Government Platform.
+    
+    ## Authentication
+    
+    Most endpoints require JWT authentication. Include the token in the `Authorization` header:
+    ```
+    Authorization: Bearer <your_token>
+    ```
+    
+    ## Rate Limiting
+    
+    - Standard API: 100 requests/minute
+    - Auth endpoints: 10 requests/minute
+    - Login: 5 requests/minute
+    
+    ## Environments
+    
+    - Production: https://api.ierahkwa.gov
+    - Staging: https://staging-api.ierahkwa.gov
+    
+  version: 2.0.0
+  contact:
+    name: Ierahkwa Development Team
+    email: dev@ierahkwa.gov
+  license:
+    name: Proprietary
+    url: https://ierahkwa.gov/license
+
+servers:
+  - url: https://api.ierahkwa.gov/api/v1
+    description: Production
+  - url: https://staging-api.ierahkwa.gov/api/v1
+    description: Staging
+  - url: http://localhost:8545/api/v1
+    description: Development
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Auth
+    description: Authentication and authorization
+  - name: Wallets
+    description: Wallet management
+  - name: Transactions
+    description: Transaction operations
+  - name: Tokens
+    description: Token management
+  - name: Trading
+    description: Trading operations
+  - name: Banking
+    description: Banking operations
+
+paths:
+  # ─────────────────────────────────────────────────────────────────────────────
+  #  HEALTH
+  # ─────────────────────────────────────────────────────────────────────────────
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      description: Returns the health status of the API
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /ready:
+    get:
+      tags: [Health]
+      summary: Readiness probe
+      description: Indicates if the service is ready to accept traffic
+      responses:
+        '200':
+          description: Service is ready
+        '503':
+          description: Service is not ready
+
+  /live:
+    get:
+      tags: [Health]
+      summary: Liveness probe
+      description: Indicates if the service is alive
+      responses:
+        '200':
+          description: Service is alive
+
+  /metrics:
+    get:
+      tags: [Health]
+      summary: Prometheus metrics
+      description: Returns Prometheus-formatted metrics
+      responses:
+        '200':
+          description: Metrics
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  #  AUTH
+  # ─────────────────────────────────────────────────────────────────────────────
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                name:
+                  type: string
+      responses:
+        '201':
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  #  WALLETS
+  # ─────────────────────────────────────────────────────────────────────────────
+  /wallets:
+    get:
+      tags: [Wallets]
+      summary: List user wallets
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of wallets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Wallet'
+
+  /wallets/create:
+    post:
+      tags: [Wallets]
+      summary: Create new wallet
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                  enum: [standard, multisig, hardware]
+      responses:
+        '201':
+          description: Wallet created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Wallet'
+
+  /wallets/{address}:
+    get:
+      tags: [Wallets]
+      summary: Get wallet details
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^0x[a-fA-F0-9]{40}$
+      responses:
+        '200':
+          description: Wallet details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /wallets/{address}/balance:
+    get:
+      tags: [Wallets]
+      summary: Get wallet balance
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: token
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Balance info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+
+  /wallets/transfer:
+    post:
+      tags: [Wallets]
+      summary: Transfer funds
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [from, to, amount]
+              properties:
+                from:
+                  type: string
+                to:
+                  type: string
+                amount:
+                  type: string
+                token:
+                  type: string
+                memo:
+                  type: string
+      responses:
+        '200':
+          description: Transfer initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  #  TRANSACTIONS
+  # ─────────────────────────────────────────────────────────────────────────────
+  /transactions:
+    get:
+      tags: [Transactions]
+      summary: List transactions
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: address
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      transactions:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Transaction'
+                      total:
+                        type: integer
+                      page:
+                        type: integer
+
+  /transactions/{hash}:
+    get:
+      tags: [Transactions]
+      summary: Get transaction by hash
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Transaction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  #  TOKENS
+  # ─────────────────────────────────────────────────────────────────────────────
+  /tokens:
+    get:
+      tags: [Tokens]
+      summary: List all tokens
+      responses:
+        '200':
+          description: List of tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Token'
+
+  /tokens/{symbol}:
+    get:
+      tags: [Tokens]
+      summary: Get token details
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Token details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  #  TRADING
+  # ─────────────────────────────────────────────────────────────────────────────
+  /markets:
+    get:
+      tags: [Trading]
+      summary: List markets
+      responses:
+        '200':
+          description: List of markets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Market'
+
+  /markets/{pair}/ticker:
+    get:
+      tags: [Trading]
+      summary: Get ticker for pair
+      parameters:
+        - name: pair
+          in: path
+          required: true
+          schema:
+            type: string
+            example: IGT-USD
+      responses:
+        '200':
+          description: Ticker data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticker'
+
+  /markets/{pair}/orderbook:
+    get:
+      tags: [Trading]
+      summary: Get orderbook
+      parameters:
+        - name: pair
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: depth
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Orderbook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orderbook'
+
+  /orders:
+    post:
+      tags: [Trading]
+      summary: Place order
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pair, side, type, amount]
+              properties:
+                pair:
+                  type: string
+                side:
+                  type: string
+                  enum: [buy, sell]
+                type:
+                  type: string
+                  enum: [market, limit, stop]
+                amount:
+                  type: string
+                price:
+                  type: string
+      responses:
+        '201':
+          description: Order placed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+        message:
+          type: string
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: healthy
+        version:
+          type: string
+        uptime:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+            refreshToken:
+              type: string
+            expiresIn:
+              type: integer
+            user:
+              type: object
+
+    Wallet:
+      type: object
+      properties:
+        address:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Balance:
+      type: object
+      properties:
+        address:
+          type: string
+        balances:
+          type: array
+          items:
+            type: object
+            properties:
+              token:
+                type: string
+              balance:
+                type: string
+              usdValue:
+                type: string
+
+    Transaction:
+      type: object
+      properties:
+        hash:
+          type: string
+        from:
+          type: string
+        to:
+          type: string
+        amount:
+          type: string
+        token:
+          type: string
+        status:
+          type: string
+          enum: [pending, confirmed, failed]
+        blockNumber:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+
+    Token:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        decimals:
+          type: integer
+        totalSupply:
+          type: string
+        contract:
+          type: string
+
+    Market:
+      type: object
+      properties:
+        pair:
+          type: string
+        baseToken:
+          type: string
+        quoteToken:
+          type: string
+        status:
+          type: string
+
+    Ticker:
+      type: object
+      properties:
+        pair:
+          type: string
+        lastPrice:
+          type: string
+        high24h:
+          type: string
+        low24h:
+          type: string
+        volume24h:
+          type: string
+        change24h:
+          type: string
+
+    Orderbook:
+      type: object
+      properties:
+        pair:
+          type: string
+        bids:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+        asks:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        pair:
+          type: string
+        side:
+          type: string
+        type:
+          type: string
+        amount:
+          type: string
+        price:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time

@@ -1,0 +1,64 @@
+[package]
+name = "mameyforge"
+version = "0.1.0"
+authors = ["Mamey Technologies <info@mamey.io>"]
+edition = "2021"
+license = "AGPL-3.0"
+repository = "https://github.com/Mamey-io/MameyForge"
+description = "MameyForge - Smart contract development framework for MameyFutureNode"
+readme = "README.md"
+keywords = ["blockchain", "smart-contracts", "wasm", "cli", "devnet"]
+categories = ["command-line-utilities", "development-tools"]
+
+[[bin]]
+name = "mameyforge"
+path = "src/main.rs"
+
+[dependencies]
+# CLI
+clap = { version = "4.4", features = ["derive", "env"] }
+console = "0.15"
+dialoguer = "0.11"
+indicatif = "0.17"
+
+# Async runtime
+tokio = { version = "1.35", features = ["full", "rt-multi-thread", "macros", "process"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+
+# HTTP/gRPC client
+reqwest = { version = "0.11", features = ["json"] }
+tonic = { version = "0.11", features = ["tls", "transport"] }
+
+# Filesystem
+walkdir = "2.4"
+glob = "0.3"
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Cryptography
+sha2 = "0.10"
+hex = "0.4"
+
+# Process management
+nix = { version = "0.27", features = ["signal", "process"] }
+
+# Utilities
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+dirs = "5.0"
+which = "5.0"
+
+[dev-dependencies]
+tempfile = "3.10"
+assert_cmd = "2.0"
+predicates = "3.0"

@@ -1,0 +1,1601 @@
+@page "/gov/applications/{ApplicationNumber}"
+@attribute [Authorize(Roles = "Admin,GovernmentAgent")]
+@using Mamey.Government.Modules.CitizenshipApplications.Contracts.DTO
+@using Mamey.Types
+
+<PageTitle>Application @ApplicationNumber - Government Portal</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+}
+else if (_application is null)
+{
+    <MudPaper Elevation="0" Class="pa-6">
+        <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="py-16">
+            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" Color="Color.Warning" />
+            <MudText Typo="Typo.h5" Class="mt-4">Application Not Found</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                The application with number @ApplicationNumber could not be found.
+            </MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/gov/applications" Class="mt-4">
+                Back to Applications
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+}
+else
+{
+    <MudPaper Elevation="0" Class="pa-6">
+        <MudStack Spacing="4">
+            @* Header *@
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                <MudStack>
+                    <MudBreadcrumbs Items="_breadcrumbs" />
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudText Typo="Typo.h4" Color="Color.Primary">@_application.ApplicationNumber</MudText>
+                        <MudChip T="string" Color="@GetStatusColor(_application.Status)" Size="Size.Medium">
+                            @GetStatusDisplayName(_application.Status)
+                        </MudChip>
+                        <MudChip T="string" Color="Color.Info" Size="Size.Medium">
+                            @GetStepDisplayName(_application.Step)
+                        </MudChip>
+                    </MudStack>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">
+                        Created: @_application.CreatedAt.ToString("MMMM dd, yyyy 'at' h:mm tt") • 
+                        @if (_application.SubmittedDate != default)
+                        {
+                            <span>Submitted: @_application.SubmittedDate.ToString("MMMM dd, yyyy 'at' h:mm tt") • </span>
+                        }
+                        Last updated: @_application.UpdatedAt.ToString("MMMM dd, yyyy 'at' h:mm tt")
+                    </MudText>
+                </MudStack>
+                <MudStack Row="true" Spacing="2">
+                    @if (_application.Status is "Submitted" or "ReviewPending" or "KycPending" or "Validating")
+                    {
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Check"
+                                   OnClick="ApproveApplication">
+                            Approve
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Close"
+                                   OnClick="@(() => _rejectDialogVisible = true)">
+                            Reject
+                        </MudButton>
+                    }
+                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Print">
+                        Print
+                    </MudButton>
+                </MudStack>
+            </MudStack>
+
+            <MudDivider />
+
+            @* Main Content Grid *@
+            <MudGrid Spacing="4">
+                @* Left Column - Applicant Info *@
+                <MudItem xs="12" md="8">
+                    @* Applicant Details Card *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6">Applicant Information</MudText>
+                                </MudStack>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="12" md="6">
+                                    <MudStack Spacing="3">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Full Name</MudText>
+                                            <MudText Typo="Typo.body1">
+                                                <strong>@_application.FirstName @_application.LastName</strong>
+                                                @if (!string.IsNullOrEmpty(_application.MiddleName))
+                                                {
+                                                    <span> @_application.MiddleName</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(_application.Nickname))
+                                                {
+                                                    <span> (@_application.Nickname)</span>
+                                                }
+                                            </MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Application ID</MudText>
+                                            <MudText Typo="Typo.body2" Class="font-monospace">@_application.Id.ToString("N")</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Email Address</MudText>
+                                            <MudText Typo="Typo.body1">@(_application.Email ?? "-")</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Phone Number</MudText>
+                                            <MudText Typo="Typo.body1">@(_application.Phone ?? "-")</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudStack Spacing="3">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Date of Birth</MudText>
+                                            <MudText Typo="Typo.body1">@_application.DateOfBirth.ToString("MMMM dd, yyyy")</MudText>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                                Age: @((DateTime.Now - _application.DateOfBirth).Days / 365) years
+                                            </MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Address</MudText>
+                                            @if (_application.Address != null)
+                                            {
+                                                <MudText Typo="Typo.body1">@_application.Address.ToSimpleFormat()</MudText>
+                                            }
+                                            else
+                                            {
+                                                <MudText Typo="Typo.body1">-</MudText>
+                                            }
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Country</MudText>
+                                            <MudText Typo="Typo.body1">@(_application.Country ?? "-")</MudText>
+                                        </div>
+                                    </MudStack>
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Personal Details Card *@
+                    @if (_applicationDetails?.PersonalDetails != null)
+                    {
+                        <MudCard Elevation="2" Class="mb-4">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.Fingerprint" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6">Personal Details</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudGrid>
+                                    <MudItem xs="12" md="6">
+                                        <MudStack Spacing="2">
+                                            <div>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">Place of Birth</MudText>
+                                                <MudText Typo="Typo.body1">@_applicationDetails.PersonalDetails.PlaceOfBirth</MudText>
+                                            </div>
+                                            <div>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">Gender</MudText>
+                                                <MudText Typo="Typo.body1">@_applicationDetails.PersonalDetails.Gender</MudText>
+                                            </div>
+                                            <div>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">Marital Status</MudText>
+                                                <MudText Typo="Typo.body1">@_applicationDetails.PersonalDetails.MaritalStatus</MudText>
+                                            </div>
+                                            @if (_applicationDetails.PersonalDetails.SpouseName != null)
+                                            {
+                                                <div>
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Spouse Name</MudText>
+                                                    <MudText Typo="Typo.body1">
+                                                        @($"{_applicationDetails.PersonalDetails.SpouseName.FirstName} {_applicationDetails.PersonalDetails.SpouseName.LastName}")
+                                                        @if (!string.IsNullOrEmpty(_applicationDetails.PersonalDetails.SpouseName.MiddleName))
+                                                        {
+                                                            <span> @_applicationDetails.PersonalDetails.SpouseName.MiddleName</span>
+                                                        }
+                                                    </MudText>
+                                                </div>
+                                            }
+                                        </MudStack>
+                                    </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudStack Spacing="2">
+                                            <div>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">Physical Description</MudText>
+                                                <MudText Typo="Typo.body2">
+                                                    Height: @_applicationDetails.PersonalDetails.HeightInInches.ToString("F1")" • 
+                                                    Weight: @_applicationDetails.PersonalDetails.WeightInPounds.ToString("F1") lbs
+                                                </MudText>
+                                                <MudText Typo="Typo.body2">
+                                                    Eyes: @_applicationDetails.PersonalDetails.EyeColor • 
+                                                    Hair: @_applicationDetails.PersonalDetails.HairColor
+                                                </MudText>
+                                            </div>
+                                            @if (_applicationDetails.PersonalDetails.CurrentNationalities?.Any() == true)
+                                            {
+                                                <div>
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Current Nationalities</MudText>
+                                                    <MudText Typo="Typo.body1">@string.Join(", ", _applicationDetails.PersonalDetails.CurrentNationalities)</MudText>
+                                                </div>
+                                            }
+                                            @if (_applicationDetails.PersonalDetails.Aliases?.Any() == true)
+                                            {
+                                                <div>
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Aliases</MudText>
+                                                    <MudText Typo="Typo.body1">@string.Join(", ", _applicationDetails.PersonalDetails.Aliases)</MudText>
+                                                </div>
+                                            }
+                                        </MudStack>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    @* Contact Information Card *@
+                    @if (_applicationDetails?.ContactInformation != null)
+                    {
+                        <MudCard Elevation="2" Class="mb-4">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.ContactMail" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6">Contact Information</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudGrid>
+                                    <MudItem xs="12" md="6">
+                                        <MudStack Spacing="2">
+                                            @if (!string.IsNullOrEmpty(_applicationDetails.ContactInformation.Email))
+                                            {
+                                                <div>
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Email</MudText>
+                                                    <MudText Typo="Typo.body1">@_applicationDetails.ContactInformation.Email</MudText>
+                                                </div>
+                                            }
+                                            @if (_applicationDetails.ContactInformation.PhoneNumbers?.Any() == true)
+                                            {
+                                                <div>
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Phone Numbers</MudText>
+                                                    @foreach (var phone in _applicationDetails.ContactInformation.PhoneNumbers)
+                                                    {
+                                                        <MudText Typo="Typo.body1">@phone</MudText>
+                                                    }
+                                                </div>
+                                            }
+                                            @if (_applicationDetails.ContactInformation.ResidentialAddress != null)
+                                            {
+                                                <div>
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Residential Address</MudText>
+                                                    <MudText Typo="Typo.body1">@FormatFullAddress(_applicationDetails.ContactInformation.ResidentialAddress)</MudText>
+                                                </div>
+                                            }
+                                        </MudStack>
+                                    </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudStack Spacing="2">
+                                            @if (_applicationDetails.ContactInformation.PostalAddress != null)
+                                            {
+                                                <div>
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Postal Address</MudText>
+                                                    <MudText Typo="Typo.body1">@FormatFullAddress(_applicationDetails.ContactInformation.PostalAddress)</MudText>
+                                                </div>
+                                            }
+                                            @if (!string.IsNullOrEmpty(_applicationDetails.ContactInformation.EmergencyContactName))
+                                            {
+                                                <div>
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Emergency Contact</MudText>
+                                                    <MudText Typo="Typo.body1">
+                                                        <strong>@_applicationDetails.ContactInformation.EmergencyContactName</strong>
+                                                        @if (!string.IsNullOrEmpty(_applicationDetails.ContactInformation.EmergencyContactRelationship))
+                                                        {
+                                                            <span> (@_applicationDetails.ContactInformation.EmergencyContactRelationship)</span>
+                                                        }
+                                                    </MudText>
+                                                    @if (!string.IsNullOrEmpty(_applicationDetails.ContactInformation.EmergencyContactPhoneNumber))
+                                                    {
+                                                        <MudText Typo="Typo.body2">@_applicationDetails.ContactInformation.EmergencyContactPhoneNumber</MudText>
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(_applicationDetails.ContactInformation.EmergencyContactEmail))
+                                                    {
+                                                        <MudText Typo="Typo.body2">@_applicationDetails.ContactInformation.EmergencyContactEmail</MudText>
+                                                    }
+                                                </div>
+                                            }
+                                        </MudStack>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    @* Dependents Card *@
+                    @if (_applicationDetails?.Dependents?.Any() == true)
+                    {
+                        <MudCard Elevation="2" Class="mb-4">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.FamilyRestroom" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6">Dependents</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                                <CardHeaderActions>
+                                    <MudChip T="string" Size="Size.Small">@_applicationDetails.Dependents.Count</MudChip>
+                                </CardHeaderActions>
+                            </MudCardHeader>
+                            <MudCardContent Class="pa-0">
+                                <MudTable Items="@_applicationDetails.Dependents" Hover="true" Dense="true" Elevation="0">
+                                    <HeaderContent>
+                                        <MudTh>Name</MudTh>
+                                        <MudTh>Date of Birth</MudTh>
+                                        <MudTh>Age</MudTh>
+                                        <MudTh>Gender</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Name">
+                                            @($"{context.Name.FirstName} {context.Name.LastName}")
+                                            @if (!string.IsNullOrEmpty(context.Name.MiddleName))
+                                            {
+                                                <span> @context.Name.MiddleName</span>
+                                            }
+                                        </MudTd>
+                                        <MudTd DataLabel="Date of Birth">@context.DateOfBirth.ToString("MMM dd, yyyy")</MudTd>
+                                        <MudTd DataLabel="Age">@context.Age years</MudTd>
+                                        <MudTd DataLabel="Gender">@context.Gender</MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    @* Residency History Card *@
+                    @if (_applicationDetails?.ResidencyHistory?.Any() == true)
+                    {
+                        <MudCard Elevation="2" Class="mb-4">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.LocationOn" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6">Residency History</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent Class="pa-0">
+                                <MudTable Items="@_applicationDetails.ResidencyHistory" Hover="true" Dense="true" Elevation="0">
+                                    <HeaderContent>
+                                        <MudTh>Country</MudTh>
+                                        <MudTh>Effective Date</MudTh>
+                                        <MudTh>Status</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Country">@context.CountryCode</MudTd>
+                                        <MudTd DataLabel="Effective Date">@context.EffectiveDate.ToString("MMM dd, yyyy")</MudTd>
+                                        <MudTd DataLabel="Status">@context.Status</MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    @* Immigration History Card *@
+                    @if (_applicationDetails?.ImmigrationHistories?.Any() == true)
+                    {
+                        <MudCard Elevation="2" Class="mb-4">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.Flight" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6">Immigration History</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                @foreach (var history in _applicationDetails.ImmigrationHistories)
+                                {
+                                    @if (history.PreviouslyDeportedFromCountry)
+                                    {
+                                        <MudAlert Severity="Severity.Warning" Class="mb-2">
+                                            <MudText Typo="Typo.body2">
+                                                <strong>Previously Deported:</strong> 
+                                                @if (!string.IsNullOrEmpty(history.PreviouslyDeportedFromCountryCode))
+                                                {
+                                                    <span>@history.PreviouslyDeportedFromCountryCode</span>
+                                                }
+                                                @if (history.PreviouslyDeportedFromCountryAt.HasValue)
+                                                {
+                                                    <span> on @history.PreviouslyDeportedFromCountryAt.Value.ToString("MMM dd, yyyy")</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(history.PreviouslyDeportedFromCountryDetails))
+                                                {
+                                                    <div class="mt-1">@history.PreviouslyDeportedFromCountryDetails</div>
+                                                }
+                                            </MudText>
+                                        </MudAlert>
+                                    }
+                                }
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    @* Education Qualifications Card *@
+                    @if (_applicationDetails?.EducationQualifications?.Any() == true)
+                    {
+                        <MudCard Elevation="2" Class="mb-4">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.School" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6">Education Qualifications</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent Class="pa-0">
+                                <MudTable Items="@_applicationDetails.EducationQualifications" Hover="true" Dense="true" Elevation="0">
+                                    <HeaderContent>
+                                        <MudTh>Qualification</MudTh>
+                                        <MudTh>Awarded By</MudTh>
+                                        <MudTh>Date</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Qualification">@context.Name</MudTd>
+                                        <MudTd DataLabel="Awarded By">@context.AwardedBy</MudTd>
+                                        <MudTd DataLabel="Date">@context.EffectiveDate.ToString("MMM dd, yyyy")</MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    @* Employment History Card *@
+                    @if (_applicationDetails?.EmploymentHistory?.Any() == true)
+                    {
+                        <MudCard Elevation="2" Class="mb-4">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.Work" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6">Employment History</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent Class="pa-0">
+                                <MudTable Items="@_applicationDetails.EmploymentHistory" Hover="true" Dense="true" Elevation="0">
+                                    <HeaderContent>
+                                        <MudTh>Employer</MudTh>
+                                        <MudTh>Occupation</MudTh>
+                                        <MudTh>Period</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Employer">
+                                            <MudStack Spacing="0">
+                                                <MudText Typo="Typo.body1">@context.Employer</MudText>
+                                                @if (context.EmployerAddress != null)
+                                                {
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">@FormatFullAddress(context.EmployerAddress)</MudText>
+                                                }
+                                                @if (!string.IsNullOrEmpty(context.EmployerPhone))
+                                                {
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">@context.EmployerPhone</MudText>
+                                                }
+                                            </MudStack>
+                                        </MudTd>
+                                        <MudTd DataLabel="Occupation">@context.Occupation</MudTd>
+                                        <MudTd DataLabel="Period">
+                                            @context.EmployedFrom.ToString("MMM yyyy")
+                                            @if (context.EmployedTo.HasValue)
+                                            {
+                                                <span> - @context.EmployedTo.Value.ToString("MMM yyyy")</span>
+                                            }
+                                            else
+                                            {
+                                                <MudChip T="string" Size="Size.Small" Color="Color.Success">Current</MudChip>
+                                            }
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    @* Criminal History Card *@
+                    @if (_applicationDetails?.CriminalHistory?.Any() == true)
+                    {
+                        <MudCard Elevation="2" Class="mb-4">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.Gavel" Color="Color.Error" />
+                                        <MudText Typo="Typo.h6">Criminal History</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent Class="pa-0">
+                                <MudTable Items="@_applicationDetails.CriminalHistory" Hover="true" Dense="true" Elevation="0">
+                                    <HeaderContent>
+                                        <MudTh>Charge</MudTh>
+                                        <MudTh>Date</MudTh>
+                                        <MudTh>Jurisdiction</MudTh>
+                                        <MudTh>Convicted</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Charge">@context.Charge</MudTd>
+                                        <MudTd DataLabel="Date">@context.EffectiveDate.ToString("MMM dd, yyyy")</MudTd>
+                                        <MudTd DataLabel="Jurisdiction">@context.CriminalChargeJurisdiction</MudTd>
+                                        <MudTd DataLabel="Convicted">
+                                            <MudChip T="string" Size="Size.Small" Color="@(context.Convicted ? Color.Error : Color.Warning)">
+                                                @(context.Convicted ? "Yes" : "No")
+                                            </MudChip>
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                                @foreach (var history in _applicationDetails.CriminalHistory)
+                                {
+                                    @if (!string.IsNullOrEmpty(history.CriminalRecordDetails))
+                                    {
+                                        <MudExpansionPanels Class="mt-2">
+                                            <MudExpansionPanel Text="@history.Charge">
+                                                <MudText Typo="Typo.body2">@history.CriminalRecordDetails</MudText>
+                                            </MudExpansionPanel>
+                                        </MudExpansionPanels>
+                                    }
+                                }
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    @* References Card *@
+                    @if (_applicationDetails?.References?.Any() == true)
+                    {
+                        <MudCard Elevation="2" Class="mb-4">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.Contacts" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6">References</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudGrid>
+                                    @foreach (var reference in _applicationDetails.References)
+                                    {
+                                        <MudItem xs="12" md="6">
+                                            <MudCard Elevation="1" Class="mb-2">
+                                                <MudCardContent>
+                                                    <MudText Typo="Typo.body1">
+                                                        <strong>@($"{reference.Name.FirstName} {reference.Name.LastName}")</strong>
+                                                        @if (!string.IsNullOrEmpty(reference.Name.MiddleName))
+                                                        {
+                                                            <span> @reference.Name.MiddleName</span>
+                                                        }
+                                                    </MudText>
+                                                    <MudText Typo="Typo.body2">@reference.Relationship</MudText>
+                                                    <MudText Typo="Typo.body2">@reference.Phone</MudText>
+                                                    <MudText Typo="Typo.body2">@FormatFullAddress(reference.Address)</MudText>
+                                                </MudCardContent>
+                                            </MudCard>
+                                        </MudItem>
+                                    }
+                                </MudGrid>
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    @* Foreign Identification Card *@
+                    @if (_applicationDetails?.ForeignIdentification != null)
+                    {
+                        <MudCard Elevation="2" Class="mb-4">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.Badge" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6">Foreign Identification</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudStack Spacing="2">
+                                    @if (!string.IsNullOrEmpty(_applicationDetails.ForeignIdentification.Number))
+                                    {
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Identification Number</MudText>
+                                            <MudText Typo="Typo.body1">@_applicationDetails.ForeignIdentification.Number</MudText>
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(_applicationDetails.ForeignIdentification.IssuingCountry))
+                                    {
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Issuing Country</MudText>
+                                            <MudText Typo="Typo.body1">@_applicationDetails.ForeignIdentification.IssuingCountry</MudText>
+                                        </div>
+                                    }
+                                    @if (_applicationDetails.ForeignIdentification.ExpiryDate.HasValue)
+                                    {
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Expiry Date</MudText>
+                                            <MudText Typo="Typo.body1">@_applicationDetails.ForeignIdentification.ExpiryDate.Value.ToString("MMM dd, yyyy")</MudText>
+                                        </div>
+                                    }
+                                </MudStack>
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    @* Foreign Citizenship Applications Card *@
+                    @if (_applicationDetails?.ForeignCitizenshipApplications?.Any() == true)
+                    {
+                        <MudCard Elevation="2" Class="mb-4">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.Public" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6">Foreign Citizenship Applications</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent Class="pa-0">
+                                <MudTable Items="@_applicationDetails.ForeignCitizenshipApplications" Hover="true" Dense="true" Elevation="0">
+                                    <HeaderContent>
+                                        <MudTh>Country</MudTh>
+                                        <MudTh>Effective Date</MudTh>
+                                        <MudTh>Status</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Country">@context.CountryCode</MudTd>
+                                        <MudTd DataLabel="Effective Date">@context.EffectiveDate.ToString("MMM dd, yyyy")</MudTd>
+                                        <MudTd DataLabel="Status">@context.Status</MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                                @foreach (var app in _applicationDetails.ForeignCitizenshipApplications)
+                                {
+                                    @if (!string.IsNullOrEmpty(app.ForeignCitizenshipApplicationDetails))
+                                    {
+                                        <MudExpansionPanels Class="mt-2">
+                                            <MudExpansionPanel Text="@app.CountryCode">
+                                                <MudText Typo="Typo.body2">@app.ForeignCitizenshipApplicationDetails</MudText>
+                                            </MudExpansionPanel>
+                                        </MudExpansionPanels>
+                                    }
+                                }
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    @* Documents Card *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Description" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6">Documents</MudText>
+                                </MudStack>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudChip T="string" Size="Size.Small">@_documents.Count Documents</MudChip>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent Class="pa-0">
+                            <MudTable Items="@_documents" Hover="true" Dense="true" Elevation="0">
+                                <HeaderContent>
+                                    <MudTh>Document</MudTh>
+                                    <MudTh>Type</MudTh>
+                                    <MudTh>Size</MudTh>
+                                    <MudTh>Uploaded</MudTh>
+                                    <MudTh>Storage Path</MudTh>
+                                    <MudTh>Status</MudTh>
+                                    <MudTh>Actions</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Document">
+                                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                            <MudIcon Icon="@GetDocumentIcon(context.Type)" Size="Size.Small" Color="Color.Default" />
+                                            <MudText>@context.Name</MudText>
+                                        </MudStack>
+                                    </MudTd>
+                                    <MudTd DataLabel="Type">@context.Type</MudTd>
+                                    <MudTd DataLabel="Size">@FormatFileSize(context.FileSize)</MudTd>
+                                    <MudTd DataLabel="Uploaded">@context.UploadedDate.ToString("MMM dd, yyyy")</MudTd>
+                                    <MudTd DataLabel="Storage Path">
+                                        <MudText Typo="Typo.caption" Class="font-monospace" Style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;" Title="@context.StoragePath">
+                                            @context.StoragePath
+                                        </MudText>
+                                    </MudTd>
+                                    <MudTd DataLabel="Status">
+                                        <MudChip T="string" Color="@GetDocumentStatusColor(context.Status)" Size="Size.Small">
+                                            @context.Status
+                                        </MudChip>
+                                    </MudTd>
+                                    <MudTd DataLabel="Actions">
+                                        <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" Size="Size.Small" Title="View Document" />
+                                            <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Default" Size="Size.Small" Title="Download Document" />
+                                            @if (context.Status == "Pending")
+                                            {
+                                                <MudIconButton Icon="@Icons.Material.Filled.Check" Color="Color.Success" Size="Size.Small" Title="Approve Document" />
+                                                <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" Size="Size.Small" Title="Reject Document" />
+                                            }
+                                        </MudButtonGroup>
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Additional Information Stepper *@
+                    @if (_applicationDetails != null)
+                    {
+                        <MudCard Elevation="2" Class="mb-4">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Primary" />
+                                        <MudText Typo="Typo.h6">Additional Information</MudText>
+                                    </MudStack>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudStepper Linear="false" Variant="Variant.Outlined">
+                                    @* Payment & Fees Step *@
+                                    <MudStep Title="Payment & Fees" Icon="@Icons.Material.Filled.Payment">
+                                        <MudStepContent>
+                                            <MudGrid Spacing="3">
+                                                <MudItem xs="12" md="6">
+                                                    <MudStack Spacing="2">
+                                                        <div>
+                                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Application Fee</MudText>
+                                                            <MudText Typo="Typo.h6">$@_applicationDetails.Fee.ToString("F2")</MudText>
+                                                        </div>
+                                                        <div>
+                                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Identification Card Fee</MudText>
+                                                            <MudText Typo="Typo.h6">$@_applicationDetails.IdentificationCardFee.ToString("F2")</MudText>
+                                                        </div>
+                                                        <div>
+                                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Total Fees</MudText>
+                                                            <MudText Typo="Typo.h6" Color="Color.Primary">
+                                                                $@((_applicationDetails.Fee + _applicationDetails.IdentificationCardFee).ToString("F2"))
+                                                            </MudText>
+                                                        </div>
+                                                    </MudStack>
+                                                </MudItem>
+                                                <MudItem xs="12" md="6">
+                                                    <MudStack Spacing="2">
+                                                        <div>
+                                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Payment Status</MudText>
+                                                            <MudChip T="string" Color="@(_applicationDetails.IsPaymentProcessed ? Color.Success : Color.Warning)" Size="Size.Medium">
+                                                                @(_applicationDetails.IsPaymentProcessed ? "Processed" : "Pending")
+                                                            </MudChip>
+                                                        </div>
+                                                        @if (_applicationDetails.PaymentTransactionId.HasValue)
+                                                        {
+                                                            <div>
+                                                                <MudText Typo="Typo.caption" Color="Color.Secondary">Transaction ID</MudText>
+                                                                <MudText Typo="Typo.body2" Class="font-monospace">@_applicationDetails.PaymentTransactionId.Value.ToString("N")</MudText>
+                                                            </div>
+                                                        }
+                                                    </MudStack>
+                                                </MudItem>
+                                            </MudGrid>
+                                        </MudStepContent>
+                                    </MudStep>
+
+                                    @* Application Flags Step *@
+                                    <MudStep Title="Application Flags" Icon="@Icons.Material.Filled.Flag">
+                                        <MudStepContent>
+                                            <MudGrid Spacing="3">
+                                                <MudItem xs="12" md="6">
+                                                    <MudStack Spacing="2">
+                                                        <div>
+                                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Application Type</MudText>
+                                                            <MudChip T="string" Color="@(_applicationDetails.IsPrimaryApplication ? Color.Primary : Color.Default)" Size="Size.Small">
+                                                                @(_applicationDetails.IsPrimaryApplication ? "Primary Application" : "Secondary Application")
+                                                            </MudChip>
+                                                        </div>
+                                                        <div>
+                                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Foreign Citizenship</MudText>
+                                                            @if (_applicationDetails.HaveForeignCitizenshipApplication.HasValue)
+                                                            {
+                                                                <MudChip T="string" Color="@(_applicationDetails.HaveForeignCitizenshipApplication.Value ? Color.Warning : Color.Success)" Size="Size.Small">
+                                                                    @(_applicationDetails.HaveForeignCitizenshipApplication.Value ? "Yes" : "No")
+                                                                </MudChip>
+                                                            }
+                                                            else
+                                                            {
+                                                                <MudText Typo="Typo.body2" Color="Color.Secondary">Not specified</MudText>
+                                                            }
+                                                        </div>
+                                                        <div>
+                                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Criminal Record</MudText>
+                                                            @if (_applicationDetails.HaveCriminalRecord.HasValue)
+                                                            {
+                                                                <MudChip T="string" Color="@(_applicationDetails.HaveCriminalRecord.Value ? Color.Error : Color.Success)" Size="Size.Small">
+                                                                    @(_applicationDetails.HaveCriminalRecord.Value ? "Yes" : "No")
+                                                                </MudChip>
+                                                            }
+                                                            else
+                                                            {
+                                                                <MudText Typo="Typo.body2" Color="Color.Secondary">Not specified</MudText>
+                                                            }
+                                                        </div>
+                                                    </MudStack>
+                                                </MudItem>
+                                                <MudItem xs="12" md="6">
+                                                    <MudStack Spacing="2">
+                                                        <div>
+                                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Rush Processing</MudText>
+                                                            <MudStack Row="true" Spacing="1" Class="mt-1">
+                                                                @if (_applicationDetails.RushToCitizen)
+                                                                {
+                                                                    <MudChip T="string" Size="Size.Small" Color="Color.Info">Rush to Citizen</MudChip>
+                                                                }
+                                                                @if (_applicationDetails.RushToDiplomacy)
+                                                                {
+                                                                    <MudChip T="string" Size="Size.Small" Color="Color.Info">Rush to Diplomacy</MudChip>
+                                                                }
+                                                                @if (!_applicationDetails.RushToCitizen && !_applicationDetails.RushToDiplomacy)
+                                                                {
+                                                                    <MudText Typo="Typo.body2" Color="Color.Secondary">Standard processing</MudText>
+                                                                }
+                                                            </MudStack>
+                                                        </div>
+                                                    </MudStack>
+                                                </MudItem>
+                                            </MudGrid>
+                                        </MudStepContent>
+                                    </MudStep>
+
+                                    @* Review & Metadata Step *@
+                                    <MudStep Title="Review & Metadata" Icon="@Icons.Material.Filled.AdminPanelSettings">
+                                        <MudStepContent>
+                                            <MudGrid Spacing="3">
+                                                <MudItem xs="12" md="6">
+                                                    <MudStack Spacing="2">
+                                                        @if (_applicationDetails.ReviewedBy.HasValue)
+                                                        {
+                                                            <div>
+                                                                <MudText Typo="Typo.caption" Color="Color.Secondary">Reviewed By</MudText>
+                                                                <MudText Typo="Typo.body1" Class="font-monospace">@_applicationDetails.ReviewedBy.Value.ToString("N")</MudText>
+                                                            </div>
+                                                        }
+                                                        <div>
+                                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Tenant ID</MudText>
+                                                            <MudText Typo="Typo.body2" Class="font-monospace">@_applicationDetails.TenantId.ToString("N")</MudText>
+                                                        </div>
+                                                    </MudStack>
+                                                </MudItem>
+                                                <MudItem xs="12" md="6">
+                                                    <MudStack Spacing="2">
+                                                        @if (!string.IsNullOrEmpty(_applicationDetails.PhotoUrl))
+                                                        {
+                                                            <div>
+                                                                <MudText Typo="Typo.caption" Color="Color.Secondary">Photo</MudText>
+                                                                <MudImage Src="@_applicationDetails.PhotoUrl" Alt="Applicant Photo" 
+                                                                         Style="max-width: 200px; max-height: 200px; border-radius: 8px;" />
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div>
+                                                                <MudText Typo="Typo.caption" Color="Color.Secondary">Photo</MudText>
+                                                                <MudText Typo="Typo.body2" Color="Color.Secondary">No photo uploaded</MudText>
+                                                            </div>
+                                                        }
+                                                    </MudStack>
+                                                </MudItem>
+                                            </MudGrid>
+                                        </MudStepContent>
+                                    </MudStep>
+                                </MudStepper>
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    @* Application Metadata Card *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6">Application Metadata</MudText>
+                                </MudStack>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid Spacing="3">
+                                <MudItem xs="12" md="6">
+                                    <MudStack Spacing="2">
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Application ID</MudText>
+                                            <MudText Typo="Typo.body2" Class="font-monospace">@_application.Id.ToString("N")</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Created At</MudText>
+                                            <MudText Typo="Typo.body1">@_application.CreatedAt.ToString("MMMM dd, yyyy 'at' h:mm tt")</MudText>
+                                        </div>
+                                        <div>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Updated At</MudText>
+                                            <MudText Typo="Typo.body1">@_application.UpdatedAt.ToString("MMMM dd, yyyy 'at' h:mm tt")</MudText>
+                                        </div>
+                                        @if (_application.SubmittedDate != default)
+                                        {
+                                            <div>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">Submitted At</MudText>
+                                                <MudText Typo="Typo.body1">@_application.SubmittedDate.ToString("MMMM dd, yyyy 'at' h:mm tt")</MudText>
+                                            </div>
+                                        }
+                                    </MudStack>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudStack Spacing="2">
+                                        @if (_application.ApprovedAt.HasValue)
+                                        {
+                                            <div>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">Approved At</MudText>
+                                                <MudText Typo="Typo.body1" Color="Color.Success">@_application.ApprovedAt.Value.ToString("MMMM dd, yyyy 'at' h:mm tt")</MudText>
+                                                @if (!string.IsNullOrEmpty(_application.ApprovedBy))
+                                                {
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">By: @_application.ApprovedBy</MudText>
+                                                }
+                                            </div>
+                                        }
+                                        @if (_application.RejectedAt.HasValue)
+                                        {
+                                            <div>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">Rejected At</MudText>
+                                                <MudText Typo="Typo.body1" Color="Color.Error">@_application.RejectedAt.Value.ToString("MMMM dd, yyyy 'at' h:mm tt")</MudText>
+                                                @if (!string.IsNullOrEmpty(_application.RejectedBy))
+                                                {
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">By: @_application.RejectedBy</MudText>
+                                                }
+                                                @if (!string.IsNullOrEmpty(_application.Notes))
+                                                {
+                                                    <MudText Typo="Typo.caption" Color="Color.Error">Reason: @_application.Notes</MudText>
+                                                }
+                                            </div>
+                                        }
+                                        @if (_applicationDetails != null && _applicationDetails.ReviewedBy.HasValue)
+                                        {
+                                            <div>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">Reviewed By</MudText>
+                                                <MudText Typo="Typo.body2" Class="font-monospace">@_applicationDetails.ReviewedBy.Value.ToString("N")</MudText>
+                                            </div>
+                                        }
+                                    </MudStack>
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Timeline Card *@
+                    <MudCard Elevation="2">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Timeline" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6">Activity Timeline</MudText>
+                                </MudStack>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudTimeline TimelinePosition="TimelinePosition.Start">
+                                @foreach (var activity in _activities)
+                                {
+                                    <MudTimelineItem Color="@GetActivityColor(activity.Type)" Size="Size.Small">
+                                        <ItemContent>
+                                            <MudStack>
+                                                <MudText Typo="Typo.body2"><strong>@activity.Title</strong></MudText>
+                                                <MudText Typo="Typo.body2">@activity.Description</MudText>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                                    @activity.Timestamp.ToString("MMM dd, yyyy 'at' h:mm tt") • @activity.User
+                                                </MudText>
+                                            </MudStack>
+                                        </ItemContent>
+                                    </MudTimelineItem>
+                                }
+                            </MudTimeline>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                @* Right Column - Summary *@
+                <MudItem xs="12" md="4">
+                    @* Application Summary Card *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Application Summary</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Spacing="3">
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Application Type</MudText>
+                                    <MudText Typo="Typo.body1">@_application.Type</MudText>
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Current Step</MudText>
+                                    <MudChip T="string" Color="Color.Info" Size="Size.Small">
+                                        @GetStepDisplayName(_application.Step)
+                                    </MudChip>
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Risk Assessment</MudText>
+                                    <MudChip T="string" Color="@GetRiskColor(_application.RiskLevel)" Size="Size.Small">
+                                        @_application.RiskLevel Risk
+                                    </MudChip>
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Assigned Agent</MudText>
+                                    <MudText Typo="Typo.body1">@_application.AssignedAgent</MudText>
+                                </div>
+                                @if (_applicationDetails != null)
+                                {
+                                    <MudDivider />
+                                    <div>
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">Flags</MudText>
+                                        <MudStack Row="true" Spacing="1" Class="mt-1">
+                                            @if (_applicationDetails.PersonalDetails != null && _applicationDetails.PersonalDetails.Aliases?.Any() == true)
+                                            {
+                                                <MudChip T="string" Size="Size.Small" Color="Color.Warning">Has Aliases</MudChip>
+                                            }
+                                            @if (_applicationDetails.CriminalHistory?.Any() == true)
+                                            {
+                                                <MudChip T="string" Size="Size.Small" Color="Color.Error">Criminal History</MudChip>
+                                            }
+                                            @if (_applicationDetails.ImmigrationHistories?.Any(h => h.PreviouslyDeportedFromCountry) == true)
+                                            {
+                                                <MudChip T="string" Size="Size.Small" Color="Color.Error">Previously Deported</MudChip>
+                                            }
+                                            @if (_applicationDetails.IsPrimaryApplication)
+                                            {
+                                                <MudChip T="string" Size="Size.Small" Color="Color.Primary">Primary</MudChip>
+                                            }
+                                            @if (_applicationDetails.RushToCitizen || _applicationDetails.RushToDiplomacy)
+                                            {
+                                                <MudChip T="string" Size="Size.Small" Color="Color.Info">Rush Processing</MudChip>
+                                            }
+                                        </MudStack>
+                                    </div>
+                                    <div>
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">Tenant ID</MudText>
+                                        <MudText Typo="Typo.body2" Class="font-monospace">@_applicationDetails.TenantId.ToString("N")</MudText>
+                                    </div>
+                                }
+                                <MudDivider />
+                                <div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Notes</MudText>
+                                    <MudText Typo="Typo.body2">@(_application.Notes ?? "-")</MudText>
+                                </div>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Document Progress Card *@
+                    <MudCard Elevation="2" Class="mb-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Document Progress</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Spacing="2">
+                                @{
+                                    var approvedDocs = _documents.Count(d => d.Status == "Approved");
+                                    var totalDocs = _documents.Count;
+                                    var progress = totalDocs > 0 ? (int)((double)approvedDocs / totalDocs * 100) : 0;
+                                }
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">@approvedDocs of @totalDocs documents verified</MudText>
+                                <MudProgressLinear Color="Color.Success" Value="@progress" Class="my-2" />
+                                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                    <MudText Typo="Typo.caption" Color="Color.Success">Approved: @approvedDocs</MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Warning">Pending: @_documents.Count(d => d.Status == "Pending")</MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Error">Rejected: @_documents.Count(d => d.Status == "Rejected")</MudText>
+                                </MudStack>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+
+                    @* Quick Actions Card *@
+                    <MudCard Elevation="2">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Quick Actions</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Spacing="2">
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Email">
+                                    Send Email
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Event">
+                                    Schedule Interview
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.NoteAdd">
+                                    Add Note
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.AssignmentInd">
+                                    Reassign Agent
+                                </MudButton>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudStack>
+    </MudPaper>
+}
+
+@* Reject Dialog *@
+<MudDialog @bind-Visible="_rejectDialogVisible">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Error" Class="mr-2" />
+            Reject Application
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-4">
+            Are you sure you want to reject application <strong>@ApplicationNumber</strong>?
+            This action cannot be undone.
+        </MudText>
+        <MudTextField @bind-Value="_rejectReason" Label="Reason for Rejection" Variant="Variant.Outlined"
+                      Lines="3" Required="true" RequiredError="Please provide a reason" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _rejectDialogVisible = false)">Cancel</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="RejectApplication">Reject</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject Mamey.Government.UI.Services.IApplicationsService ApplicationsService
+
+@code {
+    [Parameter]
+    public string ApplicationNumber { get; set; } = "";
+
+    // Default tenant ID - in production, get from user claims
+    private static readonly Guid TenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    private bool _loading = true;
+    private bool _rejectDialogVisible = false;
+    private string _rejectReason = "";
+
+    private ApplicationDetails? _application;
+    private ApplicationDetailsExtended? _applicationDetails;
+    private List<Document> _documents = new();
+    private List<Activity> _activities = new();
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    private record ApplicationDetails(
+        Guid Id,
+        string ApplicationNumber,
+        string FirstName,
+        string LastName,
+        string? MiddleName,
+        string? Nickname,
+        DateTime SubmittedDate,
+        DateTime CreatedAt,
+        DateTime UpdatedAt,
+        DateTime? ApprovedAt,
+        DateTime? RejectedAt,
+        string Status,
+        string Step,
+        string Type,
+        string Email,
+        string Phone,
+        Address? Address,
+        string Country,
+        DateTime DateOfBirth,
+        string AssignedAgent,
+        string? ApprovedBy,
+        string? RejectedBy,
+        string RiskLevel,
+        string Notes);
+
+    private record ApplicationDetailsExtended(
+        PersonalDetailsDto? PersonalDetails,
+        ContactInformationDto? ContactInformation,
+        ForeignIdentificationDto? ForeignIdentification,
+        IReadOnlyList<DependentDto>? Dependents,
+        IReadOnlyList<ResidencyDto>? ResidencyHistory,
+        IReadOnlyList<ImmigrationHistoryDto>? ImmigrationHistories,
+        IReadOnlyList<EducationQualificationDto>? EducationQualifications,
+        IReadOnlyList<EmploymentHistoryDto>? EmploymentHistory,
+        IReadOnlyList<ForeignCitizenshipApplicationDto>? ForeignCitizenshipApplications,
+        IReadOnlyList<CriminalHistoryDto>? CriminalHistory,
+        IReadOnlyList<ReferenceDto>? References,
+        // Additional properties from ApplicationDto
+        bool IsPrimaryApplication,
+        bool? HaveForeignCitizenshipApplication,
+        bool? HaveCriminalRecord,
+        Guid? PaymentTransactionId,
+        bool IsPaymentProcessed,
+        decimal Fee,
+        decimal IdentificationCardFee,
+        bool RushToCitizen,
+        bool RushToDiplomacy,
+        Guid? ReviewedBy,
+        string? PhotoUrl,
+        Guid TenantId);
+
+    private record Document(
+        Guid Id,
+        string Name,
+        string Type,
+        DateTime UploadedDate,
+        string Status,
+        long FileSize,
+        string StoragePath);
+
+    private record Activity(
+        DateTime Timestamp,
+        string Type,
+        string Title,
+        string Description,
+        string User);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _breadcrumbs = new List<BreadcrumbItem>
+        {
+            new("Home", href: "/"),
+            new("Applications", href: "/gov/applications"),
+            new(ApplicationNumber, href: null, disabled: true)
+        };
+
+        await LoadApplicationData();
+    }
+
+    private async Task LoadApplicationData()
+    {
+        _loading = true;
+        StateHasChanged();
+
+        try
+        {
+            var appData = await ApplicationsService.GetByNumberAsync(ApplicationNumber);
+            
+            if (appData is not null)
+            {
+                // Build address from AddressDto if available
+                var fullAddress = "";
+                if (appData.Address != null)
+                {
+                    fullAddress = appData.Address.ToSimpleFormat();
+                }
+                else
+                {
+                    // Fallback to old address components
+                    var addressParts = new List<string>();
+                    if (!string.IsNullOrEmpty(appData.Street)) addressParts.Add(appData.Street);
+                    if (!string.IsNullOrEmpty(appData.City)) addressParts.Add(appData.City);
+                    if (!string.IsNullOrEmpty(appData.State)) addressParts.Add(appData.State);
+                    if (!string.IsNullOrEmpty(appData.PostalCode)) addressParts.Add(appData.PostalCode);
+                    fullAddress = string.Join(", ", addressParts);
+                }
+
+                var submittedDate = appData.SubmittedAt ?? appData.CreatedAt;
+                var lastUpdated = appData.UpdatedAt;
+
+                _application = new ApplicationDetails(
+                    appData.Id,
+                    appData.ApplicationNumber ?? ApplicationNumber,
+                    appData.FirstName,
+                    appData.LastName,
+                    appData.MiddleName,
+                    appData.Nickname,
+                    submittedDate,
+                    appData.CreatedAt,
+                    appData.UpdatedAt,
+                    appData.ApprovedAt,
+                    appData.RejectedAt,
+                    appData.Status ?? "Draft",
+                    appData.Step ?? "Initial",
+                    "Citizenship Application", // Type is fixed
+                    appData.Email ?? "",
+                    appData.Phone ?? "",
+                    appData.Address,
+                    appData.Address?.Country ?? appData.Country ?? "",
+                    appData.DateOfBirth,
+                    "Unassigned", // Assigned agent not tracked yet
+                    appData.ApprovedBy,
+                    appData.RejectedBy,
+                    "Medium", // Risk level not tracked yet
+                    appData.RejectionReason ?? ""); // Use rejection reason as notes
+
+                // Create extended details from DTO
+                _applicationDetails = new ApplicationDetailsExtended(
+                    appData.PersonalDetails,
+                    appData.ContactInformation,
+                    appData.ForeignIdentification,
+                    appData.Dependents,
+                    appData.ResidencyHistory,
+                    appData.ImmigrationHistories,
+                    appData.EducationQualifications,
+                    appData.EmploymentHistory,
+                    appData.ForeignCitizenshipApplications,
+                    appData.CriminalHistory,
+                    appData.References,
+                    // Additional properties
+                    appData.IsPrimaryApplication,
+                    appData.HaveForeignCitizenshipApplication,
+                    appData.HaveCriminalRecord,
+                    appData.PaymentTransactionId,
+                    appData.IsPaymentProcessed,
+                    appData.Fee,
+                    appData.IdentificationCardFee,
+                    appData.RushToCitizen,
+                    appData.RushToDiplomacy,
+                    appData.ReviewedBy,
+                    appData.PhotoUrl,
+                    appData.TenantId);
+
+                // Documents from DTO
+                _documents = appData.Documents?.Select(d => new Document(
+                    d.Id,
+                    d.FileName,
+                    d.DocumentType,
+                    d.UploadedAt,
+                    "Pending",
+                    d.FileSize,
+                    d.StoragePath)).ToList() ?? new List<Document>();
+
+                // Activities from timeline - ordered by date (newest first)
+                _activities = new List<Activity>();
+                
+                // Add creation event
+                _activities.Add(new(appData.CreatedAt, "Creation", "Application Created", 
+                    $"Citizenship application {appData.ApplicationNumber} was created.", "System"));
+                
+                // Add submission event if submitted
+                if (appData.SubmittedAt.HasValue)
+                {
+                    _activities.Add(new(appData.SubmittedAt.Value, "Submission", "Application Submitted", 
+                        "Citizenship application submitted by applicant.", $"{appData.FirstName} {appData.LastName}"));
+                }
+                
+                // Add approval/rejection to timeline if applicable
+                if (appData.ApprovedAt.HasValue)
+                {
+                    _activities.Add(new(appData.ApprovedAt.Value, "Approval", "Application Approved", 
+                        appData.RejectionReason ?? "Citizenship application was approved.", appData.ApprovedBy ?? "System"));
+                }
+                else if (appData.RejectedAt.HasValue)
+                {
+                    _activities.Add(new(appData.RejectedAt.Value, "Rejection", "Application Rejected", 
+                        appData.RejectionReason ?? "Citizenship application was rejected.", appData.RejectedBy ?? "System"));
+                }
+                
+                // Sort by timestamp descending (newest first)
+                _activities = _activities.OrderByDescending(a => a.Timestamp).ToList();
+            }
+            else
+            {
+                // Fallback to mock data
+                // LoadMockData();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading application data: {ex.Message}");
+            // LoadMockData();
+        }
+
+        _loading = false;
+    }
+
+    private string FormatAddress(AddressDto? address)
+    {
+        if (address == null) return "";
+        
+        var parts = new List<string>();
+        if (!string.IsNullOrEmpty(address.Line)) parts.Add(address.Line);
+        if (!string.IsNullOrEmpty(address.Line2)) parts.Add(address.Line2);
+        if (!string.IsNullOrEmpty(address.City)) parts.Add(address.City);
+        if (!string.IsNullOrEmpty(address.State)) parts.Add(address.State);
+        if (!string.IsNullOrEmpty(address.PostalCode)) parts.Add(address.PostalCode);
+        if (!string.IsNullOrEmpty(address.Country)) parts.Add(address.Country);
+        
+        return string.Join(", ", parts);
+    }
+
+    private string FormatFullAddress(AddressDto address)
+    {
+        var parts = new List<string>();
+        if (!string.IsNullOrEmpty(address.FirmName)) parts.Add(address.FirmName);
+        if (!string.IsNullOrEmpty(address.Line)) parts.Add(address.Line);
+        if (!string.IsNullOrEmpty(address.Line2)) parts.Add(address.Line2);
+        if (!string.IsNullOrEmpty(address.Line3)) parts.Add(address.Line3);
+        if (!string.IsNullOrEmpty(address.Urbanization)) parts.Add(address.Urbanization);
+        if (!string.IsNullOrEmpty(address.City)) parts.Add(address.City);
+        if (!string.IsNullOrEmpty(address.State)) parts.Add(address.State);
+        if (!string.IsNullOrEmpty(address.Province)) parts.Add(address.Province);
+        if (!string.IsNullOrEmpty(address.PostalCode)) parts.Add(address.PostalCode);
+        else if (!string.IsNullOrEmpty(address.Zip5))
+        {
+            var zip = address.Zip5;
+            if (!string.IsNullOrEmpty(address.Zip4)) zip += $"-{address.Zip4}";
+            parts.Add(zip);
+        }
+        if (!string.IsNullOrEmpty(address.Country)) parts.Add(address.Country);
+        
+        var addressText = string.Join(", ", parts);
+        if (!string.IsNullOrEmpty(address.Type) && address.Type != "Default")
+        {
+            addressText += $" ({address.Type})";
+        }
+        if (address.IsDefault)
+        {
+            addressText += " [Default]";
+        }
+        return addressText;
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    // private void LoadMockData()
+    // {
+    //     _application = new ApplicationDetails(
+    //         Guid.NewGuid(),
+    //         ApplicationNumber,
+    //         "John Smith",
+    //         DateTime.Now.AddDays(-5),
+    //         "Pending",
+    //         "Citizenship Application",
+    //         "john.smith@email.com",
+    //         "+1 (555) 010-2045",
+    //         "742 Evergreen Terrace, Springfield, IL 62701",
+    //         "United States",
+    //         new DateTime(1985, 6, 15),
+    //         "Agent Amelia Grant",
+    //         DateTime.Now.AddDays(-1),
+    //         "Medium",
+    //         "Awaiting identity verification review and interview scheduling.");
+    //
+    //     _documents = new List<Document>
+    //     {
+    //         new(Guid.NewGuid(), "Government-issued ID", "Identity", DateTime.Now.AddDays(-5), "Approved"),
+    //         new(Guid.NewGuid(), "Proof of Residence", "Address", DateTime.Now.AddDays(-5), "Approved"),
+    //         new(Guid.NewGuid(), "Birth Certificate", "Identity", DateTime.Now.AddDays(-5), "Pending"),
+    //         new(Guid.NewGuid(), "Background Check Consent", "Legal", DateTime.Now.AddDays(-5), "Approved"),
+    //         new(Guid.NewGuid(), "Passport Photo", "Photo", DateTime.Now.AddDays(-4), "Pending"),
+    //         new(Guid.NewGuid(), "Employment Verification", "Financial", DateTime.Now.AddDays(-3), "Pending")
+    //     };
+    //
+    //     _activities = new List<Activity>
+    //     {
+    //         new(DateTime.Now.AddHours(-2), "Note", "Note Added", "Applicant contacted regarding missing birth certificate translation.", "Agent Amelia Grant"),
+    //         new(DateTime.Now.AddDays(-1), "Document", "Document Approved", "Government-issued ID verified and approved.", "Agent Amelia Grant"),
+    //         new(DateTime.Now.AddDays(-1), "Document", "Document Approved", "Proof of Residence verified and approved.", "Agent Amelia Grant"),
+    //         new(DateTime.Now.AddDays(-2), "Assignment", "Agent Assigned", "Application assigned to Agent Amelia Grant for review.", "System"),
+    //         new(DateTime.Now.AddDays(-5), "Submission", "Application Submitted", "Citizenship application submitted by applicant.", "John Smith")
+    //     };
+    // }
+
+    private async Task ApproveApplication()
+    {
+        if (_application is null) return;
+        
+        try
+        {
+            var success = await ApplicationsService.ApproveAsync(_application.Id);
+            if (success)
+            {
+                Snackbar.Add($"Application {ApplicationNumber} approved successfully!", Severity.Success);
+                Navigation.NavigateTo("/gov/applications");
+            }
+            else
+            {
+                Snackbar.Add("Failed to approve application. Please try again.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error approving application: {ex.Message}");
+            Snackbar.Add("An error occurred while approving the application.", Severity.Error);
+        }
+    }
+
+    private async Task RejectApplication()
+    {
+        if (_application is null) return;
+        
+        if (string.IsNullOrWhiteSpace(_rejectReason))
+        {
+            Snackbar.Add("Please provide a reason for rejection", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            var success = await ApplicationsService.RejectAsync(_application.Id, _rejectReason);
+            if (success)
+            {
+                Snackbar.Add($"Application {ApplicationNumber} rejected", Severity.Info);
+                _rejectDialogVisible = false;
+                Navigation.NavigateTo("/gov/applications");
+            }
+            else
+            {
+                Snackbar.Add("Failed to reject application. Please try again.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error rejecting application: {ex.Message}");
+            Snackbar.Add("An error occurred while rejecting the application.", Severity.Error);
+        }
+    }
+
+    private string GetStatusDisplayName(string status) => status switch
+    {
+        "ReviewPending" => "In Review",
+        "KycPending" => "KYC Pending",
+        "Validating" => "Validating",
+        _ => status
+    };
+
+    private string GetStepDisplayName(string step) => step switch
+    {
+        "Initial" => "Initial",
+        "PersonalDetailsComplete" => "Personal Details",
+        "ContactInformationComplete" => "Contact Info",
+        "PassportAndIdentificationComplete" => "Identification",
+        "ResidencyAndImmigrationComplete" => "Residency",
+        "EmploymentAndEducationComplete" => "Employment",
+        _ => step
+    };
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Draft" => Color.Default,
+        "Submitted" => Color.Primary,
+        "Validating" or "KycPending" or "ReviewPending" => Color.Warning,
+        "Approved" => Color.Success,
+        "Rejected" => Color.Error,
+        _ => Color.Default
+    };
+
+    private Color GetDocumentStatusColor(string status) => status switch
+    {
+        "Approved" => Color.Success,
+        "Pending" => Color.Warning,
+        "Rejected" => Color.Error,
+        _ => Color.Default
+    };
+
+    private Color GetRiskColor(string risk) => risk switch
+    {
+        "Low" => Color.Success,
+        "Medium" => Color.Warning,
+        "High" => Color.Error,
+        _ => Color.Default
+    };
+
+    private Color GetActivityColor(string type) => type switch
+    {
+        "Submission" => Color.Primary,
+        "Document" => Color.Info,
+        "Assignment" => Color.Secondary,
+        "Note" => Color.Default,
+        "Approval" => Color.Success,
+        "Rejection" => Color.Error,
+        _ => Color.Default
+    };
+
+    private string GetDocumentIcon(string type) => type switch
+    {
+        "Identity" => Icons.Material.Filled.Badge,
+        "Address" => Icons.Material.Filled.Home,
+        "Legal" => Icons.Material.Filled.Gavel,
+        "Photo" => Icons.Material.Filled.Photo,
+        "Financial" => Icons.Material.Filled.AttachMoney,
+        _ => Icons.Material.Filled.Description
+    };
+}

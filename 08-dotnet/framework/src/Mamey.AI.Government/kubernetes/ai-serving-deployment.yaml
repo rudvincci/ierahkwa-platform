@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-serving
+  namespace: mamey-government
+  labels:
+    app: ai-serving
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ai-serving
+  template:
+    metadata:
+      labels:
+        app: ai-serving
+    spec:
+      containers:
+      - name: ai-serving
+        image: mamey/ai-serving:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+            nvidia.com/gpu: "1" # Request GPU if available
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+        volumeMounts:
+        - name: models-volume
+          mountPath: /app/models
+          readOnly: true
+      volumes:
+      - name: models-volume
+        persistentVolumeClaim:
+          claimName: ai-models-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-serving
+  namespace: mamey-government
+spec:
+  selector:
+    app: ai-serving
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
+  type: ClusterIP

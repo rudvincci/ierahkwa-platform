@@ -1,0 +1,34 @@
+@* CIT-001-B: Treaty Acknowledgment *@
+@using Mamey.Government.UI.ViewModels.Citizenship
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h6">CIT-001-B: Treaty Acknowledgment</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary">
+        Acknowledgment of treaties. This section will be populated with all fields from CIT-001-B Treaty Acknowledgment.pdf
+    </MudText>
+
+    <MudPaper Class="pa-4">
+        <MudAlert Severity="Severity.Info" Class="mb-4">
+            <MudText Typo="Typo.body2">
+                <strong>Important:</strong> Please review the applicable treaties and agreements before acknowledging. 
+                This acknowledgment is a required part of your citizenship application.
+            </MudText>
+        </MudAlert>
+
+        <MudText Typo="Typo.body1" Class="mb-4">
+            By submitting this application, I acknowledge that I have read and understand the treaties and agreements 
+            that govern citizenship in this jurisdiction. I understand my rights and responsibilities as a citizen.
+        </MudText>
+
+        <MudCheckBox T="bool" @bind-Selected="ViewModel.AcknowledgeTreaty" 
+                    Label="I acknowledge that I have read and understand the applicable treaties and agreements" 
+                    Required="true" />
+    </MudPaper>
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public BecomeCitizenViewModel ViewModel { get; set; } = null!;
+}
+
+

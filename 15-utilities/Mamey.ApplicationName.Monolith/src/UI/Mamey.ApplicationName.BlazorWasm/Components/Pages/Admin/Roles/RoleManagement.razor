@@ -1,0 +1,27 @@
+@using Mamey.ApplicationName.BlazorWasm.Models.Roles
+@code {
+    [Parameter] public List<UserRole> UserRoles { get; set; }
+    [Parameter] public EventCallback<UserRole> OnRoleChanged { get; set; }
+}
+
+<MudTable Items="UserRoles" Hover="true" Striped="true">
+    <HeaderContent>
+        <MudTh>User</MudTh>
+        <MudTh>Role</MudTh>
+        <MudTh>Permissions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.UserName</MudTd>
+        <MudSelect T="string" Label="Role" @bind-Value="context.Role" OnChange="(e) => OnRoleChanged.InvokeAsync(context)">
+            <MudSelectItem T="string" Value="@("Trustee")">Trustee</MudSelectItem>
+            <MudSelectItem T="string" Value="@("Beneficiary")">Beneficiary</MudSelectItem>
+            <MudSelectItem T="string" Value="@("Account Manager")">Account Manager</MudSelectItem>
+        </MudSelect>
+        <MudTd>
+            @foreach (var permission in context.Permissions)
+            {
+                <MudChip T="string">@permission</MudChip>
+            }
+        </MudTd>
+    </RowTemplate>
+</MudTable>

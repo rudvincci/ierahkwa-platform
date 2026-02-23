@@ -1,0 +1,49 @@
+# Mamey.Info/k8s/mameynode-pqc/configmap.yaml
+# ConfigMap for MameyNode PQC configuration
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mameynode-pqc-config
+  namespace: mamey
+  labels:
+    app: mameynode
+    version: v2-pqc
+data:
+  # Post-Quantum Cryptography Settings
+  MAMEY_PQC_ENABLED: "true"
+  MAMEY_PQC_ALGORITHM: "ML-DSA-65"
+  MAMEY_PQC_HYBRID_MODE: "true"
+  MAMEY_PQC_MANDATORY_HEIGHT: "0"
+  MAMEY_PQC_VALIDATION_LEVEL: "Hybrid"
+  
+  # Migration Settings
+  MAMEY_PQC_MIGRATION_ENABLED: "true"
+  MAMEY_PQC_MIGRATION_MANDATORY_DATE: "2026-06-01T00:00:00Z"
+  
+  # Blockchain Settings
+  MAMEY_BLOCKCHAIN_MAX_BLOCK_SIZE: "10485760"
+  MAMEY_BLOCKCHAIN_NETWORK_ID: "mainnet"
+  
+  # Consensus Settings
+  MAMEY_CONSENSUS_REQUIRE_PQC_FOR_NEW_BLOCKS: "false"
+  MAMEY_CONSENSUS_PQC_SIGNATURE_RATIO_TARGET: "0.5"
+  
+  # Logging Configuration
+  Logging__LogLevel__Default: "Information"
+  Logging__LogLevel__Mamey: "Debug"
+  Logging__LogLevel__Microsoft.AspNetCore: "Warning"
+  
+  # gRPC Settings
+  GRPC_MAX_MESSAGE_SIZE: "16777216"
+  GRPC_KEEPALIVE_TIME_MS: "60000"
+  
+  # Metrics & Monitoring
+  MAMEY_METRICS_ENABLED: "true"
+  MAMEY_METRICS_ENDPOINT: "/metrics"
+  
+  # Application Settings
+  ASPNETCORE_ENVIRONMENT: "Production"
+  ASPNETCORE_URLS: "http://+:5001;http://+:5000"
+
+

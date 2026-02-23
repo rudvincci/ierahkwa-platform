@@ -1,0 +1,96 @@
+@page "/ledger/blocks"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumLedgerClient FutureWampumLedgerClient
+@inject ILogger<Blocks> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Blocks" Icon="fas fa-cubes" Subtitle="Blockchain block management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Blocks" Value="@_blocks.Count.ToString()" Icon="fas fa-cubes" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Confirmed" Value="@_confirmedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Max Height" Value="@_maxHeight.ToString("N0")" Icon="fas fa-chart-line" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Transactions" Value="@_totalTransactions.ToString()" Icon="fas fa-list" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Blocks" Class="mt-4">
+        <MudTable T="LedgerBlockInfo" Items="@_blocks" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Block Hash</MudTh>
+                <MudTh>Height</MudTh>
+                <MudTh>Account</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Confirmed</MudTh>
+                <MudTh>Transactions</MudTh>
+                <MudTh>Timestamp</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd><MudText Typo="Typo.caption">@context.BlockHash.Substring(0, 16)...</MudText></MudTd>
+                <MudTd>@context.BlockHeight.ToString("N0")</MudTd>
+                <MudTd>@context.Account</MudTd>
+                <MudTd>@context.BlockType</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.IsConfirmed ? Color.Success : Color.Warning)">
+                        @(context.IsConfirmed ? "Yes" : "No")
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.Transactions.Count</MudTd>
+                <MudTd>@context.Timestamp.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<LedgerBlockInfo> _blocks = new();
+    private int _confirmedCount;
+    private ulong _maxHeight;
+    private int _totalTransactions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _blocks = await FutureWampumLedgerClient.GetBlocksAsync(100);
+            _confirmedCount = _blocks.Count(b => b.IsConfirmed);
+            _maxHeight = _blocks.Any() ? _blocks.Max(b => b.BlockHeight) : 0;
+            _totalTransactions = _blocks.Sum(b => b.Transactions.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading blocks");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

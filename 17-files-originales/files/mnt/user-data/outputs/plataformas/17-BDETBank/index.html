@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FutureHead BDET Bank — Sovereign Payment System</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080604;--bg2:#110e0a;--gold:#d4a853;--gold-b:#f0c96e;--green:#00cc6a;--red:#ff4444;--cyan:#00bcd4;--wampum:#9b6dff;--blue:#4a9eff;--text:#f0ebe3;--dim:#887a68;--border:rgba(212,168,83,.12)}
+body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif}
+.c{max-width:1400px;margin:0 auto;padding:0 2rem}
+h1{font-size:3rem;font-weight:900;text-align:center;padding:2rem 0 .5rem}
+h1 .g{color:var(--gold)}
+.sub{text-align:center;font-size:.75rem;color:var(--gold);letter-spacing:.25em;text-transform:uppercase;margin-bottom:1rem}
+.desc{text-align:center;color:var(--dim);max-width:700px;margin:0 auto 2rem;line-height:1.7}
+.metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--border);margin:2rem 0;border:1px solid var(--border)}
+.m{background:var(--bg);padding:1rem;text-align:center}
+.m b{font-size:1.3rem;color:var(--gold);display:block}
+.m span{font-size:.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+.sec{margin:2.5rem 0 1rem;border-left:3px solid var(--gold);padding-left:1rem}
+.sec h2{font-size:1.5rem;font-weight:700}.sec h2 .g{color:var(--gold)}
+.sec p{color:var(--dim);font-size:.85rem;margin-top:.3rem}
+pre{background:var(--bg2);border:1px solid var(--border);padding:1.5rem;font-size:.7rem;line-height:2;overflow-x:auto;margin:1rem 0;color:var(--dim)}
+pre .g{color:var(--gold)}pre .c2{color:var(--cyan)}pre .w{color:var(--wampum)}pre .gr{color:var(--green)}pre .b{color:var(--blue)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;margin:1rem 0}
+.card{background:var(--bg2);border:1px solid var(--border);padding:1.5rem;transition:all .3s}
+.card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.card h3{font-size:.85rem;color:var(--gold);margin-bottom:.3rem;font-family:monospace}
+.card .cat{font-size:.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.6rem}
+.card p{color:var(--dim);font-size:.82rem;line-height:1.6;margin-bottom:.6rem}
+.card .api{font-family:monospace;font-size:.65rem;color:var(--cyan);background:rgba(0,188,212,.05);padding:.2rem .5rem;display:inline-block;margin-bottom:.5rem}
+.card .fees{font-family:monospace;font-size:.6rem;color:var(--dim)}
+.card .fees b{color:var(--gold)}
+.ep{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+.epc{background:var(--bg2);border:1px solid var(--border);padding:1rem}
+.epc .method{font-family:monospace;font-size:.65rem;font-weight:700;display:inline-block;padding:.1rem .4rem;border-radius:2px;margin-right:.3rem}
+.epc .method.post{background:rgba(0,204,106,.15);color:var(--green)}
+.epc .method.get{background:rgba(0,188,212,.15);color:var(--cyan)}
+.epc .path{font-family:monospace;font-size:.75rem}
+.epc p{color:var(--dim);font-size:.78rem;margin-top:.4rem}
+table{width:100%;border-collapse:collapse;margin:1rem 0}
+th{font-family:monospace;font-size:.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;text-align:left;padding:.7rem;border-bottom:1px solid var(--border);background:var(--bg2)}
+td{font-size:.8rem;padding:.7rem;border-bottom:1px solid rgba(255,255,255,.02)}
+tr:hover td{background:rgba(212,168,83,.02)}
+.amt{font-family:monospace;color:var(--gold)}
+.cr{color:var(--green)}.dr{color:var(--red)}
+.plat{font-family:monospace;font-size:.75rem;color:var(--cyan)}
+.foot{text-align:center;padding:3rem 0;border-top:1px solid var(--border);margin-top:3rem}
+.foot b{color:var(--gold)}
+@media(max-width:768px){.metrics{grid-template-columns:repeat(3,1fr)}.ep{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="c">
+
+<h1><span class="g">FutureHead</span> BDET Bank</h1>
+<div class="sub">Sovereign Central Banking · Universal Payment System · Digital Treasury</div>
+<p class="desc">The financial backbone of the Ierahkwa Sovereign Nation. Every Soberano platform, every AI agent, every citizen transaction flows through BDET Bank. Wampum currency. MameyNode blockchain. Quantum-encrypted. Zero foreign dependency.</p>
+
+<div class="metrics">
+<div class="m"><b>12,847</b><span>TPS Live</span></div>
+<div class="m"><b>2.8M W</b><span>Daily Volume</span></div>
+<div class="m"><b>24,847</b><span>Accounts</span></div>
+<div class="m"><b>3,291</b><span>Merchants</span></div>
+<div class="m"><b>24</b><span>Platforms</span></div>
+<div class="m"><b>847</b><span>Active Escrows</span></div>
+</div>
+
+<div class="sec"><h2>🏗️ <span class="g">Universal Payment Flow</span></h2><p>How every Wampum flows from citizen to platform to bank</p></div>
+
+<pre>
+<span class="g">┌─ CITIZEN LAYER ─────────────────────────────────────────────────────┐</span>
+│  <span class="gr">Sovereign Wallet</span> ←→ <span class="gr">BDET Mobile App</span> ←→ <span class="gr">Virtual Card</span> ←→ <span class="gr">ATM</span>     │
+│  Every citizen: checking + savings + business + crypto wallet       │
+<span class="g">└────────────────────────────┬────────────────────────────────────────┘</span>
+                             │ <span class="c2">Wampum Transfer / Smart Contract</span>
+<span class="w">┌─ SOBERANO PLATFORMS ───────┴────────────────────────────────────────┐</span>
+│                                                                     │
+│  <span class="c2">SoberanoUber</span>      → rider pays driver     → 2% fee    → BDET     │
+│  <span class="c2">SoberanoEats</span>      → buyer pays restaurant → 3% split  → BDET     │
+│  <span class="c2">SoberanoDoctor</span>    → patient pays provider → insurance → BDET     │
+│  <span class="c2">SoberanoBuild</span>     → milestone escrow      → release   → BDET     │
+│  <span class="c2">SoberanoFarm</span>      → buyer pays farmer     → subsidy   → BDET     │
+│  <span class="c2">SoberanoTrade</span>     → trade settlement      → forex     → BDET     │
+│  <span class="c2">SoberanoGuard</span>     → gov budget            → salary    → BDET     │
+│  <span class="c2">SoberanoTeach</span>     → edu budget            → tutor pay → BDET     │
+│  <span class="c2">SoberanoMarket</span>    → buyer pays seller     → 1.5% fee  → BDET     │
+│  <span class="c2">SoberanoEnergy</span>    → P2P energy trade      → grid fee  → BDET     │
+│  <span class="c2">SoberanoRepair</span>    → repair escrow         → tech pay  → BDET     │
+│  <span class="c2">SoberanoClean</span>     → carbon credits        → worker    → BDET     │
+│  <span class="c2">SoberanoAir</span>       → booking payment       → crew pay  → BDET     │
+│  <span class="c2">SoberanoPharmacy</span>  → prescription billing  → pharmacy  → BDET     │
+│  <span class="c2">SoberanoFactory</span>   → order payment         → payroll   → BDET     │
+│  <span class="c2">SoberanoFish</span>      → catch sale            → crew share→ BDET     │
+│  <span class="c2">SoberanoHousing</span>   → rent/mortgage         → monthly   → BDET     │
+│  <span class="c2">SoberanoMessenger</span> → delivery fee          → courier   → BDET     │
+│  <span class="c2">SoberanoSurvey</span>    → data fee              → surveyor  → BDET     │
+│  <span class="c2">SoberanoWater</span>     → utility billing       → maint     → BDET     │
+│  <span class="c2">RentaSoberano</span>     → task escrow           → worker    → BDET     │
+│  <span class="c2">Casino/Sports</span>     → bet settlement        → house     → BDET     │
+│  <span class="c2">Insurance</span>         → premium/claims        → payout    → BDET     │
+│  <span class="c2">Tax Authority</span>     → auto collection       → treasury  → BDET     │
+│                                                                     │
+<span class="w">└────────────────────────────┬────────────────────────────────────────┘</span>
+                             │ <span class="g">Settlement Layer</span>
+<span class="g">┌─ BDET BANK CORE ───────────┴────────────────────────────────────────┐</span>
+│  <span class="g">ESCROW ENGINE</span>       Smart contract escrow for all platforms        │
+│  <span class="g">SETTLEMENT ENGINE</span>   Real-time gross settlement (RTGS)              │
+│  <span class="g">TREASURY</span>            Sovereign treasury management                   │
+│  <span class="g">TAX ENGINE</span>          Auto-deduct sovereign tax on transactions       │
+│  <span class="g">INSURANCE POOL</span>      Platform insurance fund (0.1% per tx)           │
+│  <span class="g">FOREX ENGINE</span>        Wampum ←→ USD/EUR/BTC/ETH via DeFi bridge      │
+│  <span class="g">CREDIT ENGINE</span>       Micro-loans, mortgages, business credit         │
+│  <span class="g">MERCHANT ENGINE</span>     POS terminals, QR payments, invoicing           │
+│  <span class="g">PAYROLL ENGINE</span>      Auto salary for all platforms                   │
+│  <span class="g">SUBSIDY ENGINE</span>      Gov subsidies: agriculture, education, health   │
+│  <span class="g">AUDIT ENGINE</span>        Real-time monitoring & compliance                │
+<span class="g">└────────────────────────────┬────────────────────────────────────────┘</span>
+                             │ <span class="b">MameyNode Blockchain</span>
+<span class="b">┌─ BLOCKCHAIN ───────────────┴────────────────────────────────────────┐</span>
+│  MameyNode.Rust · Quantum signatures · Smart contracts · DeFi      │
+│  Block: &lt;1s · Finality: instant · TPS target: 1M+                  │
+<span class="b">└─────────────────────────────────────────────────────────────────────┘</span>
+</pre>
+
+<div class="sec"><h2>🔌 <span class="g">Platform Payment Integrations</span></h2><p>Every Soberano platform connected to BDET Bank</p></div>
+
+<div class="grid">
+<div class="card"><h3>🚗 SoberanoUber</h3><div class="cat">Transport</div><div class="api">POST /api/v1/payments/ride</div><p>Real-time fare calc. Rider auto-debited. Driver gets 85% instantly. Surge pricing by AI. Tips 100% to driver.</p><div class="fees">Driver: <b>85%</b> · Platform: <b>2%</b> · Tax: <b>8%</b> · Insurance: <b>5%</b></div></div>
+
+<div class="card"><h3>🍽️ SoberanoEats</h3><div class="cat">Food Delivery</div><div class="api">POST /api/v1/payments/food-order</div><p>Three-way split: restaurant + courier + platform. Pre-auth on order, final on delivery. Tips 100% to courier.</p><div class="fees">Restaurant: <b>75%</b> · Courier: <b>15%</b> · Platform: <b>3%</b> · Tax: <b>7%</b></div></div>
+
+<div class="card"><h3>🏥 SoberanoDoctor</h3><div class="cat">Healthcare</div><div class="api">POST /api/v1/payments/health</div><p>Insurance integration. Co-pay auto-calc. Provider paid on completion. Emergency pre-auth. Gov subsidy applied.</p><div class="fees">Provider: <b>90%</b> · Insurance: <b>co-pay</b> · Subsidy: <b>up to 100%</b></div></div>
+
+<div class="card"><h3>🏗️ SoberanoBuild</h3><div class="cat">Construction</div><div class="api">POST /api/v1/payments/milestone</div><p>Milestone escrow. Budget locked in smart contract. AI drone verifies each milestone. Contractor bonds held.</p><div class="fees">Per milestone: <b>escrow release</b> · Retention: <b>5%</b> · Bond: <b>10%</b></div></div>
+
+<div class="card"><h3>🌾 SoberanoFarm</h3><div class="cat">Agriculture</div><div class="api">POST /api/v1/payments/agriculture</div><p>Advance on planting (micro-loan). Settlement on harvest. Gov subsidies auto-deposited. Crop insurance.</p><div class="fees">Advance: <b>40%</b> · Balance: <b>60%</b> · Subsidy: <b>gov rate</b></div></div>
+
+<div class="card"><h3>🛒 SoberanoTrade</h3><div class="cat">International Commerce</div><div class="api">POST /api/v1/payments/trade</div><p>Letters of credit via BDET International. Forex Wampum↔USD/EUR. Customs duty auto-calc. Blockchain docs.</p><div class="fees">Forex: <b>0.5%</b> · LC: <b>1.5%</b> · Customs: <b>variable</b></div></div>
+
+<div class="card"><h3>🛡️ SoberanoGuard</h3><div class="cat">Security</div><div class="api">POST /api/v1/payments/gov-payroll</div><p>Gov treasury allocation. Bi-monthly salary auto-distributed. Overtime by AI. Equipment stipend. Hazard pay.</p><div class="fees">Source: <b>Gov Treasury</b> · Cycle: <b>bi-monthly</b> · Tax: <b>auto</b></div></div>
+
+<div class="card"><h3>🎓 SoberanoTeach</h3><div class="cat">Education</div><div class="api">POST /api/v1/payments/education</div><p>Per-session tutor pay. Edu budget from treasury. Scholarship mgmt. Teacher pension 8% auto-contribution.</p><div class="fees">Tutor: <b>per session</b> · Source: <b>Edu Budget</b> · Pension: <b>8%</b></div></div>
+
+<div class="card"><h3>🏪 SoberanoMarket</h3><div class="cat">Marketplace</div><div class="api">POST /api/v1/payments/marketplace</div><p>Buyer-seller escrow. Payment held until delivery confirmed. AI dispute resolution. Daily seller settlement.</p><div class="fees">Seller: <b>98.5%</b> · Platform: <b>1.5%</b> · Tax: <b>auto</b></div></div>
+
+<div class="card"><h3>⚡ SoberanoEnergy</h3><div class="cat">Energy</div><div class="api">POST /api/v1/payments/energy</div><p>P2P energy trading. Smart meter auto-billing. Solar producers earn for surplus. Carbon credit trading.</p><div class="fees">P2P: <b>instant</b> · Grid: <b>0.5%</b> · Carbon: <b>market</b></div></div>
+
+<div class="card"><h3>🦅 RentaSoberano</h3><div class="cat">AI Workforce</div><div class="api">POST /api/v1/payments/task-escrow</div><p>AI locks Wampum in escrow on task post. Worker gets 95% on AI verification. 48h auto-release timeout.</p><div class="fees">Worker: <b>95%</b> · Platform: <b>3%</b> · Insurance: <b>2%</b></div></div>
+
+<div class="card"><h3>🏠 SoberanoHousing</h3><div class="cat">Real Estate</div><div class="api">POST /api/v1/payments/mortgage</div><p>BDET mortgages. Monthly auto-debit. Property tax auto-calc. Rental income auto-deposit. Insurance bundled.</p><div class="fees">Mortgage: <b>3.5% APR</b> · Tax: <b>auto</b> · Insurance: <b>bundled</b></div></div>
+
+<div class="card"><h3>💊 SoberanoPharmacy</h3><div class="cat">Pharmacy</div><div class="api">POST /api/v1/payments/prescription</div><p>Prescription auto-billed. Insurance co-pay applied. Delivery fee to courier. Drug interaction AI blocks unsafe combos.</p><div class="fees">Pharmacy: <b>cost+margin</b> · Insurance: <b>co-pay</b> · Delivery: <b>5W</b></div></div>
+
+<div class="card"><h3>✈️ SoberanoAir</h3><div class="cat">Aviation</div><div class="api">POST /api/v1/payments/flight</div><p>Flight booking. Cargo pricing by weight/distance. Crew salary from ops budget. Drone delivery micropayments.</p><div class="fees">Booking: <b>prepaid</b> · Cargo: <b>per kg/km</b> · Crew: <b>salary</b></div></div>
+
+<div class="card"><h3>🐟 SoberanoFish</h3><div class="cat">Marine</div><div class="api">POST /api/v1/payments/catch-split</div><p>Crew share split on catch sale. Captain gets larger share. Boat maintenance fund auto-deducted. BDET fleet finance.</p><div class="fees">Captain: <b>25%</b> · Crew: <b>60%</b> · Boat fund: <b>10%</b> · Platform: <b>5%</b></div></div>
+
+<div class="card"><h3>🏭 SoberanoFactory</h3><div class="cat">Manufacturing</div><div class="api">POST /api/v1/payments/production</div><p>Order payment triggers production. Worker payroll from production budget. QA verification required. Equipment loans via BDET.</p><div class="fees">Materials: <b>cost</b> · Labor: <b>payroll</b> · Overhead: <b>15%</b></div></div>
+
+<div class="card"><h3>💧 SoberanoWater</h3><div class="cat">Utilities</div><div class="api">POST /api/v1/payments/utility</div><p>Smart meter monthly billing. Maintenance worker dispatch paid from utility fund. Desalination plant ops funded by BDET.</p><div class="fees">Usage: <b>per m³</b> · Maintenance: <b>fund</b> · Subsidy: <b>eligible</b></div></div>
+
+<div class="card"><h3>🌿 SoberanoClean</h3><div class="cat">Environment</div><div class="api">POST /api/v1/payments/environmental</div><p>Cleanup crew paid per job. Carbon credits earned and traded. Waste tracking on blockchain. Gov environmental fund.</p><div class="fees">Worker: <b>per job</b> · Carbon: <b>market rate</b> · Fund: <b>gov</b></div></div>
+
+<div class="card"><h3>📊 SoberanoSurvey</h3><div class="cat">Data Collection</div><div class="api">POST /api/v1/payments/data</div><p>Surveyor paid per data point collected. Data ownership stays with citizen. AI training data royalties.</p><div class="fees">Per point: <b>1-5 W</b> · Royalties: <b>ongoing</b> · Ownership: <b>citizen</b></div></div>
+
+<div class="card"><h3>📬 SoberanoMessenger</h3><div class="cat">Courier</div><div class="api">POST /api/v1/payments/courier</div><p>Document delivery with chain of custody on blockchain. Biometric verification at pickup and delivery. Priority pricing.</p><div class="fees">Standard: <b>10 W</b> · Express: <b>25 W</b> · Certified: <b>50 W</b></div></div>
+
+<div class="card"><h3>🎰 Casino & Sports</h3><div class="cat">Gaming</div><div class="api">POST /api/v1/payments/gaming</div><p>Bet placement and win settlement. House edge auto-calculated. Responsible gaming limits enforced by AI. Instant payouts.</p><div class="fees">Player wins: <b>instant payout</b> · House edge: <b>2-5%</b></div></div>
+
+<div class="card"><h3>🛡️ Insurance</h3><div class="cat">Insurance</div><div class="api">POST /api/v1/payments/insurance</div><p>Premium collection monthly. Claim filing via AI. Payout direct to citizen wallet. Health, property, crop, vehicle coverage.</p><div class="fees">Premium: <b>monthly auto</b> · Claims: <b>AI processed</b></div></div>
+
+<div class="card"><h3>🏛️ Tax Authority</h3><div class="cat">Government Revenue</div><div class="api">POST /api/v1/payments/tax</div><p>Auto VAT on every transaction. Income tax quarterly. Property tax annual. Import/export duties. All flows to Treasury.</p><div class="fees">VAT: <b>7%</b> · Income: <b>bracket</b> · Property: <b>annual</b></div></div>
+
+<div class="card"><h3>🔥 SoberanoFire</h3><div class="cat">Emergency</div><div class="api">POST /api/v1/payments/emergency-fund</div><p>Emergency response funded from sovereign disaster fund. Firefighter salary from gov budget. Equipment procurement via BDET.</p><div class="fees">Source: <b>Disaster Fund</b> · Personnel: <b>gov salary</b></div></div>
+</div>
+
+<div class="sec"><h2>🔗 <span class="g">BDET Bank API Endpoints</span></h2><p>REST + gRPC + WebSocket for all platform integrations</p></div>
+
+<div class="ep">
+<div class="epc"><span class="method post">POST</span><span class="path">/api/v1/payments/create</span><p>Create payment or escrow. Platform, amount, recipient, split rules.</p></div>
+<div class="epc"><span class="method post">POST</span><span class="path">/api/v1/payments/release/{id}</span><p>Release escrow. AI verification or manual approval. Auto-splits.</p></div>
+<div class="epc"><span class="method post">POST</span><span class="path">/api/v1/payments/split</span><p>Multi-party split. Eats, Build, Fish, Energy use this.</p></div>
+<div class="epc"><span class="method post">POST</span><span class="path">/api/v1/payments/recurring</span><p>Recurring: rent, salary, subscription, utility. Auto-debit.</p></div>
+<div class="epc"><span class="method post">POST</span><span class="path">/api/v1/loans/micro</span><p>Micro-loan. AI credit scoring. Farm, solar, business.</p></div>
+<div class="epc"><span class="method post">POST</span><span class="path">/api/v1/forex/convert</span><p>Wampum ↔ USD/EUR/BTC/ETH via DeFi bridge.</p></div>
+<div class="epc"><span class="method get">GET</span><span class="path">/api/v1/accounts/{id}/balance</span><p>Full balance: checking, savings, business, escrow, loans.</p></div>
+<div class="epc"><span class="method get">GET</span><span class="path">/api/v1/treasury/dashboard</span><p>Treasury: tax revenue, fees, insurance, GDP, budget.</p></div>
+<div class="epc"><span class="method post">POST</span><span class="path">/api/v1/merchant/register</span><p>Register merchant. QR code, POS, invoicing. Accept Wampum.</p></div>
+<div class="epc"><span class="method post">POST</span><span class="path">/api/v1/tax/calculate</span><p>Auto tax: VAT, income, property, import/export duty.</p></div>
+<div class="epc"><span class="method post">POST</span><span class="path">/api/v1/insurance/claim</span><p>File claim. AI adjuster. Payout to wallet.</p></div>
+<div class="epc"><span class="method get">GET</span><span class="path">/api/v1/audit/transactions</span><p>Full audit trail. AML, fraud detection via AI.</p></div>
+</div>
+
+<div class="sec"><h2>📒 <span class="g">Live Transaction Ledger</span></h2></div>
+
+<table>
+<thead><tr><th>Time</th><th>Platform</th><th>Description</th><th>Amount</th><th>Type</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>14:32:01</td><td class="plat">SoberanoUber</td><td>Ride: Akwesasne → Central</td><td class="amt">12 W</td><td class="dr">DEBIT</td><td style="color:var(--green)">✓</td></tr>
+<tr><td>14:31:45</td><td class="plat">SoberanoEats</td><td>Order: Kitchen #7</td><td class="amt">28 W</td><td class="dr">ESCROW</td><td style="color:var(--gold)">⏳</td></tr>
+<tr><td>14:31:22</td><td class="plat">SoberanoDoctor</td><td>Telemedicine — Dr. Hawk</td><td class="amt">45 W</td><td class="cr">INSURANCE</td><td style="color:var(--green)">✓</td></tr>
+<tr><td>14:30:58</td><td class="plat">SoberanoFarm</td><td>Cacao 500kg harvest</td><td class="amt">2,400 W</td><td class="cr">CREDIT</td><td style="color:var(--green)">✓</td></tr>
+<tr><td>14:30:33</td><td class="plat">RentaSoberano</td><td>Task: Soil inspection</td><td class="amt">60 W</td><td class="dr">ESCROW</td><td style="color:var(--gold)">⏳</td></tr>
+<tr><td>14:30:01</td><td class="plat">SoberanoEnergy</td><td>Solar P2P: 45 kWh</td><td class="amt">18 W</td><td class="cr">CREDIT</td><td style="color:var(--green)">✓</td></tr>
+<tr><td>14:29:44</td><td class="plat">SoberanoMarket</td><td>Handcraft: basket</td><td class="amt">85 W</td><td class="dr">ESCROW</td><td style="color:var(--cyan)">📦</td></tr>
+<tr><td>14:29:15</td><td class="plat">SoberanoHousing</td><td>Monthly mortgage</td><td class="amt">350 W</td><td class="dr">RECURRING</td><td style="color:var(--green)">✓</td></tr>
+<tr><td>14:28:50</td><td class="plat">SoberanoBuild</td><td>Milestone 3: Foundation</td><td class="amt">15,000 W</td><td class="dr">RELEASE</td><td style="color:var(--green)">✓</td></tr>
+<tr><td>14:28:22</td><td class="plat">Tax Authority</td><td>Daily VAT batch</td><td class="amt">847 W</td><td class="cr">TREASURY</td><td style="color:var(--green)">✓</td></tr>
+<tr><td>14:28:01</td><td class="plat">SoberanoTrade</td><td>Export: Coffee → EU</td><td class="amt">12,500 W</td><td class="cr">FOREX</td><td style="color:var(--green)">✓</td></tr>
+<tr><td>14:27:33</td><td class="plat">Gov Payroll</td><td>Guard salary x47</td><td class="amt">94,000 W</td><td class="dr">PAYROLL</td><td style="color:var(--green)">✓</td></tr>
+</tbody>
+</table>
+
+<div class="foot">
+<p><b>🏦 FutureHead BDET Bank</b></p>
+<p style="color:var(--dim)">24 Platforms Connected · MameyNode Blockchain · Quantum Encrypted</p>
+<p style="color:var(--gold);font-style:italic;margin-top:.5rem">We are sovereign. We are the people. 🦅</p>
+</div>
+
+</div>
+</body>
+</html>

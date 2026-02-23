@@ -1,0 +1,20 @@
+@using Mamey.BlazorWasm.Routing
+@using Mamey.BlazorWasm.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthProvider
+
+<BaseNav Routes="_routes" DrawerOpen="DrawerOpen" />
+
+@code {
+    [Parameter] public bool DrawerOpen { get; set; }
+
+    private List<Route> _routes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load routes from all registered RouteServices (from BlazorWasm projects)
+        // RouteLoader automatically discovers IRouteService implementations from all loaded assemblies
+        _routes = await RouteLoader.GetRoutesAsync(menu: true);
+    }
+}
+

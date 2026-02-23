@@ -1,0 +1,28 @@
+﻿@using Microsoft.AspNetCore.Http
+@if (!string.IsNullOrEmpty(DisplayMessage))
+{
+    var severity = DisplayMessage.StartsWith("Error") ? Severity.Error : Severity.Success;
+
+    <MudAlert Variant="Variant.Outlined" Severity="@severity">@DisplayMessage</MudAlert>
+}
+
+@code {
+    private string? messageFromCookie;
+
+    [Parameter]
+    public string? Message { get; set; }
+
+    [Inject] private IHttpContextAccessor ContextAccessor { get; set; }
+
+    private string? DisplayMessage => Message ?? messageFromCookie;
+
+    protected override void OnInitialized()
+    {
+        messageFromCookie = ContextAccessor?.HttpContext?.Request?.Cookies["Identity.StatusMessage"];
+
+        if (messageFromCookie is not null)
+        {
+            ContextAccessor?.HttpContext?.Response.Cookies.Delete("Identity.StatusMessage");
+        }
+    }
+}

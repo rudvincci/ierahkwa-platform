@@ -1,0 +1,93 @@
+@page "/futurewampum/gov"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumGovClient FutureWampumGovClient
+@inject ILogger<FutureWampumGovHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="FutureWampum Government" Icon="fas fa-landmark" Subtitle="Government services and transparency">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Budget" Value="@_totalBudget.ToString("C")" Icon="fas fa-dollar-sign" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Disbursed" Value="@_totalDisbursed.ToString("C")" Icon="fas fa-paper-plane" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Active Programs" Value="@_activePrograms.ToString()" Icon="fas fa-folder" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Recipients" Value="@_totalRecipients.ToString("N0")" Icon="fas fa-users" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Disbursements" Elevation="2">
+                <MudText Typo="Typo.body2">Manage government disbursements</MudText>
+                <MudButton Href="/futurewampum/gov/disbursements" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Disbursements
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="UBI Programs" Elevation="2">
+                <MudText Typo="Typo.body2">Universal Basic Income programs</MudText>
+                <MudButton Href="/futurewampum/gov/ubi" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View UBI
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Budget Allocations" Elevation="2">
+                <MudText Typo="Typo.body2">Budget allocation management</MudText>
+                <MudButton Href="/futurewampum/gov/budget" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    View Budget
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private decimal _totalBudget;
+    private decimal _totalDisbursed;
+    private int _activePrograms;
+    private int _totalRecipients;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            var dashboard = await FutureWampumGovClient.GetTransparencyDashboardAsync();
+            _totalBudget = decimal.Parse(dashboard.TotalBudget);
+            _totalDisbursed = decimal.Parse(dashboard.TotalDisbursed);
+            _activePrograms = int.Parse(dashboard.ActivePrograms);
+            _totalRecipients = dashboard.TotalRecipients;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading dashboard data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}

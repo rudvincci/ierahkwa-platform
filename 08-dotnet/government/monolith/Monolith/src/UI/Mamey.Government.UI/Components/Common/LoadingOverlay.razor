@@ -1,0 +1,23 @@
+@if (IsLoading)
+{
+    <MudOverlay Visible="true" DarkBackground="true" Absolute="@Absolute">
+        <MudStack AlignItems="AlignItems.Center" Spacing="2">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+            @if (!string.IsNullOrWhiteSpace(Message))
+            {
+                <MudText Typo="Typo.body1" Color="Color.Primary">@Message</MudText>
+            }
+        </MudStack>
+    </MudOverlay>
+}
+
+@code {
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public string? Message { get; set; }
+
+    [Parameter]
+    public bool Absolute { get; set; } = true;
+}

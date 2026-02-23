@@ -1,0 +1,49 @@
+# Memory Configuration
+# Configuration for SKMemory and ClaudeMemory features
+
+cache:
+  max_size: 75
+  content_cache_size: 75
+  search_cache_size: 37
+  metadata_cache_max_entries: 500
+  lazy_load_indexes: false
+  auto_save_indexes: true
+  auto_save_debounce_seconds: 5
+
+commit:
+  auto: true
+  message_prefix: "memory: "
+
+memory_root: ".maestro/memory"
+
+memory_structure:
+  public:
+    base: "memory/public"
+    long_term: "memory/public/long-term"
+    mid_term: "memory/public/mid-term"
+    roles: "memory/public/roles"
+    short_term: "memory/public/short-term"
+  private:
+    base: "memory/private"
+    long_term: "memory/private/long-term"
+    mid_term: "memory/private/mid-term"
+    roles: "memory/private/roles"
+    short_term: "memory/private/short-term"
+
+retention:
+  long_term_permanent: true
+  mid_term_months: 12
+  short_term_days: 7
+
+roles:
+  - dev
+  - ops
+  - sec
+  - ai
+
+qdrant:
+  enabled: false
+  config_file: "config/qdrant-config.yml"
+
+version: "1.0.0"
+

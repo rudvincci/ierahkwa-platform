@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Lessons.Api.Protos";
+
+package Pupitre.Lessons;
+
+// gRPC service for Lesson operations
+service LessonService {
+    // Get a single Lesson by ID
+    rpc GetLesson (GetLessonRequest) returns (LessonResponse) {};
+    
+    // List all Lessons with pagination
+    rpc ListLessons (ListLessonsRequest) returns (ListLessonsResponse) {};
+    
+    // Stream Lesson updates
+    rpc StreamLessonUpdates (StreamLessonUpdatesRequest) returns (stream LessonResponse) {};
+}
+
+message GetLessonRequest {
+    string id = 1;
+}
+
+message ListLessonsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListLessonsResponse {
+    repeated LessonResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message LessonResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamLessonUpdatesRequest {
+    string filter = 1;
+}

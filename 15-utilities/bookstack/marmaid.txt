@@ -1,0 +1,18 @@
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (!window.mermaid) return;
+  mermaid.initialize({ startOnLoad: false, securityLevel: 'strict' });
+
+  document.querySelectorAll(
+    'pre > code.language-mermaid, pre > code.lang-mermaid, pre > code[class*="language-mermaid"]'
+  ).forEach(function (code) {
+    var div = document.createElement('div');
+    div.className = 'mermaid';
+    div.textContent = code.textContent;
+    code.parentElement.replaceWith(div);
+  });
+
+  mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+});
+</script>

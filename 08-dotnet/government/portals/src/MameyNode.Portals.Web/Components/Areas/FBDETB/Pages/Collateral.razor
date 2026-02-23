@@ -1,0 +1,89 @@
+@page "/banking/collateral"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFBDETBClient FBDETBClient
+@inject ILogger<Collateral> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Collateral" Icon="fas fa-shield-alt" Subtitle="Collateral management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Collateral" Value="@_collaterals.Count.ToString()" Icon="fas fa-shield-alt" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Value" Value="@_totalValue.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Collateral" Class="mt-4">
+        <MudTable T="FBDETBCollateralInfo" Items="@_collaterals" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Collateral ID</MudTh>
+                <MudTh>Loan ID</MudTh>
+                <MudTh>Asset Type</MudTh>
+                <MudTh>Asset Value</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.CollateralId</MudTd>
+                <MudTd>@context.LoanId</MudTd>
+                <MudTd>@context.AssetType</MudTd>
+                <MudTd>@decimal.Parse(context.AssetValue).ToString("C")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<FBDETBCollateralInfo> _collaterals = new();
+    private decimal _totalValue;
+    private int _activeCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _collaterals = await FBDETBClient.GetCollateralsAsync();
+            _totalValue = _collaterals.Sum(c => decimal.Parse(c.AssetValue));
+            _activeCount = _collaterals.Count(c => c.Status == "Active");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading collateral");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

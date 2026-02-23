@@ -1,0 +1,81 @@
+@page "/merchant/analytics"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumMerchantClient FutureWampumMerchantClient
+@inject ILogger<Analytics> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Merchant Analytics" Icon="fas fa-chart-bar" Subtitle="Merchant performance analytics">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <CardContainer Title="Analytics" Class="mt-4">
+        <MudTextField @bind-Value="_merchantId" Label="Merchant ID" Class="mt-4" />
+        <MudSelect T="string" @bind-Value="_period" Label="Period" Class="mt-4">
+            <MudSelectItem Value="7d">Last 7 Days</MudSelectItem>
+            <MudSelectItem Value="30d">Last 30 Days</MudSelectItem>
+            <MudSelectItem Value="90d">Last 90 Days</MudSelectItem>
+            <MudSelectItem Value="365d">Last Year</MudSelectItem>
+        </MudSelect>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LoadAnalytics" Class="mt-4">
+            Load Analytics
+        </MudButton>
+
+        @if (_analytics != null)
+        {
+            <MudGrid Spacing="3" Class="mt-4">
+                <MudItem xs="12" md="3">
+                    <MetricCard Title="Total Revenue" Value="@decimal.Parse(_analytics.TotalRevenue).ToString("C")" Icon="fas fa-dollar-sign" Color="#3B82F6" />
+                </MudItem>
+                <MudItem xs="12" md="3">
+                    <MetricCard Title="Total Transactions" Value="@_analytics.TotalTransactions" Icon="fas fa-list" Color="#10B981" />
+                </MudItem>
+                <MudItem xs="12" md="3">
+                    <MetricCard Title="Avg Transaction" Value="@decimal.Parse(_analytics.AverageTransaction).ToString("C")" Icon="fas fa-chart-line" Color="#F59E0B" />
+                </MudItem>
+                <MudItem xs="12" md="3">
+                    <MetricCard Title="Transaction Count" Value="@_analytics.TransactionCount.ToString()" Icon="fas fa-hashtag" Color="#3B82F6" />
+                </MudItem>
+            </MudGrid>
+        }
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private MerchantAnalyticsInfo? _analytics;
+    private string _merchantId = string.Empty;
+    private string _period = "30d";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.CompletedTask;
+    }
+
+    private async Task LoadAnalytics()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(_merchantId))
+            {
+                _analytics = await FutureWampumMerchantClient.GetMerchantAnalyticsAsync(_merchantId, _period);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading analytics");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadAnalytics();
+        StateHasChanged();
+    }
+}
+

@@ -1,0 +1,172 @@
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  mamey:
+    name: mamey
+    external: true
+
+
+services:
+
+  bank-api:
+    image: mamey.azurecr.io/bank.api:0.0.1
+    container_name: bank-api
+    env_file:
+      - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_HTTPS_PORT=5000
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CS__Certificates__Default__Password}
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+      - mamey
+      - nginx-proxy
+    volumes:
+      - ./certs/:/https:ro
+
+  bank-web:
+    image: mamey.azurecr.io/bank.web.web:0.0.1
+    container_name: bank-web
+    env_file:
+      - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_HTTPS_PORT=443
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CS__Certificates__Default__Password}
+    restart: unless-stopped
+
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - ./certs/:/https:ro
+
+  barcode:
+    build:
+      context: ../MameyBarcode
+      # dockerfile: MameyBarcode/Dockerfile
+    container_name: barcode
+    restart: unless-stopped
+    ports:
+      - "18648:5000"
+    environment:
+      FLASK_ENV: production
+    networks:
+      - mamey
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    restart: unless-stopped
+    networks:
+      - mamey
+
+    ports:
+      - 1025:1025
+      - 8025:8025
+      
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: unless-stopped
+    # environment:
+      # - MONGO_INITDB_ROOT_USERNAME=root
+      # - MONGO_INITDB_ROOT_PASSWORD=secret
+    networks:
+      - mamey
+
+    ports:
+      - 27017:27017
+
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      # This environment variable is required for you to use the PostgreSQL image. 
+      # It must not be empty or undefined. This environment variable sets the superuser 
+      # password for PostgreSQL. The default superuser is defined by the POSTGRES_USER 
+      # environment variable.
+      POSTGRES_PASSWORD: secret
+      # This optional environment variable is used in conjunction with POSTGRES_PASSWORD 
+      # to set a user and its password. This variable will create the specified user with 
+      # superuser power and a database with the same name. If it is not specified, then 
+      # the default user of postgres will be used.
+      POSTGRES_USER: admin
+      # This optional environment variable can be used to define a 
+      # different name for the default database that is created when 
+      # the image is first started. If it is not specified, then the 
+      # value of POSTGRES_USER will be used.
+      POSTGRES_DB: postgres
+
+      # This optional environment variable can be used to send arguments to postgres initdb. 
+      # The value is a space separated string of arguments as postgres initdb would expect them. 
+      # This is useful for adding functionality like data page checksums: -e POSTGRES_INITDB_ARGS="--data-checksums".
+      # POSTGRES_INITDB_ARGS: 
+      
+      # This optional environment variable can be used to define another location for the 
+      # Postgres transaction log. By default the transaction log is stored in a subdirectory 
+      # of the main Postgres data folder (PGDATA)
+      # POSTGRES_INITDB_WALDIR: 
+
+      # This optional variable can be used to control the auth-method for host connections for all databases, 
+      # all users, and all addresses. If unspecified then scram-sha-256 password authentication⁠ is used (in 14+; md5 in older releases)
+      # POSTGRES_HOST_AUTH_METHOD: 
+
+      # This optional variable can be used to define another location - like a subdirectory - for the database files. 
+      # The default is /var/lib/postgresql/data
+      # PGDATA:
+    ports:
+      - 5432:5432 
+    networks:
+      - mamey
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    networks:
+      - mamey
+
+    ports:
+      - 6379:6379
+
+  seq:
+    image: datalust/seq 
+    container_name: seq
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+    networks:
+      - mamey
+
+    ports:
+      - 5341:80
+
+  vault:
+    image: hashicorp/vault:latest
+    container_name: vault
+    restart: unless-stopped
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+      - VAULT_DEV_ROOT_TOKEN_ID=secret
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - mamey
+
+    ports:
+      - 8200:8200
+

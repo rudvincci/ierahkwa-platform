@@ -1,0 +1,416 @@
+# Default values for Pupitre
+# This is a YAML-formatted file.
+
+global:
+  imageRegistry: ghcr.io/pupitre
+  imagePullSecrets: []
+  storageClass: ""
+
+# Namespace configuration
+namespaces:
+  foundation: pupitre-foundation
+  ai: pupitre-ai
+  support: pupitre-support
+  data: pupitre-data
+  observability: pupitre-observability
+
+# API Gateway
+apiGateway:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: pupitre-api-gateway
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 80
+    targetPort: 60000
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    hosts:
+      - host: api.pupitre.local
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: pupitre-tls
+        hosts:
+          - api.pupitre.local
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+
+# Foundation Services
+foundationServices:
+  users:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-users
+      tag: latest
+    port: 60001
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+  gles:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-gles
+      tag: latest
+    port: 60002
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+  curricula:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-curricula
+      tag: latest
+    port: 60003
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+  lessons:
+    enabled: true
+    replicaCount: 3
+    image:
+      repository: pupitre-lessons
+      tag: latest
+    port: 60004
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+  assessments:
+    enabled: true
+    replicaCount: 3
+    image:
+      repository: pupitre-assessments
+      tag: latest
+    port: 60005
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+  progress:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-progress
+      tag: latest
+    port: 60006
+
+  rewards:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-rewards
+      tag: latest
+    port: 60007
+
+  notifications:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-notifications
+      tag: latest
+    port: 60008
+
+  parents:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-parents
+      tag: latest
+    port: 60009
+
+  analytics:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-analytics
+      tag: latest
+    port: 60010
+
+# AI Services
+aiServices:
+  tutors:
+    enabled: true
+    replicaCount: 3
+    image:
+      repository: pupitre-ai-tutors
+      tag: latest
+    port: 60101
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+        nvidia.com/gpu: 1
+      requests:
+        cpu: 500m
+        memory: 2Gi
+
+  aiAssessments:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-ai-assessments
+      tag: latest
+    port: 60102
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+      requests:
+        cpu: 250m
+        memory: 1Gi
+
+  content:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-ai-content
+      tag: latest
+    port: 60103
+
+  speech:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-ai-speech
+      tag: latest
+    port: 60104
+
+  adaptive:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-ai-adaptive
+      tag: latest
+    port: 60105
+
+  behavior:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-ai-behavior
+      tag: latest
+    port: 60106
+
+  safety:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-ai-safety
+      tag: latest
+    port: 60107
+
+  recommendations:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-ai-recommendations
+      tag: latest
+    port: 60108
+
+  translation:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-ai-translation
+      tag: latest
+    port: 60109
+
+  vision:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-ai-vision
+      tag: latest
+    port: 60110
+
+# Support Services
+supportServices:
+  educators:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-educators
+      tag: latest
+    port: 60022
+
+  fundraising:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-fundraising
+      tag: latest
+    port: 60023
+
+  bookstore:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-bookstore
+      tag: latest
+    port: 60024
+
+  aftercare:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-aftercare
+      tag: latest
+    port: 60025
+
+  accessibility:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-accessibility
+      tag: latest
+    port: 60026
+
+  compliance:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-compliance
+      tag: latest
+    port: 60027
+
+  ministries:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-ministries
+      tag: latest
+    port: 60028
+
+  operations:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: pupitre-operations
+      tag: latest
+    port: 60029
+
+# Database Configuration
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: pupitre-secret
+    database: pupitre
+  primary:
+    persistence:
+      size: 50Gi
+  metrics:
+    enabled: true
+
+mongodb:
+  enabled: true
+  auth:
+    rootPassword: pupitre-secret
+  persistence:
+    size: 50Gi
+  metrics:
+    enabled: true
+
+redis:
+  enabled: true
+  auth:
+    password: pupitre-secret
+  master:
+    persistence:
+      size: 10Gi
+  metrics:
+    enabled: true
+
+rabbitmq:
+  enabled: true
+  auth:
+    username: pupitre
+    password: pupitre-secret
+  persistence:
+    size: 10Gi
+  metrics:
+    enabled: true
+
+# External Dependencies (not managed by Helm)
+externalServices:
+  kafka:
+    bootstrapServers: kafka:9092
+  qdrant:
+    host: qdrant
+    port: 6333
+  vault:
+    address: http://vault:8200
+
+# Observability
+observability:
+  prometheus:
+    enabled: true
+    scrapeInterval: 15s
+  grafana:
+    enabled: true
+  jaeger:
+    enabled: true
+    agentHost: jaeger-agent
+    agentPort: 6831
+
+# Service Account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod Security
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true

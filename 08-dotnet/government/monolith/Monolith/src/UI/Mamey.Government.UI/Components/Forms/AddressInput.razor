@@ -1,0 +1,86 @@
+<MudStack Spacing="2">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <MudText Typo="Typo.subtitle2">@Label</MudText>
+    }
+    
+    <MudTextField @bind-Value="Street" Label="Street Address" Variant="Variant.Outlined" Required="Required" />
+    <MudTextField @bind-Value="Street2" Label="Street Address 2 (Optional)" Variant="Variant.Outlined" />
+    
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="City" Label="City" Variant="Variant.Outlined" Required="Required" />
+        </MudItem>
+        <MudItem xs="12" sm="3">
+            <MudTextField @bind-Value="State" Label="State/Province" Variant="Variant.Outlined" Required="Required" />
+        </MudItem>
+        <MudItem xs="12" sm="3">
+            <MudTextField @bind-Value="PostalCode" Label="Postal Code" Variant="Variant.Outlined" Required="Required" />
+        </MudItem>
+    </MudGrid>
+    
+    <MudAutocomplete T="string" @bind-Value="Country" Label="Country" Variant="Variant.Outlined" Required="Required"
+                     SearchFunc="SearchCountries" MaxItems="10" />
+</MudStack>
+
+@code {
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public string? Street { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> StreetChanged { get; set; }
+
+    [Parameter]
+    public string? Street2 { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> Street2Changed { get; set; }
+
+    [Parameter]
+    public string? City { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> CityChanged { get; set; }
+
+    [Parameter]
+    public string? State { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> StateChanged { get; set; }
+
+    [Parameter]
+    public string? PostalCode { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> PostalCodeChanged { get; set; }
+
+    [Parameter]
+    public string? Country { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> CountryChanged { get; set; }
+
+    [Parameter]
+    public bool Required { get; set; }
+
+    private static readonly string[] Countries = {
+        "United States", "Canada", "United Kingdom", "Australia", "Germany", 
+        "France", "Spain", "Italy", "Japan", "China", "India", "Brazil",
+        "Mexico", "Argentina", "South Korea", "Netherlands", "Switzerland",
+        "Sweden", "Norway", "Denmark", "Finland", "Belgium", "Austria",
+        "Portugal", "Poland", "Ireland", "New Zealand", "Singapore"
+    };
+
+    private Task<IEnumerable<string>> SearchCountries(string value, CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Task.FromResult<IEnumerable<string>>(Countries);
+
+        return Task.FromResult<IEnumerable<string>>(
+            Countries.Where(c => c.Contains(value, StringComparison.OrdinalIgnoreCase))
+        );
+    }
+}

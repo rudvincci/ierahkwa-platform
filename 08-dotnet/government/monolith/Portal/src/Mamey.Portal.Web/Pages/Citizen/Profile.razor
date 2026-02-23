@@ -1,0 +1,60 @@
+@page "/citizen/profile"
+@attribute [Authorize(Roles = "Citizen")]
+@using Mamey.Portal.Citizenship.Application.Services
+@inject ICitizenPortalService CitizenPortal
+
+<PageTitle>Profile</PageTitle>
+
+@code {
+    private Mamey.Portal.Citizenship.Application.Models.CitizenProfileDto? _profile;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _profile = await CitizenPortal.GetProfileAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+}
+
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h4">My Profile</MudText>
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+    else if (_profile is null)
+    {
+        <MudText Typo="Typo.body2">Loading...</MudText>
+    }
+    else
+    {
+        <MudPaper Class="pa-4">
+            <MudGrid Spacing="2">
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2">Citizen ID</MudText>
+                    <MudText Typo="Typo.body1">@_profile.CitizenId</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2">Full name</MudText>
+                    <MudText Typo="Typo.body1">@_profile.FullName</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2">Date of birth</MudText>
+                    <MudText Typo="Typo.body1">@_profile.DateOfBirth</MudText>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.subtitle2">Email</MudText>
+                    <MudText Typo="Typo.body1">@_profile.Email</MudText>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    }
+</MudStack>
+
+

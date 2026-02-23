@@ -1,0 +1,183 @@
+@page "/public/validate-citizen"
+@layout MainLayout
+
+<PageTitle>Validate Citizen</PageTitle>
+
+<PageHeader Title="Validate Citizen ID" 
+            Subtitle="Verify a citizen's identity using their document number"
+            Breadcrumbs="@_breadcrumbs" />
+
+<MudGrid Spacing="4" Justify="Justify.Center">
+    <MudItem xs="12" md="6">
+        <MudCard Elevation="2">
+            <MudCardContent>
+                <MudStack Spacing="3">
+                    <MudTextField @bind-Value="_documentNumber" 
+                                  Label="Document Number" 
+                                  Variant="Variant.Outlined" 
+                                  Placeholder="Enter citizen ID, passport, or travel ID number"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Badge"
+                                  Required="true" />
+
+                    <MudSelect @bind-Value="_documentType" Label="Document Type" Variant="Variant.Outlined">
+                        <MudSelectItem Value="@("any")">Any Document</MudSelectItem>
+                        <MudSelectItem Value="@("passport")">Passport</MudSelectItem>
+                        <MudSelectItem Value="@("travel-id")">Travel ID / Driver's License</MudSelectItem>
+                        <MudSelectItem Value="@("citizenship")">Citizenship Certificate</MudSelectItem>
+                    </MudSelect>
+
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Primary" 
+                               FullWidth="true" 
+                               OnClick="ValidateDocument"
+                               Disabled="string.IsNullOrWhiteSpace(_documentNumber) || _isLoading"
+                               StartIcon="@Icons.Material.Filled.Search">
+                        @if (_isLoading)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                            <span>Validating...</span>
+                        }
+                        else
+                        {
+                            <span>Validate</span>
+                        }
+                    </MudButton>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+
+        @if (_validationResult != null)
+        {
+            <MudCard Elevation="2" Class="mt-4">
+                <MudCardContent>
+                    @if (_validationResult.IsValid)
+                    {
+                        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Class="mb-3">
+                            <MudStack Row="true" AlignItems="AlignItems.Center">
+                                <MudIcon Icon="@Icons.Material.Filled.VerifiedUser" />
+                                <MudText>Document Verified Successfully</MudText>
+                            </MudStack>
+                        </MudAlert>
+                        
+                        <MudSimpleTable Dense="true" Hover="true">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Name</strong></td>
+                                    <td>@_validationResult.FullName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Document Type</strong></td>
+                                    <td>@_validationResult.DocumentType</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status</strong></td>
+                                    <td><StatusChip Status="@_validationResult.Status" /></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Expiry Date</strong></td>
+                                    <td>@_validationResult.ExpiryDate?.ToString("d")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Citizenship Status</strong></td>
+                                    <td><StatusChip Status="@_validationResult.CitizenshipStatus" /></td>
+                                </tr>
+                            </tbody>
+                        </MudSimpleTable>
+                    }
+                    else
+                    {
+                        <MudAlert Severity="Severity.Error" Variant="Variant.Filled">
+                            <MudStack Row="true" AlignItems="AlignItems.Center">
+                                <MudIcon Icon="@Icons.Material.Filled.Cancel" />
+                                <MudText>Document Not Found or Invalid</MudText>
+                            </MudStack>
+                        </MudAlert>
+                        
+                        <MudText Typo="Typo.body2" Class="mt-3">
+                            The document number you entered could not be validated. Please check the number and try again.
+                            If you believe this is an error, please contact support.
+                        </MudText>
+                    }
+                </MudCardContent>
+            </MudCard>
+        }
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudCard Elevation="1">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">About Validation</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText Typo="Typo.body2">
+                    This service allows you to verify the authenticity of government-issued documents. 
+                    Enter the document number printed on the ID card, passport, or certificate.
+                </MudText>
+                
+                <MudAlert Severity="Severity.Info" Class="mt-3" Dense="true">
+                    <MudText Typo="Typo.caption">
+                        For privacy, only limited information is shown. No personal details beyond 
+                        name and document status are disclosed.
+                    </MudText>
+                </MudAlert>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private string? _documentNumber;
+    private string _documentType = "any";
+    private bool _isLoading;
+    private ValidationResult? _validationResult;
+
+    private readonly List<BreadcrumbItem> _breadcrumbs = new()
+    {
+        new("Home", "/", false, Icons.Material.Filled.Home),
+        new("Validate Citizen", "/public/validate-citizen", true, Icons.Material.Filled.Badge)
+    };
+
+    private async Task ValidateDocument()
+    {
+        if (string.IsNullOrWhiteSpace(_documentNumber))
+            return;
+
+        _isLoading = true;
+        _validationResult = null;
+
+        try
+        {
+            // Simulate API call
+            await Task.Delay(1500);
+
+            // TODO: Call actual validation service
+            // For demo purposes, return a mock result
+            _validationResult = new ValidationResult
+            {
+                IsValid = _documentNumber.Length >= 6,
+                FullName = "John Doe",
+                DocumentType = "Passport",
+                Status = "Active",
+                ExpiryDate = DateTime.Now.AddYears(5),
+                CitizenshipStatus = "Citizen"
+            };
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private class ValidationResult
+    {
+        public bool IsValid { get; set; }
+        public string? FullName { get; set; }
+        public string? DocumentType { get; set; }
+        public string? Status { get; set; }
+        public DateTime? ExpiryDate { get; set; }
+        public string? CitizenshipStatus { get; set; }
+    }
+}

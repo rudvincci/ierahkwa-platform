@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrabajoSoberano — Red Profesional | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0e;--bg2:#111118;--bg3:#1a1a22;--bg4:#222230;--gold:#d4a853;--tq:#2dd4a8;--wp:#9b6dff;--blue:#0a66c2;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#252530}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.nav{position:sticky;top:0;z-index:100;background:var(--bg2);border-bottom:1px solid var(--brd);padding:8px 24px;display:flex;align-items:center;gap:16px;max-width:1200px;margin:0 auto}
+.nav-brand{display:flex;align-items:center;gap:6px}.nav-brand span{font-size:18px}.nav-brand h1{font-size:15px;font-weight:700;color:var(--gold)}
+.nav-search{flex:1;max-width:280px}.nav-search input{width:100%;padding:7px 12px;background:var(--bg3);border:1px solid var(--brd);border-radius:6px;color:var(--txt);font-size:12px;outline:none;font-family:'DM Sans',sans-serif}
+.nav-items{display:flex;gap:4px}.nv{display:flex;flex-direction:column;align-items:center;padding:6px 14px;border-radius:6px;font-size:10px;color:var(--txt3);cursor:pointer;transition:all 0.15s;gap:2px}.nv:hover{color:var(--txt)}.nv.a{color:var(--txt)}
+.nv span{font-size:16px}
+.nav-r{margin-left:auto;display:flex;gap:6px}
+
+.content{max-width:1200px;margin:0 auto;padding:16px 24px;display:grid;grid-template-columns:240px 1fr 300px;gap:16px}
+
+/* PROFILE CARD */
+.profile-card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;overflow:hidden}
+.pc-banner{height:64px;background:linear-gradient(135deg,rgba(212,168,83,0.2),rgba(45,212,168,0.15))}
+.pc-body{padding:0 14px 14px;margin-top:-28px}
+.pc-av{width:56px;height:56px;border-radius:50%;border:3px solid var(--bg2);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--gold),var(--tq));margin-bottom:8px}
+.pc-name{font-size:15px;font-weight:700}.pc-title{font-size:11px;color:var(--txt2);margin-bottom:8px}
+.pc-stats{display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);padding-top:8px;border-top:1px solid var(--brd)}
+.pc-stat strong{color:var(--gold);display:block;font-family:'IBM Plex Mono',monospace}
+
+.side-widget{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:14px;margin-top:12px}
+.sw-title{font-size:12px;font-weight:700;margin-bottom:8px}
+.sw-item{padding:6px 0;font-size:12px;color:var(--txt2);cursor:pointer;display:flex;align-items:center;gap:6px}.sw-item:hover{color:var(--tq)}
+
+/* FEED */
+.feed{display:flex;flex-direction:column;gap:12px}
+
+.post{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;overflow:hidden}
+.post-header{display:flex;gap:10px;padding:14px 16px}
+.post-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.post-author .name{font-size:14px;font-weight:600;display:flex;align-items:center;gap:4px}
+.post-author .title{font-size:11px;color:var(--txt3)}.post-author .time{font-size:10px;color:var(--txt3)}
+.post-content{padding:0 16px 12px;font-size:14px;line-height:1.6}
+.post-content .hashtag{color:var(--tq)}
+.post-media{width:100%;aspect-ratio:2/1;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:36px}
+.post-stats{padding:8px 16px;font-size:11px;color:var(--txt3);display:flex;justify-content:space-between}
+.post-actions{display:flex;border-top:1px solid var(--brd)}
+.pa{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;font-size:12px;color:var(--txt2);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;transition:background 0.15s}
+.pa:hover{background:var(--bg3)}
+
+/* JOBS */
+.job{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:14px;margin-bottom:8px;cursor:pointer;transition:border-color 0.15s}
+.job:hover{border-color:rgba(212,168,83,0.3)}
+.job-top{display:flex;gap:10px;margin-bottom:6px}
+.job-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:var(--bg3)}
+.job-title{font-size:14px;font-weight:700}.job-company{font-size:12px;color:var(--tq)}
+.job-meta{font-size:11px;color:var(--txt3);margin-bottom:6px}
+.job-pay{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--gold);font-weight:700}
+.job-tags{display:flex;gap:3px;margin-top:6px}
+.jt{font-size:9px;padding:2px 6px;border-radius:3px;background:var(--bg3);color:var(--txt3);border:1px solid var(--brd)}
+
+/* RIGHT */
+.right-col{display:flex;flex-direction:column;gap:12px}
+.r-widget{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:14px}
+.r-title{font-size:13px;font-weight:700;margin-bottom:10px}
+
+@media(max-width:1024px){.content{grid-template-columns:1fr 300px}.profile-card,.side-widget{display:none}}
+@media(max-width:768px){.content{grid-template-columns:1fr}.right-col{display:none}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="nav">
+  <div class="nav-brand"><span>💼</span><h1>TrabajoSoberano</h1></div>
+  <div class="nav-search"><input placeholder="Buscar trabajos, personas, empresas..." /></div>
+  <div class="nav-items">
+    <div class="nv a"><span>🏠</span>Inicio</div>
+    <div class="nv"><span>👥</span>Red</div>
+    <div class="nv"><span>💼</span>Empleos</div>
+    <div class="nv"><span>💬</span>Chat</div>
+    <div class="nv"><span>🔔</span>Alertas</div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- LEFT -->
+<div>
+  <div class="profile-card">
+    <div class="pc-banner"></div>
+    <div class="pc-body">
+      <div class="pc-av">CA</div>
+      <div class="pc-name">Cacike Soberano <span style="color:var(--tq);font-size:11px">✓</span></div>
+      <div class="pc-title">Fundador & Arquitecto · Red Soberana Digital de las Américas · 296 Plataformas · MameyNode · BDET Bank</div>
+      <div class="pc-stats">
+        <div class="pc-stat"><strong>2,847</strong>Conexiones</div>
+        <div class="pc-stat"><strong>847</strong>Seguidores</div>
+        <div class="pc-stat"><strong>12</strong>Publicaciones</div>
+      </div>
+    </div>
+  </div>
+  <div class="side-widget">
+    <div class="sw-title">⚡ Acceso Rápido</div>
+    <div class="sw-item">💼 Mis Postulaciones</div>
+    <div class="sw-item">📊 Analytics</div>
+    <div class="sw-item">💎 BDET Wallet</div>
+    <div class="sw-item">🎓 Certificaciones</div>
+    <div class="sw-item">🌐 RentaSoberano</div>
+  </div>
+</div>
+
+<!-- FEED -->
+<div class="feed">
+  <div class="post">
+    <div class="post-header">
+      <div class="post-av" style="background:linear-gradient(135deg,var(--gold),var(--tq))">CA</div>
+      <div class="post-author"><div class="name">Cacike Soberano <span style="color:var(--tq);font-size:11px">✓</span></div><div class="title">Fundador · Red Soberana</div><div class="time">Hace 3 horas · 🌐</div></div>
+    </div>
+    <div class="post-content">
+      <p>🚀 <strong>Estamos contratando.</strong> La Red Soberana necesita 50 desarrolladores, 20 diseñadores, y 30 community managers para las nuevas plataformas.</p>
+      <p>Pago: 100% en Wampum via BDET Bank. Remoto desde cualquiera de los 19 países. Si eres indígena y sabes código, diseño, o comunicación — este es tu momento.</p>
+      <p>Aplica en RentaSoberano o envía CV a <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a7d3d5c6c5c6cdc8e7d4c8c5c2d5c6c9c889c5c8">[email&#160;protected]</a> <span class="hashtag">#EmpleoSoberano</span> <span class="hashtag">#RemotoIndígena</span></p>
+    </div>
+    <div class="post-stats"><span>🔥 ❤️ 💎 1,247</span><span>234 comentarios · 567 compartidos</span></div>
+    <div class="post-actions"><button class="pa">👍 Me gusta</button><button class="pa">💬 Comentar</button><button class="pa">🔄 Compartir</button><button class="pa">💎 Wampum</button></div>
+  </div>
+
+  <div class="post">
+    <div class="post-header">
+      <div class="post-av" style="background:linear-gradient(135deg,#34d399,var(--tq))">FI</div>
+      <div class="post-author"><div class="name">FILAC <span style="color:var(--tq);font-size:11px">✓</span></div><div class="title">Fondo Indígena · 19 Países</div><div class="time">Hace 6 horas · 🌐</div></div>
+    </div>
+    <div class="post-content">
+      <p>📢 FILAC busca Coordinador de Tecnología para liderar la integración con la Red Soberana. Experiencia en blockchain, IA, o telecomunicaciones preferida. Idioma indígena es un plus enorme.</p>
+      <p>Esto no es un trabajo. Es una misión para 58 millones de personas. <span class="hashtag">#EmpleoFILAC</span></p>
+    </div>
+    <div class="post-stats"><span>❤️ 💼 892</span><span>156 comentarios</span></div>
+    <div class="post-actions"><button class="pa">👍 Me gusta</button><button class="pa">💬 Comentar</button><button class="pa">🔄 Compartir</button><button class="pa">💎 Wampum</button></div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right-col">
+  <div class="r-widget">
+    <div class="r-title">💼 Empleos Soberanos</div>
+    <div class="job"><div class="job-top"><div class="job-icon">⛓</div><div><div class="job-title">Blockchain Developer Sr.</div><div class="job-company">MameyNode Core Team</div></div></div><div class="job-meta">📍 Remoto · ⏱ Tiempo completo</div><div class="job-pay">Ⓦ 8,000/mes</div><div class="job-tags"><span class="jt">Solidity</span><span class="jt">Rust</span><span class="jt">Web3</span></div></div>
+    <div class="job"><div class="job-top"><div class="job-icon">🤖</div><div><div class="job-title">AI Engineer — 42 Engines</div><div class="job-company">AI Fortress</div></div></div><div class="job-meta">📍 Remoto · ⏱ Tiempo completo</div><div class="job-pay">Ⓦ 7,500/mes</div><div class="job-tags"><span class="jt">Python</span><span class="jt">ML</span><span class="jt">NLP</span></div></div>
+    <div class="job"><div class="job-top"><div class="job-icon">🎨</div><div><div class="job-title">UX Designer — Plataformas</div><div class="job-company">Red Soberana</div></div></div><div class="job-meta">📍 Remoto · ⏱ Tiempo completo</div><div class="job-pay">Ⓦ 5,000/mes</div><div class="job-tags"><span class="jt">Figma</span><span class="jt">CSS</span><span class="jt">React</span></div></div>
+    <div class="job"><div class="job-top"><div class="job-icon">🌐</div><div><div class="job-title">Lingüista — Atabey Translator</div><div class="job-company">Atabey AI</div></div></div><div class="job-meta">📍 Remoto · ⏱ Part-time</div><div class="job-pay">Ⓦ 3,000/mes</div><div class="job-tags"><span class="jt">Quechua</span><span class="jt">NLP</span><span class="jt">Lingüística</span></div></div>
+  </div>
+  <div class="r-widget" style="text-align:center;font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace">
+    🔒 Sin trac

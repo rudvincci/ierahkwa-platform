@@ -1,0 +1,88 @@
+@page "/crypto-exchange/custody"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumXClient FutureWampumXClient
+@inject ILogger<Custody> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Custody Accounts" Icon="fas fa-vault" Subtitle="Custody account management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Accounts" Value="@_accounts.Count.ToString()" Icon="fas fa-vault" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Accounts" Value="@_accounts.Count.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Assets" Value="@_totalAssets.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Currencies" Value="@_currencyCount.ToString()" Icon="fas fa-coins" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Custody Accounts" Class="mt-4">
+        <MudTable T="CustodyAccountInfo" Items="@_accounts" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Account ID</MudTh>
+                <MudTh>Currency</MudTh>
+                <MudTh>Balance</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.CustodyAccountId</MudTd>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd>@decimal.Parse(context.Balance ?? "0").ToString("C")</MudTd>
+                <MudTd>@context.Type</MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<CustodyAccountInfo> _accounts = new();
+    private int _activeCount;
+    private decimal _totalAssets;
+    private int _currencyCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _accounts = await FutureWampumXClient.GetCustodyAccountsAsync();
+            _activeCount = _accounts.Count;
+            _totalAssets = _accounts.Sum(a => decimal.Parse(a.Balance ?? "0"));
+            _currencyCount = _accounts.Select(a => a.Currency).Distinct().Count();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading custody accounts");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

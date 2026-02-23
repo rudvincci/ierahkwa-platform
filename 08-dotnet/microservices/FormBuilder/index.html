@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📝 FORM BUILDER | Ierahkwa Dynamic Forms</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --green: #00FF41; --cyan: #00FFFF; --red: #FF1744; --purple: #9D4EDD; --orange: #FF6B35; --bg: #0a0e17; --card: #0d1a2d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17, #1a1a0a, #0a0e17); color: #fff; min-height: 100vh; }
+        
+        .header { background: var(--card); padding: 15px 30px; border-bottom: 3px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--gold), var(--orange)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+        .logo h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--gold); }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .nav-link { padding: 10px 20px; background: rgba(255,215,0,0.2); border: 1px solid var(--gold); border-radius: 10px; color: var(--gold); text-decoration: none; }
+        .save-btn { padding: 10px 25px; background: var(--green); border: none; border-radius: 10px; color: #000; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        .main { display: grid; grid-template-columns: 280px 1fr 350px; height: calc(100vh - 80px); }
+        
+        /* Toolbox */
+        .toolbox { background: var(--card); border-right: 1px solid rgba(255,215,0,0.2); padding: 20px; overflow-y: auto; }
+        .toolbox-title { font-family: 'Orbitron', sans-serif; color: var(--gold); font-size: 0.9em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .toolbox-section { margin-bottom: 25px; }
+        .toolbox-section-title { font-size: 0.7em; color: #666; text-transform: uppercase; margin-bottom: 10px; }
+        
+        .tool-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; background: rgba(0,0,0,0.3); border-radius: 10px; margin-bottom: 8px; cursor: grab; transition: all 0.2s; border: 1px solid transparent; }
+        .tool-item:hover { border-color: var(--gold); background: rgba(255,215,0,0.1); }
+        .tool-item:active { cursor: grabbing; }
+        .tool-icon { font-size: 1.3em; width: 30px; text-align: center; }
+        .tool-name { font-size: 0.9em; }
+        
+        /* Canvas */
+        .canvas { padding: 30px; overflow-y: auto; background: linear-gradient(180deg, rgba(0,0,0,0.3), transparent); }
+        .canvas-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .canvas-title { font-family: 'Orbitron', sans-serif; color: var(--cyan); }
+        .canvas-actions { display: flex; gap: 10px; }
+        .canvas-btn { padding: 8px 15px; background: rgba(0,255,255,0.1); border: 1px solid var(--cyan); border-radius: 8px; color: var(--cyan); cursor: pointer; font-size: 0.85em; }
+        
+        .form-canvas { background: var(--card); border-radius: 20px; padding: 30px; min-height: 500px; border: 2px dashed rgba(255,215,0,0.3); }
+        .form-title-input { font-family: 'Orbitron', sans-serif; font-size: 1.5em; background: none; border: none; color: var(--gold); width: 100%; margin-bottom: 10px; }
+        .form-title-input:focus { outline: none; }
+        .form-desc-input { font-size: 0.9em; background: none; border: none; color: #888; width: 100%; margin-bottom: 30px; resize: none; }
+        .form-desc-input:focus { outline: none; }
+        
+        .form-field { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 2px solid transparent; cursor: pointer; position: relative; }
+        .form-field:hover { border-color: rgba(255,215,0,0.3); }
+        .form-field.selected { border-color: var(--gold); }
+        .field-label { display: block; color: var(--cyan); margin-bottom: 8px; font-size: 0.9em; }
+        .field-input { width: 100%; padding: 12px 15px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; background: rgba(0,0,0,0.3); color: #fff; }
+        .field-required { color: var(--red); margin-left: 5px; }
+        .field-actions { position: absolute; top: 10px; right: 10px; display: none; gap: 5px; }
+        .form-field:hover .field-actions { display: flex; }
+        .field-action-btn { width: 30px; height: 30px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9em; }
+        .field-action-btn.edit { background: rgba(0,255,255,0.2); color: var(--cyan); }
+        .field-action-btn.delete { background: rgba(255,23,68,0.2); color: var(--red); }
+        
+        .drop-zone { border: 2px dashed rgba(255,215,0,0.3); border-radius: 15px; padding: 40px; text-align: center; color: #666; transition: all 0.3s; }
+        .drop-zone.active { border-color: var(--gold); background: rgba(255,215,0,0.1); color: var(--gold); }
+        
+        /* Properties Panel */
+        .properties { background: var(--card); border-left: 1px solid rgba(255,215,0,0.2); padding: 20px; overflow-y: auto; }
+        .properties-title { font-family: 'Orbitron', sans-serif; color: var(--gold); font-size: 0.9em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        .property-group { margin-bottom: 20px; }
+        .property-label { display: block; color: var(--cyan); margin-bottom: 8px; font-size: 0.85em; }
+        .property-input { width: 100%; padding: 10px 12px; border: 1px solid rgba(255,215,0,0.3); border-radius: 8px; background: rgba(0,0,0,0.3); color: #fff; font-size: 0.9em; }
+        .property-input:focus { outline: none; border-color: var(--gold); }
+        
+        .property-toggle { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .toggle-switch { width: 50px; height: 26px; background: rgba(255,255,255,0.1); border-radius: 13px; position: relative; cursor: pointer; }
+        .toggle-switch.active { background: var(--green); }
+        .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: all 0.3s; }
+        .toggle-switch.active::after { left: 26px; }
+        
+        .validation-options { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-top: 10px; }
+        .validation-title { font-size: 0.8em; color: #888; margin-bottom: 10px; }
+        
+        /* Form Templates */
+        .templates-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
+        .template-card { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .template-card:hover { border-color: var(--gold); }
+        .template-icon { font-size: 2em; margin-bottom: 8px; }
+        .template-name { font-size: 0.85em; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📝</div>
+            <div>
+                <h1>FORM BUILDER</h1>
+                <p style="color: #888; font-size: 0.75em;">Dynamic Form Creator</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="canvas-btn"><i class="bi bi-eye"></i> Preview</button>
+            <button class="save-btn"><i class="bi bi-check-lg"></i> Save Form</button>
+            <a href="/platform" class="nav-link"><i class="bi bi-arrow-left"></i> Platform</a>
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Toolbox -->
+        <aside class="toolbox">
+            <div class="toolbox-title"><i class="bi bi-tools"></i> TOOLBOX</div>
+            
+            <div class="toolbox-section">
+                <div class="toolbox-section-title">Basic Fields</div>
+                <div class="tool-item" draggable="true" data-type="text">
+                    <span class="tool-icon">Aa</span>
+                    <span class="tool-name">Text Input</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="textarea">
+                    <span class="tool-icon">📝</span>
+                    <span class="tool-name">Text Area</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="number">
+                    <span class="tool-icon">123</span>
+                    <span class="tool-name">Number</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="email">
+                    <span class="tool-icon">📧</span>
+                    <span class="tool-name">Email</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="phone">
+                    <span class="tool-icon">📱</span>
+                    <span class="tool-name">Phone</span>
+                </div>
+            </div>
+            
+            <div class="toolbox-section">
+                <div class="toolbox-section-title">Selection Fields</div>
+                <div class="tool-item" draggable="true" data-type="select">
+                    <span class="tool-icon">▼</span>
+                    <span class="tool-name">Dropdown</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="radio">
+                    <span class="tool-icon">◉</span>
+                    <span class="tool-name">Radio Buttons</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="checkbox">
+                    <span class="tool-icon">☑️</span>
+                    <span class="tool-name">Checkbox</span>
+                </div>
+            </div>
+            
+            <div class="toolbox-section">
+                <div class="toolbox-section-title">Advanced Fields</div>
+                <div class="tool-item" draggable="true" data-type="date">
+                    <span class="tool-icon">📅</span>
+                    <span class="tool-name">Date Picker</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="file">
+                    <span class="tool-icon">📎</span>
+                    <span class="tool-name">File Upload</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="signature">
+                    <span class="tool-icon">✍️</span>
+                    <span class="tool-name">Signature</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="location">
+                    <span class="tool-icon">📍</span>
+                    <span class="tool-name">Location</span>
+                </div>
+            </div>
+            
+            <div class="toolbox-section">
+                <div class="toolbox-section-title">Layout</div>
+                <div class="tool-item" draggable="true" data-type="heading">
+                    <span class="tool-icon">H1</span>
+                    <span class="tool-name">Heading</span>
+                </div>
+                <div class="tool-item" draggable="true" data-type="divider">
+                    <span class="tool-icon">—</span>
+                    <span class="tool-name">Divider</span>
+                </div>
+            </div>
+            
+            <div class="toolbox-section">
+                <div class="toolbox-section-title">Templates</div>
+                <div class="templates-grid">
+                    <div class="template-card" onclick="loadTemplate('contact')">
+                        <div class="template-icon">📞</div>
+                        <div class="template-name">Contact</div>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('register')">
+                        <div class="template-icon">📋</div>
+                        <div class="template-name">Register</div>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('survey')">
+                        <div class="template-icon">📊</div>
+                        <div class="template-name">Survey</div>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('application')">
+                        <div class="template-icon">📝</div>
+                        <div class="template-name">Application</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Canvas -->
+        <section class="canvas">
+            <div class="canvas-header">
+                <div class="canvas-title">Form Editor</div>
+                <div class="canvas-actions">
+                    <button class="canvas-btn"><i class="bi bi-arrow-counterclockwise"></i> Undo</button>
+                    <button class="canvas-btn"><i class="bi bi-arrow-clockwise"></i> Redo</button>
+                    <button class="canvas-btn"><i class="bi bi-trash"></i> Clear</button>
+                </div>
+            </div>
+            
+            <div class="form-canvas" id="formCanvas">
+                <input type="text" class="form-title-input" value="Citizen Registration Form" placeholder="Form Title">
+                <textarea class="form-desc-input" rows="2" placeholder="Form description...">Complete this form to register as a citizen of Ierahkwa.</textarea>
+                
+                <div class="form-field selected" onclick="selectField(this)">
+                    <div class="field-actions">
+                        <button class="field-action-btn edit"><i class="bi bi-pencil"></i></button>
+                        <button class="field-action-btn delete"><i class="bi bi-trash"></i></button>
+                    </div>
+                    <label class="field-label">Full Name<span class="field-required">*</span></label>
+                    <input type="text" class="field-input" placeholder="Enter your full name">
+                </div>
+                
+                <div class="form-field" onclick="selectField(this)">
+                    <div class="field-actions">
+                        <button class="field-action-btn edit"><i class="bi bi-pencil"></i></button>
+                        <button class="field-action-btn delete"><i class="bi bi-trash"></i></button>
+                    </div>
+                    <label class="field-label">Email Address<span class="field-required">*</span></label>
+                    <input type="email" class="field-input" placeholder="you@example.com">
+                </div>
+                
+                <div class="form-field" onclick="selectField(this)">
+                    <div class="field-actions">
+                        <button class="field-action-btn edit"><i class="bi bi-pencil"></i></button>
+                        <button class="field-action-btn delete"><i class="bi bi-trash"></i></button>
+                    </div>
+                    <label class="field-label">Date of Birth<span class="field-required">*</span></label>
+                    <input type="date" class="field-input">
+                </div>
+                
+                <div class="form-field" onclick="selectField(this)">
+                    <div class="field-actions">
+                        <button class="field-action-btn edit"><i class="bi bi-pencil"></i></button>
+                        <button class="field-action-btn delete"><i class="bi bi-trash"></i></button>
+                    </div>
+                    <label class="field-label">Citizen Type</label>
+                    <select class="field-input">
+                        <option value="">Select type...</option>
+                        <option>Individual</option>
+                        <option>Family Head</option>
+                        <option>Business Owner</option>
+                    </select>
+                </div>
+                
+                <div class="drop-zone" id="dropZone">
+                    <i class="bi bi-plus-circle" style="font-size: 2em; display: block; margin-bottom: 10px;"></i>
+                    Drag fields here or click toolbox items to add
+                </div>
+            </div>
+        </section>
+        
+        <!-- Properties Panel -->
+        <aside class="properties">
+            <div class="properties-title"><i class="bi bi-sliders"></i> PROPERTIES</div>
+            
+            <div class="property-group">
+                <label class="property-label">Field Label</label>
+                <input type="text" class="property-input" value="Full Name">
+            </div>
+            
+            <div class="property-group">
+                <label class="property-label">Placeholder</label>
+                <input type="text" class="property-input" value="Enter your full name">
+            </div>
+            
+            <div class="property-group">
+                <label class="property-label">Help Text</label>
+                <input type="text" class="property-input" placeholder="Optional help text">
+            </div>
+            
+            <div class="property-group">
+                <label class="property-label">Field Name (ID)</label>
+                <input type="text" class="property-input" value="full_name">
+            </div>
+            
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 10px;">
+                <div class="property-toggle">
+                    <span>Required</span>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+                <div class="property-toggle">
+                    <span>Read Only</span>
+                    <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                </div>
+                <div class="property-toggle">
+                    <span>Hidden</span>
+                    <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                </div>
+            </div>
+            
+            <div class="validation-options">
+                <div class="validation-title">Validation Rules</div>
+                <div class="property-toggle">
+                    <span>Min Length</span>
+                    <input type="number" class="property-input" style="width: 80px;" value="2">
+                </div>
+                <div class="property-toggle">
+                    <span>Max Length</span>
+                    <input type="number" class="property-input" style="width: 80px;" value="100">
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <div class="properties-title"><i class="bi bi-gear"></i> FORM SETTINGS</div>
+                
+                <div class="property-group">
+                    <label class="property-label">Submit Action</label>
+                    <select class="property-input">
+                        <option>Save to Database</option>
+                        <option>Send Email</option>
+                        <option>API Webhook</option>
+                        <option>Create Citizen Record</option>
+                    </select>
+                </div>
+                
+                <div class="property-group">
+                    <label class="property-label">Success Message</label>
+                    <input type="text" class="property-input" value="Form submitted successfully!">
+                </div>
+                
+                <div class="property-toggle">
+                    <span>Require Authentication</span>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+                
+                <div class="property-toggle">
+                    <span>Enable AI Validation</span>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+            </div>
+        </aside>
+    </main>
+    
+    <script>
+        function selectField(field) {
+            document.querySelectorAll('.form-field').forEach(f => f.classList.remove('selected'));
+            field.classList.add('selected');
+        }
+        
+        function loadTemplate(type) {
+            const templates = {
+                contact: 'Contact Form template loaded!',
+                register: 'Registration Form template loaded!',
+                survey: 'Survey Form template loaded!',
+                application: 'Application Form template loaded!'
+            };
+            alert(`📝 ${templates[type]}\n\nTemplate fields have been added to the canvas.`);
+        }
+        
+        // Drag and drop functionality
+        document.querySelectorAll('.tool-item').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('type', item.dataset.type);
+            });
+        });
+        
+        const dropZone = document.getElementById('dropZone');
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('active'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('active'); });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('active');
+            const type = e.dataTransfer.getData('type');
+            alert(`✅ Added "${type}" field to form.\n\nConfigure it in the Properties panel.`);
+        });
+        
+        console.log('📝 FORM BUILDER - Dynamic Form Creator Initialized');
+    </script>
+</body>
+</html>

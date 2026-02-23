@@ -1,0 +1,264 @@
+<%- include('partials/header') %>
+
+<div class="container-fluid p-4">
+    <h2 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard</h2>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50">Total Products</h6>
+                            <h2 class="mb-0"><%= stats.totalProducts %></h2>
+                        </div>
+                        <i class="bi bi-box-seam display-4 opacity-50"></i>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="/products" class="text-white small">View all <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50">Stock Value</h6>
+                            <h2 class="mb-0">$<%= stats.totalValue.toLocaleString('en-US', {minimumFractionDigits: 2}) %></h2>
+                        </div>
+                        <i class="bi bi-currency-dollar display-4 opacity-50"></i>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="/reports/stock" class="text-white small">View report <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50">Low Stock Items</h6>
+                            <h2 class="mb-0"><%= stats.lowStock %></h2>
+                        </div>
+                        <i class="bi bi-exclamation-triangle display-4 opacity-50"></i>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="/reports/low-stock" class="text-white small">View alerts <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50">Today's Movements</h6>
+                            <h2 class="mb-0"><%= todayMovements %></h2>
+                        </div>
+                        <i class="bi bi-arrow-left-right display-4 opacity-50"></i>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="/movements" class="text-white small">View history <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">Quick Actions</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="/products/new" class="btn btn-outline-primary">
+                            <i class="bi bi-plus-circle"></i> New Product
+                        </a>
+                        <a href="/movements/stock-in" class="btn btn-outline-success">
+                            <i class="bi bi-box-arrow-in-down"></i> Stock In
+                        </a>
+                        <a href="/movements/stock-out" class="btn btn-outline-danger">
+                            <i class="bi bi-box-arrow-up"></i> Stock Out
+                        </a>
+                        <a href="/movements/quick-entry" class="btn btn-outline-warning">
+                            <i class="bi bi-upc-scan"></i> Quick Entry
+                        </a>
+                        <a href="/reports/stock" class="btn btn-outline-info">
+                            <i class="bi bi-file-earmark-text"></i> Stock Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Charts -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <i class="bi bi-pie-chart"></i> Stock Value by Category
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <i class="bi bi-bar-chart"></i> Monthly Movements
+                </div>
+                <div class="card-body">
+                    <canvas id="movementsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock Items -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <i class="bi bi-exclamation-triangle"></i> Low Stock Items
+                </div>
+                <div class="card-body p-0">
+                    <% if (lowStockItems.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-center">Stock</th>
+                                    <th class="text-center">Min</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% lowStockItems.forEach(item => { %>
+                                <tr>
+                                    <td>
+                                        <a href="/products/<%= item.id %>"><%= item.name %></a>
+                                        <small class="text-muted d-block"><%= item.code %></small>
+                                    </td>
+                                    <td class="text-center text-danger fw-bold"><%= item.current_stock %></td>
+                                    <td class="text-center"><%= item.min_stock %></td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } else { %>
+                    <div class="text-center text-success p-4">
+                        <i class="bi bi-check-circle display-4"></i>
+                        <p class="mb-0">All items are above minimum stock!</p>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Movements -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-clock-history"></i> Recent Movements
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Type</th>
+                                    <th class="text-end">Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% recentMovements.forEach(m => { %>
+                                <tr>
+                                    <td>
+                                        <%= m.product_name %>
+                                        <small class="text-muted d-block"><%= new Date(m.created_at).toLocaleString() %></small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-<%= m.type === 'purchase' ? 'success' : m.type === 'sale' ? 'danger' : 'warning' %>">
+                                            <%= m.type %>
+                                        </span>
+                                    </td>
+                                    <td class="text-end"><%= m.quantity %></td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Category Chart
+const categoryData = <%- stockByCategory %>;
+if (categoryData.length > 0) {
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'doughnut',
+        data: {
+            labels: categoryData.map(d => d.name),
+            datasets: [{
+                data: categoryData.map(d => d.value),
+                backgroundColor: [
+                    '#0d6efd', '#198754', '#dc3545', '#ffc107', 
+                    '#0dcaf0', '#6f42c1', '#fd7e14', '#20c997'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+}
+
+// Movements Chart
+const movementsData = <%- monthlyMovements %>;
+if (movementsData.length > 0) {
+    new Chart(document.getElementById('movementsChart'), {
+        type: 'bar',
+        data: {
+            labels: movementsData.map(d => d.month),
+            datasets: [
+                {
+                    label: 'Purchases',
+                    data: movementsData.map(d => d.purchases),
+                    backgroundColor: '#198754'
+                },
+                {
+                    label: 'Sales',
+                    data: movementsData.map(d => d.sales),
+                    backgroundColor: '#dc3545'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+</script>
+
+<%- include('partials/footer') %>

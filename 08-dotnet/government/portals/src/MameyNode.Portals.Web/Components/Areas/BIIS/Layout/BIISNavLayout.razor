@@ -1,0 +1,24 @@
+@* BIISNavLayout.razor *@
+@using Mamey.BlazorWasm.Components
+@using Mamey.BlazorWasm.Routing
+@using MudBlazor
+@inject NavigationManager Navigation
+
+<MudNavMenu Margin="Margin.Dense" Rounded="false" Color="Color.Primary">
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">
+        @(DrawerOpen ? "Home" : "")
+    </MudNavLink>
+</MudNavMenu>
+
+<BaseNav Routes="_routes" DrawerOpen="DrawerOpen" DrawerMiniEnabled="true" />
+
+@code {
+    private List<Route> _routes = new();
+    [Parameter] public bool DrawerOpen { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var allRoutes = await RouteLoader.GetRoutesAsync(menu: true);
+        _routes = allRoutes.Where(r => r.Page?.StartsWith("/biis") == true).ToList();
+    }
+}

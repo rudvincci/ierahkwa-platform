@@ -1,0 +1,150 @@
+﻿@* @page "/login" *@
+@* @using System.ComponentModel.DataAnnotations *@
+@* @using Mamey.Auth *@
+@* @using MudBlazor *@
+@* *@
+@* *@
+@* @#1#inject NotificationService NotificationService#1# *@
+@* @inject IAuthenticationService AuthenticationService *@
+@* @inject NavigationManager NavigationManager *@
+@* *@
+@* <style> *@
+@*     form .row { *@
+@*         margin-bottom: 16px; *@
+@*     } *@
+@* </style> *@
+@* *@
+@* @if (_loginModel == null) *@
+@* { *@
+@*     <p><em>Loading...</em></p> *@
+@* } *@
+@* else *@
+@* { *@
+@*     <div class="d-flex justify-content-center"> *@
+@*         <MudCard Style="width:500px;"> *@
+@*             <MudImage ObjectFit="@ObjectFit.Cover" Height="300" Src="assets/images/logos/fbdet-logo-text.png" Alt="Örebro Slott" Class="rounded-lg" /> *@
+@*             $1$<MudCardMedia Image="assets/images/logos/fbdet-logo-text.png" Height="300" />#1# *@
+@*             <MudCardContent> *@
+@*                 <MudText Typo="Typo.h5">Login</MudText> *@
+@*                 <MudTextField @bind-Value="_loginModel.Email" Label="Email" Variant="Variant.Filled"></MudTextField> *@
+@*                 <MudTextField @bind-Value="_loginModel.Password" Label="Password" Variant="Variant.Text" *@
+@*                               InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" *@
+@*                               OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" /> *@
+@*             </MudCardContent> *@
+@*             <MudCardActions> *@
+@*                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@LoginAsync">Login</MudButton> *@
+@*             </MudCardActions> *@
+@*             <MudCardActions> *@
+@*                 <MudLink Href="/register">Register</MudLink> *@
+@*                 <MudLink Href="/forgot-password">Forgot Password?</MudLink> *@
+@*             </MudCardActions> *@
+@* *@
+@*         </MudCard> *@
+@* *@
+@*     </div> *@
+@*     @*<RadzenTemplateForm Data="@_loginModel"> *@
+@*             <div class="row justify-content-center"> *@
+@*                 <div class="col-md-6"> *@
+@*                     <RadzenFieldset> *@
+@*                         <div class="row"> *@
+@*                             <div class="col-md-4 align-items-center d-flex"> *@
+@*                                 <RadzenLabel Text="Email" /> *@
+@*                             </div> *@
+@*                             <div class="col-md-8"> *@
+@*                                 <RadzenTextBox style="width: 100%;" Name="Email" @bind-value="_loginModel.Email" /> *@
+@*                             </div> *@
+@*                         </div> *@
+@*                         <div class="row"> *@
+@*                             <div class="col-md-4 align-items-center d-flex"> *@
+@*                                 <RadzenLabel Text="Password" /> *@
+@*                             </div> *@
+@*                             <div class="col-md-8"> *@
+@*                                 <RadzenPassword style="width: 100%;" Name="Password" @bind-value="_loginModel.Password"/> *@
+@*                             </div> *@
+@*                         </div> *@
+@*                     </RadzenFieldset> *@
+@*                     <div> *@
+@*                         <RadzenLink Style="float:left" Path="/register" Text="Register" /> *@
+@*                         <RadzenLink Style="float:right" Path="/forgot-password" Text="Forgot Password" /> *@
+@*                     </div> *@
+@* *@
+@*                 </div> *@
+@* *@
+@*             </div> *@
+@*             <div class="row justify-content-center"> *@
+@*                 <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;"> *@
+@*                     <RadzenButton ButtonType="ButtonType.Button" IsBusy="_loading" Click="@LoginAsync" Icon="door" Text="Login" /> *@
+@*                 </div> *@
+@*             </div> *@
+@*         </RadzenTemplateForm>*@
+@* } *@
+@* *@
+@* @code *@
+@* { *@
+@*     bool isShow; *@
+@*     InputType PasswordInput = InputType.Password; *@
+@*     string PasswordInputIcon = MudBlazor.Icons.Material.Filled.VisibilityOff; *@
+@* *@
+@*     private class LoginModel *@
+@*     { *@
+@*         [Required] *@
+@*         public string Email { get; set; } *@
+@*         [Required] *@
+@*         public string Password { get; set; } *@
+@*     } *@
+@* *@
+@*     private bool _loading; *@
+@*     private readonly LoginModel _loginModel = new(); *@
+@* *@
+@*     void ButtonTestclick() *@
+@*     { *@
+@*         @if (isShow) *@
+@*         { *@
+@*             isShow = false; *@
+@*             PasswordInputIcon = MudBlazor.Icons.Material.Filled.VisibilityOff; *@
+@*             PasswordInput = InputType.Password; *@
+@*         } *@
+@*         else *@
+@*         { *@
+@*             isShow = true; *@
+@*             PasswordInputIcon = MudBlazor.Icons.Material.Filled.Visibility; *@
+@*             PasswordInput = InputType.Text; *@
+@*         } *@
+@*     } *@
+@* *@
+@*     private async Task LoginAsync() *@
+@*     { *@
+@*         _loading = true; *@
+@*         $1$NotificationService.Notify(NotificationSeverity.Info, "here", "");#1# *@
+@*         try *@
+@*         { *@
+@*             Console.Write($"Email: {_loginModel.Email}, Password: {_loginModel.Password}"); *@
+@*             var loggedIn = await AuthenticationService.LoginAsync(_loginModel.Email, _loginModel.Password); *@
+@*             _loading = false; *@
+@*             if (loggedIn is null) *@
+@*             { *@
+@*                 $1$NotificationService.Notify(NotificationSeverity.Error, "Couldn't sign in - service is unavailable :(", "", 1000);#1# *@
+@*                 return; *@
+@*             } *@
+@*             if (loggedIn.Value) *@
+@*             { *@
+@*                 $1$NotificationService.Notify(NotificationSeverity.Success, "Signed in.", "", 1000);#1# *@
+@*                 NavigationManager.NavigateTo("/"); *@
+@*             } *@
+@*             else *@
+@*             { *@
+@*                 $1$NotificationService.Notify(NotificationSeverity.Error, "Invalid credentials.", "", 1000);#1# *@
+@*             } *@
+@*         } *@
+@*         catch (Exception ex) *@
+@*         { *@
+@*             $1$NotificationService.Notify(NotificationSeverity.Error, ex.Message, "", 1000);#1# *@
+@*         } *@
+@* *@
+@*     } *@
+@* *@
+@*     private void Cancel() *@
+@*     { *@
+@* *@
+@*     } *@
+@* } *@

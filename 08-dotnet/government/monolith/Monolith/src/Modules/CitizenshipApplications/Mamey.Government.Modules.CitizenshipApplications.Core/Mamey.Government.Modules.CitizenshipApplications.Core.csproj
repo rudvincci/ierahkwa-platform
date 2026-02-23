@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <UseLocalMicroMonolith Condition="Exists('..\\..\\..\\..\\..\\..\\Mamey\\src\\Mamey.MicroMonolith.Abstractions\\src\\Mamey.MicroMonolith.Abstractions\\Mamey.MicroMonolith.Abstractions.csproj') And Exists('..\\..\\..\\..\\..\\..\\Mamey\\src\\Mamey.MicroMonolith.Infrastructure\\src\\Mamey.MicroMonolith.Infrastructure\\Mamey.MicroMonolith.Infrastructure.csproj')">true</UseLocalMicroMonolith>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants>USE_SQL</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Mamey.Government.Shared.Abstractions\Mamey.Government.Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\Mamey.Government.Modules.CitizenshipApplications.Contracts\Mamey.Government.Modules.CitizenshipApplications.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMicroMonolith)' == 'true'">
+    <ProjectReference Include="..\..\..\..\..\..\Mamey\src\Mamey.MicroMonolith.Abstractions\src\Mamey.MicroMonolith.Abstractions\Mamey.MicroMonolith.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\..\..\..\Mamey\src\Mamey.MicroMonolith.Infrastructure\src\Mamey.MicroMonolith.Infrastructure\Mamey.MicroMonolith.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMicroMonolith)' != 'true'">
+    <PackageReference Include="Mamey.MicroMonolith.Infrastructure" Version="2.0.*" />
+    <PackageReference Include="Mamey.MicroMonolith.Abstractions" Version="2.0.*" />
+  </ItemGroup>
+  
+</Project>

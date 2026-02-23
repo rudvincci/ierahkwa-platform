@@ -1,0 +1,369 @@
+@* PhoneNumberInputPro.razor — autocomplete fixed: opens on caret/focus, returns full list with empty query *@
+@using System.Linq.Expressions
+@using System.Threading
+@using Mamey.Types
+@using Mamey.ISO
+@using Mamey.ISO3166
+@inject IISO3166Service Iso
+
+<MudGrid Class="@Class" Style="@Style">
+  <MudItem xs="12" sm="4">
+
+    @if (UseAutocompleteForCountry)
+    {
+        <MudAutocomplete T="CountryOpt"
+                         Label="Country"
+                         Disabled="@_loading"
+                         @ref="_countryAuto"
+                         Value="@_selectedCountry"
+                         ValueChanged="@OnCountrySelected"
+                         SearchFunc="@SearchCountries"
+                         ToStringFunc="@(c => c?.Label ?? string.Empty)"
+                         Dense="true"
+                         Clearable="false"
+                         OpenOnFocus="true"
+                         MinCharacters="0"
+                         MaxItems="200"
+                         CoerceText="true"
+                         ForcePopupIcon="true"
+                         OpenIcon="@Icons.Material.Filled.ArrowDropDown" />
+    }
+    else
+    {
+      <MudSelect T="string"
+                 Label="Country"
+                 Disabled="@_loading"
+                 Value="@_countryCode"
+                 ValueChanged="@OnCountryChanged"
+                 Dense="true"
+                 Clearable="false">
+        @if (_loading)
+        {
+          <MudSelectItem T="string" Value="@_countryCode">Loading…</MudSelectItem>
+        }
+        else
+        {
+          @foreach (var o in _countryOptions)
+          {
+            <MudSelectItem T="string" Value="@o.Code">@o.Label</MudSelectItem>
+          }
+        }
+      </MudSelect>
+    }
+
+  </MudItem>
+
+  <MudItem xs="12" sm="8">
+    <MudTextField T="string"
+                  Label="@Label"
+                  Placeholder="@Placeholder"
+                  Value="@_number"
+                  ValueChanged="@OnNumberChanged"
+                  Immediate="true"
+                  OnBlur="@OnBlurValidate"
+                  Error="@_error"
+                  ErrorText="@_errorText"
+                  Adornment="Adornment.Start"
+                  AdornmentIcon="@Icons.Material.Filled.Phone" />
+  </MudItem>
+
+  @if (ShowType)
+  {
+    <MudItem xs="12" sm="4">
+      <MudSelect T="Phone.PhoneType"
+                 Label="Type"
+                 Value="@_type"
+                 ValueChanged="@(t => { _type = t; return EmitTentative(); })"
+                 Dense="true">
+        @foreach (var t in EffectiveTypes)
+        {
+          <MudSelectItem T="Phone.PhoneType" Value="@t">@t</MudSelectItem>
+        }
+      </MudSelect>
+    </MudItem>
+  }
+
+  @if (ShowExtension)
+  {
+    <MudItem xs="12" sm="8">
+      <MudTextField T="string"
+                    Label="Ext."
+                    Placeholder="1234"
+                    Value="@_extension"
+                    ValueChanged="@(s => { _extension = s; return EmitTentative(); })"
+                    Immediate="true"
+                    Required="@RequireExtension" />
+    </MudItem>
+  }
+</MudGrid>
+
+<FieldMessages HelperText="@HelperText" />
+
+@code {
+    // -------- public API (two-way bindable) --------
+    [Parameter] public Phone? Value { get; set; }
+    [Parameter] public EventCallback<Phone?> ValueChanged { get; set; }
+    [Parameter] public Expression<Func<Phone?>>? ValueExpression { get; set; }
+
+    // -------- UI params --------
+    [Parameter] public string Label { get; set; } = "Phone number";
+    [Parameter] public string Placeholder { get; set; } = "5551234567";
+    [Parameter] public string HelperText { get; set; } = "Stored as +<country> <number>";
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    // Feature flags
+    [Parameter] public bool ShowType { get; set; } = false;
+    [Parameter] public IEnumerable<Phone.PhoneType>? AllowedTypes { get; set; }
+    [Parameter] public Phone.PhoneType DefaultType { get; set; } = Phone.PhoneType.Main;
+
+    [Parameter] public bool ShowExtension { get; set; } = false;
+    [Parameter] public bool RequireExtension { get; set; } = false;
+    [Parameter] public Func<string, bool>? ValidateExtension { get; set; }
+
+    // Country list behavior
+    [Parameter] public bool ShowAllCountriesEvenIfSameCode { get; set; } = false; // set true to see all ~249
+    [Parameter] public bool UseAutocompleteForCountry { get; set; } = false;      // dropdown is default
+    [Parameter] public string DefaultCallingCode { get; set; } = "1";             // NANP
+    [Parameter] public bool EmitDefaultOnInit { get; set; } = false;              // VO requires number; default false
+
+    // -------- local state --------
+    private string _countryCode = "1"; // numeric calling code (no '+')
+    private string _number = "";
+    private Phone.PhoneType _type = Phone.PhoneType.Main;
+    private string? _extension;
+
+    private bool _error;
+    private string _errorText = "";
+    private bool _loading = true;
+    private MudAutocomplete<CountryOpt>? _countryAuto;
+
+    private (string? cc, string? num, string? ext, Phone.PhoneType type, bool isDefault)? _lastSnapshot;
+
+    // country options loaded from ISO service
+    private List<CountryOpt> _countryOptions = new();
+    private CountryOpt? _selectedCountry; // for autocomplete mode
+
+    private IEnumerable<Phone.PhoneType> EffectiveTypes =>
+        (AllowedTypes is { } at && at.Any()) ? at : Enum.GetValues<Phone.PhoneType>();
+
+    // ======== lifecycle ========
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var all = await Iso.GetCountriesAreaCodesAsync();
+            IEnumerable<CountryPhoneCode> src = all;
+
+            if (!ShowAllCountriesEvenIfSameCode)
+            {
+                // Collapse shared codes (e.g., all +1) into a single option and prefer US for +1
+                src = all
+                    .GroupBy(c => NormalizeDialCode(c.PhoneCode))
+                    .Select(g => PreferForDial(g, preferredAlpha2: g.Key == "1" ? "US" : null));
+            }
+
+            _countryOptions = src
+                .Select(c => new CountryOpt(
+                    Code: NormalizeDialCode(c.PhoneCode),
+                    Name: c.Name,
+                    Alpha2: c.Alpha2))
+                .OrderBy(o => o.Label, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (_countryOptions.Count == 0)
+                _countryOptions.Add(new CountryOpt("1", "United States", "US"));
+
+            // Choose default selection → US (+1) if no incoming value
+            var codeToFind = string.IsNullOrWhiteSpace(Value?.CountryCode)
+                                ? DefaultCallingCode
+                                : NormalizeDialCode(Value!.CountryCode);
+
+            _selectedCountry = PickOptionForCode(codeToFind, preferAlpha2: codeToFind == "1" ? "US" : null)
+                               ?? _countryOptions.First();
+
+            _countryCode = _selectedCountry.Code;
+
+            // Optionally emit default (only if we already have a number to satisfy VO guards)
+            if (EmitDefaultOnInit && Value is null && !string.IsNullOrWhiteSpace(_number))
+            {
+                await EmitTentative();
+            }
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!MatchesSnapshot(Value, _lastSnapshot))
+        {
+            var cc  = string.IsNullOrWhiteSpace(Value?.CountryCode) ? DefaultCallingCode : NormalizeDialCode(Value!.CountryCode);
+            var num = Value?.Number ?? "";
+
+            _countryCode = string.IsNullOrWhiteSpace(cc) ? DefaultCallingCode : cc;
+            _number      = num;
+
+            _type      = Value?.Type ?? DefaultType;
+            _extension = Value?.Extension;
+
+            _lastSnapshot = (Value?.CountryCode, Value?.Number, Value?.Extension ?? null,
+                             Value?.Type ?? DefaultType, Value?.IsDefault ?? false);
+
+            if (!_loading && UseAutocompleteForCountry)
+                _selectedCountry = PickOptionForCode(_countryCode, preferAlpha2: _countryCode == "1" ? "US" : null) ?? _selectedCountry;
+        }
+    }
+
+    // ======== events ========
+    private async Task OnCountryChanged(string code)
+    {
+        _countryCode = NormalizeDialCode(code);
+        await EmitTentative();
+    }
+
+    private async Task OnCountrySelected(CountryOpt? opt)
+    {
+        if (opt is null) return;
+        _selectedCountry = opt;
+        _countryCode = opt.Code;
+        await EmitTentative();
+    }
+
+    // Updated signature (supports empty term & opens on caret/focus)
+    private Task<IEnumerable<CountryOpt>> SearchCountries(string? value, CancellationToken _)
+    {
+        var q = (value ?? "").Trim();
+        if (q.Length == 0) return Task.FromResult<IEnumerable<CountryOpt>>(_countryOptions);
+        return Task.FromResult(_countryOptions.Where(o => o.Matches(q, startsWith: false)).Take(200));
+    }
+
+    private async Task OnNumberChanged(string n)
+    {
+        _number = n;
+        _error = false; _errorText = "";
+        await EmitTentative();
+    }
+
+    private async Task OnBlurValidate()
+    {
+        try
+        {
+            if (ShowExtension && RequireExtension && string.IsNullOrWhiteSpace(_extension))
+                throw new ArgumentException("Extension is required.");
+
+            if (ShowExtension && ValidateExtension is not null && !ValidateExtension(_extension ?? ""))
+                throw new ArgumentException("Extension format is invalid.");
+
+            var vo = new Phone(_countryCode, _number, _extension, _type, false);
+            _error = false; _errorText = "";
+            _lastSnapshot = (vo.CountryCode, vo.Number, vo.Extension, vo.Type, vo.IsDefault);
+            await ValueChanged.InvokeAsync(vo);
+        }
+        catch (Exception ex)
+        {
+            _error = true; _errorText = ex.Message;
+            _lastSnapshot = null;
+            await ValueChanged.InvokeAsync(null);
+        }
+        StateHasChanged();
+    }
+
+    private async Task EmitTentative()
+    {
+        if (string.IsNullOrWhiteSpace(_countryCode) || string.IsNullOrWhiteSpace(_number))
+        {
+            _lastSnapshot = null;
+            await ValueChanged.InvokeAsync(null);
+            return;
+        }
+
+        try
+        {
+            if (ShowExtension && RequireExtension && string.IsNullOrWhiteSpace(_extension))
+            {
+                _lastSnapshot = null;
+                await ValueChanged.InvokeAsync(null);
+                return;
+            }
+
+            var vo = new Phone(_countryCode, _number, _extension, _type, false);
+            _lastSnapshot = (vo.CountryCode, vo.Number, vo.Extension, vo.Type, vo.IsDefault);
+            await ValueChanged.InvokeAsync(vo);
+        }
+        catch
+        {
+            _lastSnapshot = null;
+            await ValueChanged.InvokeAsync(null);
+        }
+    }
+
+    // ======== helpers ========
+    private CountryOpt? PickOptionForCode(string code, string? preferAlpha2)
+    {
+        var matches = _countryOptions.Where(x => x.Code == code).ToList();
+        if (matches.Count == 0) return null;
+        if (!string.IsNullOrWhiteSpace(preferAlpha2))
+        {
+            var hit = matches.FirstOrDefault(x => string.Equals(x.Alpha2, preferAlpha2, StringComparison.OrdinalIgnoreCase));
+            if (hit is not null) return hit;
+        }
+        return matches.First();
+    }
+
+    private static CountryPhoneCode PreferForDial(
+        IGrouping<string, CountryPhoneCode> g, string? preferredAlpha2)
+    {
+        var list = g.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
+        if (!string.IsNullOrWhiteSpace(preferredAlpha2))
+        {
+            var hit = list.FirstOrDefault(x => string.Equals(x.Alpha2, preferredAlpha2, StringComparison.OrdinalIgnoreCase));
+            if (hit is not null) return hit;
+        }
+        return list.First();
+    }
+
+    private static string NormalizeDialCode(string? code)
+    {
+        if (string.IsNullOrWhiteSpace(code)) return "";
+        var s = code.Trim();
+        if (s.StartsWith("+")) s = s[1..];
+        return s;
+    }
+
+    private static bool MatchesSnapshot(Phone? v,
+        (string? cc, string? num, string? ext, Phone.PhoneType type, bool isDefault)? snap)
+    {
+        if (snap is null && v is null) return true;
+        if (snap is null || v is null) return false;
+        return string.Equals(v.CountryCode, snap.Value.cc, StringComparison.Ordinal) &&
+               string.Equals(v.Number,     snap.Value.num, StringComparison.Ordinal) &&
+               string.Equals(v.Extension,  snap.Value.ext, StringComparison.Ordinal) &&
+               v.Type == snap.Value.type &&
+               v.IsDefault == snap.Value.isDefault;
+    }
+
+    private record CountryOpt(string Code, string Name, string Alpha2)
+    {
+        public string Label => $"{Name} (+{Code})";
+
+        public bool Matches(string term, bool startsWith)
+        {
+            if (string.IsNullOrWhiteSpace(term)) return true;
+            var t = term.Trim();
+
+            bool Match(string hay)
+                => startsWith
+                    ? hay.StartsWith(t, StringComparison.OrdinalIgnoreCase)
+                    : hay.Contains(t, StringComparison.OrdinalIgnoreCase);
+
+            return Match(Name)
+                   || Match(Alpha2)
+                   || Match(Code)
+                   || Match("+" + Code);
+        }
+    }
+}

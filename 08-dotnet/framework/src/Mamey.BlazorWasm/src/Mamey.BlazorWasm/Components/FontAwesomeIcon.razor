@@ -1,0 +1,123 @@
+﻿<i class="fa-@Style fa-@Icon @iconSize(Size) @beat(Beat) @fade(Fade)" style="@setStyle(BeatScale, Duration)"></i>
+
+@code {
+
+    // https://fontawesome.com/docs/web/style/animate
+
+    private string? _icon;
+    [Parameter]
+    public string Style { get; set; } = "solid";
+    [Parameter]
+    public string? Icon
+    {
+        get => _icon;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new Exception("Icon value not set");
+            }
+            _icon = value.ToLower();
+        }
+    }
+    [Parameter]
+    public string? Animation
+    {
+        get => _icon;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new Exception("Icon value not set");
+            }
+            _icon = value.ToLower();
+        }
+    }
+
+    [Parameter]
+    public bool Beat { get; set; }
+    [Parameter]
+    public string BeatScale { get; set; }
+    [Parameter]
+    public string Duration { get; set; }
+
+    [Parameter]
+    public bool Fade { get; set; }
+    [Parameter]
+    public string FadeOpacity { get; set; }
+
+
+    [Parameter]
+    public string? Size { get; set; }
+
+    string iconSize(string size)
+    {
+        Console.WriteLine($"My size is: {size}");
+
+        var _size = string.Empty;
+        switch (size)
+        {
+            case "":
+                break;
+            case "2xs":
+            case "xs":
+            case "sm":
+            case "lg":
+            case "xl":
+            case "2xl":
+            case "1x":
+            case "2x":
+            case "3x":
+            case "4x":
+            case "5x":
+            case "6x":
+            case "7x":
+            case "8x":
+            case "9x":
+            case "20x":
+                _size = $"fa-{Size}";
+                break;
+        }
+        return _size;
+    }
+
+    string beat(bool beat)
+    {
+        if (beat)
+            return "fa-beat";
+        return "";
+    }
+
+    string fade(bool fade)
+    {
+        if (fade)
+            return "fa-fade";
+        return "";
+    }
+
+
+    string setStyle(string scale, string duration)
+    {
+        string? _beatScale = null;
+        string? _duration = null;
+        if (!string.IsNullOrWhiteSpace(scale))
+        {
+            if (Beat && !string.IsNullOrEmpty(scale))
+            {
+                _beatScale = string.IsNullOrEmpty(scale) ? "" : $"--fa-beat-scale: {scale};";
+
+            }
+            else
+            {
+                throw new Exception("Beat must be enabled");
+            }
+
+        }
+        if (!string.IsNullOrEmpty(Duration))
+        {
+            _duration = string.IsNullOrEmpty(duration) ? "" : $"--fa-animation-duration: {duration}s;";
+        }
+
+        return $"{_duration}{_beatScale}";
+    }
+}

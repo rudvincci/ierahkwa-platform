@@ -1,0 +1,354 @@
+syntax = "proto3";
+
+package mamey.upg;
+
+// Universal Protocol Gateway service for MameyNode blockchain
+service UniversalProtocolGatewayService {
+    // Protocol adapter operations
+    rpc RegisterProtocolAdapter(RegisterProtocolAdapterRequest) returns (RegisterProtocolAdapterResponse);
+    rpc GetProtocolAdapter(GetProtocolAdapterRequest) returns (GetProtocolAdapterResponse);
+    rpc ListProtocolAdapters(ListProtocolAdaptersRequest) returns (ListProtocolAdaptersResponse);
+    
+    // Protocol normalization
+    rpc NormalizeTransaction(NormalizeTransactionRequest) returns (NormalizeTransactionResponse);
+    rpc DenormalizeTransaction(DenormalizeTransactionRequest) returns (DenormalizeTransactionResponse);
+    
+    // Multi-rail routing
+    rpc RouteTransaction(RouteTransactionRequest) returns (RouteTransactionResponse);
+    rpc GetRouteOptions(GetRouteOptionsRequest) returns (GetRouteOptionsResponse);
+    
+    // HSM integration
+    rpc SignWithHSM(SignWithHSMRequest) returns (SignWithHSMResponse);
+    rpc VerifyHSMSignature(VerifyHSMSignatureRequest) returns (VerifyHSMSignatureResponse);
+    
+    // FX conversion
+    rpc ConvertFX(ConvertFXRequest) returns (ConvertFXResponse);
+    rpc GetExchangeRate(GetExchangeRateRequest) returns (GetExchangeRateResponse);
+    
+    // POS processing
+    rpc ProcessPOSTransaction(ProcessPOSTransactionRequest) returns (ProcessPOSTransactionResponse);
+    rpc GetPOSTransaction(GetPOSTransactionRequest) returns (GetPOSTransactionResponse);
+    
+    // Offline transactions
+    rpc CreateOfflineTransaction(CreateOfflineTransactionRequest) returns (CreateOfflineTransactionResponse);
+    rpc SyncOfflineTransaction(SyncOfflineTransactionRequest) returns (SyncOfflineTransactionResponse);
+    
+    // Merchant settlement
+    rpc ProcessMerchantSettlement(ProcessMerchantSettlementRequest) returns (ProcessMerchantSettlementResponse);
+    rpc GetMerchantSettlement(GetMerchantSettlementRequest) returns (GetMerchantSettlementResponse);
+}
+
+// Register protocol adapter request
+message RegisterProtocolAdapterRequest {
+    string protocol_name = 1;
+    string adapter_type = 2;
+    map<string, string> configuration = 3;
+}
+
+// Register protocol adapter response
+message RegisterProtocolAdapterResponse {
+    string adapter_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Get protocol adapter request
+message GetProtocolAdapterRequest {
+    string adapter_id = 1;
+}
+
+// Get protocol adapter response
+message GetProtocolAdapterResponse {
+    ProtocolAdapterInfo adapter = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// List protocol adapters request
+message ListProtocolAdaptersRequest {
+    string protocol_name = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// List protocol adapters response
+message ListProtocolAdaptersResponse {
+    repeated ProtocolAdapterInfo adapters = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Normalize transaction request
+message NormalizeTransactionRequest {
+    string protocol = 1;
+    string transaction_data = 2;
+}
+
+// Normalize transaction response
+message NormalizeTransactionResponse {
+    string normalized_data = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Denormalize transaction request
+message DenormalizeTransactionRequest {
+    string protocol = 1;
+    string normalized_data = 2;
+}
+
+// Denormalize transaction response
+message DenormalizeTransactionResponse {
+    string transaction_data = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Route transaction request
+message RouteTransactionRequest {
+    string from_account = 1;
+    string to_account = 2;
+    string amount = 3;
+    string currency = 4;
+    repeated string preferred_rails = 5;
+}
+
+// Route transaction response
+message RouteTransactionResponse {
+    string route_id = 1;
+    string selected_rail = 2;
+    string transaction_id = 3;
+    bool success = 4;
+    string error_message = 5;
+}
+
+// Get route options request
+message GetRouteOptionsRequest {
+    string from_account = 1;
+    string to_account = 2;
+    string amount = 3;
+    string currency = 4;
+}
+
+// Get route options response
+message GetRouteOptionsResponse {
+    repeated RouteOption options = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Sign with HSM request
+message SignWithHSMRequest {
+    string key_id = 1;
+    bytes data = 2;
+    string algorithm = 3;
+}
+
+// Sign with HSM response
+message SignWithHSMResponse {
+    bytes signature = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Verify HSM signature request
+message VerifyHSMSignatureRequest {
+    string key_id = 1;
+    bytes data = 2;
+    bytes signature = 3;
+    string algorithm = 4;
+}
+
+// Verify HSM signature response
+message VerifyHSMSignatureResponse {
+    bool verified = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Convert FX request
+message ConvertFXRequest {
+    string from_currency = 1;
+    string to_currency = 2;
+    string amount = 3;
+}
+
+// Convert FX response
+message ConvertFXResponse {
+    string converted_amount = 1;
+    string exchange_rate = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get exchange rate request
+message GetExchangeRateRequest {
+    string from_currency = 1;
+    string to_currency = 2;
+}
+
+// Get exchange rate response
+message GetExchangeRateResponse {
+    string exchange_rate = 1;
+    uint64 timestamp = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Process POS transaction request
+message ProcessPOSTransactionRequest {
+    string merchant_id = 1;
+    string terminal_id = 2;
+    string amount = 3;
+    string currency = 4;
+    string payment_method = 5;
+    bytes card_data = 6;
+}
+
+// Process POS transaction response
+message ProcessPOSTransactionResponse {
+    string transaction_id = 1;
+    string authorization_code = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get POS transaction request
+message GetPOSTransactionRequest {
+    string transaction_id = 1;
+}
+
+// Get POS transaction response
+message GetPOSTransactionResponse {
+    POSTransactionInfo transaction = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Create offline transaction request
+message CreateOfflineTransactionRequest {
+    string from_account = 1;
+    string to_account = 2;
+    string amount = 3;
+    string currency = 4;
+    bytes signature = 5;
+    uint64 timestamp = 6;
+}
+
+// Create offline transaction response
+message CreateOfflineTransactionResponse {
+    string offline_transaction_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Sync offline transaction request
+message SyncOfflineTransactionRequest {
+    string offline_transaction_id = 1;
+}
+
+// Sync offline transaction response
+message SyncOfflineTransactionResponse {
+    string transaction_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Process merchant settlement request
+message ProcessMerchantSettlementRequest {
+    string merchant_id = 1;
+    string settlement_period = 2;
+    string currency = 3;
+}
+
+// Process merchant settlement response
+message ProcessMerchantSettlementResponse {
+    string settlement_id = 1;
+    string total_amount = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get merchant settlement request
+message GetMerchantSettlementRequest {
+    string settlement_id = 1;
+}
+
+// Get merchant settlement response
+message GetMerchantSettlementResponse {
+    MerchantSettlementInfo settlement = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Protocol adapter info
+message ProtocolAdapterInfo {
+    string adapter_id = 1;
+    string protocol_name = 2;
+    string adapter_type = 3;
+    map<string, string> configuration = 4;
+    uint64 registered_at = 5;
+    AdapterStatus status = 6;
+}
+
+// Route option
+message RouteOption {
+    string rail = 1;
+    string fee = 2;
+    string estimated_time = 3;
+    double reliability_score = 4;
+}
+
+// POS transaction info
+message POSTransactionInfo {
+    string transaction_id = 1;
+    string merchant_id = 2;
+    string terminal_id = 3;
+    string amount = 4;
+    string currency = 5;
+    string authorization_code = 6;
+    POSTransactionStatus status = 7;
+    uint64 created_at = 8;
+}
+
+// Merchant settlement info
+message MerchantSettlementInfo {
+    string settlement_id = 1;
+    string merchant_id = 2;
+    string settlement_period = 3;
+    string total_amount = 4;
+    string currency = 5;
+    uint32 transaction_count = 6;
+    SettlementStatus status = 7;
+    uint64 created_at = 8;
+    uint64 processed_at = 9;
+}
+
+// Adapter status enum
+enum AdapterStatus {
+    ADAPTER_STATUS_ACTIVE = 0;
+    ADAPTER_STATUS_INACTIVE = 1;
+    ADAPTER_STATUS_ERROR = 2;
+}
+
+// POS transaction status enum
+enum POSTransactionStatus {
+    POS_STATUS_PENDING = 0;
+    POS_STATUS_AUTHORIZED = 1;
+    POS_STATUS_CAPTURED = 2;
+    POS_STATUS_DECLINED = 3;
+    POS_STATUS_REFUNDED = 4;
+}
+
+// Settlement status enum
+enum SettlementStatus {
+    SETTLEMENT_STATUS_PENDING = 0;
+    SETTLEMENT_STATUS_PROCESSING = 1;
+    SETTLEMENT_STATUS_COMPLETED = 2;
+    SETTLEMENT_STATUS_FAILED = 3;
+}
+
+
+
+

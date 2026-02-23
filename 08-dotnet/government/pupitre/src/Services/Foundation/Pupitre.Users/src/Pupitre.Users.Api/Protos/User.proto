@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Users.Api.Protos";
+
+package Pupitre.Users;
+
+// gRPC service for User operations
+service UserService {
+    // Get a single User by ID
+    rpc GetUser (GetUserRequest) returns (UserResponse) {};
+    
+    // List all Users with pagination
+    rpc ListUsers (ListUsersRequest) returns (ListUsersResponse) {};
+    
+    // Stream User updates
+    rpc StreamUserUpdates (StreamUserUpdatesRequest) returns (stream UserResponse) {};
+}
+
+message GetUserRequest {
+    string id = 1;
+}
+
+message ListUsersRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListUsersResponse {
+    repeated UserResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message UserResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamUserUpdatesRequest {
+    string filter = 1;
+}

@@ -1,0 +1,163 @@
+@using Mamey.FWID.Identities.BlazorWasm.Services
+
+<MudCard Elevation="2" Class="pa-4">
+    <MudText Typo="Typo.h6" Class="mb-4">
+        <MudIcon Icon="@Icons.Material.Filled.Security" Class="mr-2" />
+        Biometric Enrollment Progress
+    </MudText>
+
+    <!-- Progress Overview -->
+    <MudProgressLinear Value="@GetOverallProgress()" Color="Color.Primary" Class="mb-4" Rounded="true" Size="Size.Large">
+        <b>@GetOverallProgress()%</b>
+    </MudProgressLinear>
+
+    <!-- Step List -->
+    <MudList T="BiometricStep" Dense="true">
+        @foreach (var step in Steps)
+        {
+            <MudListItem>
+                <div class="d-flex align-center">
+                    <MudAvatar Size="Size.Small" 
+                               Color="@GetStepColor(step)" 
+                               Class="mr-3">
+                        @if (step.Status == BiometricStepStatus.Completed)
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" />
+                        }
+                        else if (step.Status == BiometricStepStatus.InProgress)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                        }
+                        else if (step.Status == BiometricStepStatus.Failed)
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Close" Size="Size.Small" />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@GetStepIcon(step.Type)" Size="Size.Small" />
+                        }
+                    </MudAvatar>
+                    
+                    <div class="flex-grow-1">
+                        <MudText Typo="Typo.body1">@step.Title</MudText>
+                        @if (!string.IsNullOrEmpty(step.Description))
+                        {
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">@step.Description</MudText>
+                        }
+                    </div>
+                    
+                    @if (step.Status == BiometricStepStatus.Completed)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Success">Done</MudChip>
+                    }
+                    else if (step.Status == BiometricStepStatus.InProgress)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Primary">In Progress</MudChip>
+                    }
+                    else if (step.Status == BiometricStepStatus.Failed)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Error">Failed</MudChip>
+                    }
+                    else if (step.IsRequired)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Warning" Variant="Variant.Outlined">Required</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Outlined">Optional</MudChip>
+                    }
+                </div>
+            </MudListItem>
+        }
+    </MudList>
+
+    <!-- Summary -->
+    <MudDivider Class="my-4" />
+    
+    <div class="d-flex justify-space-between align-center">
+        <div>
+            <MudText Typo="Typo.body2">
+                <strong>@GetCompletedCount()</strong> of <strong>@GetRequiredCount()</strong> required steps completed
+            </MudText>
+            @if (GetOptionalCompletedCount() > 0)
+            {
+                <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                    +@GetOptionalCompletedCount() optional step(s)
+                </MudText>
+            }
+        </div>
+        
+        @if (IsComplete)
+        {
+            <MudChip T="string" Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircle">
+                Enrollment Complete
+            </MudChip>
+        }
+        else if (CanComplete)
+        {
+            <MudButton Color="Color.Success" 
+                       Variant="Variant.Filled"
+                       OnClick="@(() => OnComplete.InvokeAsync())">
+                Complete Enrollment
+            </MudButton>
+        }
+    </div>
+
+    <!-- Error Summary -->
+    @if (Steps.Any(s => s.Status == BiometricStepStatus.Failed))
+    {
+        <MudAlert Severity="Severity.Warning" Class="mt-4" Dense="true">
+            Some steps failed. You can retry or skip optional steps to continue.
+        </MudAlert>
+    }
+</MudCard>
+
+@code {
+    [Parameter]
+    public List<BiometricStep> Steps { get; set; } = new();
+
+    [Parameter]
+    public EventCallback OnComplete { get; set; }
+
+    [Parameter]
+    public EventCallback<BiometricStep> OnStepSelected { get; set; }
+
+    private bool IsComplete => Steps.Where(s => s.IsRequired).All(s => s.Status == BiometricStepStatus.Completed);
+    
+    private bool CanComplete => Steps.Where(s => s.IsRequired).All(s => s.Status == BiometricStepStatus.Completed);
+
+    private int GetOverallProgress()
+    {
+        if (!Steps.Any()) return 0;
+        var completedRequired = Steps.Count(s => s.IsRequired && s.Status == BiometricStepStatus.Completed);
+        var totalRequired = Steps.Count(s => s.IsRequired);
+        return totalRequired > 0 ? (int)((double)completedRequired / totalRequired * 100) : 100;
+    }
+
+    private int GetCompletedCount() => Steps.Count(s => s.IsRequired && s.Status == BiometricStepStatus.Completed);
+    private int GetRequiredCount() => Steps.Count(s => s.IsRequired);
+    private int GetOptionalCompletedCount() => Steps.Count(s => !s.IsRequired && s.Status == BiometricStepStatus.Completed);
+
+    private Color GetStepColor(BiometricStep step)
+    {
+        return step.Status switch
+        {
+            BiometricStepStatus.Completed => Color.Success,
+            BiometricStepStatus.InProgress => Color.Primary,
+            BiometricStepStatus.Failed => Color.Error,
+            _ => Color.Default
+        };
+    }
+
+    private string GetStepIcon(BiometricStepType type)
+    {
+        return type switch
+        {
+            BiometricStepType.Face => Icons.Material.Filled.Face,
+            BiometricStepType.Fingerprint => Icons.Material.Filled.Fingerprint,
+            BiometricStepType.Voice => Icons.Material.Filled.Mic,
+            BiometricStepType.Iris => Icons.Material.Filled.RemoveRedEye,
+            _ => Icons.Material.Filled.Security
+        };
+    }
+}

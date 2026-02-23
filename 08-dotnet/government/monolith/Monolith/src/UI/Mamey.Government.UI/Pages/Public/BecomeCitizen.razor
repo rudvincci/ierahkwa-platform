@@ -1,0 +1,183 @@
+@page "/become-a-citizen"
+@layout MainLayout
+@using Mamey.Government.UI.ViewModels.Citizenship
+@using Mamey.Government.UI.Pages.Public.Citizenship
+@using Mamey.Government.UI.Models
+@inject IApplicationsService ApplicationsService
+@inject NavigationManager Navigation
+
+<PageTitle>Become a Citizen</PageTitle>
+<MudContainer MaxWidth="MaxWidth.Large" Class="py-4">
+    @* <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" /> *@
+
+    <PageHeader Title="Become a Citizen"
+                Subtitle="Start your citizenship application journey"
+                Breadcrumbs="@_breadcrumbs" />
+    @* <MudText Typo="Typo.h4" Class="mb-4">Manual Application Entry</MudText> *@
+    @* <MudText Typo="Typo.body2" Color="Color.Default" Class="mb-4"> *@
+    @*     Use this form to manually enter a citizenship application on behalf of an applicant. *@
+    @* </MudText> *@
+
+    <MudGrid Spacing="3">
+        <MudItem xs="12" md="6">
+            <MudCard Elevation="2">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Start your application</MudText>
+                    <MudText Typo="Typo.body2" Class="mb-3">
+                        Enter your email to receive a secure link to begin.
+                    </MudText>
+
+                    <MudTextField @bind-Value="_startEmail"
+                                  Label="Email address"
+                                  Variant="Variant.Outlined"
+                                  InputType="InputType.Email"
+                                  Required="true" />
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               FullWidth="true"
+                               Disabled="_startBusy || string.IsNullOrWhiteSpace(_startEmail)"
+                               OnClick="StartApplicationAsync"
+                               Class="mt-3">
+                        @if (_startBusy)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                            <span>Sending...</span>
+                        }
+                        else
+                        {
+                            <span>Send start link</span>
+                        }
+                    </MudButton>
+
+                    @if (!string.IsNullOrWhiteSpace(_startMessage))
+                    {
+                        <MudAlert Severity="@_startMessageSeverity" Variant="Variant.Outlined" Class="mt-3">
+                            @_startMessage
+                        </MudAlert>
+                    }
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        @* <MudItem xs="12" md="6"> *@
+        @*     <MudCard Elevation="2"> *@
+        @*         <MudCardContent> *@
+        @*             <MudText Typo="Typo.h6">Resume your application</MudText> *@
+        @*             <MudText Typo="Typo.body2" Class="mb-3"> *@
+        @*                 Enter your application number and email to receive a new link. *@
+        @*             </MudText> *@
+        @* *@
+        @*             <MudTextField @bind-Value="_resumeEmail" *@
+        @*                           Label="Email address" *@
+        @*                           Variant="Variant.Outlined" *@
+        @*                           InputType="InputType.Email" *@
+        @*                           Required="true" /> *@
+        @*             <MudTextField @bind-Value="_resumeApplicationNumber" *@
+        @*                           Label="Application number" *@
+        @*                           Variant="Variant.Outlined" *@
+        @*                           Required="true" *@
+        @*                           Class="mt-3" /> *@
+        @* *@
+        @*             <MudButton Variant="Variant.Filled" *@
+        @*                        Color="Color.Secondary" *@
+        @*                        FullWidth="true" *@
+        @*                        Disabled="_resumeBusy || string.IsNullOrWhiteSpace(_resumeEmail) || string.IsNullOrWhiteSpace(_resumeApplicationNumber)" *@
+        @*                        OnClick="ResumeApplicationAsync" *@
+        @*                        Class="mt-3"> *@
+        @*                 @if (_resumeBusy) *@
+        @*                 { *@
+        @*                     <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" /> *@
+        @*                     <span>Sending...</span> *@
+        @*                 } *@
+        @*                 else *@
+        @*                 { *@
+        @*                     <span>Send resume link</span> *@
+        @*                 } *@
+        @*             </MudButton> *@
+        @* *@
+        @*             @if (!string.IsNullOrWhiteSpace(_resumeMessage)) *@
+        @*             { *@
+        @*                 <MudAlert Severity="@_resumeMessageSeverity" Variant="Variant.Outlined" Class="mt-3"> *@
+        @*                     @_resumeMessage *@
+        @*                 </MudAlert> *@
+        @*             } *@
+        @*         </MudCardContent> *@
+        @*     </MudCard> *@
+        @* </MudItem> *@
+    </MudGrid>
+
+    <MudDivider Class="my-6" />
+
+    @* <CitizenshipApplicationPacket></CitizenshipApplicationPacket> *@
+    
+    @* @_index | @_stepper.Steps.Count *@
+</MudContainer>
+
+@code {
+    private readonly List<BreadcrumbItem> _breadcrumbs = new()
+    {
+        new("Home", "/", false, Icons.Material.Filled.Home),
+        new("Become a Citizen", "/become-a-citizen", true, Icons.Material.Filled.AssignmentInd)
+    };
+
+    private string _startEmail = string.Empty;
+    private bool _startBusy;
+    private string? _startMessage;
+    private Severity _startMessageSeverity = Severity.Info;
+
+    private string _resumeEmail = string.Empty;
+    private string _resumeApplicationNumber = string.Empty;
+    private bool _resumeBusy;
+    private string? _resumeMessage;
+    private Severity _resumeMessageSeverity = Severity.Info;
+    
+    private async Task StartApplicationAsync()
+    {
+        _startBusy = true;
+        _startMessage = null;
+
+        try
+        {
+            var request = new StartApplicationRequest
+            {
+                Email = _startEmail
+            };
+
+            var ok = await ApplicationsService.StartAsync(request);
+            _startMessageSeverity = ok ? Severity.Success : Severity.Error;
+            _startMessage = ok
+                ? "Check your email for a secure link to start your application."
+                : "We couldn't send the start link. Please try again.";
+        }
+        finally
+        {
+            _startBusy = false;
+        }
+    }
+
+    // private async Task ResumeApplicationAsync()
+    // {
+    //     _resumeBusy = true;
+    //     _resumeMessage = null;
+    //
+    //     try
+    //     {
+    //         var request = new ResumeApplicationRequest
+    //         {
+    //             Email = _resumeEmail
+    //         };
+    //
+    //         var ok = await ApplicationsService.ResumeAsync(request);
+    //         _resumeMessageSeverity = ok ? Severity.Success : Severity.Error;
+    //         _resumeMessage = ok
+    //             ? "Check your email for a secure link to resume your application."
+    //             : "We couldn't send the resume link. Please verify your details and try again.";
+    //     }
+    //     finally
+    //     {
+    //         _resumeBusy = false;
+    //     }
+    // }
+
+}

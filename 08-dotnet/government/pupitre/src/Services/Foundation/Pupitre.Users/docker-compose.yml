@@ -1,0 +1,48 @@
+version: '3.7'
+
+services:
+  users-service:
+    image: mamey.azurecr.io/users-service:0.0.1
+    container_name: users-service
+    env_file:
+      - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_HTTPS_PORT=60001
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CS__Certificates__Default__Password}
+      - vault__token=${VAULT_ROOT_TOKEN}
+    restart: unless-stopped
+      - mamey
+      - traefik
+    volumes:
+      - ./certs/:/https:ro
+    labels:
+      # The labels are usefull for Traefik only
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      # Get the routes from http
+      - "traefik.http.routers.${TRAEFIK_ROUTE}.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.${TRAEFIK_ROUTE}.entrypoints=web"
+      # Redirect these routes to https
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.${TRAEFIK_ROUTE}.middlewares=redirect-to-https@docker"
+      # Get the routes from https
+      - "traefik.http.routers.${TRAEFIK_ROUTE}-secured.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.${TRAEFIK_ROUTE}-secured.entrypoints=websecure"
+      # Apply autentificiation with http challenge
+      - "traefik.http.routers.${TRAEFIK_ROUTE}-secured.tls=true"
+      # - "traefik.http.routers.${TRAEFIK_ROUTE}-secured.tls.certresolver=myhttpchallenge"
+      - "traefik.http.routers.${TRAEFIK_ROUTE}-secured.tls.certresolver=myresolver"
+    networks:
+      - mamey
+      - traefik
+
+networks:
+  mamey:
+    name: mamey
+    external: true
+  traefik:
+    name: traefik
+    external: true

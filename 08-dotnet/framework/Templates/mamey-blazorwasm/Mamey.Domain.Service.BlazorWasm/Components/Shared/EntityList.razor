@@ -1,0 +1,38 @@
+@using Mamey.Domain.Service.Contracts
+
+<MudTable Items="@Items" Dense="true" Hover="true" Striped="true">
+    <HeaderContent>
+        <MudTh>ID</MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="ID">@context.Id</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Actions">
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                          Color="Color.Primary"
+                          OnClick="@(() => OnEdit?.Invoke(context))" />
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                          Color="Color.Error"
+                          OnClick="@(() => OnDelete?.Invoke(context))" />
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    [Parameter] public IEnumerable<EntitySummaryDto> Items { get; set; } = new List<EntitySummaryDto>();
+    [Parameter] public EventCallback<EntitySummaryDto> OnEdit { get; set; }
+    [Parameter] public EventCallback<EntitySummaryDto> OnDelete { get; set; }
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,66 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-truck"></i> Suppliers</h2>
+        <a href="/suppliers/new" class="btn btn-primary"><i class="bi bi-plus-circle"></i> New Supplier</a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" name="search" class="form-control" placeholder="Search suppliers..." value="<%= search %>">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-secondary"><i class="bi bi-search"></i> Search</button>
+                    <a href="/suppliers" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-hover" id="suppliersTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Contact</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>City</th>
+                        <th class="text-center">Products</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% suppliers.forEach(sup => { %>
+                    <tr>
+                        <td><strong><%= sup.code %></strong></td>
+                        <td><a href="/suppliers/<%= sup.id %>"><%= sup.name %></a></td>
+                        <td><%= sup.contact_person || '-' %></td>
+                        <td><%= sup.phone || '-' %></td>
+                        <td><small><%= sup.email || '-' %></small></td>
+                        <td><%= sup.city || '-' %></td>
+                        <td class="text-center"><span class="badge bg-info"><%= sup.product_count %></span></td>
+                        <td class="text-center">
+                            <a href="/suppliers/<%= sup.id %>/edit" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                            <% if (sup.product_count === 0) { %>
+                            <form method="POST" action="/suppliers/<%= sup.id %>/delete" class="d-inline" onsubmit="return confirm('Delete?')">
+                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>$(document).ready(function() { $('#suppliersTable').DataTable({ pageLength: 25 }); });</script>
+
+<%- include('../partials/footer') %>

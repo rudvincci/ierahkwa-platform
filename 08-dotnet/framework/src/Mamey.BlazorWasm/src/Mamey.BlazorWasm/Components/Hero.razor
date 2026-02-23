@@ -1,0 +1,39 @@
+@using Mamey.BlazorWasm.Models
+
+<section>
+    <MudPaper Class="my-5 hero-section mud-width-full" Elevation="0" Style="position: relative; height: 600px;">
+        <MudCarousel Class="mud-width-full rounded-lg"
+                     @ref="_carousel" ItemsSource="@Items" @bind-SelectedIndex="selectedIndex"
+                     Style="@($"{CarouselStyle};height:{CarouselHeight}px;")" ShowArrows="true" ShowBullets="true" EnableSwipeGesture="true" AutoCycle="true">
+            <ItemTemplate>
+                <div style="position: relative; height: 100%;">
+                    <!-- Overlay Content -->
+                    <div style="position: absolute; top: @context.Top%; left: @context.Left%; transform: translate(-50%, -50%); z-index: 10; text-align: center;">
+                        <MudText Typo="Typo.h4" Class="animate-slide-in">@context.Text</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="animate-slide-in-delay">@context.Text</MudText>
+                        @* <h1 class="hero-title ">@context.Text</h1> *@
+                        @* <p class="hero-subtitle animate-slide-in-delay">@context.SubText</p> *@
+                    </div>
+                    <img style="object-fit: fill; width: 100%;" class="hero-image z-0" src="@($"_content/{SourceAssemblyName}{context.ImageSource}")" alt="hero-image" />
+                </div>
+            </ItemTemplate>
+        </MudCarousel>
+    </MudPaper>
+</section>
+
+@code {
+    private MudCarousel<HeroContent> _carousel;
+    private int selectedIndex = 0;
+    [Parameter] public string Style { get; set; } = string.Empty;
+    [Parameter] public string CarouselStyle { get; set; } = string.Empty;
+    [Parameter] public int CarouselHeight { get; set; } = 600;
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public string CarouselClass { get; set; } = "mud-width-full";
+    [Parameter] public bool Rounded { get; set; } = true;
+    [Parameter]
+    public List<HeroContent> Items { get; set; }
+    [Parameter]
+    public string SourceAssemblyName { get; set; }
+
+
+}

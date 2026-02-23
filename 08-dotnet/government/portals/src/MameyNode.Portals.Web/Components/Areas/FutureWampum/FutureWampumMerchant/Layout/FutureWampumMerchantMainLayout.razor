@@ -1,0 +1,51 @@
+@* FutureWampumMerchantMainLayout.razor *@
+@using MameyNode.Portals.Web.Components.Areas.FutureWampum.FutureWampumMerchant.Layout
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_theme" IsDarkMode="true" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudBreakpointProvider>
+<MudLayout>
+    <MudAppBar Elevation="0" Class="mud-appbar-glass">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h6" Class="ml-3">FutureWampumMerchant</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/Mamey-io/Mamey" Target="_blank" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Always" Class="mud-drawer-glass">
+        <FutureWampumMerchantNavLayout DrawerOpen="_drawerOpen" />
+    </MudDrawer>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+</MudBreakpointProvider>
+
+@code {
+    bool _drawerOpen = true;
+    private MudTheme _theme = new MudTheme()
+    {
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#EAB308", // Yellow - for merchant/commerce theme
+            Secondary = "#F59E0B", // Amber
+            Tertiary = "#F97316", // Orange
+            AppbarBackground = "rgba(161, 98, 7, 0.8)", // Yellow glass
+            Background = "#A16207", // Yellow 700
+            Surface = "rgba(234, 179, 8, 0.6)", // Yellow glass
+            DrawerBackground = "rgba(161, 98, 7, 0.9)", // Dark glass
+            DrawerText = "#FEF9C3", // Yellow 100
+            TextPrimary = "#F8FAFC",
+            TextSecondary = "#FDE047",
+        }
+    };
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

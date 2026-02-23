@@ -1,0 +1,98 @@
+@page "/ledger/sync"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumLedgerClient FutureWampumLedgerClient
+@inject ILogger<Sync> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Synchronization" Icon="fas fa-sync" Subtitle="Ledger synchronization status">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Syncs" Value="@_syncs.Count.ToString()" Icon="fas fa-sync" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Completed" Value="@_completedCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Processing" Value="@_processingCount.ToString()" Icon="fas fa-spinner" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MetricCard Title="Total Records" Value="@_totalRecords.ToString("N0")" Icon="fas fa-database" Color="#3B82F6" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Synchronizations" Class="mt-4">
+        <MudTable T="SynchronizationInfo" Items="@_syncs" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Sync ID</MudTh>
+                <MudTh>Source System</MudTh>
+                <MudTh>Target System</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Total Records</MudTh>
+                <MudTh>Synced</MudTh>
+                <MudTh>Failed</MudTh>
+                <MudTh>Started</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.SyncId</MudTd>
+                <MudTd>@context.SourceSystem</MudTd>
+                <MudTd>@context.TargetSystem</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Completed" ? Color.Success : context.Status == "Processing" ? Color.Warning : Color.Error)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.TotalRecords</MudTd>
+                <MudTd>@context.SyncedRecords</MudTd>
+                <MudTd>@context.FailedRecords</MudTd>
+                <MudTd>@context.StartedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<SynchronizationInfo> _syncs = new();
+    private int _completedCount;
+    private int _processingCount;
+    private int _totalRecords;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _syncs = await FutureWampumLedgerClient.GetSynchronizationsAsync();
+            _completedCount = _syncs.Count(s => s.Status == "Completed");
+            _processingCount = _syncs.Count(s => s.Status == "Processing");
+            _totalRecords = _syncs.Sum(s => s.TotalRecords);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading synchronizations");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

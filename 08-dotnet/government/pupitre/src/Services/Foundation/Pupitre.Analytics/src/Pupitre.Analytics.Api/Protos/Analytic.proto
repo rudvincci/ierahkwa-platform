@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.Analytics.Api.Protos";
+
+package Pupitre.Analytics;
+
+// gRPC service for Analytic operations
+service AnalyticService {
+    // Get a single Analytic by ID
+    rpc GetAnalytic (GetAnalyticRequest) returns (AnalyticResponse) {};
+    
+    // List all Analytics with pagination
+    rpc ListAnalytics (ListAnalyticsRequest) returns (ListAnalyticsResponse) {};
+    
+    // Stream Analytic updates
+    rpc StreamAnalyticUpdates (StreamAnalyticUpdatesRequest) returns (stream AnalyticResponse) {};
+}
+
+message GetAnalyticRequest {
+    string id = 1;
+}
+
+message ListAnalyticsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListAnalyticsResponse {
+    repeated AnalyticResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message AnalyticResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamAnalyticUpdatesRequest {
+    string filter = 1;
+}

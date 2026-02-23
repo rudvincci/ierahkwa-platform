@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pupitre.AISafety.Api.Protos";
+
+package Pupitre.AISafety;
+
+// gRPC service for SafetyCheck operations
+service SafetyCheckService {
+    // Get a single SafetyCheck by ID
+    rpc GetSafetyCheck (GetSafetyCheckRequest) returns (SafetyCheckResponse) {};
+    
+    // List all SafetyChecks with pagination
+    rpc ListSafetyChecks (ListSafetyChecksRequest) returns (ListSafetyChecksResponse) {};
+    
+    // Stream SafetyCheck updates
+    rpc StreamSafetyCheckUpdates (StreamSafetyCheckUpdatesRequest) returns (stream SafetyCheckResponse) {};
+}
+
+message GetSafetyCheckRequest {
+    string id = 1;
+}
+
+message ListSafetyChecksRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListSafetyChecksResponse {
+    repeated SafetyCheckResponse items = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message SafetyCheckResponse {
+    string id = 1;
+    string name = 2;
+    int64 created_at = 3;
+    int64 updated_at = 4;
+}
+
+message StreamSafetyCheckUpdatesRequest {
+    string filter = 1;
+}

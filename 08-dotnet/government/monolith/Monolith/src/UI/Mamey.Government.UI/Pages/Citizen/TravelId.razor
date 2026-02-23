@@ -1,0 +1,65 @@
+@page "/citizen/travel-id"
+@layout CitizenLayout
+@attribute [Authorize]
+
+<PageTitle>My Travel ID - Citizen Portal</PageTitle>
+
+<PageHeader Title="My Travel ID" Subtitle="View and manage your travel identity card" />
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" md="8">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.CreditCard" Color="Color.Secondary" />
+                        <MudText Typo="Typo.h6">Travel ID Details</MudText>
+                    </MudStack>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <StatusChip Status="Active" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudSimpleTable Dense="true" Hover="true">
+                    <tbody>
+                        <tr><td><strong>ID Number</strong></td><td>TID-00001</td></tr>
+                        <tr><td><strong>Full Name</strong></td><td>John Smith</td></tr>
+                        <tr><td><strong>Date of Birth</strong></td><td>January 15, 1990</td></tr>
+                        <tr><td><strong>Issue Date</strong></td><td>March 20, 2024</td></tr>
+                        <tr><td><strong>Expiry Date</strong></td><td>March 19, 2029</td></tr>
+                        <tr><td><strong>Card Type</strong></td><td>Standard</td></tr>
+                    </tbody>
+                </MudSimpleTable>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Download">
+                    Download Digital Copy
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Refresh">
+                    Request Renewal
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Quick Actions</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Spacing="2">
+                    <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Report">
+                        Report Lost/Stolen
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" FullWidth="true" StartIcon="@Icons.Material.Filled.Edit">
+                        Request Update
+                    </MudButton>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>

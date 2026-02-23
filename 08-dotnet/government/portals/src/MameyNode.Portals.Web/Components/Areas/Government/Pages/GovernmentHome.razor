@@ -1,0 +1,149 @@
+@page "/admin"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IGovernmentClient GovernmentClient
+@inject ILogger<GovernmentHome> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Government Services" Icon="fas fa-building" Subtitle="Citizenship & Administration">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <!-- Dashboard Metrics -->
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Total Citizens" Value="@_totalCitizens.ToString()" Icon="fas fa-users" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Applications" Value="@_totalApplications.ToString()" Icon="fas fa-file-alt" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Passports" Value="@_totalPassports.ToString()" Icon="fas fa-passport" Color="#F59E0B" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MetricCard Title="Diplomats" Value="@_totalDiplomats.ToString()" Icon="fas fa-user-tie" Color="#8B5CF6" />
+        </MudItem>
+    </MudGrid>
+
+    <!-- Navigation Cards -->
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Citizenship Applications" Elevation="2">
+                <MudText Typo="Typo.body2">Manage citizenship applications</MudText>
+                <MudButton Href="/admin/citizenship" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Applications
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Citizen Management" Elevation="2">
+                <MudText Typo="Typo.body2">Manage citizens and their records</MudText>
+                <MudButton Href="/admin/citizens" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Citizens
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Passports" Elevation="2">
+                <MudText Typo="Typo.body2">Passport management and issuance</MudText>
+                <MudButton Href="/admin/passports" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Passports
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Travel Identity" Elevation="2">
+                <MudText Typo="Typo.body2">Travel identity management</MudText>
+                <MudButton Href="/admin/travel-identity" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Travel Identity
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Diplomats" Elevation="2">
+                <MudText Typo="Typo.body2">Diplomat management</MudText>
+                <MudButton Href="/admin/diplomats" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Diplomats
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Payment Plans" Elevation="2">
+                <MudText Typo="Typo.body2">Government payment plans</MudText>
+                <MudButton Href="/admin/payment-plans" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Payment Plans
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Compliance" Elevation="2">
+                <MudText Typo="Typo.body2">Compliance and regulatory management</MudText>
+                <MudButton Href="/compliance" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Compliance
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="RBAC" Elevation="2">
+                <MudText Typo="Typo.body2">Role-based access control</MudText>
+                <MudButton Href="/rbac" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to RBAC
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <CardContainer Title="Citizen Portal" Elevation="2">
+                <MudText Typo="Typo.body2">Citizen self-service portal</MudText>
+                <MudButton Href="/citizen" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" FullWidth="true">
+                    Go to Portal
+                </MudButton>
+            </CardContainer>
+        </MudItem>
+    </MudGrid>
+</PageContainer>
+
+@code {
+    private int _totalCitizens;
+    private int _totalApplications;
+    private int _totalPassports;
+    private int _totalDiplomats;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            var citizens = await GovernmentClient.GetCitizensAsync();
+            _totalCitizens = citizens.Count;
+
+            var applications = await GovernmentClient.GetCitizenshipApplicationsAsync();
+            _totalApplications = applications.Count;
+
+            var passports = await GovernmentClient.GetPassportsAsync();
+            _totalPassports = passports.Count;
+
+            var diplomats = await GovernmentClient.GetDiplomatsAsync();
+            _totalDiplomats = diplomats.Count;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading government dashboard data");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}

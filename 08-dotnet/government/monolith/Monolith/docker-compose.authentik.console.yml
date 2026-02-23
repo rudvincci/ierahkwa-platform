@@ -1,0 +1,92 @@
+name: mamey-authentik
+
+services:
+  authentik-postgres:
+    image: postgres:16-alpine
+    container_name: mamey-authentik-postgres
+    env_file:
+      - authentik.env
+    environment:
+      POSTGRES_USER: ${AUTHENTIK_PG_USER:-authentik}
+      POSTGRES_PASSWORD: ${AUTHENTIK_PG_PASS:-secret}
+      POSTGRES_DB: ${AUTHENTIK_PG_DB:-authentik}
+    volumes:
+      - authentik_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${AUTHENTIK_PG_USER:-authentik} -d ${AUTHENTIK_PG_DB:-authentik}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  authentik-redis:
+    image: redis:7-alpine
+    container_name: mamey-authentik-redis
+    env_file:
+      - authentik.env
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - authentik_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  authentik-server:
+    image: ghcr.io/goauthentik/server:${AUTHENTIK_TAG:-2025.10.0}
+    container_name: mamey-authentik-server
+    command: server
+    env_file:
+      - authentik.env
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:-secret}
+      AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_ERROR_REPORTING__ENABLED:-false}
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgres
+      AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_PG_PASS:-secret}
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_BOOTSTRAP_PASSWORD: ${AUTHENTIK_ADMIN_PASSWORD:-secret}
+      AUTHENTIK_TENANTS__ENABLED: ${AUTHENTIK_TENANTS_ENABLED:-true}
+    ports:
+      # Avoid conflicts with MinIO (already uses 9000/9001 in docker-compose.infrastructure.console.yml)
+      - "${AUTHENTIK_HTTP_PORT:-9100}:9000"
+      - "${AUTHENTIK_HTTPS_PORT:-9444}:9443"
+    volumes:
+      - authentik_media:/media
+    depends_on:
+      authentik-postgres:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_healthy
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:${AUTHENTIK_TAG:-2025.10.0}
+    container_name: mamey-authentik-worker
+    command: worker
+    env_file:
+      - authentik.env
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:-secret}
+      AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_ERROR_REPORTING__ENABLED:-false}
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgres
+      AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_PG_PASS:-secret}
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_BOOTSTRAP_PASSWORD: ${AUTHENTIK_ADMIN_PASSWORD:-secret}
+      AUTHENTIK_TENANTS__ENABLED: ${AUTHENTIK_TENANTS_ENABLED:-true}
+    volumes:
+      - authentik_media:/media
+    depends_on:
+      authentik-postgres:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_healthy
+
+volumes:
+  authentik_postgres_data:
+  authentik_redis_data:
+  authentik_media:
+
+

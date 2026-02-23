@@ -1,0 +1,89 @@
+@page "/banking/terminals"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFBDETBClient FBDETBClient
+@inject ILogger<Terminals> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Terminal Access" Icon="fas fa-mobile-alt" Subtitle="Terminal management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Terminals" Value="@_terminals.Count.ToString()" Icon="fas fa-mobile-alt" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Merchants" Value="@_merchantCount.ToString()" Icon="fas fa-store" Color="#F59E0B" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Terminals" Class="mt-4">
+        <MudTable T="TerminalInfo" Items="@_terminals" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Terminal ID</MudTh>
+                <MudTh>Merchant</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Location</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Registered</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.TerminalId</MudTd>
+                <MudTd>@context.MerchantId</MudTd>
+                <MudTd>@context.TerminalType</MudTd>
+                <MudTd>@context.Location</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.IsActive ? Color.Success : Color.Default)">
+                        @(context.IsActive ? "Active" : "Inactive")
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.RegisteredAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<TerminalInfo> _terminals = new();
+    private int _activeCount;
+    private int _merchantCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _terminals = await FBDETBClient.GetTerminalsAsync();
+            _activeCount = _terminals.Count(t => t.IsActive);
+            _merchantCount = _terminals.Select(t => t.MerchantId).Distinct().Count();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading terminals");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

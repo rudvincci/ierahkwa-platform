@@ -1,0 +1,89 @@
+@page "/banking/identity"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFBDETBClient FBDETBClient
+@inject ILogger<Identity> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Identity & Access" Icon="fas fa-id-card" Subtitle="Identity and access management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Accounts" Value="@_accounts.Count.ToString()" Icon="fas fa-users" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Balance" Value="@_totalBalance.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Accounts" Class="mt-4">
+        <MudTable T="AccountInfo" Items="@_accounts" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Account ID</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Balance</MudTh>
+                <MudTh>Currency</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.AccountId</MudTd>
+                <MudTd>@context.AccountType</MudTd>
+                <MudTd>@decimal.Parse(context.Balance).ToString("C")</MudTd>
+                <MudTd>@context.Currency</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == AccountStatus.Active ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<AccountInfo> _accounts = new();
+    private int _activeCount;
+    private decimal _totalBalance;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _accounts = await FBDETBClient.GetAccountsAsync();
+            _activeCount = _accounts.Count(a => a.Status == AccountStatus.Active);
+            _totalBalance = _accounts.Sum(a => decimal.Parse(a.Balance));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading accounts");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

@@ -1,0 +1,86 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pupitre-api-gateway
+  namespace: pupitre-foundation
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+spec:
+  tls:
+    - hosts:
+        - api.pupitre.edu
+      secretName: pupitre-api-tls
+  rules:
+    - host: api.pupitre.edu
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pupitre-api-gateway
+                port:
+                  number: 60000
+---
+# Student Portal Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pupitre-student-portal
+  namespace: pupitre-foundation
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+    - hosts:
+        - student.pupitre.edu
+      secretName: pupitre-student-tls
+  rules:
+    - host: student.pupitre.edu
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pupitre-student-portal
+                port:
+                  number: 80
+---
+# Admin Portal Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pupitre-admin-portal
+  namespace: pupitre-foundation
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12"
+spec:
+  tls:
+    - hosts:
+        - admin.pupitre.edu
+      secretName: pupitre-admin-tls
+  rules:
+    - host: admin.pupitre.edu
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pupitre-admin-portal
+                port:
+                  number: 80

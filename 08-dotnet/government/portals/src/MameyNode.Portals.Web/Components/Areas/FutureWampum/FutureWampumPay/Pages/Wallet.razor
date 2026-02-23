@@ -1,0 +1,87 @@
+@page "/payments/wallet"
+@using MameyNode.Portals.Shared.Components.Layout
+@using MameyNode.Portals.Shared.Components.DataDisplay
+@using MameyNode.Portals.Mocks.Interfaces
+@using MameyNode.Portals.Mocks.Models
+@using MudBlazor
+@inject IFutureWampumPayClient FutureWampumPayClient
+@inject ILogger<Wallet> Logger
+@rendermode InteractiveServer
+
+<PageContainer>
+    <SectionHeader Title="Wallet" Icon="fas fa-wallet" Subtitle="Payment wallet management">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh">
+            Refresh
+        </MudButton>
+    </SectionHeader>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Wallets" Value="@_wallets.Count.ToString()" Icon="fas fa-wallet" Color="#3B82F6" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Active" Value="@_activeCount.ToString()" Icon="fas fa-check-circle" Color="#10B981" />
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MetricCard Title="Total Balance" Value="@_totalBalance.ToString("C")" Icon="fas fa-dollar-sign" Color="#10B981" />
+        </MudItem>
+    </MudGrid>
+
+    <CardContainer Title="Wallets" Class="mt-4">
+        <MudTable T="PaymentWalletInfo" Items="@_wallets" Hover="true" Dense="false" Striped="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Wallet ID</MudTh>
+                <MudTh>From Account</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Created</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.InvoiceId</MudTd>
+                <MudTd>@context.FromAccount</MudTd>
+                <MudTd>@decimal.Parse(context.Amount).ToString("C") @context.Currency</MudTd>
+                <MudTd>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                        @context.Status
+                    </MudChip>
+                </MudTd>
+                <MudTd>@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </CardContainer>
+</PageContainer>
+
+@code {
+    private List<PaymentWalletInfo> _wallets = new();
+    private int _activeCount;
+    private decimal _totalBalance;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _wallets = await FutureWampumPayClient.GetWalletsAsync();
+            _activeCount = _wallets.Count(w => w.Status == "Active");
+            _totalBalance = _wallets.Sum(w => decimal.Parse(w.Amount ?? "0"));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading wallets");
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+}
+

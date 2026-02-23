@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mamey.Portal.Shared\Mamey.Portal.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMameyProjects)'=='true'">
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.AmvvaStandards\src\Mamey.AmvvaStandards\Mamey.AmvvaStandards.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Barcode\src\Mamey.Barcode\Mamey.Barcode.csproj" />
+    <ProjectReference Include="..\..\..\..\Mamey\src\Mamey.Word\src\Mamey.Word\Mamey.Word.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalMameyProjects)'!='true'">
+    <PackageReference Include="Mamey.AmvvaStandards" Version="2.0.*" />
+    <PackageReference Include="Mamey.Barcode" Version="2.0.*" />
+    <PackageReference Include="Mamey.Word" Version="2.0.*" />
+    <PackageReference Include="QuestPDF" Version="2024.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="QuestPDF" Version="2024.12.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.*" />
+    <PackageReference Include="ZXing.Net" Version="0.16.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\\*.docx" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,327 @@
+syntax = "proto3";
+
+package mamey.government;
+
+// Government service for MameyNode blockchain
+service GovernmentService {
+    // Identity operations
+    rpc CreateIdentity(CreateIdentityRequest) returns (CreateIdentityResponse);
+    rpc GetIdentity(GetIdentityRequest) returns (GetIdentityResponse);
+    rpc UpdateIdentity(UpdateIdentityRequest) returns (UpdateIdentityResponse);
+    rpc VerifyIdentity(VerifyIdentityRequest) returns (VerifyIdentityResponse);
+    
+    // DID operations
+    rpc CreateDID(CreateDIDRequest) returns (CreateDIDResponse);
+    rpc ResolveDID(ResolveDIDRequest) returns (ResolveDIDResponse);
+    rpc UpdateDID(UpdateDIDRequest) returns (UpdateDIDResponse);
+    rpc RevokeDID(RevokeDIDRequest) returns (RevokeDIDResponse);
+
+    // Document operations
+    rpc UploadDocument(UploadDocumentRequest) returns (UploadDocumentResponse);
+    rpc GetDocument(GetDocumentRequest) returns (GetDocumentResponse);
+    rpc VerifyDocument(VerifyDocumentRequest) returns (VerifyDocumentResponse);
+    rpc ListDocuments(ListDocumentsRequest) returns (ListDocumentsResponse);
+    
+    // Voting operations
+    rpc CreateVote(CreateVoteRequest) returns (CreateVoteResponse);
+    rpc CastVote(CastVoteRequest) returns (CastVoteResponse);
+    rpc GetVoteResults(GetVoteResultsRequest) returns (GetVoteResultsResponse);
+    rpc ListVotes(ListVotesRequest) returns (ListVotesResponse);
+    
+    // Compliance operations
+    rpc CheckCompliance(CheckComplianceRequest) returns (CheckComplianceResponse);
+    rpc ReportCompliance(ReportComplianceRequest) returns (ReportComplianceResponse);
+}
+
+// Create identity request
+message CreateIdentityRequest {
+    string citizen_id = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string date_of_birth = 4;
+    string nationality = 5;
+    map<string, string> metadata = 6;
+}
+
+// Create identity response
+message CreateIdentityResponse {
+    string identity_id = 1;
+    string blockchain_account = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get identity request
+message GetIdentityRequest {
+    string identity_id = 1;
+}
+
+// Get identity response
+message GetIdentityResponse {
+    string identity_id = 1;
+    string citizen_id = 2;
+    string first_name = 3;
+    string last_name = 4;
+    string date_of_birth = 5;
+    string nationality = 6;
+    IdentityStatus status = 7;
+    bool success = 8;
+    string error_message = 9;
+}
+
+// Update identity request
+message UpdateIdentityRequest {
+    string identity_id = 1;
+    map<string, string> updates = 2;
+}
+
+// Update identity response
+message UpdateIdentityResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Verify identity request
+message VerifyIdentityRequest {
+    string identity_id = 1;
+    string verification_type = 2;
+}
+
+// Verify identity response
+message VerifyIdentityResponse {
+    bool verified = 1;
+    string verification_result = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// --- DID Operations Messages ---
+
+message CreateDIDRequest {
+    string method = 1; // "mamey" usually
+    string controller = 2;
+    map<string, string> metadata = 3;
+}
+
+message CreateDIDResponse {
+    string did = 1;
+    string did_document = 2; // JSON string
+    bool success = 3;
+    string error_message = 4;
+}
+
+message ResolveDIDRequest {
+    string did = 1;
+}
+
+message ResolveDIDResponse {
+    string did_document = 1; // JSON string
+    bool success = 2;
+    string error_message = 3;
+}
+
+message UpdateDIDRequest {
+    string did = 1;
+    string did_document = 2; // JSON string
+    string proof = 3; // Signature
+}
+
+message UpdateDIDResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+message RevokeDIDRequest {
+    string did = 1;
+    string proof = 2; // Signature
+}
+
+message RevokeDIDResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Upload document request
+message UploadDocumentRequest {
+    string identity_id = 1;
+    string document_type = 2;
+    bytes document_data = 3;
+    string mime_type = 4;
+    map<string, string> metadata = 5;
+}
+
+// Upload document response
+message UploadDocumentResponse {
+    string document_id = 1;
+    string document_hash = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Get document request
+message GetDocumentRequest {
+    string document_id = 1;
+}
+
+// Get document response
+message GetDocumentResponse {
+    string document_id = 1;
+    string document_type = 2;
+    bytes document_data = 3;
+    string mime_type = 4;
+    string document_hash = 5;
+    bool success = 6;
+    string error_message = 7;
+}
+
+// Verify document request
+message VerifyDocumentRequest {
+    string document_id = 1;
+}
+
+// Verify document response
+message VerifyDocumentResponse {
+    bool verified = 1;
+    string verification_result = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// List documents request
+message ListDocumentsRequest {
+    string identity_id = 1;
+    uint32 limit = 2;
+    uint32 offset = 3;
+}
+
+// List documents response
+message ListDocumentsResponse {
+    repeated DocumentInfo documents = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Document info
+message DocumentInfo {
+    string document_id = 1;
+    string document_type = 2;
+    string document_hash = 3;
+    uint64 uploaded_at = 4;
+}
+
+// Create vote request
+message CreateVoteRequest {
+    string vote_id = 1;
+    string title = 2;
+    string description = 3;
+    repeated string options = 4;
+    uint64 start_time = 5;
+    uint64 end_time = 6;
+    string eligibility_criteria = 7;
+}
+
+// Create vote response
+message CreateVoteResponse {
+    string vote_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Cast vote request
+message CastVoteRequest {
+    string vote_id = 1;
+    string identity_id = 2;
+    string selected_option = 3;
+}
+
+// Cast vote response
+message CastVoteResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Get vote results request
+message GetVoteResultsRequest {
+    string vote_id = 1;
+}
+
+// Get vote results response
+message GetVoteResultsResponse {
+    string vote_id = 1;
+    repeated VoteResult results = 2;
+    uint32 total_votes = 3;
+    bool success = 4;
+    string error_message = 5;
+}
+
+// Vote result
+message VoteResult {
+    string option = 1;
+    uint32 count = 2;
+    double percentage = 3;
+}
+
+// List votes request
+message ListVotesRequest {
+    uint32 limit = 1;
+    uint32 offset = 2;
+    string status = 3;  // "active", "completed", "upcoming"
+}
+
+// List votes response
+message ListVotesResponse {
+    repeated VoteInfo votes = 1;
+    uint32 total_count = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Vote info
+message VoteInfo {
+    string vote_id = 1;
+    string title = 2;
+    string status = 3;
+    uint64 start_time = 4;
+    uint64 end_time = 5;
+    uint32 total_votes = 6;
+}
+
+// Check compliance request
+message CheckComplianceRequest {
+    string identity_id = 1;
+    string compliance_type = 2;
+}
+
+// Check compliance response
+message CheckComplianceResponse {
+    bool compliant = 1;
+    repeated string violations = 2;
+    bool success = 3;
+    string error_message = 4;
+}
+
+// Report compliance request
+message ReportComplianceRequest {
+    string identity_id = 1;
+    string compliance_type = 2;
+    string report_data = 3;
+}
+
+// Report compliance response
+message ReportComplianceResponse {
+    string report_id = 1;
+    bool success = 2;
+    string error_message = 3;
+}
+
+// Identity status enum
+enum IdentityStatus {
+    PENDING = 0;
+    ACTIVE = 1;
+    SUSPENDED = 2;
+    REVOKED = 3;
+}
+
+
+

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📜 AUDIT TRAIL | Ierahkwa Compliance & Logging</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --gold: #FFD700; --green: #00FF41; --cyan: #00FFFF; --red: #FF1744; --purple: #9D4EDD; --orange: #FF6B35; --bg: #0a0e17; --card: #0d1a2d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: linear-gradient(135deg, #0a0e17, #1a0a0e, #0a0e17); color: #fff; min-height: 100vh; }
+        
+        .header { background: var(--card); padding: 15px 30px; border-bottom: 3px solid var(--red); display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--red), var(--orange)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+        .logo h1 { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--red); }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .nav-link { padding: 10px 20px; background: rgba(255,23,68,0.2); border: 1px solid var(--red); border-radius: 10px; color: var(--red); text-decoration: none; }
+        .export-btn { padding: 10px 25px; background: var(--red); border: none; border-radius: 10px; color: #fff; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        .main { display: grid; grid-template-columns: 280px 1fr; height: calc(100vh - 80px); }
+        
+        /* Sidebar */
+        .sidebar { background: var(--card); border-right: 1px solid rgba(255,23,68,0.2); padding: 20px; overflow-y: auto; }
+        .sidebar-title { font-size: 0.7em; color: #666; text-transform: uppercase; margin: 20px 0 10px; }
+        .filter-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 10px; cursor: pointer; margin-bottom: 5px; }
+        .filter-item:hover, .filter-item.active { background: rgba(255,23,68,0.1); }
+        .filter-item.active { border-left: 3px solid var(--red); }
+        .filter-icon { font-size: 1.3em; width: 30px; text-align: center; }
+        .filter-count { margin-left: auto; background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 10px; font-size: 0.8em; }
+        
+        .date-filter { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; margin-top: 20px; }
+        .date-filter-title { font-size: 0.85em; color: var(--cyan); margin-bottom: 10px; }
+        .date-input { width: 100%; padding: 10px; border: 1px solid rgba(255,23,68,0.3); border-radius: 8px; background: rgba(0,0,0,0.3); color: #fff; margin-bottom: 10px; }
+        .date-btn { width: 100%; padding: 10px; background: rgba(255,23,68,0.2); border: 1px solid var(--red); border-radius: 8px; color: var(--red); cursor: pointer; }
+        
+        /* Content */
+        .content { padding: 25px; overflow-y: auto; }
+        
+        /* Stats Row */
+        .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--card); border-radius: 15px; padding: 20px; text-align: center; border: 1px solid rgba(255,23,68,0.2); }
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 1.5em; color: var(--red); }
+        .stat-label { font-size: 0.8em; color: #888; margin-top: 5px; }
+        
+        /* Search Bar */
+        .search-bar { display: flex; gap: 15px; margin-bottom: 25px; }
+        .search-bar input { flex: 1; padding: 12px 20px; border: 1px solid rgba(255,23,68,0.3); border-radius: 10px; background: var(--card); color: #fff; }
+        .search-bar select { padding: 12px 15px; border: 1px solid rgba(255,23,68,0.3); border-radius: 10px; background: var(--card); color: #fff; }
+        .search-bar button { padding: 12px 25px; background: var(--red); border: none; border-radius: 10px; color: #fff; cursor: pointer; }
+        
+        /* Audit Log */
+        .audit-section { background: var(--card); border-radius: 20px; padding: 25px; }
+        .audit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .audit-title { font-family: 'Orbitron', sans-serif; color: var(--gold); display: flex; align-items: center; gap: 10px; }
+        
+        .audit-entry { display: grid; grid-template-columns: 150px 120px 1fr 150px 100px; gap: 15px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; margin-bottom: 10px; align-items: center; border-left: 4px solid transparent; }
+        .audit-entry.login { border-left-color: var(--green); }
+        .audit-entry.logout { border-left-color: var(--cyan); }
+        .audit-entry.create { border-left-color: var(--purple); }
+        .audit-entry.update { border-left-color: var(--gold); }
+        .audit-entry.delete { border-left-color: var(--red); }
+        .audit-entry.security { border-left-color: var(--red); background: rgba(255,23,68,0.1); }
+        
+        .audit-time { font-family: monospace; font-size: 0.85em; color: #888; }
+        .audit-action { padding: 5px 12px; border-radius: 10px; font-size: 0.8em; text-align: center; }
+        .audit-action.login { background: rgba(0,255,65,0.2); color: var(--green); }
+        .audit-action.logout { background: rgba(0,255,255,0.2); color: var(--cyan); }
+        .audit-action.create { background: rgba(157,78,221,0.2); color: var(--purple); }
+        .audit-action.update { background: rgba(255,215,0,0.2); color: var(--gold); }
+        .audit-action.delete { background: rgba(255,23,68,0.2); color: var(--red); }
+        .audit-action.security { background: rgba(255,23,68,0.3); color: var(--red); font-weight: bold; }
+        
+        .audit-details { font-size: 0.9em; }
+        .audit-user { display: flex; align-items: center; gap: 8px; }
+        .audit-user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--purple); display: flex; align-items: center; justify-content: center; font-size: 0.8em; }
+        .audit-ip { font-family: monospace; font-size: 0.85em; color: #888; }
+        
+        /* Timeline View */
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: rgba(255,23,68,0.3); }
+        .timeline-item { position: relative; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 15px; margin-bottom: 20px; margin-left: 20px; }
+        .timeline-item::before { content: ''; position: absolute; left: -30px; top: 25px; width: 12px; height: 12px; border-radius: 50%; background: var(--red); border: 2px solid var(--card); }
+        .timeline-time { font-size: 0.8em; color: #888; margin-bottom: 5px; }
+        .timeline-title { font-weight: 600; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+        .timeline-desc { font-size: 0.9em; color: #ccc; }
+        
+        /* Compliance Score */
+        .compliance-widget { background: linear-gradient(135deg, rgba(0,255,65,0.2), rgba(0,255,65,0.05)); border-radius: 15px; padding: 20px; margin-top: 20px; }
+        .compliance-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .compliance-score { font-family: 'Orbitron', sans-serif; font-size: 2em; color: var(--green); }
+        .compliance-status { color: var(--green); font-weight: 600; }
+        .compliance-bars { display: grid; gap: 10px; }
+        .compliance-bar-item { display: flex; align-items: center; gap: 15px; }
+        .compliance-bar-label { width: 120px; font-size: 0.85em; color: #888; }
+        .compliance-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .compliance-bar-fill { height: 100%; border-radius: 4px; }
+        .compliance-bar-value { width: 50px; text-align: right; font-family: 'Orbitron', sans-serif; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📜</div>
+            <div>
+                <h1>AUDIT TRAIL</h1>
+                <p style="color: #888; font-size: 0.75em;">Compliance & Activity Logging</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="export-btn" onclick="exportAudit()"><i class="bi bi-download"></i> Export Report</button>
+            <a href="/platform" class="nav-link"><i class="bi bi-arrow-left"></i> Platform</a>
+        </div>
+    </header>
+    
+    <main class="main">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Event Types</div>
+            <div class="filter-item active">
+                <span class="filter-icon">📋</span>
+                <span>All Events</span>
+                <span class="filter-count">5,678</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🔓</span>
+                <span>Login</span>
+                <span class="filter-count">1,234</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🔒</span>
+                <span>Logout</span>
+                <span class="filter-count">1,198</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">➕</span>
+                <span>Create</span>
+                <span class="filter-count">890</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">✏️</span>
+                <span>Update</span>
+                <span class="filter-count">1,456</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🗑️</span>
+                <span>Delete</span>
+                <span class="filter-count">234</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🚨</span>
+                <span>Security</span>
+                <span class="filter-count" style="background: var(--red);">56</span>
+            </div>
+            
+            <div class="sidebar-title">Modules</div>
+            <div class="filter-item">
+                <span class="filter-icon">🏦</span>
+                <span>Banking</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">👥</span>
+                <span>Citizens</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">📄</span>
+                <span>Documents</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-icon">🔐</span>
+                <span>Security</span>
+            </div>
+            
+            <div class="date-filter">
+                <div class="date-filter-title">Date Range</div>
+                <input type="date" class="date-input" value="2026-01-01">
+                <input type="date" class="date-input" value="2026-01-21">
+                <button class="date-btn">Apply Filter</button>
+            </div>
+        </aside>
+        
+        <!-- Content -->
+        <section class="content">
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value">5,678</div>
+                    <div class="stat-label">Total Events</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">234</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--red);">56</div>
+                    <div class="stat-label">Security Alerts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">45</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--green);">98%</div>
+                    <div class="stat-label">Compliance</div>
+                </div>
+            </div>
+            
+            <!-- Search -->
+            <div class="search-bar">
+                <input type="text" placeholder="Search events, users, IP addresses...">
+                <select>
+                    <option>All Actions</option>
+                    <option>Login</option>
+                    <option>Create</option>
+                    <option>Update</option>
+                    <option>Delete</option>
+                    <option>Security</option>
+                </select>
+                <select>
+                    <option>All Users</option>
+                    <option>Ruddie S.</option>
+                    <option>Carlos R.</option>
+                    <option>María G.</option>
+                    <option>System</option>
+                </select>
+                <button><i class="bi bi-search"></i> Search</button>
+            </div>
+            
+            <!-- Audit Log -->
+            <div class="audit-section">
+                <div class="audit-header">
+                    <div class="audit-title"><i class="bi bi-list-ul"></i> Activity Log</div>
+                    <div style="display: flex; gap: 10px;">
+                        <button style="padding: 8px 15px; background: rgba(255,23,68,0.1); border: 1px solid var(--red); border-radius: 8px; color: var(--red); cursor: pointer;">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="audit-entry security">
+                    <div class="audit-time">2026-01-21<br>14:23:45</div>
+                    <div class="audit-action security">🚨 SECURITY</div>
+                    <div class="audit-details">Failed login attempt (15 tries) - IP blocked automatically</div>
+                    <div class="audit-user">
+                        <div class="audit-user-avatar">?</div>
+                        <span>Unknown</span>
+                    </div>
+                    <div class="audit-ip">192.168.1.xxx</div>
+                </div>
+                
+                <div class="audit-entry login">
+                    <div class="audit-time">2026-01-21<br>14:15:32</div>
+                    <div class="audit-action login">LOGIN</div>
+                    <div class="audit-details">User authenticated via biometric (Face ID)</div>
+                    <div class="audit-user">
+                        <div class="audit-user-avatar">👨</div>
+                        <span>Ruddie S.</span>
+                    </div>
+                    <div class="audit-ip">10.0.1.25</div>
+                </div>
+                
+                <div class="audit-entry create">
+                    <div class="audit-time">2026-01-21<br>14:10:18</div>
+                    <div class="audit-action create">CREATE</div>
+                    <div class="audit-details">New citizen registered: CIT-2026-789 (García Family)</div>
+                    <div class="audit-user">
+                        <div class="audit-user-avatar">🤖</div>
+                        <span>System</span>
+                    </div>
+                    <div class="audit-ip">Internal</div>
+                </div>
+                
+                <div class="audit-entry update">
+                    <div class="audit-time">2026-01-21<br>13:45:22</div>
+                    <div class="audit-action update">UPDATE</div>
+                    <div class="audit-details">Contract status changed: CON-2026-001 (Draft → Signed)</div>
+                    <div class="audit-user">
+                        <div class="audit-user-avatar">👩</div>
+                        <span>María G.</span>
+                    </div>
+                    <div class="audit-ip">10.0.1.30</div>
+                </div>
+                
+                <div class="audit-entry delete">
+                    <div class="audit-time">2026-01-21<br>12:30:15</div>
+                    <div class="audit-action delete">DELETE</div>
+                    <div class="audit-details">Expired document removed: DOC-2024-456</div>
+                    <div class="audit-user">
+                        <div class="audit-user-avatar">🤖</div>
+                        <span>Auto-Clean</span>
+                    </div>
+                    <div class="audit-ip">Internal</div>
+                </div>
+                
+                <div class="audit-entry logout">
+                    <div class="audit-time">2026-01-21<br>11:55:00</div>
+                    <div class="audit-action logout">LOGOUT</div>
+                    <div class="audit-details">Session ended (timeout after 30 min inactivity)</div>
+                    <div class="audit-user">
+                        <div class="audit-user-avatar">👨</div>
+                        <span>Carlos R.</span>
+                    </div>
+                    <div class="audit-ip">10.0.1.28</div>
+                </div>
+                
+                <div class="audit-entry update">
+                    <div class="audit-time">2026-01-21<br>11:30:45</div>
+                    <div class="audit-action update">UPDATE</div>
+                    <div class="audit-details">Banking transfer approved: $50,000 to BBVA Mexico</div>
+                    <div class="audit-user">
+                        <div class="audit-user-avatar">👨</div>
+                        <span>Ruddie S.</span>
+                    </div>
+                    <div class="audit-ip">10.0.1.25</div>
+                </div>
+            </div>
+            
+            <!-- Compliance Widget -->
+            <div class="compliance-widget">
+                <div class="compliance-header">
+                    <div>
+                        <div style="color: #888; font-size: 0.85em;">Compliance Score</div>
+                        <div class="compliance-score">98%</div>
+                    </div>
+                    <div class="compliance-status">✅ Fully Compliant</div>
+                </div>
+                <div class="compliance-bars">
+                    <div class="compliance-bar-item">
+                        <span class="compliance-bar-label">Data Protection</span>
+                        <div class="compliance-bar">
+                            <div class="compliance-bar-fill" style="width: 100%; background: var(--green);"></div>
+                        </div>
+                        <span class="compliance-bar-value" style="color: var(--green);">100%</span>
+                    </div>
+                    <div class="compliance-bar-item">
+                        <span class="compliance-bar-label">Access Control</span>
+                        <div class="compliance-bar">
+                            <div class="compliance-bar-fill" style="width: 98%; background: var(--green);"></div>
+                        </div>
+                        <span class="compliance-bar-value" style="color: var(--green);">98%</span>
+                    </div>
+                    <div class="compliance-bar-item">
+                        <span class="compliance-bar-label">Audit Logging</span>
+                        <div class="compliance-bar">
+                            <div class="compliance-bar-fill" style="width: 100%; background: var(--green);"></div>
+                        </div>
+                        <span class="compliance-bar-value" style="color: var(--green);">100%</span>
+                    </div>
+                    <div class="compliance-bar-item">
+                        <span class="compliance-bar-label">Encryption</span>
+                        <div class="compliance-bar">
+                            <div class="compliance-bar-fill" style="width: 95%; background: var(--gold);"></div>
+                        </div>
+                        <span class="compliance-bar-value" style="color: var(--gold);">95%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <script>
+        function exportAudit() {
+            alert('📜 AUDIT EXPORT\n\n✅ Generating compliance report...\n✅ Including 5,678 events\n✅ Date range: Jan 1 - Jan 21, 2026\n\n📄 Report ready for download!\n\nFormats available:\n• PDF Report\n• CSV Data Export\n• JSON API Format');
+        }
+        
+        console.log('📜 AUDIT TRAIL - Compliance & Logging System Initialized');
+    </script>
+</body>
+</html>

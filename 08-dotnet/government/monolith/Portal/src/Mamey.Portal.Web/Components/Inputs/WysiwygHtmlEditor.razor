@@ -1,0 +1,117 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime Js
+
+<div class="wysiwyg-toolbar">
+    <MudIconButton Icon="@MudBlazor.Icons.Material.Filled.FormatBold" Size="Size.Small" OnClick="@(() => Exec("bold"))" />
+    <MudIconButton Icon="@MudBlazor.Icons.Material.Filled.FormatItalic" Size="Size.Small" OnClick="@(() => Exec("italic"))" />
+    <MudIconButton Icon="@MudBlazor.Icons.Material.Filled.FormatUnderlined" Size="Size.Small" OnClick="@(() => Exec("underline"))" />
+    <MudDivider Vertical="true" Class="mx-2" />
+    <MudIconButton Icon="@MudBlazor.Icons.Material.Filled.FormatListBulleted" Size="Size.Small" OnClick="@(() => Exec("insertUnorderedList"))" />
+    <MudIconButton Icon="@MudBlazor.Icons.Material.Filled.FormatListNumbered" Size="Size.Small" OnClick="@(() => Exec("insertOrderedList"))" />
+    <MudDivider Vertical="true" Class="mx-2" />
+    <MudIconButton Icon="@MudBlazor.Icons.Material.Filled.Link" Size="Size.Small" OnClick="@InsertLink" />
+    <MudIconButton Icon="@MudBlazor.Icons.Material.Filled.FormatClear" Size="Size.Small" OnClick="@(() => Exec("removeFormat"))" />
+</div>
+
+<div @ref="_editor"
+     class="wysiwyg-editor"
+     contenteditable="true"
+     style="@($"min-height:{MinHeight}px")"
+     @oninput="OnInput"
+     @onblur="OnBlur">
+</div>
+
+@code {
+    private ElementReference _editor;
+    private bool _initialized;
+    private string _lastSet = string.Empty;
+    private CancellationTokenSource? _syncCts;
+
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public int MinHeight { get; set; } = 180;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Js.InvokeVoidAsync("mameyWysiwyg.init", _editor);
+            await Js.InvokeVoidAsync("mameyWysiwyg.setHtml", _editor, Value ?? string.Empty);
+            _lastSet = Value ?? string.Empty;
+            _initialized = true;
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // If parent swaps Value (e.g., entering edit mode), update editor content.
+        if (_initialized)
+        {
+            var incoming = Value ?? string.Empty;
+            if (!string.Equals(incoming, _lastSet, StringComparison.Ordinal))
+            {
+                // Avoid clobbering the user's caret while typing.
+                var focused = await Js.InvokeAsync<bool>("mameyWysiwyg.isFocused", _editor);
+                if (!focused)
+                {
+                    await Js.InvokeVoidAsync("mameyWysiwyg.setHtml", _editor, incoming);
+                    _lastSet = incoming;
+                }
+            }
+        }
+    }
+
+    private async Task Exec(string command)
+    {
+        await Js.InvokeVoidAsync("mameyWysiwyg.exec", _editor, command);
+        await SyncAsync();
+    }
+
+    private async Task InsertLink()
+    {
+        await Js.InvokeVoidAsync("mameyWysiwyg.insertLink", _editor);
+        await SyncAsync();
+    }
+
+    private async Task OnBlur()
+    {
+        await SyncAsync();
+    }
+
+    private async Task OnInput()
+    {
+        if (!_initialized)
+        {
+            return;
+        }
+
+        _syncCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _syncCts = cts;
+
+        try
+        {
+            await Task.Delay(250, cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        if (cts.IsCancellationRequested)
+        {
+            return;
+        }
+
+        await SyncAsync();
+    }
+
+    private async Task SyncAsync()
+    {
+        var html = await Js.InvokeAsync<string>("mameyWysiwyg.getHtml", _editor);
+        _lastSet = html ?? string.Empty;
+        await ValueChanged.InvokeAsync(html);
+    }
+}
+
+
