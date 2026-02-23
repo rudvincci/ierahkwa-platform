@@ -364,6 +364,20 @@ function formatFileSize(bytes) {
 }
 
 // ============================================
+// Health Check
+// ============================================
+
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'image-upload',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// ============================================
 // Error Handling
 // ============================================
 

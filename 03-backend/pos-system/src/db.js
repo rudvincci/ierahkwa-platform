@@ -683,7 +683,7 @@ function initialize() {
   }
   
   // Create default admin user
-  const hashedPassword = bcrypt.hashSync('123456', 10);
+  const hashedPassword = bcrypt.hashSync(process.env.DEFAULT_ADMIN_PASSWORD || 'changeme-dev', 10);
   database.users.push({
     id: getNextId('users'),
     username: 'a',

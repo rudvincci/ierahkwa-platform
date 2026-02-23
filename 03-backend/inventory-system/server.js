@@ -48,6 +48,17 @@ app.use('/users', require('./src/routes/users'));
 app.use('/settings', require('./src/routes/settings'));
 app.use('/api', require('./src/routes/api'));
 
+// Health check
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'inventory-system',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 // Home redirect
 app.get('/', (req, res) => {
     if (req.session.user) {

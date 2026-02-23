@@ -47,7 +47,7 @@ module.exports = {
   defaultAdmin: {
     username: 'admin',
     email: 'admin@smartschool.com',
-    password: 'P@ssw0rd',
+    password: process.env.DEFAULT_ADMIN_PASSWORD || 'changeme-dev',
     firstName: 'System',
     lastName: 'Administrator'
   }

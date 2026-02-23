@@ -397,6 +397,14 @@ async function main() {
   });
 
   // Health check
+  fastify.get('/health', async () => ({
+    status: 'ok',
+    service: 'ierahkwa-shop',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  }));
+
   fastify.get('/api/health', async () => ({
     status: 'ok',
     platform: 'Ierahkwa Futurehead Shop',

@@ -116,6 +116,17 @@ app.get('/api/me', (req, res) => {
   }
 });
 
+// Health check
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'pos-system',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 // Initialize database and start server
 db.initialize();
 

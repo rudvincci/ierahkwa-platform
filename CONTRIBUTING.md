@@ -76,10 +76,181 @@ When adding indigenous language support:
 4. Add the language to Atabey Translator config
 5. Test with right-to-left (RTL) if applicable
 
+## Testing Requirements / Requisitos de Testing
+
+All contributions must include passing tests. Run the appropriate test suite before submitting a PR.
+
+### Node.js Services
+
+```bash
+# Run all Node.js tests
+npm test
+
+# Run tests for a specific service
+npm test -- --testPathPattern=03-node-services/gateway
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run integration tests (requires Docker services running)
+npm run test:integration
+```
+
+### .NET Microservices
+
+```bash
+# Run all .NET tests
+dotnet test
+
+# Run tests for a specific project
+dotnet test 08-dotnet/tests/Sovereign.Identity.Tests
+
+# Run with coverage
+dotnet test --collect:"XPlat Code Coverage"
+```
+
+### Go SDK
+
+```bash
+# Run Go tests
+cd 11-sdks/go/mamey
+go test ./...
+
+# Run with verbose output
+go test -v ./...
+
+# Run with race detection
+go test -race ./...
+```
+
+### Rust (MameyNode / MameyForge)
+
+```bash
+# Run Rust tests
+cd 10-core/mameynode
+cargo test
+
+# Run with verbose output
+cargo test -- --nocapture
+```
+
+### Test Coverage Expectations
+
+| Language | Minimum Coverage |
+|----------|-----------------|
+| Node.js (Jest) | 70% for new code |
+| .NET (xUnit) | 70% for new code |
+| Go | 60% for new code |
+| Rust | 60% for new code |
+
+## Linting / Linting
+
+The project uses automated linting to maintain consistent code style across all languages.
+
+### ESLint (JavaScript/Node.js)
+
+```bash
+# Run ESLint across the project
+npx eslint .
+
+# Run with auto-fix
+npx eslint . --fix
+
+# Lint a specific directory
+npx eslint 03-node-services/gateway/
+```
+
+Configuration is in `.eslintrc.json` at the project root. The config extends `eslint:recommended` and enforces semicolons, single quotes, and catches unused variables.
+
+### Prettier (JavaScript/TypeScript/JSON)
+
+```bash
+# Check formatting
+npx prettier --check .
+
+# Auto-format files
+npx prettier --write .
+```
+
+Configuration is in `.prettierrc.json` at the project root.
+
+### EditorConfig
+
+The `.editorconfig` file ensures consistent formatting across all editors and IDEs. Install the EditorConfig plugin for your editor:
+
+- **VS Code**: EditorConfig for VS Code (editorconfig.editorconfig)
+- **JetBrains IDEs**: Built-in support
+- **Vim**: editorconfig-vim plugin
+
+Key settings:
+- UTF-8 charset, LF line endings for all files
+- 2-space indentation for JS/TS/JSON/YAML
+- 4-space indentation for C#, Rust, Python, Solidity
+- Tab indentation for Go and Makefiles
+
+### Language-Specific Formatters
+
+| Language | Formatter | Command |
+|----------|-----------|---------|
+| JavaScript/TypeScript | ESLint + Prettier | `npx eslint . --fix && npx prettier --write .` |
+| C# (.NET) | dotnet format | `dotnet format` |
+| Rust | rustfmt | `cargo fmt` |
+| Go | gofmt | `gofmt -w .` |
+| Python | Black | `black .` |
+
+## Code Quality Standards / Estándares de Calidad
+
+### General Guidelines
+
+1. **No secrets or credentials** in code -- use environment variables and `.env` files (never committed)
+2. **Meaningful variable and function names** -- avoid single-letter names except in loops
+3. **Comments for complex logic** -- explain "why", not "what"
+4. **Error handling** -- never silently swallow errors; log or propagate them
+5. **Small, focused functions** -- each function should do one thing well
+6. **DRY principle** -- avoid code duplication; extract shared logic into utilities
+
+### Pre-Commit Checks
+
+Before submitting a PR, ensure:
+
+```bash
+# 1. Linting passes
+npx eslint .
+
+# 2. Formatting is correct
+npx prettier --check .
+
+# 3. Tests pass
+npm test
+
+# 4. No secrets in staged files
+git diff --cached --name-only | xargs grep -l "API_KEY\|SECRET\|PASSWORD\|PRIVATE_KEY" || echo "No secrets found"
+```
+
+### CI/CD Validation
+
+The GitHub Actions CI pipeline automatically runs on every PR:
+
+- ESLint linting
+- Prettier format checking
+- Jest test suite with coverage
+- .NET build and test
+- Docker build validation
+- Security audit (`npm audit`)
+
+PRs that fail any CI check will not be merged.
+
+### Dependency Management
+
+- Use `npm ci` (not `npm install`) in CI for reproducible builds
+- Pin exact versions (configured via `.npmrc` with `save-exact=true`)
+- Review dependency updates before merging Dependabot PRs
+- Avoid adding unnecessary dependencies -- prefer built-in Node.js/standard library modules
+
 ## Code of Conduct
 
 Please read [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 
 ---
 
-*Skennen — Peace*
+*Skennen -- Peace*

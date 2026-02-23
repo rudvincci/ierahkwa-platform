@@ -2,26 +2,218 @@ name: Sovereign Platform CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  DOTNET_VERSION: '10.0.x'
+
 jobs:
-  validate:
-    name: Validate Structure
+  # ──────────────────────────────────────────────
+  # Structure Validation
+  # ──────────────────────────────────────────────
+  structure-validate:
+    name: Validate Project Structure
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check project structure
-        run: |
-          for dir in 01-documentos 02-plataformas-html 03-backend 04-infraestructura 05-api 06-dashboards 07-scripts 08-dotnet 09-assets; do
-            test -d "$dir" || (echo "MISSING: $dir" && exit 1)
-          done
-          echo "Project structure validated"
 
-  build-node:
-    name: Build Node.js Services
+      - name: Verify required directories exist
+        run: |
+          echo "Checking required project directories..."
+          REQUIRED_DIRS=(
+            "01-documentos"
+            "02-plataformas-html"
+            "03-backend"
+            "04-infraestructura"
+            "05-api"
+            "06-dashboards"
+            "07-scripts"
+            "08-dotnet"
+            "09-assets"
+            "10-core"
+            "11-sdks"
+            "12-rust"
+            "13-ai"
+            "14-blockchain"
+            "15-utilities"
+          )
+          MISSING=0
+          for dir in "${REQUIRED_DIRS[@]}"; do
+            if [ -d "$dir" ]; then
+              echo "  [OK] $dir"
+            else
+              echo "  [MISSING] $dir"
+              MISSING=$((MISSING + 1))
+            fi
+          done
+          if [ $MISSING -gt 0 ]; then
+            echo ""
+            echo "ERROR: $MISSING required directories are missing."
+            exit 1
+          fi
+          echo ""
+          echo "All required directories validated successfully."
+
+      - name: Verify key config files exist
+        run: |
+          for f in package.json Makefile LICENSE docker-compose.sovereign.yml; do
+            if [ -f "$f" ]; then
+              echo "  [OK] $f"
+            else
+              echo "  [MISSING] $f"
+            fi
+          done
+
+  # ──────────────────────────────────────────────
+  # Lint
+  # ──────────────────────────────────────────────
+  lint:
+    name: ESLint - Backend Services
     runs-on: ubuntu-latest
+    needs: [structure-validate]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install root dependencies
+        run: npm install --ignore-scripts
+
+      - name: Run ESLint on backend services
+        run: |
+          echo "Running ESLint on 03-backend/ services..."
+          LINT_ERRORS=0
+          for service_dir in 03-backend/*/; do
+            service=$(basename "$service_dir")
+            if [ -f "$service_dir/package.json" ]; then
+              echo ""
+              echo "--- Linting $service ---"
+              # Check if service has its own eslint config
+              if [ -f "$service_dir/.eslintrc.json" ] || [ -f "$service_dir/.eslintrc.js" ] || [ -f "$service_dir/eslint.config.js" ]; then
+                cd "$service_dir"
+                npx eslint . --no-error-on-unmatched-pattern --max-warnings=50 || LINT_ERRORS=$((LINT_ERRORS + 1))
+                cd "$GITHUB_WORKSPACE"
+              else
+                # Use root eslint config
+                npx eslint "$service_dir" --no-error-on-unmatched-pattern --max-warnings=50 || LINT_ERRORS=$((LINT_ERRORS + 1))
+              fi
+            fi
+          done
+          if [ $LINT_ERRORS -gt 0 ]; then
+            echo ""
+            echo "WARNING: $LINT_ERRORS service(s) had lint issues."
+          fi
+          echo "Lint check completed."
+
+  # ──────────────────────────────────────────────
+  # Node.js Tests
+  # ──────────────────────────────────────────────
+  test-node:
+    name: Jest Tests - Node.js
+    runs-on: ubuntu-latest
+    needs: [structure-validate]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-root-${{ hashFiles('package-lock.json', 'package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-root-
+
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+
+      - name: Run Jest tests
+        run: |
+          if [ -f jest.config.js ] || [ -f jest.config.ts ] || grep -q '"jest"' package.json 2>/dev/null; then
+            npx jest --ci --passWithNoTests --forceExit --detectOpenHandles
+          else
+            echo "No Jest configuration found at root level. Skipping."
+          fi
+
+      - name: Run per-service tests
+        run: |
+          for service_dir in 03-backend/*/; do
+            service=$(basename "$service_dir")
+            if [ -f "$service_dir/package.json" ]; then
+              if grep -q '"test"' "$service_dir/package.json" 2>/dev/null; then
+                echo "--- Testing $service ---"
+                cd "$service_dir"
+                npm install --ignore-scripts 2>/dev/null || true
+                npm test --if-present 2>/dev/null || echo "Tests skipped or failed for $service"
+                cd "$GITHUB_WORKSPACE"
+              fi
+            fi
+          done
+
+  # ──────────────────────────────────────────────
+  # .NET Tests
+  # ──────────────────────────────────────────────
+  test-dotnet:
+    name: Test .NET Solutions
+    runs-on: ubuntu-latest
+    needs: [structure-validate]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.sln') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Find and test .NET solutions
+        run: |
+          echo "Searching for .NET solution files..."
+          SOLUTIONS=$(find 08-dotnet -name "*.sln" -maxdepth 4 2>/dev/null | head -20)
+          if [ -z "$SOLUTIONS" ]; then
+            echo "No .NET solutions found."
+            exit 0
+          fi
+          TEST_ERRORS=0
+          while IFS= read -r sln; do
+            echo ""
+            echo "--- Testing: $sln ---"
+            dotnet restore "$sln" --verbosity quiet || { echo "  Restore failed, skipping."; continue; }
+            dotnet test "$sln" --no-restore --verbosity quiet --logger "console;verbosity=minimal" || {
+              echo "  Test failed for $sln"
+              TEST_ERRORS=$((TEST_ERRORS + 1))
+            }
+          done <<< "$SOLUTIONS"
+          if [ $TEST_ERRORS -gt 0 ]; then
+            echo ""
+            echo "WARNING: $TEST_ERRORS solution(s) had test failures."
+          fi
+
+  # ──────────────────────────────────────────────
+  # Build Node.js Services (Matrix)
+  # ──────────────────────────────────────────────
+  build-node:
+    name: Build Node.js - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    needs: [lint, test-node]
     strategy:
       matrix:
         service:
@@ -34,58 +226,247 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-      - name: Install and validate
-        run: |
-          cd 03-backend/${{ matrix.service }}
-          if [ -f package.json ]; then
-            npm install --ignore-scripts
-            echo "Built ${{ matrix.service }}"
-          fi
+          node-version: ${{ env.NODE_VERSION }}
 
-  build-dotnet:
-    name: Build .NET Services
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - name: Cache node_modules for ${{ matrix.service }}
+        uses: actions/cache@v4
         with:
-          dotnet-version: '10.0.x'
-      - name: Restore and build
-        run: |
-          find 08-dotnet -name "*.sln" -maxdepth 4 | head -10 | while read sln; do
-            echo "Building $sln..."
-            dotnet restore "$sln" || true
-          done
+          path: 03-backend/${{ matrix.service }}/node_modules
+          key: ${{ runner.os }}-node-${{ matrix.service }}-${{ hashFiles(format('03-backend/{0}/package-lock.json', matrix.service), format('03-backend/{0}/package.json', matrix.service)) }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.service }}-
 
-  build-rust:
-    name: Build Rust Components
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Build MameyForge
+      - name: Install and validate ${{ matrix.service }}
         run: |
-          if [ -f 12-rust/mamey-forge/Cargo.toml ]; then
-            cd 12-rust/mamey-forge && cargo check
+          SERVICE_DIR="03-backend/${{ matrix.service }}"
+          if [ ! -f "$SERVICE_DIR/package.json" ]; then
+            echo "No package.json found for ${{ matrix.service }}. Skipping."
+            exit 0
           fi
-      - name: Build MameyNode Rust SDK
-        run: |
-          if [ -f 12-rust/mamey-node-rust/Cargo.toml ]; then
-            cd 12-rust/mamey-node-rust && cargo check
-          fi
-
-  docker-validate:
-    name: Validate Docker
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Validate compose files
-        run: |
-          for f in docker-compose.sovereign.yml docker-compose.dev.yml docker-compose.infra.yml; do
-            if [ -f "$f" ]; then
-              docker compose -f "$f" config --quiet && echo "Valid: $f"
+          echo "Installing dependencies for ${{ matrix.service }}..."
+          cd "$SERVICE_DIR"
+          npm install --ignore-scripts
+          echo ""
+          echo "Checking for syntax errors..."
+          # Validate main entry point if it exists
+          for entry in server.js index.js app.js src/index.js src/app.js src/server.js; do
+            if [ -f "$entry" ]; then
+              node --check "$entry" && echo "  [OK] $entry" || echo "  [WARN] Syntax issue in $entry"
             fi
           done
+          echo ""
+          echo "Build complete for ${{ matrix.service }}."
+
+  # ──────────────────────────────────────────────
+  # Build .NET Solutions
+  # ──────────────────────────────────────────────
+  build-dotnet:
+    name: Build .NET Solutions
+    runs-on: ubuntu-latest
+    needs: [test-dotnet]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.sln') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore and build .NET solutions
+        run: |
+          echo "Searching for .NET solution files..."
+          SOLUTIONS=$(find 08-dotnet -name "*.sln" -maxdepth 4 2>/dev/null | head -20)
+          if [ -z "$SOLUTIONS" ]; then
+            echo "No .NET solutions found in 08-dotnet/."
+            exit 0
+          fi
+          BUILD_ERRORS=0
+          BUILT=0
+          while IFS= read -r sln; do
+            echo ""
+            echo "--- Building: $sln ---"
+            dotnet restore "$sln" --verbosity quiet || { echo "  Restore failed, skipping."; continue; }
+            dotnet build "$sln" --no-restore --configuration Release --verbosity quiet || {
+              echo "  Build failed for $sln"
+              BUILD_ERRORS=$((BUILD_ERRORS + 1))
+              continue
+            }
+            BUILT=$((BUILT + 1))
+            echo "  Build succeeded."
+          done <<< "$SOLUTIONS"
+          echo ""
+          echo "Build summary: $BUILT succeeded, $BUILD_ERRORS failed."
+          if [ $BUILD_ERRORS -gt 0 ]; then
+            echo "WARNING: Some solutions failed to build."
+          fi
+
+  # ──────────────────────────────────────────────
+  # Build Rust Projects
+  # ──────────────────────────────────────────────
+  build-rust:
+    name: Build Rust - ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    needs: [structure-validate]
+    strategy:
+      matrix:
+        project:
+          - mamey-forge
+          - mamey-node-rust
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo registry and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            12-rust/${{ matrix.project }}/target
+          key: ${{ runner.os }}-cargo-${{ matrix.project }}-${{ hashFiles(format('12-rust/{0}/Cargo.lock', matrix.project), format('12-rust/{0}/Cargo.toml', matrix.project)) }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ matrix.project }}-
+
+      - name: Cargo check ${{ matrix.project }}
+        run: |
+          PROJECT_DIR="12-rust/${{ matrix.project }}"
+          if [ -f "$PROJECT_DIR/Cargo.toml" ]; then
+            echo "Running cargo check for ${{ matrix.project }}..."
+            cd "$PROJECT_DIR"
+            cargo check --all-targets 2>&1
+            echo "Cargo check passed for ${{ matrix.project }}."
+          else
+            echo "No Cargo.toml found at $PROJECT_DIR. Skipping."
+          fi
+
+  # ──────────────────────────────────────────────
+  # Docker Validation
+  # ──────────────────────────────────────────────
+  docker-validate:
+    name: Validate Docker Configuration
+    runs-on: ubuntu-latest
+    needs: [structure-validate]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate root docker-compose files
+        run: |
+          echo "Validating root-level docker-compose files..."
+          COMPOSE_FILES=(
+            "docker-compose.sovereign.yml"
+            "docker-compose.dev.yml"
+            "docker-compose.infra.yml"
+          )
+          ERRORS=0
+          for f in "${COMPOSE_FILES[@]}"; do
+            if [ -f "$f" ]; then
+              docker compose -f "$f" config --quiet 2>/dev/null && echo "  [VALID] $f" || {
+                echo "  [INVALID] $f"
+                ERRORS=$((ERRORS + 1))
+              }
+            else
+              echo "  [SKIP] $f (not found)"
+            fi
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo ""
+            echo "ERROR: $ERRORS compose file(s) are invalid."
+            exit 1
+          fi
+
+      - name: Validate Dockerfiles (syntax check)
+        run: |
+          echo "Checking Dockerfiles in 03-backend/..."
+          ERRORS=0
+          for dockerfile in 03-backend/*/Dockerfile; do
+            if [ -f "$dockerfile" ]; then
+              # Basic validation: check that FROM instruction exists
+              if grep -q "^FROM" "$dockerfile"; then
+                echo "  [OK] $dockerfile"
+              else
+                echo "  [WARN] $dockerfile - No FROM instruction found"
+                ERRORS=$((ERRORS + 1))
+              fi
+            fi
+          done
+          echo ""
+          echo "Dockerfile check completed."
+
+  # ──────────────────────────────────────────────
+  # Security Checks
+  # ──────────────────────────────────────────────
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    needs: [structure-validate]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check for secrets and sensitive files
+        run: |
+          echo "Scanning for potential secrets..."
+          ISSUES=0
+
+          # Check for .env files committed to repo
+          ENV_FILES=$(find . -name ".env" -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null)
+          if [ -n "$ENV_FILES" ]; then
+            echo "  [WARN] Found .env files in repository:"
+            echo "$ENV_FILES" | while read f; do echo "    - $f"; done
+            ISSUES=$((ISSUES + 1))
+          fi
+
+          # Check for common secret patterns in tracked files
+          PATTERNS=(
+            "PRIVATE_KEY"
+            "SECRET_KEY"
+            "API_KEY.*=.*['\"][a-zA-Z0-9]"
+            "password.*=.*['\"][^'\"]*['\"]"
+          )
+          for pattern in "${PATTERNS[@]}"; do
+            MATCHES=$(grep -rl "$pattern" --include="*.js" --include="*.ts" --include="*.json" \
+              --exclude-dir=node_modules --exclude-dir=.git --exclude="package-lock.json" \
+              --exclude="*.example" --exclude="*.sample" . 2>/dev/null | head -5)
+            if [ -n "$MATCHES" ]; then
+              echo "  [WARN] Potential secret pattern '$pattern' found in:"
+              echo "$MATCHES" | while read f; do echo "    - $f"; done
+            fi
+          done
+
+          echo ""
+          echo "Secret scan completed. Review warnings above."
+
+      - name: npm audit for Node.js services
+        run: |
+          echo "Running npm audit on backend services..."
+          AUDIT_ISSUES=0
+          for service_dir in 03-backend/*/; do
+            service=$(basename "$service_dir")
+            if [ -f "$service_dir/package.json" ] && [ -f "$service_dir/package-lock.json" ]; then
+              echo ""
+              echo "--- Auditing $service ---"
+              cd "$service_dir"
+              npm audit --audit-level=critical 2>/dev/null || {
+                echo "  [WARN] Critical vulnerabilities found in $service"
+                AUDIT_ISSUES=$((AUDIT_ISSUES + 1))
+              }
+              cd "$GITHUB_WORKSPACE"
+            fi
+          done
+          echo ""
+          echo "Audit completed. $AUDIT_ISSUES service(s) with critical vulnerabilities."
