@@ -279,6 +279,142 @@ services:
       retries: 3
 
   # ==========================================
+  # NODE.JS SERVICES — Extended Platforms
+  # ==========================================
+  pos-system:
+    build:
+      context: ./03-backend/pos-system
+    container_name: pos-system
+    ports:
+      - "127.0.0.1:3030:3030"
+    environment:
+      - PORT=3030
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3030/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ierahkwa-shop:
+    build:
+      context: ./03-backend/ierahkwa-shop
+    container_name: ierahkwa-shop
+    ports:
+      - "127.0.0.1:3100:3100"
+    environment:
+      - PORT=3100
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3100/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  inventory-system:
+    build:
+      context: ./03-backend/inventory-system
+    container_name: inventory-system
+    ports:
+      - "127.0.0.1:3200:3200"
+    environment:
+      - PORT=3200
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+    depends_on:
+      - postgres
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3200/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  image-upload:
+    build:
+      context: ./03-backend/image-upload
+    container_name: image-upload
+    ports:
+      - "127.0.0.1:3300:3300"
+    environment:
+      - PORT=3300
+      - NODE_ENV=production
+    depends_on:
+      - postgres
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3300/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  forex-trading:
+    build:
+      context: ./03-backend/forex-trading-server
+    container_name: forex-trading
+    ports:
+      - "127.0.0.1:3400:3400"
+    environment:
+      - PORT=3400
+      - NODE_ENV=production
+      - MAMEYNODE_RPC=http://mameynode:8545
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+    depends_on:
+      - mameynode
+      - postgres
+      - redis
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3400/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  smart-school:
+    build:
+      context: ./03-backend/smart-school-node
+    container_name: smart-school
+    ports:
+      - "127.0.0.1:3500:3500"
+    environment:
+      - PORT=3500
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+    depends_on:
+      - postgres
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3500/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================
   # REVERSE PROXY — Nginx
   # ==========================================
   nginx-proxy:
