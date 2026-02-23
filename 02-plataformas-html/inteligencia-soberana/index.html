@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inteligencia Soberana — OSINT &amp; An&aacute;lisis Pan-Americano</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--accent:#651fff}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s}
+.skip-nav:focus{top:1rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:99}
+nav .logo{font-weight:700;font-size:1.2rem;color:var(--gold)}
+nav ul{display:flex;list-style:none;gap:1.5rem}
+nav ul a{color:var(--txt2);font-size:.9rem;transition:color .2s}
+nav ul a:hover,nav ul a:focus{color:var(--accent)}
+.hero{text-align:center;padding:4rem 2rem;position:relative;background:radial-gradient(ellipse at center,rgba(101,31,255,.07) 0%,transparent 70%)}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);margin-bottom:.5rem}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{color:var(--txt2);max-width:650px;margin:1rem auto}
+.network-viz{width:220px;height:220px;margin:2rem auto;position:relative}
+.node{position:absolute;width:14px;height:14px;background:var(--accent);border-radius:50%;animation:node-glow 3s ease-in-out infinite}
+.node:nth-child(1){top:10px;left:100px;animation-delay:0s}
+.node:nth-child(2){top:50px;left:30px;animation-delay:.4s}
+.node:nth-child(3){top:50px;left:170px;animation-delay:.8s}
+.node:nth-child(4){top:110px;left:10px;animation-delay:1.2s}
+.node:nth-child(5){top:110px;left:190px;animation-delay:1.6s}
+.node:nth-child(6){top:170px;left:60px;animation-delay:2s}
+.node:nth-child(7){top:170px;left:140px;animation-delay:2.4s}
+.node:nth-child(8){top:100px;left:100px;width:22px;height:22px;background:var(--gold);animation-delay:0s}
+.edge{position:absolute;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.3;animation:edge-flow 4s linear infinite}
+.edge:nth-child(9){top:105px;left:25px;width:170px;transform:rotate(-5deg)}
+.edge:nth-child(10){top:60px;left:40px;width:160px;transform:rotate(30deg);animation-delay:1s}
+.edge:nth-child(11){top:140px;left:30px;width:160px;transform:rotate(-20deg);animation-delay:2s}
+@keyframes node-glow{0%,100%{box-shadow:0 0 4px var(--accent)}50%{box-shadow:0 0 14px var(--accent)}}
+@keyframes edge-flow{0%{opacity:.1}50%{opacity:.5}100%{opacity:.1}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
+.stat{text-align:center;padding:1rem}
+.stat .val{font-size:1.5rem;font-weight:700;color:var(--accent)}
+.stat .lbl{font-size:.8rem;color:var(--txt2);margin-top:.25rem}
+section.features{padding:3rem 2rem}
+section.features h2{text-align:center;font-size:1.6rem;margin-bottom:2rem;color:var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;max-width:1200px;margin:0 auto}
+.card{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.card h3{font-size:1rem;margin-bottom:.5rem}
+.card h3 .ico{margin-right:.4rem}
+.card p{font-size:.85rem;color:var(--txt2)}
+.intel-feed{padding:3rem 2rem;max-width:800px;margin:0 auto}
+.intel-feed h2{text-align:center;font-size:1.6rem;margin-bottom:2rem;color:var(--gold)}
+.feed-item{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:1.2rem;margin-bottom:.8rem;display:flex;align-items:flex-start;gap:1rem;transition:border-color .2s}
+.feed-item:hover{border-color:var(--accent)}
+.feed-item .severity{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:.4rem}
+.feed-item .severity.high{background:#f44336}
+.feed-item .severity.med{background:#ff9100}
+.feed-item .severity.low{background:#4caf50}
+.feed-item .content .title{font-size:.9rem;font-weight:600}
+.feed-item .content .meta{font-size:.75rem;color:var(--txt2);margin-top:.2rem}
+.feed-item .content .source{font-size:.7rem;color:var(--accent);margin-top:.3rem;text-transform:uppercase;letter-spacing:.05em}
+.feed-item .time{font-size:.7rem;color:var(--txt2);white-space:nowrap;margin-left:auto}
+footer{text-align:center;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);color:var(--txt2);font-size:.8rem}
+footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5rem}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+<nav aria-label="Navegaci&oacute;n principal">
+  <div class="logo"><span aria-hidden="true">&#x1F441;</span> Inteligencia Soberana</div>
+  <ul>
+    <li><a href="#features">Capacidades</a></li>
+    <li><a href="#feed">Intel Feed</a></li>
+    <li><a href="#contact">Contacto</a></li>
+  </ul>
+</nav>
+<main id="main">
+  <section class="hero">
+    <div class="network-viz" aria-hidden="true">
+      <div class="node"></div><div class="node"></div><div class="node"></div>
+      <div class="node"></div><div class="node"></div><div class="node"></div>
+      <div class="node"></div><div class="node"></div>
+      <div class="edge"></div><div class="edge"></div><div class="edge"></div>
+    </div>
+    <h1>OSINT &amp; An&aacute;lisis <em>Pan-Americano</em></h1>
+    <p>Inteligencia de fuentes abiertas y an&aacute;lisis estrat&eacute;gico para gobernanza ind&iacute;gena soberana. Agregaci&oacute;n de datos, an&aacute;lisis geoespacial y detecci&oacute;n de desinformaci&oacute;n.</p>
+  </section>
+  <div class="stats" role="region" aria-label="Estad&iacute;sticas clave">
+    <div class="stat"><div class="val">19</div><div class="lbl">Pa&iacute;ses</div></div>
+    <div class="stat"><div class="val">OSINT</div><div class="lbl">+ GEOINT</div></div>
+    <div class="stat"><div class="val">AI</div><div class="lbl">An&aacute;lisis</div></div>
+    <div class="stat"><div class="val">RT</div><div class="lbl">Tiempo Real</div></div>
+  </div>
+  <section class="features" id="features">
+    <h2><span aria-hidden="true">&#x1F50E;</span> Capacidades de Inteligencia</h2>
+    <div class="grid">
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F310;</span>OSINT Aggregator</h3><p>Agregador de inteligencia de fuentes abiertas con recopilaci&oacute;n automatizada de medios, redes sociales, documentos p&uacute;blicos y datos geospaciales.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4F1;</span>Social Media Monitoring</h3><p>Monitoreo de redes sociales con an&aacute;lisis de sentimiento, detecci&oacute;n de tendencias y alertas de menciones de territorios soberanos.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F5FA;</span>GEOINT</h3><p>Inteligencia geoespacial con an&aacute;lisis de im&aacute;genes satelitales, mapeo de actividades y detecci&oacute;n de cambios en territorio.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F916;</span>Threat Assessment AI</h3><p>Evaluaci&oacute;n de amenazas con IA que correlaciona m&uacute;ltiples fuentes de datos para generar clasificaciones de riesgo priorizadas.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4DC;</span>Diplomatic Intelligence Brief</h3><p>Informes de inteligencia diplom&aacute;tica automatizados con an&aacute;lisis de pol&iacute;ticas gubernamentales que afectan soberan&iacute;a ind&iacute;gena.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4B9;</span>Economic Intelligence</h3><p>Dashboard de inteligencia econ&oacute;mica rastreando inversiones, concesiones y actividades econ&oacute;micas en territorios soberanos.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F3DB;</span>Cultural Heritage Monitor</h3><p>Monitor de amenazas al patrimonio cultural con detecci&oacute;n de tr&aacute;fico de artefactos y apropiaci&oacute;n cultural documentada.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F6AB;</span>Disinformation Detection</h3><p>Detecci&oacute;n de desinformaci&oacute;n dirigida a comunidades ind&iacute;genas con rastreo de origen y an&aacute;lisis de redes de propagaci&oacute;n.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x26A0;</span>Early Warning System</h3><p>Sistema de alerta temprana multi-dominio con indicadores predictivos para amenazas pol&iacute;ticas, ambientales y de seguridad.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F512;</span>Encrypted Report Distribution</h3><p>Distribuci&oacute;n cifrada de informes clasificados con control de acceso granular y auditor&iacute;a de lectura para cada naci&oacute;n.</p></article>
+    </div>
+  </section>
+  <section class="intel-feed" id="feed">
+    <h2><span aria-hidden="true">&#x1F4E1;</span> Feed de Inteligencia en Vivo</h2>
+    <div role="list" aria-label="Alertas de inteligencia recientes">
+      <div class="feed-item" role="listitem"><div class="severity high" aria-label="Severidad alta"></div><div class="content"><div class="title">Concesi&oacute;n minera detectada en territorio Mapuche</div><div class="meta">An&aacute;lisis GEOINT confirma maquinaria pesada en zona protegida</div><div class="source">GEOINT + OSINT</div></div><div class="time">Hace 12 min</div></div>
+      <div class="feed-item" role="listitem"><div class="severity med" aria-label="Severidad media"></div><div class="content"><div class="title">Campa&ntilde;a de desinformaci&oacute;n contra Territorio Wayuu</div><div class="meta">Red de cuentas coordinadas en redes sociales identificada</div><div class="source">Social Media + AI</div></div><div class="time">Hace 38 min</div></div>
+      <div class="feed-item" role="listitem"><div class="severity low" aria-label="Severidad baja"></div><div class="content"><div class="title">Resoluci&oacute;n de la OEA sobre derechos territoriales</div><div class="meta">Nuevo marco legal favorable para reclamaciones ind&iacute;genas</div><div class="source">Diplomatic Intel</div></div><div class="time">Hace 1h</div></div>
+      <div class="feed-item" role="listitem"><div class="severity high" aria-label="Severidad alta"></div><div class="content"><div class="title">Deforestaci&oacute;n acelerada en Amazonia — Territorio Yanomami</div><div class="meta">Incremento del 340% en actividad de tala ilegal detectada por sat&eacute;lite</div><div class="source">GEOINT</div></div><div class="time">Hace 2h</div></div>
+      <div class="feed-item" role="listitem"><div class="severity med" aria-label="Severidad media"></div><div class="content"><div class="title">Licitaci&oacute;n petrolera en aguas de Territorio Kuna Yala</div><div class="meta">Gobierno de Panam&aacute; anuncia nueva ronda de concesiones offshore</div><div class="source">Economic Intel</div></div><div class="time">Hace 3h</div></div>
+    </div>
+  </section>
+</main>
+<footer id="contact">
+  <div class="brand"><span aria-hidden="true">&#x1F441;</span> Ierahkwa</div>
+  <p>Inteligencia Soberana &mdash; OSINT para Naciones Ind&iacute;genas</p>
+  <p>&copy; 2026 Ierahkwa Sovereign Systems. Todos los derechos reservados.</p>
+</footer>
+</body>
+</html>

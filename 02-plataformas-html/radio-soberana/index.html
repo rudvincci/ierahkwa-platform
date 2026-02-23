@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Radio Soberana — SDR & Broadcasting Pan-Americano</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--accent:#ff6d00}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s}
+.skip-nav:focus{top:1rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:99}
+nav .logo{font-size:1.2rem;font-weight:700;color:var(--accent)}
+nav ul{list-style:none;display:flex;gap:1.5rem}
+nav ul a{color:var(--txt2);transition:color .3s}
+nav ul a:hover{color:var(--accent)}
+.hero{text-align:center;padding:5rem 2rem 3rem;background:linear-gradient(180deg,var(--bg2),var(--bg));position:relative;overflow:hidden}
+.hero h1{font-size:clamp(1.8rem,5vw,3rem);margin-bottom:1rem}
+.hero h1 span{color:var(--accent)}
+.hero p{max-width:680px;margin:0 auto 2rem;color:var(--txt2);font-size:1.1rem}
+.spectrum{display:flex;align-items:flex-end;justify-content:center;gap:2px;height:120px;margin:2rem auto;max-width:600px}
+.spectrum .bar{width:6px;background:var(--accent);border-radius:2px 2px 0 0;animation:spectrumPulse 1.5s ease-in-out infinite}
+@keyframes spectrumPulse{0%,100%{opacity:.3}50%{opacity:1}}
+.spectrum .bar:nth-child(1){height:25%;animation-delay:0s}
+.spectrum .bar:nth-child(2){height:45%;animation-delay:.08s}
+.spectrum .bar:nth-child(3){height:70%;animation-delay:.16s}
+.spectrum .bar:nth-child(4){height:90%;animation-delay:.24s}
+.spectrum .bar:nth-child(5){height:60%;animation-delay:.32s}
+.spectrum .bar:nth-child(6){height:100%;animation-delay:.4s}
+.spectrum .bar:nth-child(7){height:50%;animation-delay:.48s}
+.spectrum .bar:nth-child(8){height:80%;animation-delay:.56s}
+.spectrum .bar:nth-child(9){height:35%;animation-delay:.64s}
+.spectrum .bar:nth-child(10){height:95%;animation-delay:.72s}
+.spectrum .bar:nth-child(11){height:55%;animation-delay:.8s}
+.spectrum .bar:nth-child(12){height:75%;animation-delay:.88s}
+.spectrum .bar:nth-child(13){height:40%;animation-delay:.96s}
+.spectrum .bar:nth-child(14){height:85%;animation-delay:1.04s}
+.spectrum .bar:nth-child(15){height:30%;animation-delay:1.12s}
+.spectrum .bar:nth-child(16){height:65%;animation-delay:1.2s}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
+.stat{text-align:center;padding:1rem}
+.stat .num{font-size:1.6rem;font-weight:700;color:var(--accent)}
+.stat .label{color:var(--txt2);font-size:.85rem;margin-top:.3rem}
+.features{padding:3rem 2rem;max-width:1200px;margin:0 auto}
+.features h2{text-align:center;font-size:1.8rem;margin-bottom:2rem}
+.features h2 span{color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem}
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:border-color .3s,transform .3s}
+.card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.card .icon{font-size:1.5rem;margin-bottom:.5rem}
+.card h3{font-size:1rem;margin-bottom:.4rem}
+.card p{font-size:.85rem;color:var(--txt2)}
+.radio-player{padding:3rem 2rem;max-width:600px;margin:0 auto}
+.radio-player h2{text-align:center;margin-bottom:2rem;font-size:1.8rem}
+.radio-player h2 span{color:var(--accent)}
+.player-ui{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden}
+.player-header{background:var(--bg3);padding:.8rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--brd)}
+.player-header .station{font-weight:600;color:var(--accent)}
+.player-header .freq{color:var(--txt2);font-size:.85rem}
+.player-body{padding:1.5rem;text-align:center}
+.player-body .now-playing{font-size:.8rem;color:var(--txt2);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:1px}
+.player-body .track{font-size:1.2rem;font-weight:600;margin-bottom:.3rem}
+.player-body .artist{color:var(--txt2);margin-bottom:1.5rem}
+.player-bar{width:100%;height:4px;background:var(--bg4);border-radius:2px;margin-bottom:1rem;overflow:hidden}
+.player-bar .fill{width:65%;height:100%;background:var(--accent);border-radius:2px;animation:progress 8s linear infinite}
+@keyframes progress{0%{width:0}100%{width:100%}}
+.player-controls{display:flex;align-items:center;justify-content:center;gap:1.5rem}
+.player-controls button{background:none;border:none;color:var(--txt);font-size:1.3rem;cursor:pointer;transition:color .2s}
+.player-controls button:hover{color:var(--accent)}
+.player-controls .play-btn{background:var(--accent);color:#000;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+.stations{display:flex;gap:.5rem;padding:1rem;border-top:1px solid var(--brd);overflow-x:auto}
+.stations .chip{background:var(--bg3);border:1px solid var(--brd);border-radius:20px;padding:.3rem .8rem;font-size:.75rem;color:var(--txt2);white-space:nowrap;cursor:pointer;transition:all .2s}
+.stations .chip:hover,.stations .chip.active{border-color:var(--accent);color:var(--accent)}
+footer{text-align:center;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);color:var(--txt2);font-size:.85rem}
+footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5rem}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+<nav aria-label="Navegacion principal">
+<div class="logo"><span aria-hidden="true">&#x1F4FB;</span> Radio Soberana</div>
+<ul>
+<li><a href="#features">Funciones</a></li>
+<li><a href="#player">Escuchar</a></li>
+<li><a href="#contact">Contacto</a></li>
+</ul>
+</nav>
+<main id="main">
+<section class="hero">
+<h1><span>Radio Soberana</span><br>SDR &amp; Broadcasting Pan-Americano</h1>
+<p>Radio definida por software y radiodifusion digital para comunidades indigenas remotas. Espectro soberano sin dependencias corporativas.</p>
+<div class="spectrum" aria-label="Visualizacion de espectro de frecuencias de radio">
+<div class="bar" aria-hidden="true"></div><div class="bar" aria-hidden="true"></div>
+<div class="bar" aria-hidden="true"></div><div class="bar" aria-hidden="true"></div>
+<div class="bar" aria-hidden="true"></div><div class="bar" aria-hidden="true"></div>
+<div class="bar" aria-hidden="true"></div><div class="bar" aria-hidden="true"></div>
+<div class="bar" aria-hidden="true"></div><div class="bar" aria-hidden="true"></div>
+<div class="bar" aria-hidden="true"></div><div class="bar" aria-hidden="true"></div>
+<div class="bar" aria-hidden="true"></div><div class="bar" aria-hidden="true"></div>
+<div class="bar" aria-hidden="true"></div><div class="bar" aria-hidden="true"></div>
+</div>
+</section>
+<section class="stats" aria-label="Estadisticas principales">
+<div class="stat"><div class="num">19</div><div class="label">Paises</div></div>
+<div class="stat"><div class="num">37</div><div class="label">Lenguas</div></div>
+<div class="stat"><div class="num">Off-Grid</div><div class="label">Autonomo</div></div>
+<div class="stat"><div class="num">SDR</div><div class="label">Espectro Soberano</div></div>
+</section>
+<section class="features" id="features">
+<h2>10 <span>Funciones</span> Soberanas</h2>
+<div class="grid">
+<div class="card"><div class="icon" aria-hidden="true">&#x1F4E1;</div><h3>Transmisor/Receptor SDR</h3><p>Radio definida por software para transmitir y recibir en cualquier frecuencia.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F4FB;</div><h3>FM/AM Digital</h3><p>Broadcasting digital en FM y AM con calidad superior y menor consumo.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F310;</div><h3>Radio por Internet</h3><p>Streaming de radio en linea con baja latencia y alta fidelidad.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F6A8;</div><h3>Alertas de Emergencia</h3><p>Sistema EAS integrado para alertas de desastres y emergencias comunitarias.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F5E3;</div><h3>Programacion Indigena</h3><p>Contenido en 37 lenguas indigenas con programacion cultural dedicada.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F4DC;</div><h3>Licencias Comunitarias</h3><p>Gestion simplificada de licencias de radio comunitaria en cada pais.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F3A7;</div><h3>Hosting de Podcasts</h3><p>Plataforma de podcasts con distribucion automatica y RSS soberano.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F3B5;</div><h3>Consola DJ en Vivo</h3><p>Mesa de mezcla virtual para programas en vivo con efectos y transiciones.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F4CA;</div><h3>Analizador de Espectro</h3><p>Visualizacion en tiempo real del espectro radioelectrico disponible.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F3D4;</div><h3>Audio Ultima Milla</h3><p>Solucion de audio para comunidades rurales sin conectividad a internet.</p></div>
+</div>
+</section>
+<section class="radio-player" id="player">
+<h2>Escucha <span>Radio Soberana</span></h2>
+<div class="player-ui" role="img" aria-label="Demostracion de reproductor de Radio Soberana">
+<div class="player-header"><span class="station"><span aria-hidden="true">&#x1F534;</span> EN VIVO</span><span class="freq">98.5 FM &mdash; SDR</span></div>
+<div class="player-body">
+<div class="now-playing">Reproduciendo Ahora</div>
+<div class="track">Cantos del Altiplano</div>
+<div class="artist">Radio Ayllu Cusco &bull; Quechua</div>
+<div class="player-bar"><div class="fill"></div></div>
+<div class="player-controls">
+<button type="button" aria-label="Cancion anterior"><span aria-hidden="true">&#x23EE;</span></button>
+<button class="play-btn" type="button" aria-label="Reproducir"><span aria-hidden="true">&#x25B6;</span></button>
+<button type="button" aria-label="Siguiente cancion"><span aria-hidden="true">&#x23ED;</span></button>
+</div>
+</div>
+<div class="stations" role="list" aria-label="Estaciones disponibles">
+<span class="chip active" role="listitem">Ayllu Cusco</span>
+<span class="chip" role="listitem">Mapuche FM</span>
+<span class="chip" role="listitem">Navajo Nation</span>
+<span class="chip" role="listitem">Maya Voz</span>
+<span class="chip" role="listitem">Guarani Libre</span>
+<span class="chip" role="listitem">Aymara Stereo</span>
+</div>
+</div>
+</section>
+</main>
+<footer id="contact">
+<div class="brand">Ierahkwa</div>
+<p>Radio Soberana &mdash; La voz de los pueblos originarios en el espectro libre.</p>
+</footer>
+</body>
+</html>

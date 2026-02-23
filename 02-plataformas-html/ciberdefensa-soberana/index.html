@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ciberdefensa Soberana — Escudo Digital Pan-Americano</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--accent:#f44336}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s}
+.skip-nav:focus{top:1rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:99}
+nav .logo{font-weight:700;font-size:1.2rem;color:var(--gold)}
+nav ul{display:flex;list-style:none;gap:1.5rem}
+nav ul a{color:var(--txt2);font-size:.9rem;transition:color .2s}
+nav ul a:hover,nav ul a:focus{color:var(--accent)}
+.hero{text-align:center;padding:4rem 2rem;position:relative;overflow:hidden;background:radial-gradient(ellipse at center,rgba(244,67,54,.07) 0%,transparent 70%)}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);color:var(--txt);margin-bottom:.5rem}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{color:var(--txt2);max-width:650px;margin:1rem auto}
+.shield-anim{width:180px;height:180px;margin:2rem auto;position:relative}
+.shield-anim .ring{position:absolute;inset:0;border:2px solid var(--accent);border-radius:50%;opacity:.3;animation:pulse-ring 3s ease-in-out infinite}
+.shield-anim .ring:nth-child(2){inset:15px;animation-delay:.5s;opacity:.5}
+.shield-anim .ring:nth-child(3){inset:30px;animation-delay:1s;opacity:.7}
+.shield-anim .core{position:absolute;inset:45px;background:rgba(244,67,54,.15);border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem}
+.shield-anim .dot{position:absolute;width:8px;height:8px;background:var(--accent);border-radius:50%;animation:orbit 4s linear infinite}
+.shield-anim .dot:nth-child(5){top:0;left:50%;animation-delay:0s}
+.shield-anim .dot:nth-child(6){top:50%;right:0;animation-delay:1s}
+.shield-anim .dot:nth-child(7){bottom:0;left:50%;animation-delay:2s}
+@keyframes pulse-ring{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.05);opacity:.6}}
+@keyframes orbit{0%{box-shadow:0 0 6px var(--accent)}50%{box-shadow:0 0 16px var(--accent)}100%{box-shadow:0 0 6px var(--accent)}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
+.stat{text-align:center;padding:1rem}
+.stat .val{font-size:1.5rem;font-weight:700;color:var(--accent)}
+.stat .lbl{font-size:.8rem;color:var(--txt2);margin-top:.25rem}
+section.features{padding:3rem 2rem}
+section.features h2{text-align:center;font-size:1.6rem;margin-bottom:2rem;color:var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;max-width:1200px;margin:0 auto}
+.card{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.card h3{font-size:1rem;margin-bottom:.5rem;color:var(--txt)}
+.card h3 .ico{margin-right:.4rem}
+.card p{font-size:.85rem;color:var(--txt2)}
+.threat-map{padding:3rem 2rem;max-width:1000px;margin:0 auto}
+.threat-map h2{text-align:center;font-size:1.6rem;margin-bottom:2rem;color:var(--gold)}
+.map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.8rem}
+.country{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:.8rem;text-align:center;position:relative;overflow:hidden}
+.country .name{font-size:.8rem;font-weight:600;color:var(--txt)}
+.country .status{font-size:.7rem;margin-top:.3rem;color:#4caf50;font-weight:600}
+.country .bar{position:absolute;bottom:0;left:0;height:3px;background:var(--accent);animation:scan 3s linear infinite;width:100%;opacity:.5}
+@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+footer{text-align:center;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);color:var(--txt2);font-size:.8rem}
+footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5rem}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+<nav aria-label="Navegaci&oacute;n principal">
+  <div class="logo"><span aria-hidden="true">&#x1F6E1;</span> Ciberdefensa Soberana</div>
+  <ul>
+    <li><a href="#features">Capacidades</a></li>
+    <li><a href="#map">Mapa de Amenazas</a></li>
+    <li><a href="#contact">Contacto</a></li>
+  </ul>
+</nav>
+<main id="main">
+  <section class="hero">
+    <div class="shield-anim" aria-hidden="true">
+      <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+      <div class="core"><span aria-hidden="true">&#x1F6E1;</span></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    <h1>Escudo Digital <em>Pan-Americano</em></h1>
+    <p>Centro de comando de ciberdefensa soberana protegiendo la infraestructura digital de 19 naciones ind&iacute;genas. Detecci&oacute;n de amenazas con IA, mitigaci&oacute;n en tiempo real, cero brechas.</p>
+  </section>
+  <div class="stats" role="region" aria-label="Estad&iacute;sticas clave">
+    <div class="stat"><div class="val">24/7</div><div class="lbl">SOC Activo</div></div>
+    <div class="stat"><div class="val">19</div><div class="lbl">Naciones</div></div>
+    <div class="stat"><div class="val">AI</div><div class="lbl">Threat Detection</div></div>
+    <div class="stat"><div class="val">0</div><div class="lbl">Brechas</div></div>
+  </div>
+  <section class="features" id="features">
+    <h2><span aria-hidden="true">&#x2699;</span> Capacidades de Defensa</h2>
+    <div class="grid">
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4CA;</span>SOC Dashboard 24/7</h3><p>Centro de operaciones de seguridad con monitoreo continuo, alertas en tiempo real y respuesta automatizada ante incidentes cr&iacute;ticos.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4E1;</span>Threat Intelligence Feed</h3><p>Alimentaci&oacute;n de inteligencia de amenazas de m&uacute;ltiples fuentes, correlacionadas con IA para detecci&oacute;n predictiva.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F6E1;</span>DDoS Mitigation</h3><p>Mitigaci&oacute;n de ataques de denegaci&oacute;n de servicio distribuida con capacidad multi-terabit y respuesta en milisegundos.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F916;</span>Intrusion Detection (AI)</h3><p>Sistema de detecci&oacute;n de intrusiones potenciado por inteligencia artificial con aprendizaje continuo de patrones de ataque.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F9EA;</span>Malware Analysis Sandbox</h3><p>Sandbox aislado para an&aacute;lisis din&aacute;mico y est&aacute;tico de malware con detonaci&oacute;n segura y extracci&oacute;n de IOCs.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F50D;</span>Vulnerability Scanner</h3><p>Esc&aacute;ner de vulnerabilidades continuo para toda la infraestructura soberana con priorizaci&oacute;n por riesgo contextual.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x26A1;</span>Incident Response Orchestrator</h3><p>Orquestador de respuesta a incidentes con playbooks automatizados y coordinaci&oacute;n multi-naci&oacute;n en tiempo real.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F3AF;</span>Red Team Simulation</h3><p>Simulaciones de equipo rojo con t&eacute;cnicas MITRE ATT&CK para evaluar y fortalecer defensas soberanas.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F575;</span>Threat Hunting Platform</h3><p>Plataforma de caza proactiva de amenazas con hip&oacute;tesis guiadas por IA y an&aacute;lisis forense avanzado.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F52E;</span>Zero-Day Defense (ML)</h3><p>Defensa contra vulnerabilidades zero-day con modelos de machine learning entrenados en comportamiento an&oacute;malo.</p></article>
+    </div>
+  </section>
+  <section class="threat-map" id="map">
+    <h2><span aria-hidden="true">&#x1F30E;</span> Mapa de Amenazas en Vivo</h2>
+    <div class="map-grid" role="list" aria-label="Estado de protecci&oacute;n por pa&iacute;s">
+      <div class="country" role="listitem"><div class="name">M&eacute;xico</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Guatemala</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Honduras</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">El Salvador</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Nicaragua</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Costa Rica</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Panam&aacute;</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Colombia</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Venezuela</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Ecuador</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Per&uacute;</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Bolivia</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Paraguay</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Chile</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Argentina</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Brasil</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Uruguay</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Surinam</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+      <div class="country" role="listitem"><div class="name">Guyana</div><div class="status">PROTEGIDO</div><div class="bar" aria-hidden="true"></div></div>
+    </div>
+  </section>
+</main>
+<footer id="contact">
+  <div class="brand"><span aria-hidden="true">&#x1F30E;</span> Ierahkwa</div>
+  <p>Ciberdefensa Soberana &mdash; Protecci&oacute;n Digital para Naciones Ind&iacute;genas</p>
+  <p>&copy; 2026 Ierahkwa Sovereign Systems. Todos los derechos reservados.</p>
+</footer>
+</body>
+</html>

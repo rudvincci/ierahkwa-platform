@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Criptograf&iacute;a Militar Soberana — Comunicaciones Clasificadas</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--accent:#00e676}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s}
+.skip-nav:focus{top:1rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:99}
+nav .logo{font-weight:700;font-size:1.2rem;color:var(--gold)}
+nav ul{display:flex;list-style:none;gap:1.5rem}
+nav ul a{color:var(--txt2);font-size:.9rem;transition:color .2s}
+nav ul a:hover,nav ul a:focus{color:var(--accent)}
+.hero{text-align:center;padding:4rem 2rem;position:relative;background:radial-gradient(ellipse at center,rgba(0,230,118,.06) 0%,transparent 70%)}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);margin-bottom:.5rem}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{color:var(--txt2);max-width:650px;margin:1rem auto}
+.cipher-anim{width:240px;height:160px;margin:2rem auto;position:relative;overflow:hidden;border:1px solid var(--brd);border-radius:var(--r);background:var(--bg2)}
+.cipher-row{display:flex;white-space:nowrap;font-family:'Courier New',monospace;font-size:.75rem;color:var(--accent);opacity:.4;animation:cipher-scroll 8s linear infinite;padding:2px 0}
+.cipher-row:nth-child(2){animation-duration:6s;animation-direction:reverse;opacity:.3}
+.cipher-row:nth-child(3){animation-duration:10s;opacity:.5}
+.cipher-row:nth-child(4){animation-duration:7s;animation-direction:reverse;opacity:.25}
+.cipher-row:nth-child(5){animation-duration:9s;opacity:.4}
+.cipher-row:nth-child(6){animation-duration:5s;animation-direction:reverse;opacity:.35}
+.cipher-row:nth-child(7){animation-duration:11s;opacity:.3}
+.cipher-row:nth-child(8){animation-duration:6.5s;animation-direction:reverse;opacity:.45}
+.cipher-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(9,9,13,.6)}
+.cipher-overlay .lock{font-size:2.5rem;animation:lock-pulse 3s ease-in-out infinite}
+@keyframes cipher-scroll{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+@keyframes lock-pulse{0%,100%{opacity:.7;text-shadow:0 0 10px var(--accent)}50%{opacity:1;text-shadow:0 0 25px var(--accent)}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
+.stat{text-align:center;padding:1rem}
+.stat .val{font-size:1.3rem;font-weight:700;color:var(--accent);font-family:'Courier New',monospace}
+.stat .lbl{font-size:.8rem;color:var(--txt2);margin-top:.25rem}
+section.features{padding:3rem 2rem}
+section.features h2{text-align:center;font-size:1.6rem;margin-bottom:2rem;color:var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;max-width:1200px;margin:0 auto}
+.card{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.card h3{font-size:1rem;margin-bottom:.5rem}
+.card h3 .ico{margin-right:.4rem}
+.card p{font-size:.85rem;color:var(--txt2)}
+.crypto-dash{padding:3rem 2rem;max-width:900px;margin:0 auto}
+.crypto-dash h2{text-align:center;font-size:1.6rem;margin-bottom:2rem;color:var(--gold)}
+.algo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem}
+.algo{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:1.2rem;position:relative}
+.algo .name{font-family:'Courier New',monospace;font-size:.9rem;color:var(--accent);font-weight:700}
+.algo .type{font-size:.7rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.05em;margin:.3rem 0}
+.algo .meter{height:4px;background:var(--bg4);border-radius:2px;margin-top:.5rem;overflow:hidden}
+.algo .meter .fill{height:100%;background:var(--accent);border-radius:2px;animation:meter-fill 3s ease-out forwards}
+.algo:nth-child(1) .fill{width:98%}
+.algo:nth-child(2) .fill{width:95%;animation-delay:.3s}
+.algo:nth-child(3) .fill{width:92%;animation-delay:.6s}
+.algo:nth-child(4) .fill{width:99%;animation-delay:.9s}
+.algo .strength{font-size:.75rem;color:var(--txt2);margin-top:.4rem;display:flex;justify-content:space-between}
+.algo .strength em{color:var(--accent);font-style:normal}
+@keyframes meter-fill{from{width:0}}
+footer{text-align:center;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);color:var(--txt2);font-size:.8rem}
+footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5rem}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+<nav aria-label="Navegaci&oacute;n principal">
+  <div class="logo"><span aria-hidden="true">&#x1F510;</span> Criptograf&iacute;a Militar Soberana</div>
+  <ul>
+    <li><a href="#features">Capacidades</a></li>
+    <li><a href="#algorithms">Algoritmos</a></li>
+    <li><a href="#contact">Contacto</a></li>
+  </ul>
+</nav>
+<main id="main">
+  <section class="hero">
+    <div class="cipher-anim" aria-hidden="true">
+      <div class="cipher-row">a7f3 9c2d e1b8 04f6 7a3c d5e9 82b1 f4a0 6c8e 3d7b a1f5 9e2c 0b84 d6f3 7a1e c5b9 82d4 f0a7</div>
+      <div class="cipher-row">CRYSTALS-KYBER-1024::ENCAP{0xf3a7c2d1e9b8046f} ML-DSA-65::SIGN{0x7a3cd5e982b1f4a0}</div>
+      <div class="cipher-row">e2b9 0c7a d4f1 83a6 5e9c b2d7 f0a3 6184 c8e5 3b9f a7d2 1c04 e6f8 9a3b 5d7c 02e1 b4f6 8a9d</div>
+      <div class="cipher-row">HSM::GENERATE_KEY{algorithm:CRYSTALS-Kyber,security_level:5,entropy:QRNG}</div>
+      <div class="cipher-row">4f8a 2d6c b1e3 97f0 5a8d c2b4 e7f1 03a9 6d8c 3b5e a0f2 9c7d 14b6 e8a3 5f9d 02c1 7b4e d6f8</div>
+      <div class="cipher-row">ZRTP+PQ::HANDSHAKE{peer:SOV-NODE-07,cipher:AES-256-GCM,kex:KYBER-1024}</div>
+      <div class="cipher-row">b3e7 1a9f c5d2 08b4 6f3a e9c1 72d8 a4f6 5b0e 8c3d f1a7 9e2b 04d6 c8f3 3a5e 71b9 e0d4 f2a8</div>
+      <div class="cipher-row">PKI::CERT{issuer:SOVEREIGN-CA,subject:NATION-19,validity:365d,algo:ML-DSA-65}</div>
+      <div class="cipher-overlay"><span class="lock" aria-hidden="true">&#x1F512;</span></div>
+    </div>
+    <h1>Comunicaciones <em>Clasificadas</em></h1>
+    <p>Criptograf&iacute;a militar post-cu&aacute;ntica de grado soberano para comunicaciones clasificadas. CRYSTALS-Kyber, ML-DSA-65, HSM y generaci&oacute;n cu&aacute;ntica de n&uacute;meros aleatorios.</p>
+  </section>
+  <div class="stats" role="region" aria-label="Estad&iacute;sticas clave">
+    <div class="stat"><div class="val">PQ</div><div class="lbl">Post-Cu&aacute;ntico</div></div>
+    <div class="stat"><div class="val">KYBER</div><div class="lbl">CRYSTALS-Kyber</div></div>
+    <div class="stat"><div class="val">ML-DSA</div><div class="lbl">ML-DSA-65</div></div>
+    <div class="stat"><div class="val">HSM</div><div class="lbl">Grade</div></div>
+  </div>
+  <section class="features" id="features">
+    <h2><span aria-hidden="true">&#x1F5DD;</span> Capacidades Criptogr&aacute;ficas</h2>
+    <div class="grid">
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F511;</span>Post-Quantum Key Exchange</h3><p>Intercambio de claves post-cu&aacute;ntico basado en CRYSTALS-Kyber-1024 resistente a ataques de computadoras cu&aacute;nticas.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x270D;</span>Digital Signatures (ML-DSA-65)</h3><p>Firmas digitales con ML-DSA-65 (antes Dilithium) para autenticaci&oacute;n de documentos clasificados soberanos.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4DE;</span>Secure Voice (ZRTP+PQ)</h3><p>Comunicaciones de voz seguras con protocolo ZRTP mejorado con intercambio de claves post-cu&aacute;ntico.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4C1;</span>Classified Document Vault</h3><p>B&oacute;veda de documentos clasificados con cifrado AES-256-GCM, control de acceso multinivel y auditor&iacute;a completa.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F3DB;</span>Key Management (PKI)</h3><p>Infraestructura de gesti&oacute;n de claves con PKI soberana, autoridad certificadora propia y revocaci&oacute;n en tiempo real.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4E6;</span>Hardware Security Modules</h3><p>M&oacute;dulos HSM FIPS 140-3 Level 4 para almacenamiento de claves maestras y operaciones criptogr&aacute;ficas cr&iacute;ticas.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4E1;</span>Secure Mesh Radio</h3><p>Protocolo de radio mesh cifrado para comunicaciones t&aacute;cticas en campo sin dependencia de infraestructura celular.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4D6;</span>Code Book Generator</h3><p>Generador de libros de c&oacute;digos din&aacute;micos con rotaci&oacute;n autom&aacute;tica y distribuci&oacute;n cifrada entre naciones.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F5BC;</span>Steganography Engine</h3><p>Motor de esteganograf&iacute;a avanzado para ocultar mensajes clasificados en archivos multimedia ordinarios.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F3B2;</span>Quantum RNG</h3><p>Generador cu&aacute;ntico de n&uacute;meros aleatorios verdaderos basado en efectos cu&aacute;nticos para entrop&iacute;a perfecta.</p></article>
+    </div>
+  </section>
+  <section class="crypto-dash" id="algorithms">
+    <h2><span aria-hidden="true">&#x1F9EC;</span> Estado de Algoritmos Soberanos</h2>
+    <div class="algo-grid" role="list" aria-label="Estado de algoritmos criptogr&aacute;ficos">
+      <div class="algo" role="listitem"><div class="name">CRYSTALS-Kyber-1024</div><div class="type">Key Encapsulation Mechanism</div><div class="meter"><div class="fill"></div></div><div class="strength"><span>Seguridad post-cu&aacute;ntica</span><em>Nivel 5</em></div></div>
+      <div class="algo" role="listitem"><div class="name">ML-DSA-65</div><div class="type">Digital Signature Algorithm</div><div class="meter"><div class="fill"></div></div><div class="strength"><span>Resistencia cu&aacute;ntica</span><em>Nivel 3</em></div></div>
+      <div class="algo" role="listitem"><div class="name">AES-256-GCM</div><div class="type">Symmetric Encryption</div><div class="meter"><div class="fill"></div></div><div class="strength"><span>Cifrado sim&eacute;trico</span><em>256-bit</em></div></div>
+      <div class="algo" role="listitem"><div class="name">SPHINCS+-256f</div><div class="type">Hash-Based Signatures</div><div class="meter"><div class="fill"></div></div><div class="strength"><span>Firmas basadas en hash</span><em>Nivel 5</em></div></div>
+    </div>
+  </section>
+</main>
+<footer id="contact">
+  <div class="brand"><span aria-hidden="true">&#x1F510;</span> Ierahkwa</div>
+  <p>Criptograf&iacute;a Militar Soberana &mdash; Comunicaciones Clasificadas</p>
+  <p>&copy; 2026 Ierahkwa Sovereign Systems. Todos los derechos reservados.</p>
+</footer>
+</body>
+</html>

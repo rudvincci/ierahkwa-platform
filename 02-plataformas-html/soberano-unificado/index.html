@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ierahkwa Soberano Unificado — Gobierno Digital Pan-Americano</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--accent:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+a{color:var(--gold);text-decoration:none}
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+.skip{position:absolute;top:-100%;left:8px;background:var(--gold);color:var(--bg);padding:8px 16px;border-radius:var(--r);z-index:9999;font-weight:700}
+.skip:focus{top:8px}
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(9,9,13,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--brd);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.brand{display:flex;align-items:center;gap:10px;font-size:1.1rem;font-weight:700;color:var(--txt)}
+.brand-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),#b8922e);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 0 12px rgba(212,168,83,.25)}
+.nav-links{display:flex;gap:20px;align-items:center;font-size:.85rem;flex-wrap:wrap}
+.nav-links a{color:var(--txt2);transition:color .2s}
+.nav-links a:hover{color:var(--gold)}
+.btn{display:inline-block;padding:8px 22px;background:linear-gradient(135deg,var(--gold),#b8922e);color:var(--bg);font-weight:700;border-radius:var(--r);border:none;cursor:pointer;font-size:.85rem;transition:transform .15s,box-shadow .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 24px rgba(212,168,83,.35)}
+.btn-outline{background:transparent;border:1px solid var(--gold);color:var(--gold)}
+.btn-outline:hover{background:rgba(212,168,83,.1)}
+/* HERO */
+.hero{padding:130px 24px 64px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:40%;left:50%;width:800px;height:800px;background:radial-gradient(circle,rgba(212,168,83,.14) 0%,rgba(212,168,83,.05) 35%,transparent 65%);transform:translate(-50%,-55%);pointer-events:none;animation:pulse 6s ease-in-out infinite}
+.hero::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 50px,rgba(212,168,83,.015) 50px,rgba(212,168,83,.015) 51px);pointer-events:none}
+@keyframes pulse{0%,100%{opacity:.6;transform:translate(-50%,-55%) scale(1)}50%{opacity:1;transform:translate(-50%,-55%) scale(1.18)}}
+.hero h1{font-size:clamp(2rem,5.5vw,3.6rem);font-weight:800;background:linear-gradient(135deg,var(--gold) 0%,#f0d080 50%,var(--gold) 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;position:relative;margin-bottom:14px;animation:shimmer 4s linear infinite}
+@keyframes shimmer{to{background-position:200% center}}
+.hero .sub{font-size:clamp(.95rem,2vw,1.15rem);color:var(--txt2);max-width:700px;margin:0 auto 40px}
+.hero .tagline{display:inline-block;padding:6px 18px;background:rgba(212,168,83,.08);border:1px solid rgba(212,168,83,.2);border-radius:24px;font-size:.78rem;color:var(--gold);margin-bottom:24px;letter-spacing:.5px}
+.counters{display:flex;flex-wrap:wrap;justify-content:center;gap:36px;margin-bottom:44px}
+.counter{text-align:center;min-width:90px}
+.counter .num{font-size:clamp(1.6rem,3vw,2.5rem);font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+.counter .label{font-size:.75rem;color:var(--txt2);text-transform:uppercase;letter-spacing:1.2px;margin-top:2px}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+/* LIVE BADGE */
+.live-badge{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;color:#22c55e;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.live-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;animation:blink 2s ease-in-out infinite}
+/* DASHBOARD */
+.dashboard{padding:48px 24px;max-width:1100px;margin:0 auto}
+.section-title{font-size:1.5rem;font-weight:700;margin-bottom:28px;text-align:center}
+.section-title span{color:var(--gold)}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:60px}
+.dash-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:20px;text-align:center;transition:border-color .2s}
+.dash-card:hover{border-color:rgba(212,168,83,.3)}
+.dash-card .val{font-size:1.5rem;font-weight:800;color:var(--gold)}
+.dash-card .lbl{font-size:.72rem;color:var(--txt2);margin-top:4px;text-transform:uppercase;letter-spacing:.6px}
+.dash-card .bar{height:4px;background:var(--bg4);border-radius:4px;margin-top:12px;overflow:hidden}
+.dash-card .bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),#f0d080);animation:fillBar 2.2s ease-out forwards;transform-origin:left}
+@keyframes fillBar{from{width:0}to{width:var(--w)}}
+.dash-card .status{font-size:.65rem;color:#22c55e;margin-top:6px}
+/* CATEGORIES */
+.categories{padding:48px 24px;max-width:1200px;margin:0 auto}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;margin-bottom:60px}
+.cat-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:20px;transition:border-color .25s,transform .25s,box-shadow .25s}
+.cat-card:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,168,83,.08)}
+.cat-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cat-icon{font-size:1.3rem;width:40px;height:40px;background:var(--bg4);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cat-name{font-size:.95rem;font-weight:700}
+.cat-count{font-size:.7rem;color:var(--gold);background:rgba(212,168,83,.1);padding:2px 9px;border-radius:20px;margin-left:auto;font-weight:600}
+.cat-list{display:flex;flex-wrap:wrap;gap:5px}
+.cat-tag{font-size:.7rem;padding:3px 9px;background:var(--bg3);border:1px solid var(--brd);border-radius:20px;color:var(--txt2);transition:color .2s,border-color .2s,background .2s;cursor:default;white-space:nowrap}
+.cat-tag:hover{color:var(--gold);border-color:rgba(212,168,83,.35);background:rgba(212,168,83,.05)}
+/* COUNTRIES */
+.countries{padding:48px 24px;max-width:1000px;margin:0 auto}
+.country-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:60px}
+.country{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:10px 12px;display:flex;align-items:center;gap:8px;font-size:.82rem;transition:border-color .2s}
+.country:hover{border-color:rgba(212,168,83,.3)}
+.country .dot{width:7px;height:7px;background:#22c55e;border-radius:50%;flex-shrink:0;animation:blink 3s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+/* ARCH */
+.arch{padding:48px 24px;max-width:1000px;margin:0 auto}
+.arch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:60px}
+.arch-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:18px;text-align:center;transition:border-color .2s}
+.arch-card:hover{border-color:rgba(212,168,83,.3)}
+.arch-card .av{font-size:1.25rem;font-weight:800;color:var(--gold);font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.arch-card .al{font-size:.7rem;color:var(--txt2);margin-top:5px;text-transform:uppercase;letter-spacing:.6px}
+/* SEPARATOR */
+.sep{height:1px;max-width:200px;margin:0 auto 48px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.3}
+/* FOOTER */
+footer{text-align:center;padding:48px 24px 36px;border-top:1px solid var(--brd);color:var(--txt2);font-size:.8rem}
+footer .f-brand{font-size:1.15rem;font-weight:700;color:var(--txt);margin-bottom:6px}
+footer .f-peace{color:var(--gold);font-style:italic;margin:8px 0}
+footer .f-built{margin-top:8px;font-size:.72rem;color:var(--txt2)}
+footer .f-copy{margin-top:14px;font-size:.65rem;color:var(--brd)}
+/* RESPONSIVE */
+@media(max-width:600px){
+  nav{padding:0 14px;height:50px}
+  .nav-links{display:none}
+  .hero{padding:90px 16px 40px}
+  .cat-grid{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:repeat(2,1fr)}
+  .country-grid{grid-template-columns:repeat(2,1fr)}
+  .arch-grid{grid-template-columns:repeat(2,1fr)}
+  .counters{gap:20px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Saltar al contenido principal</a>
+
+<nav aria-label="Navegaci&oacute;n principal">
+  <div class="brand">
+    <div class="brand-icon" aria-hidden="true">&#x1F985;</div>
+    Ierahkwa Unificado
+  </div>
+  <div class="nav-links">
+    <a href="#dashboard">Dashboard</a>
+    <a href="#plataformas">Plataformas</a>
+    <a href="#naciones">Naciones</a>
+    <a href="#arquitectura">Arquitectura</a>
+    <button class="btn">Iniciar Sesi&oacute;n</button>
+  </div>
+</nav>
+
+<main id="main">
+  <!-- HERO -->
+  <section class="hero" aria-label="Bienvenida">
+    <div class="tagline" aria-hidden="true">&#x1F30E; Gobierno Digital Soberano Pan-Americano</div>
+    <h1>Un Gobierno. Un Pueblo. Una Plataforma.</h1>
+    <p class="sub">151 plataformas soberanas unificadas para 72 millones de personas ind&iacute;genas en 19 pa&iacute;ses &mdash; la infraestructura digital m&aacute;s ambiciosa del hemisferio.</p>
+    <div class="counters" role="list" aria-label="Estad&iacute;sticas clave">
+      <div class="counter" role="listitem"><div class="num" data-target="151">0</div><div class="label">Plataformas</div></div>
+      <div class="counter" role="listitem"><div class="num" data-target="72" data-suffix="M">0</div><div class="label">Personas</div></div>
+      <div class="counter" role="listitem"><div class="num" data-target="19">0</div><div class="label">Pa&iacute;ses</div></div>
+      <div class="counter" role="listitem"><div class="num" data-target="574">0</div><div class="label">Naciones</div></div>
+      <div class="counter" role="listitem"><div class="num" data-target="43">0</div><div class="label">Idiomas</div></div>
+    </div>
+    <div class="hero-ctas">
+      <a href="#plataformas" class="btn">Explorar Plataformas</a>
+      <a href="#dashboard" class="btn btn-outline">Portal Ciudadano</a>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="dashboard" id="dashboard" aria-label="Panel de estad&iacute;sticas en vivo">
+    <h2 class="section-title"><span aria-hidden="true">&#x25C8;</span> Dashboard en Vivo</h2>
+    <div class="live-badge" aria-label="Sistema en l&iacute;nea"><span class="live-dot" aria-hidden="true"></span> Sistema operativo &mdash; todos los nodos activos</div>
+    <div class="dash-grid">
+      <div class="dash-card">
+        <div class="val">47.2M</div><div class="lbl">Usuarios Activos</div>
+        <div class="bar"><div class="bar-fill" style="--w:92%"></div></div>
+        <div class="status" aria-hidden="true">&#x25B2; 3.2% hoy</div>
+      </div>
+      <div class="dash-card">
+        <div class="val">12.8M</div><div class="lbl">Transacciones Hoy</div>
+        <div class="bar"><div class="bar-fill" style="--w:78%"></div></div>
+        <div class="status" aria-hidden="true">&#x25B2; 1.8% hoy</div>
+      </div>
+      <div class="dash-card">
+        <div class="val">99.999%</div><div class="lbl">Uptime</div>
+        <div class="bar"><div class="bar-fill" style="--w:99.9%"></div></div>
+        <div class="status" aria-hidden="true">&#x2713; Five-nines</div>
+      </div>
+      <div class="dash-card">
+        <div class="val">8ms</div><div class="lbl">Latencia</div>
+        <div class="bar"><div class="bar-fill" style="--w:12%"></div></div>
+        <div class="status" aria-hidden="true">&#x2713; Ultra-low</div>
+      </div>
+      <div class="dash-card">
+        <div class="val">500+</div><div class="lbl">Sat&eacute;lites Activos</div>
+        <div class="bar"><div class="bar-fill" style="--w:85%"></div></div>
+        <div class="status" aria-hidden="true">&#x25B2; 12 nuevos</div>
+      </div>
+      <div class="dash-card">
+        <div class="val">19</div><div class="lbl">Estaciones Terrestres</div>
+        <div class="bar"><div class="bar-fill" style="--w:100%"></div></div>
+        <div class="status" aria-hidden="true">&#x2713; 100% online</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sep" aria-hidden="true"></div>
+
+  <!-- CATEGORIES -->
+  <section class="categories" id="plataformas" aria-label="151 plataformas organizadas por categor&iacute;a">
+    <h2 class="section-title"><span aria-hidden="true">&#x25C8;</span> 151 Plataformas Soberanas</h2>
+    <div class="cat-grid">
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x1F4AC;</div><div class="cat-name">Comunicaciones</div><span class="cat-count">8</span></div>
+        <div class="cat-list"><span class="cat-tag">Mensajer&iacute;a</span><span class="cat-tag">Telefon&iacute;a</span><span class="cat-tag">Radio</span><span class="cat-tag">Correo</span><span class="cat-tag">Conferencia</span><span class="cat-tag">Voz</span><span class="cat-tag">Foro</span><span class="cat-tag">Traducci&oacute;n</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x1F465;</div><div class="cat-name">Redes Sociales</div><span class="cat-count">4</span></div>
+        <div class="cat-list"><span class="cat-tag">Red Soberana</span><span class="cat-tag">Cortos Ind&iacute;genas</span><span class="cat-tag">Canal Soberano</span><span class="cat-tag">M&uacute;sica</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x1F3E6;</div><div class="cat-name">Finanzas &amp; Banca</div><span class="cat-count">10</span></div>
+        <div class="cat-list"><span class="cat-tag">BDET Bank</span><span class="cat-tag">Wallet</span><span class="cat-tag">Pagos</span><span class="cat-tag">CBDC</span><span class="cat-tag">Tokenizaci&oacute;n</span><span class="cat-tag">Trading</span><span class="cat-tag">Inversiones</span><span class="cat-tag">Banco Central</span><span class="cat-tag">Seguros</span><span class="cat-tag">Pensiones</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x1F3DB;</div><div class="cat-name">Gobierno</div><span class="cat-count">10</span></div>
+        <div class="cat-list"><span class="cat-tag">Parlamento</span><span class="cat-tag">Justicia</span><span class="cat-tag">Registro Civil</span><span class="cat-tag">Diplomacia</span><span class="cat-tag">Hacienda</span><span class="cat-tag">Democracia L&iacute;quida</span><span class="cat-tag">Comisi&oacute;n Electoral</span><span class="cat-tag">Auditor&iacute;a</span><span class="cat-tag">Inmigraci&oacute;n</span><span class="cat-tag">Pasaportes</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x1F6E1;</div><div class="cat-name">Defensa &amp; Seguridad</div><span class="cat-count">10</span></div>
+        <div class="cat-list"><span class="cat-tag">Ej&eacute;rcito</span><span class="cat-tag">Ciberdefensa</span><span class="cat-tag">Frontera Digital</span><span class="cat-tag">Inteligencia</span><span class="cat-tag">Criptograf&iacute;a Militar</span><span class="cat-tag">Centro Ops</span><span class="cat-tag">Drones</span><span class="cat-tag">Vigilancia</span><span class="cat-tag">Seguridad</span><span class="cat-tag">Bomberos</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x1F6F0;</div><div class="cat-name">Espacio &amp; Sat&eacute;lite</div><span class="cat-count">7</span></div>
+        <div class="cat-list"><span class="cat-tag">StarLink</span><span class="cat-tag">GPS</span><span class="cat-tag">Estaci&oacute;n Terrena</span><span class="cat-tag">Lanzamiento</span><span class="cat-tag">Observaci&oacute;n</span><span class="cat-tag">Sat&eacute;lite</span><span class="cat-tag">Telecom</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x1F3E5;</div><div class="cat-name">Salud</div><span class="cat-count">4</span></div>
+        <div class="cat-list"><span class="cat-tag">Healthcare</span><span class="cat-tag">Hospital Campa&ntilde;a</span><span class="cat-tag">Gen&oacute;mica</span><span class="cat-tag">Discapacidad</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x1F4DA;</div><div class="cat-name">Educaci&oacute;n &amp; Cultura</div><span class="cat-count">8</span></div>
+        <div class="cat-list"><span class="cat-tag">Universidad</span><span class="cat-tag">Sabidur&iacute;a</span><span class="cat-tag">Museo</span><span class="cat-tag">Biblioteca</span><span class="cat-tag">Deporte</span><span class="cat-tag">Parques</span><span class="cat-tag">Turismo</span><span class="cat-tag">Patrimonio</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x1F6D2;</div><div class="cat-name">Comercio</div><span class="cat-count">6</span></div>
+        <div class="cat-list"><span class="cat-tag">Comercio</span><span class="cat-tag">Empresa</span><span class="cat-tag">Artesan&iacute;a</span><span class="cat-tag">Hospedaje</span><span class="cat-tag">Marketing</span><span class="cat-tag">Aduana</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x1F5FA;</div><div class="cat-name">Territorio</div><span class="cat-count">8</span></div>
+        <div class="cat-list"><span class="cat-tag">Catastro</span><span class="cat-tag">Urbanismo</span><span class="cat-tag">Vivienda</span><span class="cat-tag">Agricultura</span><span class="cat-tag">Pesca</span><span class="cat-tag">Ganader&iacute;a</span><span class="cat-tag">Agua</span><span class="cat-tag">Residuos</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x2699;</div><div class="cat-name">Tecnolog&iacute;a</div><span class="cat-count">15</span></div>
+        <div class="cat-list"><span class="cat-tag">Cloud</span><span class="cat-tag">Nube</span><span class="cat-tag">CDN</span><span class="cat-tag">IoT</span><span class="cat-tag">Mesh</span><span class="cat-tag">Edge AI</span><span class="cat-tag">Quantum</span><span class="cat-tag">BCI</span><span class="cat-tag">Gemelo Digital</span><span class="cat-tag">ML</span><span class="cat-tag">Rob&oacute;tica</span><span class="cat-tag">Blockchain</span><span class="cat-tag">Homomorf&iacute;ca</span><span class="cat-tag">ZK-Identity</span><span class="cat-tag">Biom&eacute;trica</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x1F4BB;</div><div class="cat-name">Desarrollo</div><span class="cat-count">10</span></div>
+        <div class="cat-list"><span class="cat-tag">IDE</span><span class="cat-tag">Agente</span><span class="cat-tag">Code</span><span class="cat-tag">DevOps</span><span class="cat-tag">LowCode</span><span class="cat-tag">Backend</span><span class="cat-tag">Repositorio</span><span class="cat-tag">Automatizaci&oacute;n</span><span class="cat-tag">Flujos</span><span class="cat-tag">Orquestador</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x2764;</div><div class="cat-name">Servicios Sociales</div><span class="cat-count">6</span></div>
+        <div class="cat-list"><span class="cat-tag">Familia</span><span class="cat-tag">Veteranos</span><span class="cat-tag">Desempleo</span><span class="cat-tag">Emergencias</span><span class="cat-tag">Fauna</span><span class="cat-tag">Humanitario</span></div>
+      </article>
+
+      <article class="cat-card">
+        <div class="cat-head"><div class="cat-icon" aria-hidden="true">&#x1F52C;</div><div class="cat-name">Ciencia &amp; Ambiente</div><span class="cat-count">6</span></div>
+        <div class="cat-list"><span class="cat-tag">Meteorolog&iacute;a</span><span class="cat-tag">Geolog&iacute;a</span><span class="cat-tag">Ambiente</span><span class="cat-tag">Censo</span><span class="cat-tag">Energ&iacute;a</span><span class="cat-tag">Observaci&oacute;n Terrestre</span></div>
+      </article>
+
+    </div>
+  </section>
+
+  <div class="sep" aria-hidden="true"></div>
+
+  <!-- 19 COUNTRIES -->
+  <section class="countries" id="naciones" aria-label="19 naciones conectadas">
+    <h2 class="section-title"><span aria-hidden="true">&#x25C8;</span> 19 Naciones Conectadas</h2>
+    <div class="live-badge"><span class="live-dot" aria-hidden="true"></span> Todos los nodos nacionales activos</div>
+    <div class="country-grid">
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1F2;&#x1F1FD;</span> M&eacute;xico</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1EC;&#x1F1F9;</span> Guatemala</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1ED;&#x1F1F3;</span> Honduras</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1F8;&#x1F1FB;</span> El Salvador</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1F3;&#x1F1EE;</span> Nicaragua</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1E8;&#x1F1F7;</span> Costa Rica</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1F5;&#x1F1E6;</span> Panam&aacute;</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1E8;&#x1F1F4;</span> Colombia</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1FB;&#x1F1EA;</span> Venezuela</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1EA;&#x1F1E8;</span> Ecuador</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1F5;&#x1F1EA;</span> Per&uacute;</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1E7;&#x1F1F4;</span> Bolivia</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1E7;&#x1F1F7;</span> Brasil</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1F5;&#x1F1FE;</span> Paraguay</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1E6;&#x1F1F7;</span> Argentina</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1E8;&#x1F1F1;</span> Chile</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1FA;&#x1F1FE;</span> Uruguay</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1EC;&#x1F1FE;</span> Guyana</div>
+      <div class="country"><span class="dot" aria-hidden="true"></span><span aria-hidden="true">&#x1F1F8;&#x1F1F7;</span> Surinam</div>
+    </div>
+  </section>
+
+  <div class="sep" aria-hidden="true"></div>
+
+  <!-- ARCHITECTURE -->
+  <section class="arch" id="arquitectura" aria-label="Infraestructura y arquitectura">
+    <h2 class="section-title"><span aria-hidden="true">&#x25C8;</span> Arquitectura Soberana</h2>
+    <div class="arch-grid">
+      <div class="arch-card"><div class="av">12,847 TPS</div><div class="al">MameyNode</div></div>
+      <div class="arch-card"><div class="av">777777</div><div class="al">Chain ID</div></div>
+      <div class="arch-card"><div class="av">ML-DSA-65</div><div class="al">Post-Quantum</div></div>
+      <div class="arch-card"><div class="av">43</div><div class="al">Idiomas</div></div>
+      <div class="arch-card"><div class="av">0%</div><div class="al">Tax Rate</div></div>
+      <div class="arch-card"><div class="av">720M</div><div class="al">Wampum Supply</div></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="f-brand">Ierahkwa Ne Kanienke</div>
+  <div class="f-peace">Skennen&#8217;kowa &mdash; The Great Peace</div>
+  <p class="f-built">Built for sovereignty. Built for 72 million.</p>
+  <p class="f-copy">Ierahkwa Soberano Unificado &mdash; Gobierno Digital Pan-Americano &mdash; 151 Plataformas</p>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  // Animated counters with IntersectionObserver
+  const nums=document.querySelectorAll('.counter .num');
+  const countObserver=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      const el=e.target;
+      const target=+el.dataset.target;
+      const suffix=el.dataset.suffix||'';
+      const duration=1800;
+      const start=performance.now();
+      const step=now=>{
+        const progress=Math.min((now-start)/duration,1);
+        const ease=1-Math.pow(1-progress,3);
+        el.textContent=Math.floor(ease*target)+(progress>=1?suffix:'');
+        if(progress<1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+      countObserver.unobserve(el);
+    });
+  },{threshold:.3});
+  nums.forEach(n=>countObserver.observe(n));
+
+  // Stagger card entrance animations
+  const cards=document.querySelectorAll('.cat-card,.dash-card,.country,.arch-card');
+  const cardObserver=new IntersectionObserver(entries=>{
+    entries.forEach((e,i)=>{
+      if(e.isIntersecting){
+        e.target.style.opacity='1';
+        e.target.style.transform='translateY(0)';
+        cardObserver.unobserve(e.target);
+      }
+    });
+  },{threshold:.1});
+  cards.forEach((c,i)=>{
+    c.style.opacity='0';
+    c.style.transform='translateY(16px)';
+    c.style.transition='opacity .4s ease '+i%8*.06+'s,transform .4s ease '+i%8*.06+'s';
+    cardObserver.observe(c);
+  });
+});
+</script>
+</body>
+</html>

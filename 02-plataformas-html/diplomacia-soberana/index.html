@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diplomacia Soberana — Relaciones Internacionales Pan-Americanas</title>
+<meta name="description" content="Plataforma diplomática para gestionar relaciones internacionales entre naciones indígenas soberanas y el mundo.">
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--accent:#42a5f5}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s;text-decoration:none}
+.skip-nav:focus{top:1rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+a{color:var(--accent);text-decoration:none}
+nav{position:sticky;top:0;background:rgba(9,9,13,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;z-index:100}
+nav .logo{font-size:1.2rem;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:.5rem}
+nav ul{list-style:none;display:flex;gap:1.5rem}
+nav ul a{color:var(--txt2);font-size:.9rem;transition:color .2s}
+nav ul a:hover{color:var(--accent)}
+.hero{position:relative;padding:5rem 2rem;text-align:center;background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%);overflow:hidden}
+.hero::before{content:'';position:absolute;top:50%;left:50%;width:320px;height:320px;background:radial-gradient(circle,rgba(66,165,245,.08) 0%,transparent 70%);border-radius:50%;transform:translate(-50%,-50%);animation:orbit 8s linear infinite}
+@keyframes orbit{0%{transform:translate(-50%,-50%) rotate(0deg)}100%{transform:translate(-50%,-50%) rotate(360deg)}}
+.globe{width:140px;height:140px;border:2px solid var(--accent);border-radius:50%;margin:0 auto 2rem;position:relative;opacity:.6}
+.globe::before{content:'';position:absolute;top:10%;left:50%;width:70%;height:80%;border:1.5px solid var(--accent);border-radius:50%;transform:translateX(-50%);opacity:.4}
+.globe::after{content:'';position:absolute;top:50%;left:0;right:0;height:1.5px;background:var(--accent);opacity:.4;transform:translateY(-50%)}
+.globe-meridian{position:absolute;top:0;left:50%;width:1.5px;height:100%;background:var(--accent);opacity:.4;transform:translateX(-50%)}
+.globe-dots{position:absolute;inset:0}
+.globe-dots span{position:absolute;width:6px;height:6px;background:var(--accent);border-radius:50%;animation:blink 2s ease-in-out infinite}
+.globe-dots span:nth-child(1){top:25%;left:30%;animation-delay:0s}
+.globe-dots span:nth-child(2){top:45%;left:70%;animation-delay:.5s}
+.globe-dots span:nth-child(3){top:65%;left:25%;animation-delay:1s}
+.globe-dots span:nth-child(4){top:35%;left:55%;animation-delay:1.5s}
+.globe-dots span:nth-child(5){top:55%;left:45%;animation-delay:.8s}
+@keyframes blink{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;margin-bottom:.5rem}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{color:var(--txt2);max-width:600px;margin:0 auto 2rem;font-size:1.05rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--brd);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
+.stat{background:var(--bg2);padding:1.5rem 1rem;text-align:center}
+.stat strong{display:block;font-size:1.15rem;color:var(--accent);margin-bottom:.25rem}
+.stat span{font-size:.78rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.05em}
+section{padding:4rem 2rem}
+.section-title{text-align:center;font-size:1.6rem;font-weight:700;margin-bottom:.5rem}
+.section-sub{text-align:center;color:var(--txt2);margin-bottom:2.5rem;max-width:550px;margin-left:auto;margin-right:auto}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;max-width:1100px;margin:0 auto}
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:border-color .25s,transform .25s}
+.card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.card .icon{font-size:1.6rem;margin-bottom:.75rem}
+.card h3{font-size:1rem;font-weight:600;margin-bottom:.4rem}
+.card p{font-size:.85rem;color:var(--txt2);line-height:1.5}
+.relations{max-width:800px;margin:0 auto}
+.rel-row{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:.75rem;transition:border-color .25s}
+.rel-row:hover{border-color:var(--accent)}
+.rel-icon{font-size:1.3rem;flex-shrink:0}
+.rel-info{flex:1}
+.rel-info h4{font-size:.95rem;font-weight:600;margin-bottom:.15rem}
+.rel-info p{font-size:.8rem;color:var(--txt2)}
+.rel-status{padding:.3rem .7rem;border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.rel-status.active{background:rgba(102,187,106,.15);color:#66bb6a}
+.rel-status.pending{background:rgba(255,167,38,.15);color:#ffa726}
+.rel-status.observer{background:rgba(66,165,245,.15);color:#42a5f5}
+footer{border-top:1px solid var(--brd);padding:2rem;text-align:center;color:var(--txt2);font-size:.85rem}
+footer strong{color:var(--accent)}
+@media(max-width:600px){nav ul{display:none}.features{grid-template-columns:1fr}.hero{padding:3rem 1rem}}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+<nav aria-label="Navegación principal">
+  <div class="logo"><span aria-hidden="true">&#127758;</span> Diplomacia Soberana</div>
+  <ul role="list">
+    <li><a href="#funciones">Funciones</a></li>
+    <li><a href="#relaciones">Relaciones</a></li>
+  </ul>
+</nav>
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="globe" aria-hidden="true">
+      <div class="globe-meridian"></div>
+      <div class="globe-dots"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+    <h1 id="hero-title"><em>Diplomacia</em> Soberana</h1>
+    <p>Relaciones Internacionales Pan-Americanas — Plataforma diplomática que gestiona las relaciones entre naciones indígenas soberanas y organizaciones internacionales.</p>
+  </section>
+  <div class="stats" role="list" aria-label="Estadísticas clave">
+    <div class="stat" role="listitem"><strong>19</strong><span>Naciones</span></div>
+    <div class="stat" role="listitem"><strong>ONU/OEA</strong><span>Integración</span></div>
+    <div class="stat" role="listitem"><strong>Cifrados</strong><span>Tratados</span></div>
+    <div class="stat" role="listitem"><strong>Global</strong><span>Reconocimiento</span></div>
+  </div>
+  <section id="funciones" aria-labelledby="feat-title">
+    <h2 class="section-title" id="feat-title">Funciones Diplomáticas</h2>
+    <p class="section-sub">Diez módulos para gestión diplomática soberana completa en el escenario internacional.</p>
+    <div class="features">
+      <article class="card"><div class="icon" aria-hidden="true">&#127970;</div><h3>Red de Embajadas</h3><p>Dashboard de embajadas soberanas en 19 países con gestión de personal, presupuesto y operaciones consulares.</p></article>
+      <article class="card"><div class="icon" aria-hidden="true">&#128220;</div><h3>Repositorio de Tratados</h3><p>Archivo digital de todos los tratados vigentes, históricos y en negociación con búsqueda semántica avanzada.</p></article>
+      <article class="card"><div class="icon" aria-hidden="true">&#128274;</div><h3>Comunicación Cifrada</h3><p>Canal diplomático con cifrado de extremo a extremo, mensajería efímera y protocolos de seguridad soberanos.</p></article>
+      <article class="card"><div class="icon" aria-hidden="true">&#127760;</div><h3>Integración ONU/OEA</h3><p>Conexión directa con sistemas de Naciones Unidas y OEA para participación en foros y votaciones internacionales.</p></article>
+      <article class="card"><div class="icon" aria-hidden="true">&#128176;</div><h3>Negociación Comercial</h3><p>Herramientas para negociar acuerdos comerciales con análisis de impacto económico y cultural automatizado.</p></article>
+      <article class="card"><div class="icon" aria-hidden="true">&#127912;</div><h3>Intercambio Cultural</h3><p>Programas de intercambio artístico, educativo y cultural entre naciones soberanas y países del mundo.</p></article>
+      <article class="card"><div class="icon" aria-hidden="true">&#128101;</div><h3>Servicios Consulares</h3><p>Portal de atención a ciudadanos soberanos en el exterior: visas, asistencia legal y protección consular.</p></article>
+      <article class="card"><div class="icon" aria-hidden="true">&#128179;</div><h3>Credenciales Blockchain</h3><p>Credenciales diplomáticas verificables en blockchain con inmunidad y privilegios codificados criptográficamente.</p></article>
+      <article class="card"><div class="icon" aria-hidden="true">&#129309;</div><h3>Coordinación de Ayuda</h3><p>Gestión de ayuda internacional recibida y proporcionada con transparencia total y trazabilidad de fondos.</p></article>
+      <article class="card"><div class="icon" aria-hidden="true">&#128200;</div><h3>Rastreador de Reconocimiento</h3><p>Monitor en tiempo real del estado de reconocimiento de soberanía por parte de estados y organizaciones globales.</p></article>
+    </div>
+  </section>
+  <section id="relaciones" aria-labelledby="rel-title">
+    <h2 class="section-title" id="rel-title">Relaciones Internacionales Activas</h2>
+    <p class="section-sub">Estado actual de relaciones diplomáticas con organizaciones y estados clave.</p>
+    <div class="relations" role="list" aria-label="Relaciones diplomáticas activas">
+      <div class="rel-row" role="listitem">
+        <span class="rel-icon" aria-hidden="true">&#127760;</span>
+        <div class="rel-info"><h4>Naciones Unidas (ONU)</h4><p>Foro Permanente para las Cuestiones Indígenas — Participación plena</p></div>
+        <span class="rel-status active">Activo</span>
+      </div>
+      <div class="rel-row" role="listitem">
+        <span class="rel-icon" aria-hidden="true">&#127757;</span>
+        <div class="rel-info"><h4>Organización de Estados Americanos (OEA)</h4><p>Estatus de observador con voz en asuntos de soberanía indígena</p></div>
+        <span class="rel-status observer">Observador</span>
+      </div>
+      <div class="rel-row" role="listitem">
+        <span class="rel-icon" aria-hidden="true">&#127981;</span>
+        <div class="rel-info"><h4>Unión Europea</h4><p>Acuerdo marco de cooperación y desarrollo sostenible en negociación</p></div>
+        <span class="rel-status pending">Pendiente</span>
+      </div>
+      <div class="rel-row" role="listitem">
+        <span class="rel-icon" aria-hidden="true">&#127758;</span>
+        <div class="rel-info"><h4>Unión Africana</h4><p>Intercambio de experiencias en soberanía de pueblos originarios</p></div>
+        <span class="rel-status active">Activo</span>
+      </div>
+      <div class="rel-row" role="listitem">
+        <span class="rel-icon" aria-hidden="true">&#128187;</span>
+        <div class="rel-info"><h4>ICANN / Gobernanza Digital</h4><p>Dominio soberano .sov y gestión de infraestructura digital autónoma</p></div>
+        <span class="rel-status pending">Pendiente</span>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>
+  <p><strong>Ierahkwa</strong> &mdash; Diplomacia Soberana &copy; 2026. Relaciones internacionales para naciones soberanas.</p>
+</footer>
+</body>
+</html>

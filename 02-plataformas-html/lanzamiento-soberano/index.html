@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Lanzamiento Soberano — Programa Espacial Indígena</title><style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--accent:#e040fb}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,sans-serif;line-height:1.6}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s}
+.skip-nav:focus{top:1rem}
+a{color:var(--accent);text-decoration:none}
+nav{position:sticky;top:0;background:var(--bg2);border-bottom:1px solid var(--brd);padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between;z-index:99}
+.brand{font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:.5rem}
+.nav-links{display:flex;gap:.5rem}
+.nav-links a{padding:.4rem .8rem;border-radius:var(--r);font-size:.85rem;border:1px solid var(--brd);color:var(--txt2);transition:all .2s}
+.nav-links a:hover{border-color:var(--accent);color:var(--accent)}
+.btn{background:var(--accent);color:#000;padding:.5rem 1.2rem;border-radius:var(--r);font-weight:700;font-size:.85rem;border:none;cursor:pointer}
+.hero{text-align:center;padding:5rem 2rem 3rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 90%,rgba(224,64,251,.15),transparent 60%);pointer-events:none}
+.badge{display:inline-block;background:var(--bg3);border:1px solid var(--brd);padding:.3rem .8rem;border-radius:2rem;font-size:.75rem;color:var(--accent);margin-bottom:1rem}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);margin-bottom:.5rem}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--txt2);max-width:600px;margin:0 auto 1.5rem}
+.rocket{width:60px;margin:0 auto 2rem;position:relative;height:140px}
+.rocket-body{width:20px;height:60px;background:var(--txt);border-radius:10px 10px 4px 4px;position:absolute;bottom:50px;left:20px}
+.rocket-nose{width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:20px solid var(--accent);position:absolute;bottom:110px;left:20px}
+.flame{width:14px;height:30px;background:linear-gradient(to bottom,var(--accent),#ff6d00,transparent);border-radius:0 0 50% 50%;position:absolute;bottom:18px;left:23px;animation:flameFlicker .15s infinite alternate}
+@keyframes flameFlicker{0%{height:30px;opacity:.9}100%{height:38px;opacity:1}}
+.countdown{font-family:monospace;font-size:2rem;color:var(--accent);margin-bottom:1rem;letter-spacing:.3rem}
+.stats{display:flex;justify-content:center;gap:2rem;padding:1.5rem 2rem;background:var(--bg2);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);flex-wrap:wrap}
+.stat{text-align:center}.stat strong{color:var(--accent);font-size:1.3rem;display:block}.stat span{font-size:.75rem;color:var(--txt2)}
+.section{padding:4rem 2rem;max-width:1200px;margin:0 auto}
+.section h2{text-align:center;margin-bottom:2rem;font-size:1.6rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem}
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:all .3s}
+.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.card .num{color:var(--accent);font-size:.7rem;font-weight:700;margin-bottom:.3rem}
+.card h3{font-size:1rem;margin-bottom:.3rem}.card p{color:var(--txt2);font-size:.85rem}
+.timeline{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:2rem;margin-top:2rem}
+.timeline h3{text-align:center;margin-bottom:1.5rem;color:var(--accent)}
+.stages{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.stage{text-align:center;flex:1;min-width:100px;position:relative}
+.stage-num{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;margin:0 auto .5rem;font-size:.85rem}
+.stage-label{font-size:.8rem;color:var(--txt2)}.stage-name{font-size:.85rem;font-weight:600}
+.stage-line{height:2px;background:var(--brd);flex:1;min-width:30px;margin-top:-18px}
+footer{text-align:center;padding:2rem;border-top:1px solid var(--brd);color:var(--txt2);font-size:.8rem}
+footer span{color:var(--gold)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:600px){.stats{gap:1rem}.hero{padding:3rem 1rem 2rem}.stages{flex-direction:column}.stage-line{width:2px;height:20px;min-width:2px;margin:0 auto}}
+</style></head><body>
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+<nav><div class="brand"><span aria-hidden="true">🚀</span> Lanzamiento Soberano</div><div class="nav-links"><a href="#features">Programa</a><a href="#timeline">Misiones</a><button class="btn">Control de Misión</button></div></nav>
+<main id="main">
+<section class="hero" aria-label="Presentación">
+<div class="rocket" aria-hidden="true"><div class="rocket-nose"></div><div class="rocket-body"></div><div class="flame"></div></div>
+<div class="countdown" aria-label="Cuenta regresiva">T-00:03:27</div>
+<div class="badge">Programa Espacial Indígena</div>
+<h1><span>Lanzamiento</span> Soberano</h1>
+<p>Programa espacial propio de las naciones indígenas — cohetes reutilizables para desplegar y mantener la constelación satelital soberana sin depender de SpaceX ni NASA.</p>
+<button class="btn">Ver Próximo Lanzamiento</button>
+</section>
+<div class="stats" aria-label="Estadísticas">
+<div class="stat"><strong>Reutilizable</strong><span>Cohetes</span></div>
+<div class="stat"><strong>LEO/MEO</strong><span>Órbitas</span></div>
+<div class="stat"><strong>Soberano</strong><span>100% Propio</span></div>
+<div class="stat"><strong>19</strong><span>Naciones</span></div>
+</div>
+<section class="section" id="features" aria-label="Capacidades">
+<h2>Programa Espacial Soberano</h2>
+<div class="grid">
+<div class="card"><div class="num">01</div><h3><span aria-hidden="true">🚀</span> Vehículo de Lanzamiento</h3><p>Desarrollo de cohete soberano con etapas reutilizables y propulsión limpia.</p></div>
+<div class="card"><div class="num">02</div><h3><span aria-hidden="true">🏗️</span> Cosmódromo</h3><p>Infraestructura de cosmódromo soberano: plataformas, ensamblaje, combustible, control.</p></div>
+<div class="card"><div class="num">03</div><h3><span aria-hidden="true">📋</span> Planificación de Misión</h3><p>Scheduling de misiones, ventanas de lanzamiento, condiciones meteorológicas óptimas.</p></div>
+<div class="card"><div class="num">04</div><h3><span aria-hidden="true">📦</span> Integración de Carga</h3><p>Preparación e integración de satélites en la cofia del vehículo de lanzamiento.</p></div>
+<div class="card"><div class="num">05</div><h3><span aria-hidden="true">📊</span> Telemetría de Lanzamiento</h3><p>Datos en tiempo real: aceleración, altitud, presión, temperatura, trayectoria.</p></div>
+<div class="card"><div class="num">06</div><h3><span aria-hidden="true">♻️</span> Boosters Reutilizables</h3><p>Aterrizaje autónomo de etapas — reduce costo 90% por lanzamiento.</p></div>
+<div class="card"><div class="num">07</div><h3><span aria-hidden="true">🎯</span> Inserción Orbital</h3><p>Calculadora de órbitas: LEO (500km), MEO (20,000km), transferencias Hohmann.</p></div>
+<div class="card"><div class="num">08</div><h3><span aria-hidden="true">🛰️</span> Despliegue de Satélites</h3><p>Secuenciador de despliegue múltiple — hasta 60 satélites por lanzamiento.</p></div>
+<div class="card"><div class="num">09</div><h3><span aria-hidden="true">🗑️</span> Debris Tracker</h3><p>Seguimiento de debris espacial y planificación de maniobras de evasión.</p></div>
+<div class="card"><div class="num">10</div><h3><span aria-hidden="true">🤝</span> Acuerdos Internacionales</h3><p>Cooperación con agencias espaciales y cumplimiento de tratados del espacio exterior.</p></div>
+</div>
+</section>
+<section class="section" id="timeline" aria-label="Línea de tiempo">
+<h2>Secuencia de Lanzamiento</h2>
+<div class="timeline">
+<h3>Fases de la Misión</h3>
+<div class="stages">
+<div class="stage"><div class="stage-num">1</div><div class="stage-name">Ignición</div><div class="stage-label">T-0</div></div>
+<div class="stage-line" aria-hidden="true"></div>
+<div class="stage"><div class="stage-num">2</div><div class="stage-name">Max-Q</div><div class="stage-label">T+72s</div></div>
+<div class="stage-line" aria-hidden="true"></div>
+<div class="stage"><div class="stage-num">3</div><div class="stage-name">Separación</div><div class="stage-label">T+150s</div></div>
+<div class="stage-line" aria-hidden="true"></div>
+<div class="stage"><div class="stage-num">4</div><div class="stage-name">Órbita</div><div class="stage-label">T+540s</div></div>
+<div class="stage-line" aria-hidden="true"></div>
+<div class="stage"><div class="stage-num">5</div><div class="stage-name">Despliegue</div><div class="stage-label">T+3600s</div></div>
+</div>
+</div>
+</section>
+</main>
+<footer><span aria-hidden="true">🚀</span> Powered by <span>Ierahkwa Ne Kanienke</span> · MameyNode Network · WAMPUM Token Economy</footer>
+</body></html>

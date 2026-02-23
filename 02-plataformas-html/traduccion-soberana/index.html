@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Traduccion Soberana — IA Linguistica Pan-Americana</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--accent:#ffab00}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s}
+.skip-nav:focus{top:1rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:99}
+nav .logo{font-size:1.2rem;font-weight:700;color:var(--accent)}
+nav ul{list-style:none;display:flex;gap:1.5rem}
+nav ul a{color:var(--txt2);transition:color .3s}
+nav ul a:hover{color:var(--accent)}
+.hero{text-align:center;padding:5rem 2rem 3rem;background:linear-gradient(180deg,var(--bg2),var(--bg));position:relative;overflow:hidden}
+.hero h1{font-size:clamp(1.8rem,5vw,3rem);margin-bottom:1rem}
+.hero h1 span{color:var(--accent)}
+.hero p{max-width:680px;margin:0 auto 2rem;color:var(--txt2);font-size:1.1rem}
+.lang-web{position:relative;height:180px;margin:2rem auto;max-width:500px}
+.lang-node{position:absolute;background:var(--bg3);border:1px solid var(--brd);border-radius:20px;padding:.3rem .7rem;font-size:.75rem;color:var(--txt2);animation:floatNode 3s ease-in-out infinite;white-space:nowrap}
+.lang-node.active{border-color:var(--accent);color:var(--accent)}
+.lang-node:nth-child(1){left:5%;top:15%;animation-delay:0s}
+.lang-node:nth-child(2){left:40%;top:5%;animation-delay:.3s}
+.lang-node:nth-child(3){right:10%;top:20%;animation-delay:.6s}
+.lang-node:nth-child(4){left:15%;top:55%;animation-delay:.9s}
+.lang-node:nth-child(5){left:45%;bottom:5%;animation-delay:1.2s}
+.lang-node:nth-child(6){right:5%;top:55%;animation-delay:1.5s}
+.lang-node:nth-child(7){left:2%;bottom:10%;animation-delay:1.8s}
+.lang-node:nth-child(8){right:25%;bottom:15%;animation-delay:2.1s}
+.lang-node:nth-child(9){left:60%;top:35%;animation-delay:2.4s}
+@keyframes floatNode{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(-6px);opacity:1}}
+.connector{position:absolute;top:50%;left:50%;width:8px;height:8px;background:var(--accent);border-radius:50%;transform:translate(-50%,-50%);animation:corePulse 2s ease-in-out infinite}
+@keyframes corePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,171,0,.4)}50%{box-shadow:0 0 0 20px rgba(255,171,0,0)}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
+.stat{text-align:center;padding:1rem}
+.stat .num{font-size:1.6rem;font-weight:700;color:var(--accent)}
+.stat .label{color:var(--txt2);font-size:.85rem;margin-top:.3rem}
+.features{padding:3rem 2rem;max-width:1200px;margin:0 auto}
+.features h2{text-align:center;font-size:1.8rem;margin-bottom:2rem}
+.features h2 span{color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem}
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:border-color .3s,transform .3s}
+.card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.card .icon{font-size:1.5rem;margin-bottom:.5rem}
+.card h3{font-size:1rem;margin-bottom:.4rem}
+.card p{font-size:.85rem;color:var(--txt2)}
+.translate-demo{padding:3rem 2rem;max-width:700px;margin:0 auto}
+.translate-demo h2{text-align:center;margin-bottom:2rem;font-size:1.8rem}
+.translate-demo h2 span{color:var(--accent)}
+.translator{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden}
+.translator-header{display:flex;background:var(--bg3);border-bottom:1px solid var(--brd)}
+.translator-header .lang-tab{flex:1;padding:.6rem 1rem;text-align:center;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent}
+.translator-header .lang-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.translator-header .arrow{display:flex;align-items:center;padding:0 .5rem;color:var(--accent);font-size:1.2rem}
+.translator-body{display:grid;grid-template-columns:1fr auto 1fr}
+.translator-body .col{padding:1rem}
+.translator-body .col .lang-label{font-size:.7rem;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem}
+.translator-body .col .text{font-size:.95rem;line-height:1.7}
+.translator-body .divider{width:1px;background:var(--brd);margin:.5rem 0}
+.flow-arrow{display:flex;flex-direction:column;align-items:center;padding:1rem;gap:.3rem;border-top:1px solid var(--brd)}
+.flow-arrow .step{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--txt2)}
+.flow-arrow .step .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:stepPulse 1.5s ease-in-out infinite}
+.flow-arrow .step:nth-child(2) .dot{animation-delay:.3s}
+.flow-arrow .step:nth-child(3) .dot{animation-delay:.6s}
+@keyframes stepPulse{0%,100%{opacity:.3}50%{opacity:1}}
+.context-badge{display:inline-block;background:var(--bg3);border:1px solid var(--gold);border-radius:4px;padding:.15rem .4rem;font-size:.65rem;color:var(--gold);margin-top:.5rem}
+footer{text-align:center;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);color:var(--txt2);font-size:.85rem}
+footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5rem}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+<nav aria-label="Navegacion principal">
+<div class="logo"><span aria-hidden="true">&#x1F30D;</span> Traduccion Soberana</div>
+<ul>
+<li><a href="#features">Funciones</a></li>
+<li><a href="#demo">Demo</a></li>
+<li><a href="#contact">Contacto</a></li>
+</ul>
+</nav>
+<main id="main">
+<section class="hero">
+<h1><span>Traduccion Soberana</span><br>IA Linguistica Pan-Americana</h1>
+<p>Traduccion potenciada por IA cubriendo 43 idiomas (37 indigenas + 6 globales) con contexto cultural integrado. Soberania linguistica total.</p>
+<div class="lang-web" aria-label="Red de idiomas conectados con nodo central">
+<div class="lang-node active">Quechua</div>
+<div class="lang-node">Mapudungun</div>
+<div class="lang-node active">Espanol</div>
+<div class="lang-node">Nahuatl</div>
+<div class="lang-node active">Guarani</div>
+<div class="lang-node">English</div>
+<div class="lang-node">Aymara</div>
+<div class="lang-node active">Maya</div>
+<div class="lang-node">Navajo</div>
+<div class="connector" aria-hidden="true"></div>
+</div>
+</section>
+<section class="stats" aria-label="Estadisticas principales">
+<div class="stat"><div class="num">43</div><div class="label">Idiomas</div></div>
+<div class="stat"><div class="num">37</div><div class="label">Indigenas</div></div>
+<div class="stat"><div class="num">&lt;1s</div><div class="label">Tiempo Real</div></div>
+<div class="stat"><div class="num">IA</div><div class="label">Contexto Cultural</div></div>
+</section>
+<section class="features" id="features">
+<h2>10 <span>Funciones</span> Soberanas</h2>
+<div class="grid">
+<div class="card"><div class="icon" aria-hidden="true">&#x1F4DD;</div><h3>Traduccion de Texto</h3><p>Traduccion en tiempo real entre 43 idiomas con precisiones superiores a modelos comerciales.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F399;</div><h3>Voz a Voz</h3><p>Traduccion de habla a habla en tiempo real preservando tono e intencion.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F4C4;</div><h3>Documentos Completos</h3><p>Traduce documentos PDF, DOCX y TXT manteniendo formato original.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F3AC;</div><h3>Subtitulos Automaticos</h3><p>Generacion de subtitulos multilingue para video y audio en tiempo real.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F9E0;</div><h3>Modelos NLP Indigenas</h3><p>Modelos de procesamiento de lenguaje natural entrenados con datos comunitarios.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F3AD;</div><h3>Motor de Contexto Cultural</h3><p>Preserva matices culturales, metaforas y significados ceremoniales en traducciones.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F50D;</div><h3>Deteccion de Dialectos</h3><p>Identifica automaticamente dialectos regionales y variantes linguisticas.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F465;</div><h3>Correcciones Comunitarias</h3><p>Sistema de correcciones colaborativas validadas por hablantes nativos.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F517;</div><h3>API Universal</h3><p>API REST integrada con todas las plataformas soberanas del ecosistema.</p></div>
+<div class="card"><div class="icon" aria-hidden="true">&#x1F4E6;</div><h3>Paquetes Offline</h3><p>Descarga paquetes de traduccion para usar sin conexion a internet.</p></div>
+</div>
+</section>
+<section class="translate-demo" id="demo">
+<h2>Demo de <span>Traduccion</span></h2>
+<div class="translator" role="img" aria-label="Demostracion de traduccion en tiempo real de Quechua a Espanol a Ingles">
+<div class="translator-header">
+<div class="lang-tab active">Quechua</div>
+<div class="arrow" aria-hidden="true">&rarr;</div>
+<div class="lang-tab active">Espanol</div>
+<div class="arrow" aria-hidden="true">&rarr;</div>
+<div class="lang-tab">English</div>
+</div>
+<div class="translator-body">
+<div class="col">
+<div class="lang-label">Quechua (Runasimi)</div>
+<div class="text">Allpa Mamanchikta waqaychana, pay kawsayta qowanchik. Yakuta, wayrata, allpata munakuna.</div>
+<div class="context-badge"><span aria-hidden="true">&#x1F33F;</span> Contexto: Cosmovisional</div>
+</div>
+<div class="divider" aria-hidden="true"></div>
+<div class="col">
+<div class="lang-label">Espanol</div>
+<div class="text">Debemos cuidar a nuestra Madre Tierra, ella nos da la vida. Amar al agua, al viento, a la tierra.</div>
+<div class="context-badge"><span aria-hidden="true">&#x1F3AD;</span> Contexto cultural preservado</div>
+</div>
+</div>
+<div class="flow-arrow">
+<div class="step"><span class="dot" aria-hidden="true"></span> Deteccion: Quechua (Cusco)</div>
+<div class="step"><span class="dot" aria-hidden="true"></span> Motor NLP Indigena activo</div>
+<div class="step"><span class="dot" aria-hidden="true"></span> Contexto cultural: Pachamama &rarr; Madre Tierra</div>
+</div>
+</div>
+</section>
+</main>
+<footer id="contact">
+<div class="brand">Ierahkwa</div>
+<p>Traduccion Soberana &mdash; Conectando idiomas, preservando culturas, con inteligencia artificial soberana.</p>
+</footer>
+</body>
+</html>

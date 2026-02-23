@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GPS Soberano — Navegacion Satelital Indigena</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--accent:#76ff03;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s;text-decoration:none}
+.skip-nav:focus{top:1rem}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+/* Nav */
+nav{position:fixed;top:0;width:100%;background:rgba(9,9,13,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;z-index:900}
+.nav-brand{font-weight:800;font-size:1.1rem;display:flex;align-items:center;gap:.5rem}
+.nav-links{display:flex;gap:1.5rem;font-size:.88rem;color:var(--txt2)}
+.nav-links a:hover{color:var(--accent)}
+/* Hero */
+.hero{position:relative;min-height:94vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem 2rem;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 40% at 50% 40%,rgba(118,255,3,.07),transparent 70%)}
+.stars{position:absolute;inset:0;overflow:hidden}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:twinkle 3s infinite}
+.star:nth-child(1){top:10%;left:20%;animation-delay:0s}.star:nth-child(2){top:30%;left:75%;animation-delay:.5s}
+.star:nth-child(3){top:50%;left:35%;animation-delay:1s}.star:nth-child(4){top:70%;left:60%;animation-delay:1.5s}
+.star:nth-child(5){top:85%;left:45%;animation-delay:2s}.star:nth-child(6){top:15%;left:58%;animation-delay:.3s}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+/* Globe + MEO ring */
+.globe{position:absolute;top:50%;left:50%;width:240px;height:240px;border:2px solid rgba(118,255,3,.12);border-radius:50%;transform:translate(-50%,-50%)}
+.globe::after{content:'';position:absolute;inset:15%;border:1px solid rgba(118,255,3,.06);border-radius:50%}
+.meo-ring{position:absolute;top:50%;left:50%;width:400px;height:400px;border:1px dashed rgba(118,255,3,.1);border-radius:50%;transform:translate(-50%,-50%) rotateX(60deg);perspective:600px}
+.nav-sat{position:absolute;width:7px;height:7px;background:var(--accent);border-radius:50%;box-shadow:0 0 12px var(--accent);top:-3px;left:50%;animation:nav-orbit 16s linear infinite}
+@keyframes nav-orbit{0%{transform:rotate(0deg) translateX(200px) rotate(0deg)}100%{transform:rotate(360deg) translateX(200px) rotate(-360deg)}}
+/* Triangulation beams */
+.tri-beam{position:absolute;top:50%;left:50%;width:1px;height:180px;background:linear-gradient(to bottom,rgba(118,255,3,.4),transparent);transform-origin:top center;animation:tri-rotate 12s linear infinite}
+.tri-beam:nth-child(2){animation-delay:-4s}.tri-beam:nth-child(3){animation-delay:-8s}
+@keyframes tri-rotate{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.hero-content{position:relative;max-width:800px;z-index:2}
+.badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--bg3);border:1px solid var(--accent);border-radius:99px;padding:.4rem 1.2rem;font-size:.78rem;color:var(--accent);margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:.5px}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-size:clamp(2rem,5.5vw,3.6rem);font-weight:800;letter-spacing:-.02em;line-height:1.1;margin-bottom:1rem}
+h1 .accent{background:linear-gradient(135deg,var(--accent),#b2ff59);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tagline{font-size:clamp(1rem,2.5vw,1.25rem);color:var(--txt2);max-width:620px;margin:0 auto 2.5rem}
+.hero-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--accent);color:#000;font-weight:700;padding:.85rem 2rem;border-radius:var(--r);font-size:1rem;border:none;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.hero-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(118,255,3,.3)}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--brd);border:1px solid var(--brd);border-radius:var(--r);max-width:860px;margin:-3rem auto 0;position:relative;z-index:2}
+.stat{background:var(--bg2);padding:1.4rem 1rem;text-align:center}
+.stat:first-child{border-radius:var(--r) 0 0 var(--r)}.stat:last-child{border-radius:0 var(--r) var(--r) 0}
+.stat-val{font-size:1.3rem;font-weight:800;color:var(--accent)}.stat-lbl{font-size:.78rem;color:var(--txt2);margin-top:.2rem}
+/* Sections */
+section{padding:5rem 1.5rem}.section-header{text-align:center;max-width:680px;margin:0 auto 3.5rem}
+.section-header h2{font-size:clamp(1.5rem,3.5vw,2.4rem);font-weight:800;margin-bottom:.75rem}
+.section-header p{color:var(--txt2);font-size:1.05rem}.accent-text{color:var(--accent)}
+/* Features */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;max-width:1100px;margin:0 auto}
+.feature-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.8rem;transition:border-color .25s,transform .25s;position:relative;overflow:hidden}
+.feature-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.feature-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent);opacity:0;transition:opacity .3s}
+.feature-card:hover::before{opacity:1}
+.feature-icon{width:44px;height:44px;border-radius:10px;background:rgba(118,255,3,.08);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;border:1px solid rgba(118,255,3,.18)}
+.feature-card h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem}
+.feature-card p{font-size:.88rem;color:var(--txt2);line-height:1.55}
+/* Accuracy Panel */
+.accuracy{max-width:960px;margin:0 auto;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:2.5rem;position:relative;overflow:hidden}
+.accuracy::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(118,255,3,.03),transparent 60%)}
+.accuracy h3{font-size:1.15rem;font-weight:700;margin-bottom:1.5rem;text-align:center}
+.accuracy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.acc-card{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:1.2rem;text-align:center;transition:border-color .25s}
+.acc-card:hover{border-color:var(--accent)}
+.acc-val{font-size:1.8rem;font-weight:800;color:var(--accent)}.acc-label{font-size:.82rem;color:var(--txt2);margin-top:.3rem}
+.acc-bar{height:4px;background:var(--bg4);border-radius:2px;margin-top:.8rem;overflow:hidden}
+.acc-bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 1s ease}
+/* Footer */
+footer{text-align:center;padding:2.5rem 1.5rem;border-top:1px solid var(--brd);color:var(--txt2);font-size:.82rem}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.stat:first-child{border-radius:var(--r) 0 0 0}.stat:nth-child(2){border-radius:0 var(--r) 0 0}.stat:nth-child(3){border-radius:0 0 0 var(--r)}.stat:last-child{border-radius:0 0 var(--r) 0}.hero{min-height:80vh}.globe,.meo-ring,.tri-beam{display:none}.nav-links{display:none}}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+
+<nav aria-label="Navegacion principal">
+  <div class="nav-brand"><span aria-hidden="true">📍</span> GPS Soberano</div>
+  <div class="nav-links"><a href="#features">Capacidades</a><a href="#precision">Precision</a><a href="#footer">Contacto</a></div>
+</nav>
+
+<header class="hero">
+  <div class="stars" aria-hidden="true"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div>
+  <div class="globe" aria-hidden="true"></div>
+  <div class="meo-ring" aria-hidden="true"><div class="nav-sat"></div></div>
+  <div class="tri-beam" aria-hidden="true"></div><div class="tri-beam" aria-hidden="true"></div><div class="tri-beam" aria-hidden="true"></div>
+  <div class="hero-content">
+    <div class="badge"><span class="badge-dot" aria-hidden="true"></span> Navegacion Independiente</div>
+    <h1>GPS <span class="accent">Soberano</span></h1>
+    <p class="tagline">Sistema de navegacion satelital indigena con precision sub-metrica. Sin dependencia de GPS, GLONASS, Galileo o BeiDou.</p>
+    <button class="hero-btn" aria-label="Acceder al panel de navegacion"><span aria-hidden="true">🧭</span> Panel de Navegacion</button>
+  </div>
+</header>
+
+<div class="stats" role="list" aria-label="Estadisticas principales">
+  <div class="stat" role="listitem"><div class="stat-val">24</div><div class="stat-lbl">Satelites MEO</div></div>
+  <div class="stat" role="listitem"><div class="stat-val">&lt; 1m</div><div class="stat-lbl">Precision</div></div>
+  <div class="stat" role="listitem"><div class="stat-val">Anti-Spoofing</div><div class="stat-lbl">Senales Cifradas</div></div>
+  <div class="stat" role="listitem"><div class="stat-val">Tiempo Real</div><div class="stat-lbl">Posicionamiento</div></div>
+</div>
+
+<main id="main">
+  <section id="features" aria-labelledby="feat-title">
+    <div class="section-header">
+      <h2 id="feat-title">Navegacion <span class="accent-text">Verdaderamente Soberana</span></h2>
+      <p>24 satelites MEO proporcionando posicionamiento preciso para mapeo territorial, agricultura de precision y vehiculos autonomos.</p>
+    </div>
+    <div class="features-grid">
+      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🛰️</div><h3>Constelacion MEO de Navegacion</h3><p>24 satelites en orbita media terrestre en 3 planos orbitales para cobertura global continua.</p></article>
+      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🎯</div><h3>Precision Sub-Metrica</h3><p>Aumentacion SBAS para precision inferior a 1 metro. Ideal para agricultura y mapeo territorial.</p></article>
+      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🗺️</div><h3>Limites Territoriales Indigenas</h3><p>Mapeo preciso de fronteras de territorios indigenas. Evidencia satelital de demarcaciones ancestrales.</p></article>
+      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🌾</div><h3>Guia Agricola de Precision</h3><p>Navegacion centimetrica para tractores y drones agricolas en campos de comunidades indigenas.</p></article>
+      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🚢</div><h3>Navegacion Maritima</h3><p>Posicionamiento preciso para flotas pesqueras indigenas y navegacion costera segura.</p></article>
+      <article class="feature-card"><div class="feature-icon" aria-hidden="true">✈️</div><h3>Guia de Aproximacion Aerea</h3><p>Procedimientos de aproximacion por satelite para aeropuertos rurales sin radar terrestre.</p></article>
+      <article class="feature-card"><div class="feature-icon" aria-hidden="true">⏱️</div><h3>Servicio de Sincronizacion</h3><p>Precision de nanosegundos para redes de telecomunicaciones y sistemas financieros soberanos.</p></article>
+      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🆘</div><h3>Baliza de Busqueda y Rescate</h3><p>Localizacion de emergencia via satelite para comunidades remotas en situaciones de peligro.</p></article>
+      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🔐</div><h3>Anti-Spoofing</h3><p>Senales cifradas que impiden manipulacion o falsificacion de posicion por actores externos.</p></article>
+      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🗺️</div><h3>Integracion con Mapa Soberano</h3><p>Conexion directa con la plataforma Mapa Soberano para cartografia territorial indigena en tiempo real.</p></article>
+    </div>
+  </section>
+
+  <section id="precision" aria-labelledby="prec-title">
+    <div class="section-header">
+      <h2 id="prec-title">Metricas de <span class="accent-text">Precision</span></h2>
+      <p>Rendimiento del sistema de navegacion soberano comparado con sistemas convencionales.</p>
+    </div>
+    <div class="accuracy">
+      <h3><span aria-hidden="true">🎯</span> Rendimiento del Sistema en Tiempo Real</h3>
+      <div class="accuracy-grid">
+        <div class="acc-card"><div class="acc-val">&lt; 0.8m</div><div class="acc-label">Precision Horizontal</div><div class="acc-bar"><div class="acc-bar-fill" style="width:95%"></div></div></div>
+        <div class="acc-card"><div class="acc-val">&lt; 1.2m</div><div class="acc-label">Precision Vertical</div><div class="acc-bar"><div class="acc-bar-fill" style="width:88%"></div></div></div>
+        <div class="acc-card"><div class="acc-val">5ns</div><div class="acc-label">Precision Temporal</div><div class="acc-bar"><div class="acc-bar-fill" style="width:98%"></div></div></div>
+        <div class="acc-card"><div class="acc-val">99.97%</div><div class="acc-label">Disponibilidad</div><div class="acc-bar"><div class="acc-bar-fill" style="width:99%"></div></div></div>
+        <div class="acc-card"><div class="acc-val">24/24</div><div class="acc-label">Satelites Operativos</div><div class="acc-bar"><div class="acc-bar-fill" style="width:100%"></div></div></div>
+        <div class="acc-card"><div class="acc-val">0</div><div class="acc-label">Intentos de Spoofing Hoy</div><div class="acc-bar"><div class="acc-bar-fill" style="width:0%"></div></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="footer">
+  <p>GPS Soberano — Ecosistema Digital Ierahkwa &copy; 2026. Navegacion satelital independiente para naciones indigenas.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ejercito Soberano — Defensa Territorial Indigena Pan-Americana</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--accent:#4caf50}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s}
+.skip-nav:focus{top:1rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:99}
+.nav-brand{font-size:1.2rem;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:.5rem}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{color:var(--txt2);font-size:.9rem;transition:color .3s}
+.nav-links a:hover{color:var(--accent)}
+.hero{text-align:center;padding:4rem 2rem;background:linear-gradient(180deg,var(--bg2),var(--bg));position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 49px,rgba(76,175,80,.06) 50px),repeating-linear-gradient(90deg,transparent,transparent 49px,rgba(76,175,80,.06) 50px);pointer-events:none}
+.hero-emblem{width:120px;height:120px;margin:0 auto 1.5rem;border:3px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;animation:pulse-shield 3s ease-in-out infinite}
+@keyframes pulse-shield{0%,100%{box-shadow:0 0 20px rgba(76,175,80,.2)}50%{box-shadow:0 0 40px rgba(76,175,80,.4)}}
+.hero h1{font-size:2.2rem;color:var(--txt);margin-bottom:.5rem}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--txt2);max-width:600px;margin:0 auto;font-size:1rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--brd);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
+.stat{background:var(--bg2);padding:1.5rem;text-align:center}
+.stat-value{font-size:1.3rem;font-weight:700;color:var(--accent)}
+.stat-label{font-size:.8rem;color:var(--txt2);margin-top:.25rem}
+section{padding:3rem 2rem}
+.section-title{text-align:center;font-size:1.6rem;color:var(--txt);margin-bottom:2rem}
+.section-title span{color:var(--accent)}
+.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem;max-width:1200px;margin:0 auto}
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:transform .3s,border-color .3s}
+.card:hover{transform:translateY(-3px);border-color:var(--accent)}
+.card-icon{font-size:1.5rem;margin-bottom:.75rem}
+.card h3{font-size:1rem;margin-bottom:.4rem;color:var(--txt)}
+.card p{font-size:.85rem;color:var(--txt2)}
+.readiness{max-width:1000px;margin:0 auto}
+.readiness-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.unit{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1rem;display:flex;align-items:center;gap:.75rem;transition:border-color .3s}
+.unit:hover{border-color:var(--accent)}
+.unit-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;animation:blink 2s ease-in-out infinite}
+.unit-dot.green{background:#4caf50;box-shadow:0 0 8px #4caf50}
+.unit-dot.amber{background:#ff9800;box-shadow:0 0 8px #ff9800}
+.unit-dot.red{background:#f44336;box-shadow:0 0 8px #f44336}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+.unit-info{flex:1}
+.unit-name{font-size:.85rem;font-weight:600}
+.unit-status{font-size:.75rem;color:var(--txt2)}
+footer{text-align:center;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);color:var(--txt2);font-size:.8rem}
+footer strong{color:var(--gold)}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+<nav>
+  <div class="nav-brand"><span aria-hidden="true">&#x1F6E1;</span> Ejercito Soberano</div>
+  <ul class="nav-links">
+    <li><a href="#features">Capacidades</a></li>
+    <li><a href="#readiness">Estado de Fuerza</a></li>
+    <li><a href="#contact">Contacto</a></li>
+  </ul>
+</nav>
+<main id="main">
+  <section class="hero">
+    <div class="hero-emblem" role="img" aria-label="Escudo soberano con aguila y condor"><span aria-hidden="true">&#x1F985;</span></div>
+    <h1>Ejercito <span>Soberano</span></h1>
+    <p>Fuerza de defensa territorial indigena coordinando la proteccion soberana a traves de 19 naciones Pan-Americanas. Cifrado post-cuantico. Protocolos unificados.</p>
+  </section>
+  <div class="stats">
+    <div class="stat"><div class="stat-value">19</div><div class="stat-label">Naciones</div></div>
+    <div class="stat"><div class="stat-value"><span aria-hidden="true">&#x1F6E1;</span></div><div class="stat-label">Defensa Territorial</div></div>
+    <div class="stat"><div class="stat-value"><span aria-hidden="true">&#x2694;</span></div><div class="stat-label">Entrenamiento Unificado</div></div>
+    <div class="stat"><div class="stat-value">PQ</div><div class="stat-label">Post-Cuantico</div></div>
+  </div>
+  <section id="features">
+    <h2 class="section-title">Capacidades <span>Operacionales</span></h2>
+    <div class="features">
+      <div class="card"><div class="card-icon" aria-hidden="true">&#x1F4CA;</div><h3>Dashboard de Despliegue</h3><p>Visualizacion en tiempo real de tropas desplegadas en todos los territorios soberanos.</p></div>
+      <div class="card"><div class="card-icon" aria-hidden="true">&#x1F3AF;</div><h3>Gestion de Entrenamiento</h3><p>Sistema unificado de entrenamiento tactico y estrategico para todas las naciones.</p></div>
+      <div class="card"><div class="card-icon" aria-hidden="true">&#x1F4E6;</div><h3>Inventario de Equipo</h3><p>Control total de armamento, vehiculos y equipo tactico con trazabilidad completa.</p></div>
+      <div class="card"><div class="card-icon" aria-hidden="true">&#x1F512;</div><h3>Registros de Personal</h3><p>Registros cifrados de personal militar con autenticacion biometrica soberana.</p></div>
+      <div class="card"><div class="card-icon" aria-hidden="true">&#x1F4E1;</div><h3>Red de Comunicacion Tactica</h3><p>Red de comunicaciones cifrada post-cuantica entre todas las unidades operativas.</p></div>
+      <div class="card"><div class="card-icon" aria-hidden="true">&#x1F5FA;</div><h3>Optimizador de Patrullas</h3><p>IA optimiza rutas de patrulla basandose en terreno, amenazas y recursos disponibles.</p></div>
+      <div class="card"><div class="card-icon" aria-hidden="true">&#x1F6A7;</div><h3>Coordinacion Fronteriza</h3><p>Protocolos inter-nacionales de seguridad fronteriza entre territorios soberanos.</p></div>
+      <div class="card"><div class="card-icon" aria-hidden="true">&#x1F91D;</div><h3>Planificador de Ejercicios</h3><p>Ejercicios militares conjuntos entre las 19 naciones con simulacion avanzada.</p></div>
+      <div class="card"><div class="card-icon" aria-hidden="true">&#x1F396;</div><h3>Portal de Veteranos</h3><p>Servicios integrales para veteranos: salud, educacion y reintegracion comunitaria.</p></div>
+      <div class="card"><div class="card-icon" aria-hidden="true">&#x1F54A;</div><h3>Rastreo de Misiones de Paz</h3><p>Seguimiento de operaciones de mantenimiento de paz y diplomacia territorial.</p></div>
+    </div>
+  </section>
+  <section id="readiness">
+    <h2 class="section-title">Estado de <span>Fuerza</span></h2>
+    <div class="readiness">
+      <div class="readiness-grid">
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Haudenosaunee</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Maya-Kiche</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot amber" role="img" aria-label="Parcial"></div><div class="unit-info"><div class="unit-name">Mapuche</div><div class="unit-status">Despliegue Parcial</div></div></div>
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Quechua</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Aymara</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot red" role="img" aria-label="Mantenimiento"></div><div class="unit-info"><div class="unit-name">Guarani</div><div class="unit-status">Mantenimiento</div></div></div>
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Nahua</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot amber" role="img" aria-label="Parcial"></div><div class="unit-info"><div class="unit-name">Wayuu</div><div class="unit-status">En Transicion</div></div></div>
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Lakota</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Navajo</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Cree</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot amber" role="img" aria-label="Parcial"></div><div class="unit-info"><div class="unit-name">Mixteco</div><div class="unit-status">Reclutamiento</div></div></div>
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Zapoteco</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Kuna</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Misquito</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot amber" role="img" aria-label="Parcial"></div><div class="unit-info"><div class="unit-name">Yanomami</div><div class="unit-status">Alerta Elevada</div></div></div>
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Taino</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot green" role="img" aria-label="Operativo"></div><div class="unit-info"><div class="unit-name">Inuit</div><div class="unit-status">Operativo</div></div></div>
+        <div class="unit"><div class="unit-dot red" role="img" aria-label="Mantenimiento"></div><div class="unit-info"><div class="unit-name">Ashuar</div><div class="unit-status">Reestructuracion</div></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer id="contact">
+  <p><strong>Ierahkwa</strong> &mdash; Soberania Digital Indigena Pan-Americana</p>
+  <p>Ejercito Soberano &copy; 2026. Todos los derechos reservados bajo ley soberana.</p>
+</footer>
+</body>
+</html>

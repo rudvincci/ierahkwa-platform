@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Centro de Operaciones Soberano — Comando Unificado Pan-Americano</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--accent:#29b6f6}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s}
+.skip-nav:focus{top:1rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:99}
+nav .logo{font-weight:700;font-size:1.2rem;color:var(--gold)}
+nav ul{display:flex;list-style:none;gap:1.5rem}
+nav ul a{color:var(--txt2);font-size:.9rem;transition:color .2s}
+nav ul a:hover,nav ul a:focus{color:var(--accent)}
+.hero{text-align:center;padding:4rem 2rem;position:relative;background:radial-gradient(ellipse at center,rgba(41,182,246,.06) 0%,transparent 70%)}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);margin-bottom:.5rem}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{color:var(--txt2);max-width:650px;margin:1rem auto}
+.cmd-viz{width:260px;height:160px;margin:2rem auto;position:relative;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:6px}
+.cmd-panel{background:var(--bg3);border:1px solid var(--brd);border-radius:4px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:var(--txt2)}
+.cmd-panel::after{content:'';position:absolute;bottom:0;left:0;height:2px;background:var(--accent);animation:panel-scan 4s linear infinite;width:100%}
+.cmd-panel:nth-child(1)::after{animation-delay:0s}
+.cmd-panel:nth-child(2)::after{animation-delay:.6s}
+.cmd-panel:nth-child(3)::after{animation-delay:1.2s}
+.cmd-panel:nth-child(4)::after{animation-delay:1.8s}
+.cmd-panel:nth-child(5)::after{animation-delay:2.4s}
+.cmd-panel:nth-child(6)::after{animation-delay:3s}
+.cmd-panel .dot{position:absolute;top:4px;right:4px;width:5px;height:5px;background:#4caf50;border-radius:50%;animation:blink 2s infinite}
+@keyframes panel-scan{0%{transform:translateX(-100%);opacity:.3}50%{opacity:.8}100%{transform:translateX(100%);opacity:.3}}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
+.stat{text-align:center;padding:1rem}
+.stat .val{font-size:1.5rem;font-weight:700;color:var(--accent)}
+.stat .lbl{font-size:.8rem;color:var(--txt2);margin-top:.25rem}
+section.features{padding:3rem 2rem}
+section.features h2{text-align:center;font-size:1.6rem;margin-bottom:2rem;color:var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;max-width:1200px;margin:0 auto}
+.card{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.card h3{font-size:1rem;margin-bottom:.5rem}
+.card h3 .ico{margin-right:.4rem}
+.card p{font-size:.85rem;color:var(--txt2)}
+.ops-dash{padding:3rem 2rem;max-width:1100px;margin:0 auto}
+.ops-dash h2{text-align:center;font-size:1.6rem;margin-bottom:2rem;color:var(--gold)}
+.nation-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.8rem}
+.nation-card{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:.8rem;position:relative;overflow:hidden;transition:border-color .2s}
+.nation-card:hover{border-color:var(--accent)}
+.nation-card .flag{font-size:.7rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem}
+.nation-card .name{font-size:.85rem;font-weight:600;color:var(--txt)}
+.nation-card .metrics{display:flex;gap:.6rem;margin-top:.5rem;flex-wrap:wrap}
+.nation-card .metric{font-size:.65rem;color:var(--txt2);background:var(--bg4);padding:2px 6px;border-radius:3px}
+.nation-card .metric.online{color:#4caf50}
+.nation-card .metric.alert{color:#ff9100}
+.nation-card .status-bar{position:absolute;top:0;left:0;right:0;height:2px;background:#4caf50}
+.nation-card .status-bar.warning{background:#ff9100}
+.nation-card .pulse{position:absolute;top:8px;right:8px;width:6px;height:6px;background:#4caf50;border-radius:50%;animation:blink 2s infinite}
+footer{text-align:center;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);color:var(--txt2);font-size:.8rem}
+footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5rem}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+<nav aria-label="Navegaci&oacute;n principal">
+  <div class="logo"><span aria-hidden="true">&#x1F3DB;</span> Centro de Operaciones Soberano</div>
+  <ul>
+    <li><a href="#features">Capacidades</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#contact">Contacto</a></li>
+  </ul>
+</nav>
+<main id="main">
+  <section class="hero">
+    <div class="cmd-viz" aria-hidden="true">
+      <div class="cmd-panel">COMMS<div class="dot"></div></div>
+      <div class="cmd-panel">INTEL<div class="dot"></div></div>
+      <div class="cmd-panel">CYBER<div class="dot"></div></div>
+      <div class="cmd-panel">TERR<div class="dot"></div></div>
+      <div class="cmd-panel">CRYPTO<div class="dot"></div></div>
+      <div class="cmd-panel">LOGIS<div class="dot"></div></div>
+    </div>
+    <h1>Comando Unificado <em>Pan-Americano</em></h1>
+    <p>Centro de operaciones soberano coordinando las operaciones de 19 naciones ind&iacute;genas. Dashboard unificado, comunicaciones en tiempo real y soporte de decisiones con IA.</p>
+  </section>
+  <div class="stats" role="region" aria-label="Estad&iacute;sticas clave">
+    <div class="stat"><div class="val">19</div><div class="lbl">Naciones</div></div>
+    <div class="stat"><div class="val"><span aria-hidden="true">&#x1F3DB;</span></div><div class="lbl">Comando Unificado</div></div>
+    <div class="stat"><div class="val">RT</div><div class="lbl">Tiempo Real</div></div>
+    <div class="stat"><div class="val">AI</div><div class="lbl">Decision Support</div></div>
+  </div>
+  <section class="features" id="features">
+    <h2><span aria-hidden="true">&#x2699;</span> Capacidades Operacionales</h2>
+    <div class="grid">
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4CA;</span>Unified Dashboard</h3><p>Dashboard unificado de 19 naciones con vistas en tiempo real de operaciones, alertas y m&eacute;tricas clave de cada sistema soberano.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4E1;</span>Communication Hub</h3><p>Hub de comunicaciones en tiempo real con voz, video, mensajer&iacute;a cifrada y canales dedicados por naci&oacute;n y por operaci&oacute;n.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4E6;</span>Resource Allocation Engine</h3><p>Motor de asignaci&oacute;n de recursos con optimizaci&oacute;n por IA para distribuir capacidades entre las 19 naciones seg&uacute;n necesidad.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F91D;</span>Multi-Agency Coordination</h3><p>Coordinaci&oacute;n multi-agencia con protocolos estandarizados para operaciones conjuntas entre naciones soberanas.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F6A8;</span>Crisis Management</h3><p>Protocolo de gesti&oacute;n de crisis con escalamiento autom&aacute;tico, asignaci&oacute;n de roles y comunicaci&oacute;n de emergencia prioritaria.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4FA;</span>Situation Room</h3><p>Sala de situaci&oacute;n virtual con video wall compartido, mapas en vivo y presentaci&oacute;n de datos en tiempo real para decisiones cr&iacute;ticas.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F69A;</span>Logistics Tracker</h3><p>Rastreador log&iacute;stico con visibilidad completa de suministros, transporte y recursos distribuidos en los 19 territorios.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F916;</span>Decision Support AI</h3><p>Sistema de soporte de decisiones con IA que analiza escenarios, predice resultados y recomienda cursos de acci&oacute;n &oacute;ptimos.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F4DD;</span>After-Action Review</h3><p>Sistema de revisi&oacute;n post-acci&oacute;n con an&aacute;lisis automatizado, lecciones aprendidas y mejora continua de protocolos.</p></article>
+      <article class="card"><h3><span class="ico" aria-hidden="true">&#x1F517;</span>Interoperability Gateway</h3><p>Gateway de interoperabilidad conectando todos los sistemas soberanos con APIs estandarizadas y traducci&oacute;n de protocolos.</p></article>
+    </div>
+  </section>
+  <section class="ops-dash" id="dashboard">
+    <h2><span aria-hidden="true">&#x1F30E;</span> Dashboard Operacional en Vivo</h2>
+    <div class="nation-grid" role="list" aria-label="Estado operacional por naci&oacute;n">
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">MX</div><div class="name">M&eacute;xico</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">GT</div><div class="name">Guatemala</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">HN</div><div class="name">Honduras</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">SV</div><div class="name">El Salvador</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">NI</div><div class="name">Nicaragua</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">CR</div><div class="name">Costa Rica</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">PA</div><div class="name">Panam&aacute;</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar warning"></div><div class="pulse" aria-hidden="true"></div><div class="flag">CO</div><div class="name">Colombia</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric alert">ALERT 2</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">VE</div><div class="name">Venezuela</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">EC</div><div class="name">Ecuador</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">PE</div><div class="name">Per&uacute;</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">BO</div><div class="name">Bolivia</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">PY</div><div class="name">Paraguay</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">CL</div><div class="name">Chile</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">AR</div><div class="name">Argentina</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar warning"></div><div class="pulse" aria-hidden="true"></div><div class="flag">BR</div><div class="name">Brasil</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric alert">ALERT 3</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">UY</div><div class="name">Uruguay</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">SR</div><div class="name">Surinam</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+      <div class="nation-card" role="listitem"><div class="status-bar"></div><div class="pulse" aria-hidden="true"></div><div class="flag">GY</div><div class="name">Guyana</div><div class="metrics"><span class="metric online">SOC OK</span><span class="metric online">COMMS OK</span></div></div>
+    </div>
+  </section>
+</main>
+<footer id="contact">
+  <div class="brand"><span aria-hidden="true">&#x1F3DB;</span> Ierahkwa</div>
+  <p>Centro de Operaciones Soberano &mdash; Comando Unificado Pan-Americano</p>
+  <p>&copy; 2026 Ierahkwa Sovereign Systems. Todos los derechos reservados.</p>
+</footer>
+</body>
+</html>
