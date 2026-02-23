@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Genómica Soberana — Genómica y Medicina Personalizada Soberana</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--accent:#ff1744;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s;text-decoration:none;font-size:.95rem}
+.skip-nav:focus{top:1rem}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;min-height:100vh;overflow-x:hidden}
+header{background:var(--bg2);border-bottom:1px solid var(--brd);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.logo{display:flex;align-items:center;gap:.75rem}
+.logo-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),#ff616f);border-radius:var(--r);display:grid;place-items:center;position:relative;overflow:hidden}
+.logo-icon::after{content:'';position:absolute;width:20px;height:2px;background:#fff;border-radius:1px;box-shadow:0 5px 0 #fff,0 -5px 0 #fff;opacity:.8}
+.logo h1{font-size:1.25rem;color:var(--txt);letter-spacing:-.02em}
+.logo h1 span{color:var(--accent)}
+nav{display:flex;gap:.25rem}
+nav a{color:var(--txt2);text-decoration:none;padding:.5rem .85rem;border-radius:var(--r);font-size:.85rem;transition:all .2s}
+nav a:hover,nav a[aria-current="page"]{color:var(--accent);background:rgba(255,23,68,.08)}
+.hero{text-align:center;padding:4rem 2rem 3rem;position:relative}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(255,23,68,.07),transparent 70%);pointer-events:none}
+.hero .badge{display:inline-block;padding:.35rem 1rem;background:rgba(255,23,68,.1);border:1px solid rgba(255,23,68,.25);border-radius:20px;font-size:.75rem;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1.25rem}
+.hero h2{font-size:clamp(1.8rem,5vw,3rem);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-bottom:1rem;background:linear-gradient(135deg,var(--txt),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--txt2);font-size:1.1rem;max-width:620px;margin:0 auto 2rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;padding:0 2rem 3rem;max-width:900px;margin:0 auto}
+.stat{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.25rem;text-align:center;transition:transform .2s,border-color .2s}
+.stat:hover{transform:translateY(-2px);border-color:var(--accent)}
+.stat .val{font-size:1rem;font-weight:700;color:var(--accent);margin-bottom:.25rem}
+.stat .lbl{font-size:.75rem;color:var(--txt2)}
+.dna-banner{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);margin:0 auto 3rem;padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem;max-width:1200px;flex-wrap:wrap;width:calc(100% - 4rem)}
+.dna-strand{display:flex;gap:3px;align-items:center}
+.dna-dot{width:6px;height:6px;border-radius:50%;animation:dnaWave 2s ease-in-out infinite}
+.dna-dot:nth-child(odd){background:var(--accent)}
+.dna-dot:nth-child(even){background:rgba(255,23,68,.4)}
+.dna-dot:nth-child(1){animation-delay:0s}.dna-dot:nth-child(2){animation-delay:.1s}.dna-dot:nth-child(3){animation-delay:.2s}
+.dna-dot:nth-child(4){animation-delay:.3s}.dna-dot:nth-child(5){animation-delay:.4s}.dna-dot:nth-child(6){animation-delay:.5s}
+.dna-dot:nth-child(7){animation-delay:.6s}.dna-dot:nth-child(8){animation-delay:.7s}
+@keyframes dnaWave{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.dna-banner .info{font-size:.82rem;color:var(--txt2)}.dna-banner .val{color:var(--accent);font-weight:600}
+.shield{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,23,68,.08);border:1px solid rgba(255,23,68,.2);padding:.3rem .7rem;border-radius:6px;font-size:.75rem;color:var(--accent);font-weight:600;margin-left:auto}
+.section-title{text-align:center;padding:2rem 2rem .5rem}
+.section-title h3{font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
+.section-title p{color:var(--txt2);font-size:.9rem;margin-top:.5rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;padding:1.5rem 2rem 3rem;max-width:1200px;margin:0 auto}
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:all .25s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent);opacity:0;transition:opacity .25s}
+.card:hover{border-color:rgba(255,23,68,.3);transform:translateY(-3px);box-shadow:0 8px 30px rgba(255,23,68,.06)}.card:hover::before{opacity:1}
+.card-icon{width:40px;height:40px;background:rgba(255,23,68,.1);border-radius:8px;display:grid;place-items:center;font-size:1.1rem;margin-bottom:1rem}
+.card h4{font-size:.95rem;font-weight:700;margin-bottom:.5rem;color:var(--txt)}
+.card p{font-size:.82rem;color:var(--txt2);line-height:1.55}
+.card .tag{display:inline-block;margin-top:.75rem;padding:.2rem .55rem;background:rgba(255,23,68,.08);border-radius:4px;font-size:.7rem;color:var(--accent);font-weight:600}
+footer{background:var(--bg2);border-top:1px solid var(--brd);padding:2rem;text-align:center}
+footer p{font-size:.8rem;color:var(--txt2)}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){header{padding:1rem}.hero{padding:3rem 1rem 2rem}.grid{grid-template-columns:1fr;padding:1rem}.stats{grid-template-columns:repeat(2,1fr);padding:0 1rem 2rem}.dna-banner{width:calc(100% - 2rem);flex-direction:column;align-items:flex-start}.shield{margin-left:0}}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Skip to main content</a>
+<header>
+  <div class="logo">
+    <div class="logo-icon" aria-hidden="true"></div>
+    <h1>Genómica <span>Soberana</span></h1>
+  </div>
+  <nav aria-label="Navegación principal">
+    <a href="#" aria-current="page">Dashboard</a>
+    <a href="#">Secuenciación</a>
+    <a href="#">Medicina</a>
+    <a href="#">Biobanco</a>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="badge"><span aria-hidden="true">&#129516;</span> Genómica Soberana</div>
+    <h2>Tu ADN es soberano, tu medicina es personal</h2>
+    <p>Plataforma genómica donde los datos nunca salen del territorio. Secuenciación local, medicina personalizada y herencia ancestral protegida.</p>
+  </section>
+
+  <div class="stats" role="list" aria-label="Estadísticas clave">
+    <div class="stat" role="listitem"><div class="val">0 Datos Vendidos</div><div class="lbl">Genéticos</div></div>
+    <div class="stat" role="listitem"><div class="val">100% Soberano</div><div class="lbl">Control Total</div></div>
+    <div class="stat" role="listitem"><div class="val">Medicina</div><div class="lbl">Personalizada</div></div>
+    <div class="stat" role="listitem"><div class="val">Herencia</div><div class="lbl">Ancestral</div></div>
+  </div>
+
+  <div class="dna-banner" aria-label="Estado del procesamiento genómico">
+    <div class="dna-strand" aria-hidden="true">
+      <div class="dna-dot"></div><div class="dna-dot"></div><div class="dna-dot"></div><div class="dna-dot"></div>
+      <div class="dna-dot"></div><div class="dna-dot"></div><div class="dna-dot"></div><div class="dna-dot"></div>
+    </div>
+    <span class="info">Secuenciaciones activas: <span class="val">2,847</span></span>
+    <span class="info">Genomas almacenados: <span class="val">184,391</span></span>
+    <div class="shield"><span aria-hidden="true">&#128274;</span> Cifrado Homomórfico Activo</div>
+  </div>
+
+  <div class="section-title">
+    <h3>Módulos de la Plataforma</h3>
+    <p>10 herramientas para la soberanía genómica total de los pueblos indígenas</p>
+  </div>
+
+  <div class="grid">
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#129516;</div>
+      <h4>Secuenciación Soberana</h4>
+      <p>Secuenciación genómica en infraestructura local. Tus datos genéticos nunca abandonan el territorio soberano.</p>
+      <span class="tag">On-Premises</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#128138;</div>
+      <h4>Motor de Medicina Personalizada</h4>
+      <p>Compatibilidad farmacológica basada en perfiles genéticos indígenas. Tratamientos diseñados para tu genoma.</p>
+      <span class="tag">IA Médica</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#127795;</div>
+      <h4>Mapeo de Linaje Ancestral</h4>
+      <p>Traza tu herencia indígena a través de tu ADN. Conexiones genéticas con ancestros y comunidades milenarias.</p>
+      <span class="tag">Heritage</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#128202;</div>
+      <h4>Dashboard Farmacogenómico</h4>
+      <p>Predice respuestas a medicamentos según tu perfil genético. Evita efectos adversos, optimiza tratamientos.</p>
+      <span class="tag">Predicción</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#128269;</div>
+      <h4>Detección de Enfermedades Raras</h4>
+      <p>Screening genético impulsado por IA para detección temprana de enfermedades raras y condiciones hereditarias.</p>
+      <span class="tag">IA Diagnóstica</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#127975;</div>
+      <h4>Biobanco Indígena</h4>
+      <p>Repositorio genético controlado por la comunidad. Los pueblos deciden quién accede a su patrimonio genético.</p>
+      <span class="tag">Comunitario</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#128272;</div>
+      <h4>Almacenamiento Cifrado</h4>
+      <p>Datos genómicos cifrados con encriptación homomórfica. Análisis sin jamás exponer información bruta.</p>
+      <span class="tag">Homomórfico</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#128104;</div>
+      <h4>Portal de Asesoría Genética</h4>
+      <p>Conecta con consejeros genéticos soberanos. Asesoramiento personalizado sobre resultados y opciones médicas.</p>
+      <span class="tag">Consultoría</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#127811;</div>
+      <h4>Genética de Conservación</h4>
+      <p>Protege el ADN de especies endémicas del territorio. Biodiversidad genética soberana para futuras generaciones.</p>
+      <span class="tag">Biodiversidad</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#128220;</div>
+      <h4>Gestor de Consentimiento</h4>
+      <p>Control granular sobre cómo se usa tu ADN en investigación. Consentimiento revocable, auditable y transparente.</p>
+      <span class="tag">Gobernanza</span>
+    </article>
+  </div>
+</main>
+
+<footer>
+  <p><span aria-hidden="true">&#129516;</span> Genómica Soberana &mdash; Ecosistema Digital <a href="#">Ierahkwa</a> &mdash; 0 datos genéticos vendidos, siempre</p>
+</footer>
+</body>
+</html>

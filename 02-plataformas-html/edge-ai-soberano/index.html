@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Edge AI Soberano — On-Device Sovereign AI Processing</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--accent:#00e676;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold));outline-offset:2px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s;text-decoration:none}.skip-nav:focus{top:1rem}
+nav{position:sticky;top:0;z-index:100;background:rgba(9,9,13,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--brd);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:1.25rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:1.5rem;list-style:none}.nav-links a{color:var(--txt2);text-decoration:none;font-size:.9rem;transition:color .3s}.nav-links a:hover{color:var(--accent)}
+.hero{position:relative;padding:6rem 2rem 4rem;text-align:center;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 50% 30%,rgba(0,230,118,.07) 0%,transparent 60%);animation:pulse 8s ease-in-out infinite alternate}
+@keyframes pulse{0%{opacity:.5;transform:scale(1)}100%{opacity:1;transform:scale(1.05)}}
+.hero-badge{display:inline-block;padding:.4rem 1.2rem;border:1px solid var(--accent);border-radius:2rem;font-size:.8rem;color:var(--accent);margin-bottom:1.5rem;letter-spacing:.05em;text-transform:uppercase}
+h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.1;margin-bottom:1rem;background:linear-gradient(135deg,var(--txt),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tagline{font-size:clamp(1rem,2.5vw,1.4rem);color:var(--txt2);max-width:600px;margin:0 auto 2.5rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;max-width:800px;margin:0 auto 2rem}
+.stat{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.25rem;text-align:center;transition:transform .3s,border-color .3s}.stat:hover{transform:translateY(-3px);border-color:var(--accent)}
+.stat-value{font-size:1.5rem;font-weight:800;color:var(--accent)}.stat-label{font-size:.8rem;color:var(--txt2);margin-top:.25rem}
+.section{padding:4rem 2rem}.section-title{text-align:center;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;margin-bottom:.5rem}.section-sub{text-align:center;color:var(--txt2);margin-bottom:3rem;max-width:600px;margin-left:auto;margin-right:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;max-width:1200px;margin:0 auto}
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.75rem;transition:transform .3s,border-color .3s,box-shadow .3s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .3s}.card:hover::before{opacity:1}
+.card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 32px rgba(0,230,118,.1)}
+.card-icon{font-size:2rem;margin-bottom:.75rem}.card h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem;color:var(--txt)}.card p{font-size:.875rem;color:var(--txt2);line-height:1.5}
+.device-ring{display:flex;justify-content:center;align-items:center;gap:.75rem;margin-bottom:2rem;flex-wrap:wrap}
+.ring-node{width:48px;height:48px;border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;animation:ringPulse 3s ease-in-out infinite;position:relative}
+.ring-node::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--accent);opacity:.3;animation:ringExpand 3s ease-in-out infinite}
+@keyframes ringPulse{0%,100%{border-color:var(--accent);opacity:.7}50%{border-color:var(--gold);opacity:1}}
+@keyframes ringExpand{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.2);opacity:0}}
+.zero-cloud{background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--accent);border-radius:var(--r);padding:1.5rem 2rem;max-width:700px;margin:0 auto 2rem;text-align:center;position:relative;overflow:hidden}
+.zero-cloud::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,230,118,.03),transparent);pointer-events:none}
+.zero-cloud .big{font-size:2.5rem;font-weight:900;color:var(--accent)}.zero-cloud p{color:var(--txt2);font-size:.9rem;margin-top:.5rem}
+.cta-section{text-align:center;padding:4rem 2rem}
+.cta-btn{display:inline-block;padding:.9rem 2.5rem;background:linear-gradient(135deg,var(--accent),#00c060);color:#09090d;font-weight:700;font-size:1rem;border:none;border-radius:var(--r);cursor:pointer;text-decoration:none;transition:transform .3s,box-shadow .3s}.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,230,118,.3)}
+footer{text-align:center;padding:2rem;border-top:1px solid var(--brd);color:var(--txt2);font-size:.8rem}
+.glow-line{height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:0 auto;max-width:600px;opacity:.4}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.float{animation:float 4s ease-in-out infinite}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.1;pointer-events:none}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Skip to main content</a>
+<nav aria-label="Main navigation">
+  <div class="logo"><span aria-hidden="true">🤖</span> Edge AI Soberano</div>
+  <ul class="nav-links">
+    <li><a href="#features">Capacidades</a></li>
+    <li><a href="#stats">Rendimiento</a></li>
+    <li><a href="#deploy">Desplegar</a></li>
+  </ul>
+</nav>
+<main id="main">
+  <section class="hero">
+    <div class="orb" style="width:500px;height:500px;background:var(--accent);top:-10%;left:-10%"></div>
+    <div class="orb" style="width:350px;height:350px;background:var(--gold);bottom:-5%;right:-5%"></div>
+    <div class="hero-badge">On-Device Sovereign AI</div>
+    <h1>Edge AI Soberano</h1>
+    <p class="tagline">IA que nunca abandona tu dispositivo</p>
+    <div class="device-ring" aria-hidden="true">
+      <div class="ring-node" style="animation-delay:0s"><span aria-hidden="true">📱</span></div>
+      <div class="ring-node" style="animation-delay:.4s"><span aria-hidden="true">💻</span></div>
+      <div class="ring-node" style="animation-delay:.8s"><span aria-hidden="true">🖥</span></div>
+      <div class="ring-node" style="animation-delay:1.2s"><span aria-hidden="true">⌚</span></div>
+      <div class="ring-node" style="animation-delay:1.6s"><span aria-hidden="true">🔬</span></div>
+    </div>
+    <div class="stats" id="stats">
+      <div class="stat float" style="animation-delay:0s"><div class="stat-value">0 Bytes</div><div class="stat-label">a la Nube</div></div>
+      <div class="stat float" style="animation-delay:.5s"><div class="stat-value">43</div><div class="stat-label">Idiomas Locales</div></div>
+      <div class="stat float" style="animation-delay:1s"><div class="stat-value">&lt; 100ms</div><div class="stat-label">Inferencia</div></div>
+      <div class="stat float" style="animation-delay:1.5s"><div class="stat-value">100%</div><div class="stat-label">Offline</div></div>
+    </div>
+  </section>
+  <div class="glow-line"></div>
+  <div class="zero-cloud">
+    <div class="big">0 Bytes a la Nube</div>
+    <p>Reemplaza Google AI, AWS AI, Azure AI. Toda la inteligencia artificial se ejecuta en tu dispositivo. Tus datos nunca salen.</p>
+  </div>
+  <section class="section" id="features">
+    <h2 class="section-title">Capacidades de IA Local</h2>
+    <p class="section-sub">Procesamiento de IA completamente soberano. Sin internet, sin servidores externos, sin fugas de datos.</p>
+    <div class="grid">
+      <article class="card"><div class="card-icon" aria-hidden="true">💬</div><h3>On-Device LLM</h3><p>Modelo de lenguaje soberano que se ejecuta localmente. Conversaci&oacute;n, an&aacute;lisis y generaci&oacute;n sin env&iacute;ar una sola palabra a la nube.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">🔗</div><h3>Federated Learning Hub</h3><p>Entrena modelos entre dispositivos sin compartir datos. Aprendizaje colectivo con privacidad individual total.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">⚡</div><h3>Edge Inference Engine</h3><p>Motor de inferencia en tiempo real sin internet. Menos de 100ms de latencia en cualquier dispositivo.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">📦</div><h3>Sovereign Model Store</h3><p>Tienda de modelos pre-entrenados para uso offline. Descarga una vez, usa para siempre sin conexi&oacute;n.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">🌐</div><h3>Privacy-First NLP</h3><p>Procesamiento de lenguaje natural en 43 idiomas ind&iacute;genas. Todo el an&aacute;lisis de texto ocurre localmente.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">👁</div><h3>Local Vision AI</h3><p>Reconocimiento de im&aacute;genes en el dispositivo. An&aacute;lisis visual sin que tus fotos toquen ning&uacute;n servidor.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">🏥</div><h3>Edge Health Diagnostics</h3><p>IA m&eacute;dica sin nube. Diagn&oacute;sticos preliminares en el dispositivo con total privacidad del paciente.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">🗣</div><h3>Offline Translation Engine</h3><p>Traducci&oacute;n de idiomas ind&iacute;genas sin internet. 43 idiomas disponibles completamente offline.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">🔒</div><h3>Device Trust Score</h3><p>Atestaci&oacute;n de hardware que verifica integridad del dispositivo. Solo hardware confiable ejecuta modelos soberanos.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">📴</div><h3>Bandwidth-Zero AI</h3><p>Capacidad completa de IA con cero ancho de banda. Funcionalidad total sin una sola conexi&oacute;n a internet.</p></article>
+    </div>
+  </section>
+  <section class="cta-section" id="deploy">
+    <div class="glow-line" style="margin-bottom:3rem"></div>
+    <h2 class="section-title">Despliega IA Soberana</h2>
+    <p class="tagline">Tu dispositivo. Tu IA. Tus datos. Sin excepciones, sin excusas, sin dependencias externas.</p>
+    <a href="#" class="cta-btn">Descargar Edge AI Runtime</a>
+  </section>
+</main>
+<footer>
+  <p><span aria-hidden="true">🤖</span> Edge AI Soberano &mdash; Ierahkwa Sovereign Digital Ecosystem &copy; 2026</p>
+  <p>72M personas &middot; 19 pa&iacute;ses &middot; Inteligencia artificial 100% soberana</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moneda Soberana CBDC — Dashboard de Moneda Digital del Banco Central</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--accent:#64ffda;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s;text-decoration:none;font-size:.95rem}
+.skip-nav:focus{top:1rem}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;min-height:100vh;overflow-x:hidden}
+header{background:var(--bg2);border-bottom:1px solid var(--brd);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.logo{display:flex;align-items:center;gap:.75rem}
+.logo-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),#00bfa5);border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:1.1rem;color:var(--bg)}
+.logo h1{font-size:1.2rem;color:var(--txt);letter-spacing:-.02em}
+.logo h1 span{color:var(--accent)}
+nav{display:flex;gap:.25rem}
+nav a{color:var(--txt2);text-decoration:none;padding:.5rem .85rem;border-radius:var(--r);font-size:.85rem;transition:all .2s}
+nav a:hover,nav a[aria-current="page"]{color:var(--accent);background:rgba(100,255,218,.08)}
+.hero{text-align:center;padding:4rem 2rem 3rem;position:relative}
+.hero::before{content:'';position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:600px;height:500px;background:radial-gradient(circle,rgba(100,255,218,.05),transparent 65%);pointer-events:none}
+.hero .badge{display:inline-block;padding:.35rem 1rem;background:rgba(100,255,218,.1);border:1px solid rgba(100,255,218,.25);border-radius:20px;font-size:.75rem;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1.25rem}
+.hero h2{font-size:clamp(1.7rem,5vw,2.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-bottom:1rem;background:linear-gradient(135deg,var(--txt),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--txt2);font-size:1.1rem;max-width:640px;margin:0 auto 2rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;padding:0 2rem 3rem;max-width:900px;margin:0 auto}
+.stat{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.25rem;text-align:center;transition:transform .2s,border-color .2s}
+.stat:hover{transform:translateY(-2px);border-color:var(--accent)}
+.stat .val{font-size:.95rem;font-weight:700;color:var(--accent);margin-bottom:.25rem}
+.stat .lbl{font-size:.75rem;color:var(--txt2)}
+.ticker{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);margin:0 auto 3rem;padding:1rem 1.5rem;max-width:1200px;width:calc(100% - 4rem);overflow:hidden;position:relative}
+.ticker-inner{display:flex;gap:2.5rem;animation:scroll 25s linear infinite;width:max-content}
+@keyframes scroll{to{transform:translateX(-50%)}}
+.ticker-item{display:flex;align-items:center;gap:.5rem;white-space:nowrap;font-size:.82rem}
+.ticker-item .pair{color:var(--txt);font-weight:600}
+.ticker-item .rate{color:var(--accent);font-weight:700}
+.ticker-item .change{font-size:.72rem;padding:.15rem .4rem;border-radius:4px}
+.up{background:rgba(100,255,218,.1);color:var(--accent)}
+.down{background:rgba(255,23,68,.1);color:#ff1744}
+.coin{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#00bfa5);color:var(--bg);font-weight:900;font-size:.7rem;flex-shrink:0}
+.section-title{text-align:center;padding:2rem 2rem .5rem}
+.section-title h3{font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
+.section-title p{color:var(--txt2);font-size:.9rem;margin-top:.5rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;padding:1.5rem 2rem 3rem;max-width:1200px;margin:0 auto}
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:all .25s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent);opacity:0;transition:opacity .25s}
+.card:hover{border-color:rgba(100,255,218,.3);transform:translateY(-3px);box-shadow:0 8px 30px rgba(100,255,218,.06)}.card:hover::before{opacity:1}
+.card-icon{width:40px;height:40px;background:rgba(100,255,218,.1);border-radius:8px;display:grid;place-items:center;font-size:1.1rem;margin-bottom:1rem}
+.card h4{font-size:.95rem;font-weight:700;margin-bottom:.5rem;color:var(--txt)}
+.card p{font-size:.82rem;color:var(--txt2);line-height:1.55}
+.card .tag{display:inline-block;margin-top:.75rem;padding:.2rem .55rem;background:rgba(100,255,218,.08);border-radius:4px;font-size:.7rem;color:var(--accent);font-weight:600}
+.supply-bar{display:flex;align-items:center;gap:.75rem;margin:0 auto 3rem;max-width:1200px;width:calc(100% - 4rem);background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1rem 1.5rem;flex-wrap:wrap}
+.supply-bar .label{font-size:.82rem;color:var(--txt2);white-space:nowrap}
+.supply-track{flex:1;min-width:180px;height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;position:relative}
+.supply-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),#00bfa5);width:0;animation:supplyGrow 3s ease-out forwards}
+@keyframes supplyGrow{to{width:62%}}
+.supply-bar .val{font-size:.85rem;font-weight:700;color:var(--accent)}
+footer{background:var(--bg2);border-top:1px solid var(--brd);padding:2rem;text-align:center}
+footer p{font-size:.8rem;color:var(--txt2)}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){header{padding:1rem}.hero{padding:3rem 1rem 2rem}.grid{grid-template-columns:1fr;padding:1rem}.stats{grid-template-columns:repeat(2,1fr);padding:0 1rem 2rem}.ticker,.supply-bar{width:calc(100% - 2rem)}.supply-bar{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Skip to main content</a>
+<header>
+  <div class="logo">
+    <div class="logo-icon" aria-hidden="true">W</div>
+    <h1>Moneda Soberana <span>CBDC</span></h1>
+  </div>
+  <nav aria-label="Navegación principal">
+    <a href="#" aria-current="page">Dashboard</a>
+    <a href="#">Emisión</a>
+    <a href="#">Política</a>
+    <a href="#">Reservas</a>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="badge"><span class="coin" aria-hidden="true">W</span>&ensp;WAMPUM &mdash; Primera CBDC Indígena</div>
+    <h2>La primera moneda digital soberana de los pueblos indígenas</h2>
+    <p>WAMPUM: moneda digital del banco central construida por y para 72 millones de personas indígenas en 19 naciones soberanas.</p>
+  </section>
+
+  <div class="stats" role="list" aria-label="Estadísticas clave">
+    <div class="stat" role="listitem"><div class="val">720M Max Supply</div><div class="lbl">WAMPUM</div></div>
+    <div class="stat" role="listitem"><div class="val">0.1% Burn Rate</div><div class="lbl">Deflacionaria</div></div>
+    <div class="stat" role="listitem"><div class="val">19 Naciones</div><div class="lbl">Conectadas</div></div>
+    <div class="stat" role="listitem"><div class="val">Offline Payments</div><div class="lbl">NFC sin Internet</div></div>
+  </div>
+
+  <div class="ticker" aria-label="Ticker de tasas de cambio" role="marquee">
+    <div class="ticker-inner" aria-hidden="true">
+      <div class="ticker-item"><span class="coin">W</span><span class="pair">WPM/USD</span><span class="rate">1.0042</span><span class="change up">+0.12%</span></div>
+      <div class="ticker-item"><span class="coin">W</span><span class="pair">WPM/EUR</span><span class="rate">0.9318</span><span class="change up">+0.08%</span></div>
+      <div class="ticker-item"><span class="coin">W</span><span class="pair">WPM/BTC</span><span class="rate">0.0000021</span><span class="change down">-0.03%</span></div>
+      <div class="ticker-item"><span class="coin">W</span><span class="pair">WPM/MXN</span><span class="rate">17.24</span><span class="change up">+0.21%</span></div>
+      <div class="ticker-item"><span class="coin">W</span><span class="pair">WPM/BRL</span><span class="rate">5.18</span><span class="change up">+0.15%</span></div>
+      <div class="ticker-item"><span class="coin">W</span><span class="pair">WPM/CAD</span><span class="rate">1.3671</span><span class="change down">-0.05%</span></div>
+      <div class="ticker-item"><span class="coin">W</span><span class="pair">WPM/USD</span><span class="rate">1.0042</span><span class="change up">+0.12%</span></div>
+      <div class="ticker-item"><span class="coin">W</span><span class="pair">WPM/EUR</span><span class="rate">0.9318</span><span class="change up">+0.08%</span></div>
+      <div class="ticker-item"><span class="coin">W</span><span class="pair">WPM/BTC</span><span class="rate">0.0000021</span><span class="change down">-0.03%</span></div>
+      <div class="ticker-item"><span class="coin">W</span><span class="pair">WPM/MXN</span><span class="rate">17.24</span><span class="change up">+0.21%</span></div>
+      <div class="ticker-item"><span class="coin">W</span><span class="pair">WPM/BRL</span><span class="rate">5.18</span><span class="change up">+0.15%</span></div>
+      <div class="ticker-item"><span class="coin">W</span><span class="pair">WPM/CAD</span><span class="rate">1.3671</span><span class="change down">-0.05%</span></div>
+    </div>
+  </div>
+
+  <div class="supply-bar" aria-label="Suministro de WAMPUM">
+    <span class="label">Circulante:</span>
+    <span class="val">447.2M WPM</span>
+    <div class="supply-track" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="62% del suministro máximo en circulación">
+      <div class="supply-fill"></div>
+    </div>
+    <span class="val">62%</span>
+    <span class="label">de 720M max</span>
+  </div>
+
+  <div class="section-title">
+    <h3>Módulos de la Plataforma</h3>
+    <p>10 herramientas para la soberanía monetaria de los pueblos indígenas</p>
+  </div>
+
+  <div class="grid">
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#9878;</div>
+      <h4>Consola de Emisión WAMPUM</h4>
+      <p>Mint/burn de CBDC con gobernanza multi-firma. Cada operación requiere consenso de múltiples naciones soberanas.</p>
+      <span class="tag">Multi-Sig</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#128200;</div>
+      <h4>Simulador de Política Monetaria</h4>
+      <p>Prueba tasas de interés y cambios de suministro en simulación antes de implementar. Política monetaria basada en datos.</p>
+      <span class="tag">Simulación</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#127760;</div>
+      <h4>Dashboard de Divisas en Tiempo Real</h4>
+      <p>Tasas de cambio en tiempo real entre WAMPUM y todas las monedas de las 19 naciones. Mercados soberanos 24/7.</p>
+      <span class="tag">Tiempo Real</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#128259;</div>
+      <h4>Motor de Liquidación Transfronteriza</h4>
+      <p>Liquidación instantánea entre naciones soberanas. Sin SWIFT, sin intermediarios, sin demoras de 3-5 días.</p>
+      <span class="tag">Instantáneo</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#129302;</div>
+      <h4>Control de Inflación con IA</h4>
+      <p>Machine learning para predicción y control inflacionario. Políticas proactivas basadas en datos económicos soberanos.</p>
+      <span class="tag">ML-Powered</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#128101;</div>
+      <h4>Métricas de Inclusión Financiera</h4>
+      <p>Rastreo de incorporación bancaria de población no bancarizada. Cada persona indígena con acceso financiero.</p>
+      <span class="tag">Inclusión</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#128221;</div>
+      <h4>Dinero Programable</h4>
+      <p>Smart contracts para pagos condicionales: educación, salud, infraestructura. El dinero cumple su propósito automáticamente.</p>
+      <span class="tag">Smart Contracts</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#128225;</div>
+      <h4>Pagos CBDC Offline</h4>
+      <p>Pagos NFC sin internet. Funciona en comunidades remotas sin conectividad. Soberanía monetaria sin excepciones.</p>
+      <span class="tag">NFC Offline</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#128737;</div>
+      <h4>Motor Anti-Lavado</h4>
+      <p>AML que preserva la privacidad con pruebas de conocimiento cero. Cumplimiento regulatorio sin sacrificar derechos.</p>
+      <span class="tag">ZK Proofs</span>
+    </article>
+    <article class="card">
+      <div class="card-icon" aria-hidden="true">&#127974;</div>
+      <h4>Dashboard de Reservas</h4>
+      <p>Monitoreo de reservas soberanas: oro, cripto y activos reales. Transparencia total del respaldo de WAMPUM.</p>
+      <span class="tag">Reservas</span>
+    </article>
+  </div>
+</main>
+
+<footer>
+  <p><span class="coin" style="width:20px;height:20px;font-size:.6rem;vertical-align:middle" aria-hidden="true">W</span> Moneda Soberana CBDC &mdash; Ecosistema Digital <a href="#">Ierahkwa</a> &mdash; WAMPUM: la moneda del pueblo</p>
+</footer>
+</body>
+</html>

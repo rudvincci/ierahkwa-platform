@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BCI Soberano — Brain-Computer Interface for Accessibility</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--accent:#ff4081;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold));outline-offset:2px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s;text-decoration:none}.skip-nav:focus{top:1rem}
+nav{position:sticky;top:0;z-index:100;background:rgba(9,9,13,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--brd);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:1.25rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:1.5rem;list-style:none}.nav-links a{color:var(--txt2);text-decoration:none;font-size:.9rem;transition:color .3s}.nav-links a:hover{color:var(--accent)}
+.hero{position:relative;padding:6rem 2rem 4rem;text-align:center;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 50% 30%,rgba(255,64,129,.08) 0%,transparent 60%);animation:pulse 8s ease-in-out infinite alternate}
+@keyframes pulse{0%{opacity:.5;transform:scale(1)}100%{opacity:1;transform:scale(1.05)}}
+.hero-badge{display:inline-block;padding:.4rem 1.2rem;border:1px solid var(--accent);border-radius:2rem;font-size:.8rem;color:var(--accent);margin-bottom:1.5rem;letter-spacing:.05em;text-transform:uppercase}
+h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.1;margin-bottom:1rem;background:linear-gradient(135deg,var(--txt),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tagline{font-size:clamp(1rem,2.5vw,1.4rem);color:var(--txt2);max-width:650px;margin:0 auto 2.5rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;max-width:800px;margin:0 auto 2rem}
+.stat{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.25rem;text-align:center;transition:transform .3s,border-color .3s}.stat:hover{transform:translateY(-3px);border-color:var(--accent)}
+.stat-value{font-size:1.5rem;font-weight:800;color:var(--accent)}.stat-label{font-size:.8rem;color:var(--txt2);margin-top:.25rem}
+.section{padding:4rem 2rem}.section-title{text-align:center;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;margin-bottom:.5rem}.section-sub{text-align:center;color:var(--txt2);margin-bottom:3rem;max-width:600px;margin-left:auto;margin-right:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;max-width:1200px;margin:0 auto}
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.75rem;transition:transform .3s,border-color .3s,box-shadow .3s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .3s}.card:hover::before{opacity:1}
+.card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 32px rgba(255,64,129,.1)}
+.card-icon{font-size:2rem;margin-bottom:.75rem}.card h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem;color:var(--txt)}.card p{font-size:.875rem;color:var(--txt2);line-height:1.5}
+.brainwave{display:flex;align-items:center;justify-content:center;gap:3px;margin-bottom:2rem;height:60px}
+.wave-bar{width:4px;border-radius:2px;background:var(--accent);animation:waveAnim 1.5s ease-in-out infinite}
+@keyframes waveAnim{0%,100%{height:8px;opacity:.4}50%{height:50px;opacity:1}}
+.cta-section{text-align:center;padding:4rem 2rem}
+.cta-btn{display:inline-block;padding:.9rem 2.5rem;background:linear-gradient(135deg,var(--accent),#d0306a);color:#fff;font-weight:700;font-size:1rem;border:none;border-radius:var(--r);cursor:pointer;text-decoration:none;transition:transform .3s,box-shadow .3s}.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,64,129,.3)}
+footer{text-align:center;padding:2rem;border-top:1px solid var(--brd);color:var(--txt2);font-size:.8rem}
+.glow-line{height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:0 auto;max-width:600px;opacity:.4}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.float{animation:float 4s ease-in-out infinite}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.12;pointer-events:none}
+.a11y-banner{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:1.25rem 2rem;max-width:700px;margin:0 auto 2rem;text-align:center;font-size:.9rem;color:var(--txt2)}
+.a11y-banner strong{color:var(--accent)}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-nav">Skip to main content</a>
+<nav aria-label="Main navigation">
+  <div class="logo"><span aria-hidden="true">🧠</span> BCI Soberano</div>
+  <ul class="nav-links">
+    <li><a href="#features">Interfaces</a></li>
+    <li><a href="#stats">M&eacute;tricas</a></li>
+    <li><a href="#access">Acceso</a></li>
+  </ul>
+</nav>
+<main id="main">
+  <section class="hero">
+    <div class="orb" style="width:450px;height:450px;background:var(--accent);top:-8%;right:-8%"></div>
+    <div class="orb" style="width:300px;height:300px;background:var(--gold);bottom:5%;left:5%"></div>
+    <div class="hero-badge">Brain-Computer Interface</div>
+    <h1>BCI Soberano</h1>
+    <p class="tagline">La mente como interfaz, la accesibilidad como derecho</p>
+    <div class="brainwave" aria-hidden="true">
+      <div class="wave-bar" style="animation-delay:0s"></div><div class="wave-bar" style="animation-delay:.1s"></div>
+      <div class="wave-bar" style="animation-delay:.2s"></div><div class="wave-bar" style="animation-delay:.3s"></div>
+      <div class="wave-bar" style="animation-delay:.4s"></div><div class="wave-bar" style="animation-delay:.5s"></div>
+      <div class="wave-bar" style="animation-delay:.6s"></div><div class="wave-bar" style="animation-delay:.7s"></div>
+      <div class="wave-bar" style="animation-delay:.8s"></div><div class="wave-bar" style="animation-delay:.9s"></div>
+      <div class="wave-bar" style="animation-delay:1s"></div><div class="wave-bar" style="animation-delay:1.1s"></div>
+      <div class="wave-bar" style="animation-delay:1.2s"></div><div class="wave-bar" style="animation-delay:1.3s"></div>
+      <div class="wave-bar" style="animation-delay:1.4s"></div><div class="wave-bar" style="animation-delay:1.5s"></div>
+    </div>
+    <div class="stats" id="stats">
+      <div class="stat float" style="animation-delay:0s"><div class="stat-value">100%</div><div class="stat-label">Accesible</div></div>
+      <div class="stat float" style="animation-delay:.5s"><div class="stat-value">0</div><div class="stat-label">Datos Neurales en Nube</div></div>
+      <div class="stat float" style="animation-delay:1s"><div class="stat-value">&lt; 200ms</div><div class="stat-label">Latencia</div></div>
+      <div class="stat float" style="animation-delay:1.5s"><div class="stat-value">43</div><div class="stat-label">Idiomas</div></div>
+    </div>
+  </section>
+  <div class="glow-line"></div>
+  <div class="a11y-banner"><strong>Accesibilidad Universal:</strong> La primera interfaz cerebro-computadora dise&ntilde;ada para servicios gubernamentales. Ning&uacute;n dato neural abandona tu dispositivo.</div>
+  <section class="section" id="features">
+    <h2 class="section-title">Interfaces Neurales</h2>
+    <p class="section-sub">China planea BCI para 2026-2030. Ierahkwa ya lo implement&oacute; para 72 millones de personas con soberan&iacute;a total de datos neurales.</p>
+    <div class="grid">
+      <article class="card"><div class="card-icon" aria-hidden="true">💭</div><h3>Neural Navigation</h3><p>Navega servicios digitales con el pensamiento. Control total del sistema operativo mediante se&ntilde;ales cerebrales.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">🗣</div><h3>Assistive Communication</h3><p>S&iacute;ntesis de voz desde se&ntilde;ales cerebrales. Comunicaci&oacute;n para personas que no pueden hablar o escribir.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">🔐</div><h3>Cognitive Authentication</h3><p>Identidad basada en patrones de ondas cerebrales. Imposible de falsificar, imposible de robar.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">💜</div><h3>Emotion-Responsive UI</h3><p>La interfaz se adapta al estado emocional del usuario. Simplifica cuando detecta estr&eacute;s, expande cuando detecta curiosidad.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">🏥</div><h3>Motor Rehabilitation Tracker</h3><p>Seguimiento de rehabilitaci&oacute;n motora con feedback neural en tiempo real y medici&oacute;n de progreso.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">👁</div><h3>Eye-Gaze + BCI Hybrid</h3><p>Interfaz h&iacute;brida que combina seguimiento ocular con se&ntilde;ales cerebrales para m&aacute;xima precisi&oacute;n.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">🛡</div><h3>Sovereign Neural Data Privacy</h3><p>Los datos neurales nunca abandonan el dispositivo. Procesamiento 100% local con encriptaci&oacute;n a nivel de hardware.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">🌎</div><h3>Indigenous Language Neural Decoder</h3><p>Decodificador neural para idiomas ind&iacute;genas. Piensa en tu lengua materna y el sistema lo interpreta.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">🧘</div><h3>Meditation &amp; Wellness Monitor</h3><p>Monitor de meditaci&oacute;n y bienestar que mide estados de consciencia y gu&iacute;a pr&aacute;cticas ancestrales.</p></article>
+      <article class="card"><div class="card-icon" aria-hidden="true">📈</div><h3>Accessibility Score Dashboard</h3><p>Panel que mide y mejora continuamente la accesibilidad de todos los servicios digitales soberanos.</p></article>
+    </div>
+  </section>
+  <section class="cta-section" id="access">
+    <div class="glow-line" style="margin-bottom:3rem"></div>
+    <h2 class="section-title">Accesibilidad como Derecho</h2>
+    <p class="tagline">Cada cerebro es una interfaz. Cada persona merece acceso total a los servicios digitales soberanos.</p>
+    <a href="#" class="cta-btn">Activar Interfaz Neural</a>
+  </section>
+</main>
+<footer>
+  <p><span aria-hidden="true">🧠</span> BCI Soberano &mdash; Ierahkwa Sovereign Digital Ecosystem &copy; 2026</p>
+  <p>72M personas &middot; 19 pa&iacute;ses &middot; Accesibilidad universal como derecho</p>
+</footer>
+</body>
+</html>

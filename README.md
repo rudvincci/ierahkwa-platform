@@ -8,7 +8,7 @@
 <p align="center">
   <a href="https://github.com/rudvincci/ierahkwa-platform/actions"><img src="https://github.com/rudvincci/ierahkwa-platform/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Sovereign--1.0-gold.svg" alt="License"></a>
-  <a href="#platforms"><img src="https://img.shields.io/badge/Platforms-332+-2dd4a8.svg" alt="Platforms"></a>
+  <a href="#platforms"><img src="https://img.shields.io/badge/Platforms-347+-2dd4a8.svg" alt="Platforms"></a>
   <a href="#blockchain"><img src="https://img.shields.io/badge/MameyNode-v4.2-purple.svg" alt="MameyNode"></a>
   <a href="#languages"><img src="https://img.shields.io/badge/Languages-43-9b6dff.svg" alt="Languages"></a>
   <a href="#zero-tax"><img src="https://img.shields.io/badge/Tax_Rate-0%25-ff6b4a.svg" alt="Zero Tax"></a>
@@ -22,12 +22,12 @@
 </p>
 
 <p align="center">
-  <strong>70+ sovereign platforms replacing Big Tech for indigenous communities across 19 countries.</strong><br>
+  <strong>85+ sovereign platforms replacing Big Tech for indigenous communities across 19 countries.</strong><br>
   <strong>Zero taxes. Free schools. Free hospitals. Post-quantum encryption.</strong>
 </p>
 
 <p align="center">
-  <em>70+ plataformas soberanas reemplazando Big Tech para comunidades indigenas en 19 paises.</em><br>
+  <em>85+ plataformas soberanas reemplazando Big Tech para comunidades indigenas en 19 paises.</em><br>
   <em>Cero impuestos. Escuelas gratis. Hospitales gratis. Encriptacion post-cuantica.</em>
 </p>
 
@@ -39,7 +39,7 @@
 - [Quick Start](#quick-start)
 - [Architecture](#architecture)
 - [Project Structure](#project-structure)
-- [Platforms (332+)](#platforms)
+- [Platforms (347+)](#platforms)
 - [Services & Ports](#services--ports)
 - [Technology Stack](#tech-stack)
 - [Continuous AI](#-continuous-ai--agentic-workflows)
@@ -67,7 +67,7 @@ All services run on **MameyNode**, a post-quantum blockchain with **12,847 TPS**
 | Indigenous people served | **72M+** across the Americas |
 | Countries | **19** |
 | Tribal nations | **574** (NCAI recognized) |
-| Platforms | **332+** (70 flagship) |
+| Platforms | **347+** (85 flagship) |
 | Languages | **43** (37 indigenous + 6 global) |
 | Tax rate | **0%** |
 | Blockchain TPS | **12,847** |
@@ -181,7 +181,7 @@ All services bind to `127.0.0.1` only. All traffic encrypted with post-quantum a
 ```
 ierahkwa-platform/
 ├── 01-documentos/              Legal framework, investors, whitepapers
-├── 02-plataformas-html/        70 platform front-end UIs
+├── 02-plataformas-html/        88 platform front-end UIs
 ├── 03-backend/                 19 Node.js services
 │   ├── api-gateway/            API Gateway
 │   ├── blockchain-api/         MameyNode RPC interface
@@ -248,7 +248,7 @@ ierahkwa-platform/
 ---
 
 <a name="platforms"></a>
-## Platforms (70 Flagship)
+## Platforms (85 Flagship)
 
 | # | Platform | Replaces | Category |
 |---|----------|----------|----------|
@@ -322,6 +322,21 @@ ierahkwa-platform/
 | 68 | Orquestador Soberano | Flowise/LangFlow/Dify | Sovereign LLM Orchestration Platform |
 | 69 | Colaboración Soberana | AppFlowy/Notion/Confluence | Sovereign Workspace & Collaboration |
 | 70 | Backend Soberano | Manifest.Build/Supabase/Firebase | Sovereign Low-Code Backend Platform |
+| 71 | ZK-Identidad Soberana | N/A | Zero-Knowledge Identity (ZK-SNARKs, Groth16, BBS+) |
+| 72 | Homomórfica Soberana | N/A | Fully Homomorphic Encryption (CKKS/BGV/BFV) |
+| 73 | Gemelo Digital Soberano | N/A | National-Scale Digital Twin Simulation |
+| 74 | Quantum Cloud Soberana | N/A | Sovereign Quantum Computing (128 qubits, QKD) |
+| 75 | Mesh Soberana | N/A | Sovereign Mesh Network (P2P, anti-censorship) |
+| 76 | BCI Soberano | N/A | Brain-Computer Interface (neural nav, assistive) |
+| 77 | Edge AI Soberano | N/A | On-Device AI (LLM, federated learning, zero cloud) |
+| 78 | Democracia Líquida Soberana | N/A | Liquid Democracy & DAO Governance |
+| 79 | Tokenización Soberana | N/A | Asset Tokenization (land, bonds, carbon, cultural) |
+| 80 | Biométrica Soberana | N/A | Multimodal Biometrics (7 modalities, on-device) |
+| 81 | Satélite Soberano | N/A | Sovereign Satellite (LEO constellation, GPS, EO) |
+| 82 | Energía Soberana | N/A | Decentralized Energy (P2P trading, microgrids, AI) |
+| 83 | Genómica Soberana | N/A | Sovereign Genomics (sequencing, pharmacogenomics) |
+| 84 | Archivo Eterno Soberano | N/A | Quantum-Proof Archive (IPFS, CRYSTALS-Kyber) |
+| 85 | Moneda Soberana CBDC | N/A | WAMPUM CBDC (720M supply, offline NFC, P2P) |
 
 ---
 
@@ -388,7 +403,7 @@ ierahkwa-platform/
 | **Backend** | Rust | MameyForge CLI + gRPC blockchain SDK |
 | **Backend** | Go | Microservices + API SDKs |
 | **AI** | Python | MameyFutureAI (42 engines), fraud detection |
-| **Frontend** | HTML/CSS/JS | 332+ responsive platforms |
+| **Frontend** | HTML/CSS/JS | 347+ responsive platforms |
 | **Frontend** | Blazor | MameyNode.UI + Pupitre education |
 | **Database** | PostgreSQL 16 | Primary relational data |
 | **Cache** | Redis 7 | Sessions, rate limiting, pub/sub |
@@ -421,7 +436,7 @@ ierahkwa-platform/
 
 - WCAG 2.2 AA compliance across all platforms
 - Shared accessibility middleware (`03-backend/shared/accessibility.js`)
-- Automated a11y audit tool scanning 70 platforms (12 WCAG checks)
+- Automated a11y audit tool scanning 88 platforms (12 WCAG checks)
 - E2E accessibility testing with Playwright
 - Accessibility CI workflow on every PR touching HTML
 - See [ACCESSIBILITY.md](ACCESSIBILITY.md) for full details

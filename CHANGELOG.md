@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.0] — 2026-02-23
+
+### Added
+- **ZK-Identidad Soberana** — Zero-knowledge identity platform with ZK-SNARKs, Groth16, BBS+ signatures, selective disclosure, and sovereign DID management
+- **Homomórfica Soberana** — Fully homomorphic encryption platform (CKKS/BGV/BFV lattice-based) for computing on encrypted data without decryption
+- **Gemelo Digital Soberano** — National-scale digital twin simulation with economic, infrastructure, climate, and social modeling agents
+- **Quantum Cloud Soberana** — Sovereign quantum computing cloud with 128 qubits, quantum key distribution (QKD), and post-quantum cryptography
+- **Mesh Soberana** — Sovereign mesh networking with P2P decentralized topology, off-grid communication, and anti-censorship relay nodes
+- **BCI Soberano** — Brain-computer interface platform with neural navigation, assistive communication, and on-device neural data privacy
+- **Edge AI Soberano** — On-device AI platform with sovereign LLM inference, federated learning, and zero-bandwidth architecture
+- **Democracia Líquida Soberana** — Liquid democracy and DAO governance with quadratic voting, conviction voting, and transparent delegation
+- **Tokenización Soberana** — Asset tokenization platform for land titles, sovereign bonds, carbon credits, and cultural heritage NFTs
+- **Biométrica Soberana** — Multimodal biometrics with 7 modalities (face, fingerprint, iris, voice, behavioral, palm vein, fusion), all on-device
+- **Satélite Soberano** — Sovereign satellite constellation (LEO), indigenous GPS alternative, earth observation, and space-based internet
+- **Energía Soberana** — Decentralized energy platform with P2P energy trading, microgrids, smart grid AI, and renewable integration
+- **Genómica Soberana** — Sovereign genomics platform with on-premises sequencing, pharmacogenomics, and indigenous biobank with data sovereignty
+- **Archivo Eterno Soberano** — Quantum-proof digital archive with IPFS + blockchain, CRYSTALS-Kyber encryption, oral history preservation
+- **Moneda Soberana CBDC (WAMPUM)** — Central bank digital currency with 720M max supply, offline NFC payments, P2P transfers, and programmable monetary policy
+
+### Changed
+- Platform count updated from 70 to **85 flagship** (347+ total)
+- README.md updated with 15 new frontier technology platforms (#71-85)
+- All new platforms include GAAD accessibility (skip-nav, aria-hidden, prefers-reduced-motion, focus-visible)
+
 ## [2.4.1] — 2026-02-23
 
 ### Security
@@ -128,7 +152,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LICENSE (MIT) for open-source distribution
 - Security policy (SECURITY.md) with vulnerability reporting process
 
-[Unreleased]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.4.1...HEAD
+[Unreleased]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.4.1...v2.5.0
 [2.4.1]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.1.0...v2.3.0

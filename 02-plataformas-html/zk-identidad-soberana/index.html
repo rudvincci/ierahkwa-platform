@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZK-Identidad Soberana — Zero-Knowledge Sovereign Identity | Ierahkwa</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--accent:#00e5ff;--accent-d:rgba(0,229,255,0.1);--accent-g:rgba(0,229,255,0.05);--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* SKIP NAV */
+.skip-nav{position:absolute;top:-100%;left:16px;padding:12px 24px;background:var(--accent);color:#09090d;font-weight:700;border-radius:0 0 var(--r) var(--r);z-index:200;font-size:14px;text-decoration:none}
+.skip-nav:focus{top:0}
+
+/* FOCUS */
+:focus{outline:2px solid var(--accent);outline-offset:2px}
+:focus:not(:focus-visible){outline:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:14px 32px;display:flex;align-items:center;gap:16px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand span{font-size:22px}
+.nav-brand h1{font-size:17px;font-weight:800;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase}
+.nav-links{display:flex;gap:6px;margin-left:auto}
+.nav-btn{padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:inherit;transition:all 0.2s}
+.nav-btn:hover{background:var(--bg3);color:var(--txt)}
+.nav-btn.primary{background:var(--accent);color:#09090d;border-color:var(--accent);font-weight:700}
+.nav-btn.primary:hover{filter:brightness(1.15)}
+
+/* HERO */
+.hero{text-align:center;padding:80px 32px 48px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,0.07),rgba(0,229,255,0.02) 40%,transparent 70%);pointer-events:none;animation:heroPulse 6s ease-in-out infinite}
+.hero::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,229,255,0.01) 2px,rgba(0,229,255,0.01) 4px);pointer-events:none;animation:scanline 8s linear infinite}
+@keyframes heroPulse{0%,100%{opacity:.7;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.05)}}
+@keyframes scanline{0%{transform:translateY(0)}100%{transform:translateY(40px)}}
+.hero-icon{font-size:52px;margin-bottom:16px;display:block;position:relative;z-index:1}
+.hero h2{font-size:52px;font-weight:900;line-height:1.05;letter-spacing:2px;margin-bottom:16px;text-transform:uppercase;position:relative;z-index:1}
+.hero h2 em{background:linear-gradient(135deg,var(--accent),#76ff03);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.hero .tagline{font-size:18px;color:var(--accent);font-style:italic;margin-bottom:12px;position:relative;z-index:1;opacity:.9}
+.hero p{font-size:16px;color:var(--txt2);max-width:600px;margin:0 auto 32px;line-height:1.6;position:relative;z-index:1}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+.cta-btn{padding:14px 32px;border-radius:24px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all 0.2s}
+.cta-btn.primary{background:var(--accent);color:#09090d}
+.cta-btn.primary:hover{filter:brightness(1.15);box-shadow:0 4px 24px rgba(0,229,255,0.3)}
+.cta-btn.secondary{background:none;border:1px solid var(--txt3);color:var(--txt)}
+.cta-btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.hero-tag{margin-top:24px;font-size:12px;color:var(--txt3);font-family:'Courier New',monospace;position:relative;z-index:1}
+
+/* STATS */
+.stats{display:flex;justify-content:center;gap:48px;padding:40px 32px;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);flex-wrap:wrap;background:var(--bg2)}
+.stat{text-align:center}
+.stat .num{font-family:'Courier New',monospace;font-size:32px;font-weight:700;color:var(--accent)}
+.stat .label{font-size:12px;color:var(--txt2);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+
+/* SECTION SHARED */
+.section-header{text-align:center;margin-bottom:40px}
+.section-header h2{font-size:34px;font-weight:900;letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase}
+.section-header p{font-size:15px;color:var(--txt2);max-width:560px;margin:0 auto;line-height:1.6}
+
+/* FEATURES */
+.features{max-width:1100px;margin:0 auto;padding:64px 32px}
+.feature-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.feature-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:24px 20px;transition:all 0.25s;position:relative;overflow:hidden}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity 0.3s}
+.feature-card:hover{border-color:rgba(0,229,255,0.3);transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,0.4)}
+.feature-card:hover::before{opacity:1}
+.feature-card .icon{font-size:28px;margin-bottom:10px;display:block}
+.feature-card h3{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--txt)}
+.feature-card p{font-size:12px;color:var(--txt2);line-height:1.5}
+
+/* ZK DEMO */
+.demo{max-width:900px;margin:0 auto;padding:64px 32px}
+.demo-box{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:32px;position:relative;overflow:hidden}
+.demo-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--gold),var(--accent));animation:gradientSlide 3s linear infinite;background-size:200% 100%}
+@keyframes gradientSlide{0%{background-position:0% 0}100%{background-position:200% 0}}
+.demo-flow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+.demo-step{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:16px 20px;text-align:center;min-width:140px;flex:1;transition:all 0.3s}
+.demo-step:hover{border-color:var(--accent);background:rgba(0,229,255,0.04)}
+.demo-step .step-icon{font-size:24px;display:block;margin-bottom:6px}
+.demo-step .step-label{font-size:11px;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.demo-step .step-title{font-size:13px;font-weight:700;color:var(--txt)}
+.demo-arrow{color:var(--accent);font-size:20px;font-weight:700;flex-shrink:0}
+.demo-result{margin-top:24px;background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:var(--r);padding:16px 20px;font-family:'Courier New',monospace;font-size:12px;color:var(--accent);line-height:1.8}
+.demo-result .line-ok{color:#76ff03}
+.demo-result .line-dim{color:var(--txt3)}
+
+/* INTEGRATIONS */
+.integrations{max-width:1100px;margin:0 auto;padding:64px 32px}
+.int-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.int-card{background:linear-gradient(135deg,var(--accent-d),var(--accent-g));border:1px solid rgba(0,229,255,0.15);border-radius:var(--r);padding:28px;text-align:center;transition:all 0.25s}
+.int-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.3)}
+.int-card .icon{font-size:32px;margin-bottom:10px;display:block}
+.int-card h4{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--accent)}
+.int-card p{font-size:12px;color:var(--txt2);line-height:1.5}
+
+/* FOOTER */
+.footer{text-align:center;padding:40px 32px;border-top:1px solid var(--brd);background:var(--bg2)}
+.footer .brand{font-size:18px;font-weight:800;color:var(--accent);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.footer p{font-size:12px;color:var(--txt3);line-height:1.8}
+.footer .powered{font-family:'Courier New',monospace;font-size:11px;color:var(--txt3);margin-top:12px}
+
+/* REDUCED MOTION */
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  .feature-card:hover,.int-card:hover,.demo-step:hover{transform:none}
+}
+
+/* RESPONSIVE */
+@media(max-width:1000px){
+  .feature-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:768px){
+  .feature-grid{grid-template-columns:repeat(2,1fr)}
+  .int-grid{grid-template-columns:1fr}
+  .hero h2{font-size:36px}
+  .demo-flow{flex-direction:column}
+  .demo-arrow{transform:rotate(90deg)}
+  .stats{gap:24px}
+  .stat .num{font-size:26px}
+}
+@media(max-width:500px){
+  .feature-grid{grid-template-columns:1fr}
+  .hero{padding:48px 16px 32px}
+  .hero h2{font-size:28px}
+  .nav{padding:12px 16px}
+  .nav-links{gap:4px}
+  .nav-btn{padding:6px 12px;font-size:11px}
+  .features,.demo,.integrations{padding-left:16px;padding-right:16px}
+}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+
+<!-- NAV -->
+<nav class="nav" aria-label="Main navigation">
+  <div class="nav-brand">
+    <span aria-hidden="true">&#x1f510;</span>
+    <h1>ZK-Identidad Soberana</h1>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn">Plataforma</button>
+    <button class="nav-btn">Documentos</button>
+    <button class="nav-btn primary">Crear DID</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <span class="hero-icon" aria-hidden="true">&#x1f9ec;&#x1f50f;</span>
+  <h2>Zero-Knowledge<br><em>Identidad Soberana</em></h2>
+  <div class="tagline">"Prueba qui&eacute;n eres sin revelar qui&eacute;n eres"</div>
+  <p>La primera naci&oacute;n en implementar identidad nacional basada en pruebas de conocimiento cero. Reemplaza sistemas de identificaci&oacute;n gubernamental para 72 millones de personas ind&iacute;genas en 19 pa&iacute;ses soberanos.</p>
+  <div class="hero-cta">
+    <button class="cta-btn primary">Generar Mi Identidad ZK</button>
+    <button class="cta-btn secondary">Explorar Pruebas</button>
+  </div>
+  <div class="hero-tag">Plataforma #71 // Ierahkwa Ecosystem // ZK-SNARKs + Groth16 // Post-Quantum Ready</div>
+</header>
+
+<!-- MAIN -->
+<main id="main">
+
+<!-- STATS -->
+<section class="stats" aria-label="Estad&iacute;sticas de la plataforma">
+  <div class="stat"><div class="num">574</div><div class="label">Naciones Tribales</div></div>
+  <div class="stat"><div class="num">0</div><div class="label">Datos Expuestos</div></div>
+  <div class="stat"><div class="num">&infin;</div><div class="label">Pruebas Verificables</div></div>
+  <div class="stat"><div class="num">&lt; 50ms</div><div class="label">Verificaci&oacute;n</div></div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" aria-label="Funcionalidades de la plataforma">
+  <div class="section-header">
+    <h2>Toolkit de Identidad Soberana</h2>
+    <p>Diez m&oacute;dulos criptogr&aacute;ficos que eliminan la necesidad de confiar en gobiernos centrales para demostrar tu identidad.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1f382;</span>
+      <h3>ZK-Age Verification</h3>
+      <p>Demuestra que eres mayor de 18 sin revelar tu fecha de nacimiento. Prueba de rango basada en Bulletproofs.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1f3db;&#xfe0f;</span>
+      <h3>ZK-Citizenship Proof</h3>
+      <p>Prueba membres&iacute;a tribal sin revelar datos personales. Merkle proof de pertenencia al &aacute;rbol de la naci&oacute;n.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1f512;</span>
+      <h3>ZK-Credential Vault</h3>
+      <p>B&oacute;veda de credenciales verificables: diplomas, licencias, registros de salud. Cifrado homomr&oacute;rfico en reposo.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1f3af;</span>
+      <h3>Selective Disclosure</h3>
+      <p>Elige exactamente qu&eacute; atributos revelar en cada interacci&oacute;n. Divulgaci&oacute;n selectiva con BBS+ Signatures.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1f517;</span>
+      <h3>DID Management</h3>
+      <p>Crea y gestiona Identificadores Descentralizados en MameyNode. Compatible con W3C DID Core v1.0.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1f9ec;</span>
+      <h3>Biometric ZK-Auth</h3>
+      <p>Verificaci&oacute;n facial y dactilar con pruebas de conocimiento cero. Tu biometr&iacute;a nunca sale del dispositivo.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1f30d;</span>
+      <h3>Cross-Border Verify</h3>
+      <p>Verifica tu identidad en las 19 naciones soberanas. Protocolo inter-cadena con IBC y pruebas recursivas.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1f6ab;</span>
+      <h3>Revocation Registry</h3>
+      <p>Revocaci&oacute;n de credenciales en tiempo real sin revelar al titular. Accumuladores criptogr&aacute;ficos RSA.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1f91d;</span>
+      <h3>Guardian Recovery</h3>
+      <p>Recuperaci&oacute;n social para credenciales perdidas. Sin autoridad central &mdash; tus guardianes verifican con Shamir.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1f4dc;</span>
+      <h3>Audit Trail</h3>
+      <p>Historial verificable de todas las pruebas generadas. Preserva privacidad con commitments Pedersen.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ZK DEMO -->
+<section class="demo" aria-label="Demostraci&oacute;n de prueba ZK">
+  <div class="section-header">
+    <h2>Demo: Flujo de Prueba ZK</h2>
+    <p>As&iacute; funciona una verificaci&oacute;n de edad sin revelar datos personales.</p>
+  </div>
+  <div class="demo-box">
+    <div class="demo-flow">
+      <div class="demo-step">
+        <span class="step-icon" aria-hidden="true">&#x1f464;</span>
+        <div class="step-label">Paso 1</div>
+        <div class="step-title">Titular solicita</div>
+      </div>
+      <span class="demo-arrow" aria-hidden="true">&#x2192;</span>
+      <div class="demo-step">
+        <span class="step-icon" aria-hidden="true">&#x1f9e0;</span>
+        <div class="step-label">Paso 2</div>
+        <div class="step-title">Genera ZK-Proof</div>
+      </div>
+      <span class="demo-arrow" aria-hidden="true">&#x2192;</span>
+      <div class="demo-step">
+        <span class="step-icon" aria-hidden="true">&#x2705;</span>
+        <div class="step-label">Paso 3</div>
+        <div class="step-title">Verificador valida</div>
+      </div>
+      <span class="demo-arrow" aria-hidden="true">&#x2192;</span>
+      <div class="demo-step">
+        <span class="step-icon" aria-hidden="true">&#x1f510;</span>
+        <div class="step-label">Resultado</div>
+        <div class="step-title">Acceso sin datos</div>
+      </div>
+    </div>
+    <div class="demo-result" role="status" aria-label="Resultado de verificaci&oacute;n ZK">
+      <span class="line-dim">$</span> zkid verify --claim age_gte_18 --holder did:mamey:0x7a3f<br>
+      <span class="line-dim">[circuit]</span> Compilando circuito Groth16... <span class="line-ok">OK</span><br>
+      <span class="line-dim">[proof]</span>&nbsp; Generando prueba ZK-SNARK... <span class="line-ok">47ms</span><br>
+      <span class="line-dim">[verify]</span> Validando en MameyNode... <span class="line-ok">VALID</span><br>
+      <span class="line-ok">&#x2714; Claim verificado: age &ge; 18 = TRUE</span><br>
+      <span class="line-dim">&#x2514; Datos revelados: NINGUNO | Proof hash: 0xae4f...c891</span>
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRATIONS -->
+<section class="integrations" aria-label="Integraciones del ecosistema">
+  <div class="section-header">
+    <h2>Integrado al Ecosistema</h2>
+    <p>ZK-Identidad se conecta nativamente con la infraestructura soberana de Ierahkwa.</p>
+  </div>
+  <div class="int-grid">
+    <div class="int-card">
+      <span class="icon" aria-hidden="true">&#x26d3;&#xfe0f;</span>
+      <h4>MameyNode Blockchain</h4>
+      <p>Ancla pruebas ZK directamente en la cadena soberana. Contratos verificadores desplegados en L1 con finalidad de 2 segundos.</p>
+    </div>
+    <div class="int-card">
+      <span class="icon" aria-hidden="true">&#x1f4b3;</span>
+      <h4>BDET Bank</h4>
+      <p>Verificaci&oacute;n KYC sin exponer datos. Abre cuentas bancarias soberanas demostrando elegibilidad con ZK-proofs.</p>
+    </div>
+    <div class="int-card">
+      <span class="icon" aria-hidden="true">&#x1f4f1;</span>
+      <h4>FWID Wallet</h4>
+      <p>Almacena credenciales verificables en tu wallet m&oacute;vil. Firma pruebas con clave privada protegida por TEE/Secure Enclave.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="brand">ZK-Identidad Soberana</div>
+  <p>Identidad soberana para pueblos soberanos. Sin vigilancia. Sin bases de datos centrales. Sin gobiernos intermediarios.<br>Plataforma #71 del ecosistema digital Ierahkwa &mdash; 72M personas, 19 naciones.</p>
+  <div class="powered">Powered by Ierahkwa // MameyNode Network // ZK-SNARKs Groth16 // WAMPUM Token Economy</div>
+</footer>
+
+</body>
+</html>

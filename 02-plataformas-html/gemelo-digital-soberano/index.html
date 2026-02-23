@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gemelo Digital Soberano — National Digital Twin Simulator | Ierahkwa</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--gold-d:rgba(212,168,83,0.1);--accent:#ff6d00;--accent-d:rgba(255,109,0,0.1);--accent-g:rgba(255,109,0,0.06);--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* SKIP NAV */
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s;text-decoration:none;font-size:14px}
+.skip-nav:focus{top:1rem}
+
+/* FOCUS */
+:focus{outline:2px solid var(--accent);outline-offset:2px}
+:focus:not(:focus-visible){outline:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:14px 32px;display:flex;align-items:center;gap:16px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand span{font-size:22px}
+.nav-brand h1{font-size:18px;font-weight:800;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase}
+.nav-links{display:flex;gap:6px;margin-left:auto}
+.nav-btn{padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:inherit;transition:all 0.2s}
+.nav-btn:hover{background:var(--bg3);color:var(--txt)}
+.nav-btn.primary{background:var(--accent);color:#09090d;border-color:var(--accent)}
+.nav-btn.primary:hover{filter:brightness(1.15)}
+
+/* HERO */
+.hero{text-align:center;padding:80px 32px 48px;position:relative}
+.hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,var(--accent-g),transparent 70%);pointer-events:none}
+.hero-badge{display:inline-block;padding:6px 16px;border-radius:20px;border:1px solid rgba(255,109,0,0.3);background:var(--accent-d);font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.hero-icon{font-size:52px;margin-bottom:16px;display:block}
+.hero h2{font-size:52px;font-weight:900;line-height:1.05;letter-spacing:1px;margin-bottom:16px;text-transform:uppercase}
+.hero h2 em{background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.hero p{font-size:18px;color:var(--txt2);max-width:620px;margin:0 auto 32px;line-height:1.6}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-btn{padding:14px 32px;border-radius:24px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all 0.2s}
+.cta-btn.primary{background:var(--accent);color:#09090d}
+.cta-btn.primary:hover{filter:brightness(1.15);box-shadow:0 4px 24px rgba(255,109,0,0.35)}
+.cta-btn.secondary{background:none;border:1px solid var(--txt3);color:var(--txt)}
+.cta-btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.hero-tag{margin-top:24px;font-size:12px;color:var(--txt3);font-family:'Courier New',monospace;letter-spacing:0.5px}
+
+/* STATS */
+.stats{display:flex;justify-content:center;gap:48px;padding:40px 32px;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);flex-wrap:wrap}
+.stat{text-align:center}
+.stat .num{font-family:'Courier New',monospace;font-size:34px;font-weight:700;color:var(--accent)}
+.stat .label{font-size:12px;color:var(--txt2);margin-top:4px}
+
+/* SECTION HEADER */
+.section-header{text-align:center;margin-bottom:40px}
+.section-header h2{font-size:34px;font-weight:900;letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase}
+.section-header p{font-size:15px;color:var(--txt2);max-width:580px;margin:0 auto}
+
+/* FEATURES */
+.features{max-width:1100px;margin:0 auto;padding:64px 32px}
+.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.feature-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:24px;transition:all 0.25s;position:relative;overflow:hidden}
+.feature-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent);opacity:0;transition:opacity 0.25s}
+.feature-card:hover{border-color:rgba(255,109,0,0.3);transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,0.35)}
+.feature-card:hover::before{opacity:1}
+.feature-card .icon{font-size:30px;margin-bottom:10px;display:block}
+.feature-card .num-tag{font-family:'Courier New',monospace;font-size:10px;color:var(--accent);opacity:0.6;position:absolute;top:12px;right:14px}
+.feature-card h4{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--txt)}
+.feature-card p{font-size:13px;color:var(--txt2);line-height:1.55}
+
+/* SIMULATION VIZ */
+.sim-viz{max-width:1100px;margin:0 auto;padding:0 32px 64px}
+.sim-panel{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:32px;position:relative;overflow:hidden}
+.sim-panel::after{content:'';position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle,rgba(255,109,0,0.05),transparent);pointer-events:none}
+.sim-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.sim-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse-dot 2s infinite}
+.sim-header span{font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+.sim-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.sim-cell{background:var(--bg3);border:1px solid var(--brd);border-radius:6px;padding:16px;text-align:center}
+.sim-cell .val{font-family:'Courier New',monospace;font-size:22px;font-weight:700;color:var(--txt)}
+.sim-cell .lbl{font-size:11px;color:var(--txt2);margin-top:4px}
+.sim-cell .bar{height:4px;background:var(--bg4);border-radius:2px;margin-top:10px;overflow:hidden}
+.sim-cell .bar-fill{height:100%;border-radius:2px;background:var(--accent);transition:width 1s}
+
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* WHY SECTION */
+.why-section{max-width:1100px;margin:0 auto;padding:64px 32px}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.why-card{background:linear-gradient(135deg,var(--accent-d),rgba(212,168,83,0.04));border:1px solid rgba(255,109,0,0.15);border-radius:var(--r);padding:28px;text-align:center}
+.why-card .icon{font-size:34px;margin-bottom:12px;display:block}
+.why-card h4{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--accent)}
+.why-card p{font-size:13px;color:var(--txt2);line-height:1.6}
+
+/* FOOTER */
+.footer{text-align:center;padding:40px 32px;border-top:1px solid var(--brd)}
+.footer .brand{font-size:18px;font-weight:800;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.footer p{font-size:12px;color:var(--txt3);line-height:1.8}
+.footer .powered{font-family:'Courier New',monospace;font-size:11px;color:var(--txt3);margin-top:12px}
+
+/* REDUCED MOTION */
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  .feature-card:hover{transform:none}
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .feature-grid{grid-template-columns:1fr 1fr}
+  .sim-grid{grid-template-columns:repeat(2,1fr)}
+  .why-grid{grid-template-columns:1fr}
+  .hero h2{font-size:38px}
+}
+@media(max-width:600px){
+  .feature-grid{grid-template-columns:1fr}
+  .sim-grid{grid-template-columns:1fr 1fr}
+  .hero{padding:48px 20px 36px}
+  .hero h2{font-size:30px}
+  .stats{gap:24px}
+  .stat .num{font-size:26px}
+  .nav{padding:12px 16px}
+  .nav-brand h1{font-size:14px}
+  .features,.why-section,.sim-viz{padding-left:16px;padding-right:16px}
+}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-nav">Skip to main content</a>
+
+<!-- NAV -->
+<nav class="nav" aria-label="Main navigation">
+  <div class="nav-brand">
+    <span aria-hidden="true">&#x1F30D;</span>
+    <h1>Gemelo Digital Soberano</h1>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn">Simuladores</button>
+    <button class="nav-btn">Documentaci&oacute;n</button>
+    <button class="nav-btn primary">Iniciar Simulaci&oacute;n</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <span class="hero-badge">Plataforma #73 &mdash; Sin precedente mundial</span>
+  <span class="hero-icon" aria-hidden="true">&#x1F3D7;&#xFE0F;&#x1F30E;</span>
+  <h2>Simula el Futuro<br><em>Antes de Construirlo</em></h2>
+  <p>El primer gemelo digital a escala nacional. Simula la econom&iacute;a soberana, infraestructura y pol&iacute;ticas de 19 naciones ind&iacute;genas antes de implementarlas en el mundo real.</p>
+  <div class="hero-cta">
+    <button class="cta-btn primary">Ejecutar Simulaci&oacute;n</button>
+    <button class="cta-btn secondary">Explorar Modelos</button>
+  </div>
+  <div class="hero-tag">Reemplaza: Nada &mdash; ning&uacute;n gobierno tiene esto a escala nacional // 72M agentes // Tiempo real</div>
+</header>
+
+<!-- MAIN -->
+<main id="main">
+
+<!-- STATS -->
+<section class="stats" aria-label="Estad&iacute;sticas de la plataforma">
+  <div class="stat"><div class="num">19</div><div class="label">Naciones Simuladas</div></div>
+  <div class="stat"><div class="num">72M</div><div class="label">Agentes Virtuales</div></div>
+  <div class="stat"><div class="num">1000x</div><div class="label">Velocidad</div></div>
+  <div class="stat"><div class="num">99.7%</div><div class="label">Precisi&oacute;n</div></div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" aria-label="Simuladores disponibles">
+  <div class="section-header">
+    <h2>Simuladores Soberanos</h2>
+    <p>Diez motores de simulaci&oacute;n que replican cada dimensi&oacute;n de las 19 naciones ind&iacute;genas soberanas.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="num-tag">01</span>
+      <span class="icon" aria-hidden="true">&#x1F4C8;</span>
+      <h4>Simulador Econ&oacute;mico</h4>
+      <p>Modela PIB, comercio, flujos monetarios y cadenas de valor entre 19 naciones. Proyecciones macroecon&oacute;micas con variables soberanas en tiempo real.</p>
+    </div>
+    <div class="feature-card">
+      <span class="num-tag">02</span>
+      <span class="icon" aria-hidden="true">&#x1F3D7;&#xFE0F;</span>
+      <h4>Gemelo de Infraestructura</h4>
+      <p>R&eacute;plica digital de carreteras, redes el&eacute;ctricas, sistemas h&iacute;dricos y telecomunicaciones. Detecta cuellos de botella antes de construir.</p>
+    </div>
+    <div class="feature-card">
+      <span class="num-tag">03</span>
+      <span class="icon" aria-hidden="true">&#x2696;&#xFE0F;</span>
+      <h4>Sandbox de Pol&iacute;ticas</h4>
+      <p>Prueba nuevas leyes y pol&iacute;ticas p&uacute;blicas en simulaci&oacute;n antes de su implementaci&oacute;n real. Mide impacto social, econ&oacute;mico y ambiental.</p>
+    </div>
+    <div class="feature-card">
+      <span class="num-tag">04</span>
+      <span class="icon" aria-hidden="true">&#x1F32A;&#xFE0F;</span>
+      <h4>Modelado de Resiliencia Clim&aacute;tica</h4>
+      <p>Simula desastres naturales, impacto del cambio clim&aacute;tico y estrategias de adaptaci&oacute;n. Protege territorios ancestrales con datos predictivos.</p>
+    </div>
+    <div class="feature-card">
+      <span class="num-tag">05</span>
+      <span class="icon" aria-hidden="true">&#x1F3E5;</span>
+      <h4>Gemelo del Sistema de Salud</h4>
+      <p>Modela capacidad hospitalaria, propagaci&oacute;n de epidemias y asignaci&oacute;n de recursos m&eacute;dicos. Prev&eacute; crisis sanitarias semanas antes.</p>
+    </div>
+    <div class="feature-card">
+      <span class="num-tag">06</span>
+      <span class="icon" aria-hidden="true">&#x1F393;</span>
+      <h4>Simulador de Pipeline Educativo</h4>
+      <p>Proyecta resultados estudiantiles, necesidades docentes y capacidad de instalaciones. Optimiza inversi&oacute;n educativa por territorio.</p>
+    </div>
+    <div class="feature-card">
+      <span class="num-tag">07</span>
+      <span class="icon" aria-hidden="true">&#x26A1;</span>
+      <h4>Optimizador de Red El&eacute;ctrica</h4>
+      <p>Simula integraci&oacute;n de energ&iacute;a renovable, balanceo de carga y transiciones energ&eacute;ticas a trav&eacute;s de todos los territorios soberanos.</p>
+    </div>
+    <div class="feature-card">
+      <span class="num-tag">08</span>
+      <span class="icon" aria-hidden="true">&#x1F3D9;&#xFE0F;</span>
+      <h4>Motor de Planificaci&oacute;n Urbana</h4>
+      <p>Planificaci&oacute;n urbana 3D con modelado de crecimiento poblacional. Dise&ntilde;a ciudades soberanas que respetan el territorio ancestral.</p>
+    </div>
+    <div class="feature-card">
+      <span class="num-tag">09</span>
+      <span class="icon" aria-hidden="true">&#x1F69A;</span>
+      <h4>Simulador de Cadena de Suministro</h4>
+      <p>Modela distribuci&oacute;n de alimentos y bienes entre 19 pa&iacute;ses. Identifica vulnerabilidades log&iacute;sticas y optimiza rutas soberanas.</p>
+    </div>
+    <div class="feature-card">
+      <span class="num-tag">10</span>
+      <span class="icon" aria-hidden="true">&#x1F6E1;&#xFE0F;</span>
+      <h4>Simulador de Defensa y Cibersoberan&iacute;a</h4>
+      <p>Modelado de amenazas cibern&eacute;ticas y de soberan&iacute;a territorial. War games defensivos para proteger la infraestructura digital ind&iacute;gena.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SIMULATION DASHBOARD -->
+<section class="sim-viz" aria-label="Panel de simulaci&oacute;n en vivo">
+  <div class="sim-panel">
+    <div class="sim-header">
+      <div class="sim-dot" aria-hidden="true"></div>
+      <span>Simulaci&oacute;n activa &mdash; Ciclo 2026-Q1</span>
+    </div>
+    <div class="sim-grid">
+      <div class="sim-cell">
+        <div class="val">$4.2T</div>
+        <div class="lbl">PIB Simulado Conjunto</div>
+        <div class="bar"><div class="bar-fill" style="width:78%"></div></div>
+      </div>
+      <div class="sim-cell">
+        <div class="val">94.3%</div>
+        <div class="lbl">Estabilidad de Red</div>
+        <div class="bar"><div class="bar-fill" style="width:94%"></div></div>
+      </div>
+      <div class="sim-cell">
+        <div class="val">2.1M</div>
+        <div class="lbl">Agentes Activos Ahora</div>
+        <div class="bar"><div class="bar-fill" style="width:62%"></div></div>
+      </div>
+      <div class="sim-cell">
+        <div class="val">47ms</div>
+        <div class="lbl">Latencia del Motor</div>
+        <div class="bar"><div class="bar-fill" style="width:15%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY SOVEREIGN -->
+<section class="why-section" aria-label="Por qu&eacute; un gemelo digital soberano">
+  <div class="section-header">
+    <h2>&iquest;Por Qu&eacute; un Gemelo Digital Soberano?</h2>
+    <p>Ning&uacute;n gobierno del mundo tiene un simulador nacional completo. Las 19 naciones ind&iacute;genas ser&aacute;n las primeras.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">&#x1F52E;</span>
+      <h4>Predecir Antes de Actuar</h4>
+      <p>Cada pol&iacute;tica, cada ley, cada inversi&oacute;n se prueba en simulaci&oacute;n primero. Cero errores costosos, cero sorpresas econ&oacute;micas.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">&#x1F310;</span>
+      <h4>19 Naciones, Un Modelo</h4>
+      <p>Un solo gemelo digital unifica las econom&iacute;as de 19 naciones y 72 millones de personas. Coordinaci&oacute;n sin precedentes.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">&#x1F512;</span>
+      <h4>Soberan&iacute;a Total de Datos</h4>
+      <p>Los datos de simulaci&oacute;n nunca salen de la infraestructura soberana. Cero dependencia de AWS, Azure o cualquier nube colonial.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">&#x23E9;</span>
+      <h4>1000x M&aacute;s R&aacute;pido que la Realidad</h4>
+      <p>Simula una d&eacute;cada de pol&iacute;ticas econ&oacute;micas en horas. Acelera decisiones que normalmente tardan a&ntilde;os en validarse.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">&#x1F331;</span>
+      <h4>Territorio Ancestral Protegido</h4>
+      <p>Cada proyecto de infraestructura se simula primero para medir su impacto en territorios sagrados y ecosistemas ancestrales.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">&#x1F91D;</span>
+      <h4>Transparencia Absoluta</h4>
+      <p>Cada ciudadano puede ver las simulaciones p&uacute;blicas. Gobernanza abierta donde las decisiones se fundamentan en datos, no en opiniones.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="brand">Gemelo Digital Soberano</div>
+  <p>El futuro se simula antes de construirse. Soberan&iacute;a digital para 72 millones de personas ind&iacute;genas.<br>Sin rastreo. Sin dependencia. Sin control corporativo sobre nuestros datos.</p>
+  <div class="powered">Powered by Ierahkwa | MameyNode Network | WAMPUM Token Economy</div>
+</footer>
+
+</body>
+</html>

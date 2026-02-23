@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homomorfica Soberana — Fully Homomorphic Encryption for Sovereign Public Services | Ierahkwa</title>
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--gold-d:rgba(212,168,83,0.1);--accent:#76ff03;--accent-d:rgba(118,255,3,0.08);--accent-g:rgba(118,255,3,0.15);--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* SKIP NAV */
+.skip-nav{position:absolute;top:-100%;left:16px;padding:12px 24px;background:var(--accent);color:#000;font-weight:700;border-radius:0 0 var(--r) var(--r);z-index:200;font-size:14px;text-decoration:none}
+.skip-nav:focus{top:0}
+
+/* FOCUS */
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:focus:not(:focus-visible){outline:none}
+
+/* REDUCED MOTION */
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:14px 32px;display:flex;align-items:center;gap:16px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand span{font-size:24px}
+.nav-brand h1{font-size:20px;font-weight:800;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase}
+.nav-links{display:flex;gap:6px;margin-left:auto}
+.nav-btn{padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:inherit;transition:all 0.2s}
+.nav-btn:hover{background:var(--bg3);color:var(--txt)}
+.nav-btn.primary{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700}
+.nav-btn.primary:hover{filter:brightness(1.15)}
+
+/* HERO */
+.hero{text-align:center;padding:80px 32px 48px;position:relative}
+.hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(118,255,3,0.05),transparent 70%);pointer-events:none}
+.hero-icon{font-size:56px;margin-bottom:16px;display:block}
+.hero-badge{display:inline-block;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--accent);border:1px solid var(--accent-g);background:var(--accent-d);margin-bottom:20px;text-transform:uppercase}
+.hero h2{font-size:52px;font-weight:900;line-height:1.05;letter-spacing:1px;margin-bottom:16px;text-transform:uppercase}
+.hero h2 em{background:linear-gradient(135deg,var(--accent),#b2ff59);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.hero p{font-size:18px;color:var(--txt2);max-width:620px;margin:0 auto 32px;line-height:1.6}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-btn{padding:14px 32px;border-radius:24px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all 0.2s}
+.cta-btn.primary{background:var(--accent);color:#000}
+.cta-btn.primary:hover{filter:brightness(1.15);box-shadow:0 4px 24px rgba(118,255,3,0.25)}
+.cta-btn.secondary{background:none;border:1px solid var(--txt3);color:var(--txt)}
+.cta-btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.hero-tag{margin-top:24px;font-size:12px;color:var(--txt3);font-family:'Courier New',monospace;letter-spacing:0.5px}
+
+/* STATS */
+.stats{display:flex;justify-content:center;gap:48px;padding:40px 32px;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);flex-wrap:wrap;background:var(--bg2)}
+.stat{text-align:center}
+.stat .num{font-family:'Courier New',monospace;font-size:32px;font-weight:700;color:var(--accent)}
+.stat .label{font-size:12px;color:var(--txt2);margin-top:4px;text-transform:uppercase;letter-spacing:0.5px}
+
+/* SECTION HEADER */
+.section-header{text-align:center;margin-bottom:40px}
+.section-header h2{font-size:36px;font-weight:900;letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase}
+.section-header p{font-size:15px;color:var(--txt2);max-width:560px;margin:0 auto}
+
+/* FEATURES */
+.features{max-width:1100px;margin:0 auto;padding:64px 32px}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.feature-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:24px;transition:all 0.25s;position:relative;overflow:hidden}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity 0.3s}
+.feature-card:hover{border-color:var(--accent-g);transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,0.4)}
+.feature-card:hover::before{opacity:1}
+.feature-card .icon{font-size:32px;margin-bottom:12px;display:block}
+.feature-card .card-num{position:absolute;top:14px;right:16px;font-size:11px;font-weight:700;color:var(--accent);font-family:'Courier New',monospace;opacity:0.5}
+.feature-card h4{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--txt)}
+.feature-card p{font-size:13px;color:var(--txt2);line-height:1.55}
+
+/* ARCHITECTURE */
+.arch-section{max-width:1100px;margin:0 auto;padding:64px 32px}
+.arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.arch-card{background:linear-gradient(135deg,var(--accent-d),rgba(118,255,3,0.03));border:1px solid rgba(118,255,3,0.12);border-radius:var(--r);padding:28px;text-align:center;transition:all 0.25s}
+.arch-card:hover{border-color:rgba(118,255,3,0.3);box-shadow:0 0 20px rgba(118,255,3,0.05)}
+.arch-card .icon{font-size:36px;margin-bottom:12px;display:block}
+.arch-card h4{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--accent)}
+.arch-card p{font-size:13px;color:var(--txt2);line-height:1.6}
+
+/* CODE BLOCK */
+.code-section{max-width:800px;margin:0 auto;padding:0 32px 64px}
+.code-block{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden}
+.code-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg3);border-bottom:1px solid var(--brd);font-size:12px;color:var(--txt2);font-family:'Courier New',monospace}
+.code-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);opacity:0.6}
+.code-body{padding:20px;font-family:'Courier New',monospace;font-size:13px;line-height:1.7;color:var(--txt2);overflow-x:auto}
+.code-body .kw{color:var(--accent)}
+.code-body .str{color:var(--gold)}
+.code-body .cm{color:var(--txt3)}
+
+/* FOOTER */
+.footer{text-align:center;padding:40px 32px;border-top:1px solid var(--brd)}
+.footer .brand{font-size:18px;font-weight:800;color:var(--accent);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.footer p{font-size:12px;color:var(--txt3);line-height:1.8}
+.footer .powered{font-family:'Courier New',monospace;font-size:11px;color:var(--txt3);margin-top:12px}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .feature-grid{grid-template-columns:repeat(2,1fr)}
+  .arch-grid{grid-template-columns:1fr}
+  .hero h2{font-size:38px}
+}
+@media(max-width:600px){
+  .feature-grid{grid-template-columns:1fr}
+  .hero{padding:48px 20px 36px}
+  .hero h2{font-size:30px}
+  .stats{gap:24px}
+  .stat .num{font-size:24px}
+  .nav{padding:12px 16px}
+  .nav-brand h1{font-size:16px}
+  .features,.arch-section{padding-left:16px;padding-right:16px}
+  .code-section{padding-left:16px;padding-right:16px}
+}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+
+<!-- NAV -->
+<nav class="nav" aria-label="Main navigation">
+  <div class="nav-brand">
+    <span aria-hidden="true">&#x1F510;</span>
+    <h1>Homomorfica Soberana</h1>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn">Esquemas</button>
+    <button class="nav-btn">Documentacion</button>
+    <button class="nav-btn primary">Iniciar FHE</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <span class="hero-icon" aria-hidden="true">&#x1F512;&#x1F9EE;</span>
+  <div class="hero-badge">Plataforma #72 // Ecosistema Ierahkwa</div>
+  <h2>Cifrado <em>Homomorfico</em><br>Soberano</h2>
+  <p>Computacion sobre datos que nunca se descifran. Procesamos censos, impuestos, salud y votos sobre datos cifrados. Ningun gobierno del mundo tiene esta capacidad.</p>
+  <div class="hero-cta">
+    <button class="cta-btn primary">Encriptar y Computar</button>
+    <button class="cta-btn secondary">Explorar Esquemas</button>
+  </div>
+  <div class="hero-tag">FHE v3.0 // CKKS + BGV + BFV // 72M Personas // 19 Paises // Post-Cuantico</div>
+</header>
+
+<!-- MAIN -->
+<main id="main">
+
+<!-- STATS -->
+<section class="stats" aria-label="Estadisticas de la plataforma">
+  <div class="stat"><div class="num">0</div><div class="label">Datos Descifrados</div></div>
+  <div class="stat"><div class="num">100%</div><div class="label">Privacidad</div></div>
+  <div class="stat"><div class="num">12,847</div><div class="label">TPS Encriptados</div></div>
+  <div class="stat"><div class="num">Post-Cuantico</div><div class="label">Seguridad</div></div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" aria-label="Capacidades de cifrado homomorfico">
+  <div class="section-header">
+    <h2>Capacidades FHE Soberanas</h2>
+    <p>Diez motores de computacion homomorficos. Los datos nunca se descifran, ni durante el procesamiento.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1F4CA;</span>
+      <span class="card-num">01</span>
+      <h4>FHE Census Engine</h4>
+      <p>Analisis censal completo sobre datos de poblacion cifrados. Estadisticas demograficas sin exponer un solo registro individual.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1FA7A;</span>
+      <span class="card-num">02</span>
+      <h4>Encrypted Healthcare Analytics</h4>
+      <p>Estadisticas de salud publica computadas sobre expedientes cifrados. Tendencias epidemiologicas sin ver datos de pacientes.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1F4B0;</span>
+      <span class="card-num">03</span>
+      <h4>Private Tax Computation</h4>
+      <p>Calculo de impuestos y deteccion de fraude ejecutados sobre datos financieros cifrados de extremo a extremo.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1F5F3;</span>
+      <span class="card-num">04</span>
+      <h4>Encrypted Voting Tallying</h4>
+      <p>Conteo de votos homomorfico. El resultado se calcula sin descifrar ningun voto individual. Democracia verificable.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1F91D;</span>
+      <span class="card-num">05</span>
+      <h4>Secure Multi-Party Computation</h4>
+      <p>Multiples agencias gubernamentales colaboran sobre datos cifrados sin revelar sus conjuntos de datos privados.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1F9E0;</span>
+      <span class="card-num">06</span>
+      <h4>Encrypted AI Training</h4>
+      <p>Entrenamiento de modelos de ML sobre datasets cifrados. Inteligencia artificial que nunca ve los datos en claro.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1F4CA;</span>
+      <span class="card-num">07</span>
+      <h4>Privacy Budget Dashboard</h4>
+      <p>Gestion de presupuestos epsilon para privacidad diferencial. Controla cuanta informacion se filtra en cada consulta.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1F523;</span>
+      <span class="card-num">08</span>
+      <h4>Lattice-Based Cryptography</h4>
+      <p>Administracion de esquemas CKKS, BGV y BFV. Seleccion automatica del esquema optimo segun la operacion.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x1F50D;</span>
+      <span class="card-num">09</span>
+      <h4>Encrypted Search</h4>
+      <p>Consultas sobre bases de datos cifradas sin descifrarlas. Busqueda por patrones, rangos y coincidencias exactas.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">&#x2705;</span>
+      <span class="card-num">10</span>
+      <h4>Compliance Proofs</h4>
+      <p>Pruebas de cumplimiento regulatorio generadas sobre datos cifrados. Auditoria sin exposicion de informacion sensible.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="arch-section" aria-label="Arquitectura de cifrado">
+  <div class="section-header">
+    <h2>Arquitectura Post-Cuantica</h2>
+    <p>Ningun gobierno procesa datos ciudadanos cifrados. Ierahkwa es el primero.</p>
+  </div>
+  <div class="arch-grid">
+    <div class="arch-card">
+      <span class="icon" aria-hidden="true">&#x1F3D7;</span>
+      <h4>Lattice Foundations</h4>
+      <p>Criptografia basada en reticulados resistente a computacion cuantica. RLWE y MLWE como primitivas base.</p>
+    </div>
+    <div class="arch-card">
+      <span class="icon" aria-hidden="true">&#x1F504;</span>
+      <h4>Bootstrapping Engine</h4>
+      <p>Refresh homomorfico ilimitado. Computaciones de profundidad arbitraria sin degradacion de cifrado.</p>
+    </div>
+    <div class="arch-card">
+      <span class="icon" aria-hidden="true">&#x1F6E1;</span>
+      <h4>Soberania Total</h4>
+      <p>Sin dependencias externas. Ningun dato sale de la infraestructura indigena. Soberania criptografica absoluta.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CODE EXAMPLE -->
+<section class="code-section" aria-label="Ejemplo de codigo FHE">
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-dot" aria-hidden="true"></span>
+      homomorfica_soberana.py
+    </div>
+    <div class="code-body" role="img" aria-label="Ejemplo de codigo: cifrar censo, computar estadisticas, verificar resultado sin descifrar">
+      <span class="cm"># FHE Census - Computacion sobre datos cifrados</span><br>
+      <span class="kw">from</span> homomorfica <span class="kw">import</span> CKKSEngine<br><br>
+      engine = CKKSEngine(scheme=<span class="str">"CKKS"</span>, security=<span class="str">"post-quantum"</span>)<br>
+      censo_cifrado = engine.encrypt(datos_censo)<br><br>
+      <span class="cm"># Computar SIN descifrar</span><br>
+      resultado = engine.compute(censo_cifrado, op=<span class="str">"demographics"</span>)<br><br>
+      <span class="cm"># Solo el resultado se descifra, nunca los datos</span><br>
+      estadisticas = engine.decrypt_result(resultado)<br>
+      <span class="kw">assert</span> engine.data_exposed == <span class="str">0</span>  <span class="cm"># Siempre cero</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="brand">Homomorfica Soberana</div>
+  <p>Cifrado homomorfico para un gobierno que respeta la privacidad absoluta.<br>Cero datos descifrados. Cero dependencias externas. Cero vigilancia.</p>
+  <div class="powered">Powered by Ierahkwa | MameyNode Network | WAMPUM Token Economy</div>
+</footer>
+
+</body>
+</html>
