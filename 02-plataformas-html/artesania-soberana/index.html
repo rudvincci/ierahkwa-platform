@@ -81,17 +81,21 @@
 @media(max-width:768px){.grid{grid-template-columns:1fr 1fr}.hero{flex-direction:column}.hero-art{font-size:48px}}
 @media(max-width:480px){.grid{grid-template-columns:1fr}.artisan-row{grid-template-columns:1fr 1fr}}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-nav">Skip to main content</a>
 
 <div class="nav">
-  <div class="nav-brand"><span>🏺</span><h1>ArtesaníaSoberana</h1></div>
+  <div class="nav-brand"><span aria-hidden="true">🏺</span><h1>ArtesaníaSoberana</h1></div>
   <div class="nav-search"><input placeholder="Buscar artesanías, artesanos, técnicas..." /></div>
   <div class="nav-r">
-    <button class="nb sell">🏺 Vender</button>
-    <button class="nb">🛒 Carrito</button>
-    <button class="nb">💎</button>
+    <button class="nb sell"><span aria-hidden="true">🏺</span> Vender</button>
+    <button class="nb"><span aria-hidden="true">🛒</span> Carrito</button>
+    <button class="nb"><span aria-hidden="true">💎</span></button>
     <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--tq));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;cursor:pointer">CA</div>
   </div>
 </div>
@@ -114,11 +118,11 @@
   <button class="cat">🍫 Alimentos</button>
 </div>
 
-<div class="content">
+<main id="main" class="content">
 
   <div class="hero">
     <div class="hero-left">
-      <div class="hero-badge">🌎 Marketplace Artesanal Indígena</div>
+      <div class="hero-badge"><span aria-hidden="true">🌎</span> Marketplace Artesanal Indígena</div>
       <h2>Cada Pieza Cuenta una Historia de Miles de Años</h2>
       <p>Compra directo de artesanos indígenas de 19 países. 88% del pago va al artesano via BDET Bank. Certificado de autenticidad en blockchain MameyNode.</p>
       <div class="hero-stats">
@@ -128,15 +132,15 @@
         <div class="hs"><div class="n">88%</div><div class="l">Al Artesano</div></div>
       </div>
     </div>
-    <div class="hero-art">🏺🧵💍🎭</div>
+    <div class="hero-art" aria-hidden="true">🏺🧵💍🎭</div>
   </div>
 
   <div class="trust">
-    <div class="trust-item"><span>🔒</span> Autenticidad verificada en blockchain</div>
-    <div class="trust-item"><span>💎</span> Pago via BDET · 88% artesano</div>
-    <div class="trust-item"><span>🌿</span> Materiales sostenibles</div>
-    <div class="trust-item"><span>📦</span> Envío con SoberanoFreight</div>
-    <div class="trust-item"><span>🛡</span> Protección al comprador</div>
+    <div class="trust-item"><span aria-hidden="true">🔒</span> Autenticidad verificada en blockchain</div>
+    <div class="trust-item"><span aria-hidden="true">💎</span> Pago via BDET · 88% artesano</div>
+    <div class="trust-item"><span aria-hidden="true">🌿</span> Materiales sostenibles</div>
+    <div class="trust-item"><span aria-hidden="true">📦</span> Envío con SoberanoFreight</div>
+    <div class="trust-item"><span aria-hidden="true">🛡</span> Protección al comprador</div>
   </div>
 
   <div class="sec-h"><h3>⭐ Lo Más Vendido</h3><a>Ver todos →</a></div>
@@ -276,6 +280,6 @@
     <div><div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--wp)">0%</div><div style="font-size:10px;color:var(--txt3)">Comisiones Ocultas</div></div>
   </div>
 
-</div>
+</main>
 </body>
 </html>

@@ -41,14 +41,18 @@
 .cm{background:rgba(77,142,255,0.15);border-bottom:2px solid var(--blue);cursor:pointer}
 @media(max-width:768px){.paper{padding:32px 24px}}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
 </style>
 </head>
 <body>
-<div class="app">
+<a href="#main" class="skip-nav">Skip to main content</a>
+<main id="main" class="app">
 <div class="topbar">
-  <div class="tb-brand"><span>📄</span><h1>DocsSoberanos</h1></div>
+  <div class="tb-brand"><span aria-hidden="true">📄</span><h1>DocsSoberanos</h1></div>
   <div class="tb-title">Propuesta: Red Soberana de las Américas</div>
-  <div class="tb-saved">🔒 Guardado en MameyNode · hace 2 min</div>
+  <div class="tb-saved"><span aria-hidden="true">🔒</span> Guardado en MameyNode · hace 2 min</div>
   <div class="tb-r">
     <button class="btn">💬</button><button class="btn">📤</button><button class="btn">🌐 Atabey</button><button class="btn share">🔗 Compartir</button>
     <div class="tb-users">
@@ -129,6 +133,6 @@
     </div>
   </div>
 </div>
-</div>
+</main>
 </body>
 </html>

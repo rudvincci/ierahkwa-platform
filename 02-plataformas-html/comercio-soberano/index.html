@@ -96,12 +96,16 @@
 .p-btn-gold{background:var(--gold);color:#08080d}.p-btn-gold:hover{filter:brightness(1.15)}
 
 @media(max-width:768px){.features,.pricing{grid-template-columns:1fr}.hero h2{font-size:28px}.stats-row{flex-wrap:wrap;gap:20px}.ds-products{grid-template-columns:1fr}}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-nav">Skip to main content</a>
 
 <div class="nav">
-  <span style="font-size:20px">🛍</span>
+  <span style="font-size:20px" aria-hidden="true">🛍</span>
   <h1>ComercioSoberano</h1>
   <div class="nav-links">
     <button class="nl a">Producto</button>
@@ -115,15 +119,15 @@
   </div>
 </div>
 
-<div class="content">
+<main id="main" class="content">
 
   <div class="hero">
-    <div class="hero-badge">🚀 Plataforma E-Commerce Soberana</div>
+    <div class="hero-badge"><span aria-hidden="true">🚀</span> Plataforma E-Commerce Soberana</div>
     <h2>Tu Tienda Digital.<br><em>Tu Soberanía Económica.</em></h2>
     <p>Crea tu tienda online en minutos. Sin código. Con pagos BDET Bank integrados. 88% de cada venta directo a tu cuenta. La alternativa soberana a Shopify.</p>
     <div class="hero-btns">
-      <button class="hb hb-primary">🚀 Crear Tienda Gratis</button>
-      <button class="hb hb-sec">📺 Ver Demo</button>
+      <button class="hb hb-primary"><span aria-hidden="true">🚀</span> Crear Tienda Gratis</button>
+      <button class="hb hb-sec"><span aria-hidden="true">📺</span> Ver Demo</button>
     </div>
   </div>
 
@@ -215,6 +219,6 @@
     </div>
   </div>
 
-</div>
+</main>
 </body>
 </html>

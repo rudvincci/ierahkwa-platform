@@ -30,7 +30,7 @@ services:
       - RUST_LOG=info,commercial_core_service=debug
       
       # Database
-      - COMMERCIAL_CORE__DATABASE__URL=postgres://mamey:mamey@postgres:5432/mamey_commercial
+      - COMMERCIAL_CORE__DATABASE__URL=postgres://${POSTGRES_USER:-mamey}:${POSTGRES_PASSWORD:-mamey}@postgres:5432/mamey_commercial
       
       # Inter-service endpoints (Sprint 8.4)
       # Commercial banks ONLY talk to BIIS, never directly to Central
@@ -66,7 +66,7 @@ services:
       - RUST_LOG=info,biis_core_service=debug
       
       # Database
-      - BIIS_CORE__DATABASE__URL=postgres://mamey:mamey@postgres:5432/mamey_biis
+      - BIIS_CORE__DATABASE__URL=postgres://${POSTGRES_USER:-mamey}:${POSTGRES_PASSWORD:-mamey}@postgres:5432/mamey_biis
       
       # Inter-service endpoints (Sprint 8.4)
       # BIIS is the infrastructure layer connecting Commercial and Central
@@ -104,7 +104,7 @@ services:
       - RUST_LOG=info,central_core_service=debug
       
       # Database
-      - CENTRAL_CORE__DATABASE__URL=postgres://mamey:mamey@postgres:5432/mamey_central
+      - CENTRAL_CORE__DATABASE__URL=postgres://${POSTGRES_USER:-mamey}:${POSTGRES_PASSWORD:-mamey}@postgres:5432/mamey_central
       
       # Central Bank domain ID (settlement authority)
       - CENTRAL_BANK_DOMAIN_ID=10
@@ -139,16 +139,16 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=mamey
-      - POSTGRES_PASSWORD=mamey
-      - POSTGRES_DB=mamey
+      - POSTGRES_USER=${POSTGRES_USER:-mamey}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-mamey}
+      - POSTGRES_DB=${POSTGRES_DB:-mamey}
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init-db.sql:ro
     networks:
       - mamey-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U mamey"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-mamey}"]
       interval: 5s
       timeout: 5s
       retries: 5

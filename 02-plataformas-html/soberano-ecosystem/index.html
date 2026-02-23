@@ -56,9 +56,14 @@ header p{color:var(--dim);font-size:1rem;max-width:750px;margin:1rem auto;line-h
 .bottom .sov{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);font-style:italic;margin-top:.8rem}
 
 @media(max-width:768px){.grid{grid-template-columns:1fr}.stats{gap:1.5rem}}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-nav">Skip to main content</a>
+<main id="main">
 
 <header>
   <div class="badge"><span class="dot"></span> Ierahkwa Sovereign Ecosystem — Americas & Caribbean</div>
@@ -330,8 +335,9 @@ header p{color:var(--dim);font-size:1rem;max-width:750px;margin:1rem auto;line-h
   </div>
 </div>
 
+</main>
 <div class="bottom">
-  <div class="eagle">🦅</div>
+  <div class="eagle" aria-hidden="true">🦅</div>
   <p><b style="color:var(--gold)">Soberano Ecosystem</b> — Part of Ierahkwa Sovereign Platform</p>
   <p>Americas & Caribbean Indigenous Territory — Global Reach</p>
   <p>Powered by MameyNode · BDET Bank · Quantum-Resistant · AI Fortress</p>

@@ -131,9 +131,14 @@ footer .sovereign-text{font-family:'Playfair Display',serif;font-size:1.2rem;col
   .payment-grid{grid-template-columns:1fr}
   .task-row{grid-template-columns:1fr 1fr}
 }
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-nav">Skip to main content</a>
+<main id="main">
 
 <!-- HERO -->
 <section class="hero">
@@ -357,9 +362,10 @@ footer .sovereign-text{font-family:'Playfair Display',serif;font-size:1.2rem;col
   </div>
 </section>
 
+</main>
 <!-- FOOTER -->
 <footer>
-  <div class="eagle">🦅</div>
+  <div class="eagle" aria-hidden="true">🦅</div>
   <p><strong style="color:var(--gold)">RentaSoberano</strong> — Part of the Ierahkwa Sovereign Platform</p>
   <p>Americas & Caribbean Indigenous Territory — Global Reach</p>
   <p style="margin-top:0.5rem;font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--earth3)">Powered by MameyNode · Quantum-Resistant · AI Fortress Defended</p>

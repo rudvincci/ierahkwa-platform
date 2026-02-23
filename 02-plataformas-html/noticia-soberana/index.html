@@ -57,11 +57,15 @@
 .live-dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:pulse 1.5s infinite;flex-shrink:0}
 
 @media(max-width:900px){.content{grid-template-columns:1fr}.sidebar{display:none}.story-main{grid-template-columns:1fr}}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-nav">Skip to main content</a>
 <div class="nav">
-  <span style="font-size:18px">📰</span>
+  <span style="font-size:18px" aria-hidden="true">📰</span>
   <h1>SovereignNews</h1>
   <div class="nav-cats">
     <button class="nc a">Top Stories</button><button class="nc">Sovereignty</button><button class="nc">Technology</button><button class="nc">Economy</button><button class="nc">Culture</button><button class="nc">Health</button><button class="nc">Environment</button><button class="nc">Education</button><button class="nc">Sports</button><button class="nc">World</button>
@@ -69,6 +73,7 @@
   <div class="nav-r"><button class="nb">🌐 EN</button><button class="nb">🔔</button></div>
 </div>
 
+<main id="main">
 <div class="content">
 <div class="stories">
 
@@ -135,5 +140,6 @@
   </div>
 </div>
 </div>
+</main>
 </body>
 </html>

@@ -155,13 +155,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-
 @media(max-width:1024px){.results-body{grid-template-columns:1fr}.knowledge-panel{position:static}}
 @media(max-width:640px){.results-topbar .logo-sm h2{display:none}.results-body{padding:12px}}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
 </style>
 </head>
 <body>
-
+<a href="#main" class="skip-nav">Skip to main content</a>
+<main id="main">
 <!-- ═══ LANDING PAGE ═══ -->
 <div class="landing" id="landing">
-  <div class="landing-logo">🔍</div>
+  <div class="landing-logo" aria-hidden="true">🔍</div>
   <h1>BúsquedaSoberana</h1>
   <div class="sub">Motor de Búsqueda Soberano · MameyNode · Sin Tracking</div>
 
@@ -226,7 +230,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-
 
       <!-- AI Answer -->
       <div class="ai-answer">
-        <div class="ai-label">🤖 MameyAI · Respuesta Soberana</div>
+        <div class="ai-label"><span aria-hidden="true">🤖</span> MameyAI · Respuesta Soberana</div>
         <div class="ai-text">
           La <strong>soberanía digital indígena</strong> es el derecho de los pueblos originarios a controlar su propia infraestructura tecnológica, datos y presencia digital. En las Américas, más de <strong>72 millones</strong> de personas indígenas buscan alternativas a las plataformas de Big Tech que extraen datos sin consentimiento.
           <br><br>
@@ -325,7 +329,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-
     <div class="knowledge-panel">
 
       <div class="kp-card">
-        <div class="kp-banner">🦅🌎🔒</div>
+        <div class="kp-banner" aria-hidden="true">🦅🌎🔒</div>
         <div class="kp-body">
           <div class="kp-title">Soberanía Digital Indígena</div>
           <div class="kp-subtitle">Movimiento · Tecnología · Autodeterminación</div>
@@ -372,6 +376,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-
     </div>
   </div>
 </div>
+</main>
 
 <script>
 function doSearch() {

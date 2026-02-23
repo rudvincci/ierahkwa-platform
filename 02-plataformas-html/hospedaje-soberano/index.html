@@ -97,13 +97,17 @@
 @media(max-width:768px){.nav-search{display:none}.grid{grid-template-columns:1fr 1fr}.content{padding:12px}}
 @media(max-width:480px){.grid{grid-template-columns:1fr}}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-nav">Skip to main content</a>
 
 <!-- NAV -->
 <div class="nav">
-  <div class="nav-brand"><span>🏠</span><h1>HospedajeSoberano</h1></div>
+  <div class="nav-brand"><span aria-hidden="true">🏠</span><h1>HospedajeSoberano</h1></div>
   <div class="nav-search">
     <div class="ns-field" style="flex:1.5"><div><div class="ns-label">Destino</div><div class="ns-val">Buscar comunidades...</div></div></div>
     <div class="ns-field"><div><div class="ns-label">Llegada</div><div class="ns-val">15 Mar</div></div></div>
@@ -112,38 +116,39 @@
     <button class="ns-go">⌕</button>
   </div>
   <div class="nav-right">
-    <button class="nb host">🏠 Sé Anfitrión</button>
-    <button class="nb">🌐</button>
-    <button class="nb">💎</button>
+    <button class="nb host"><span aria-hidden="true">🏠</span> Sé Anfitrión</button>
+    <button class="nb"><span aria-hidden="true">🌐</span></button>
+    <button class="nb"><span aria-hidden="true">💎</span></button>
     <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--tq));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;cursor:pointer">CA</div>
   </div>
 </div>
 
 <!-- FILTERS -->
 <div class="filters">
-  <div class="fil active"><span>🏠</span>Todos</div>
-  <div class="fil"><span>🏡</span>Comunidad</div>
-  <div class="fil"><span>🌳</span>Eco-Lodge</div>
-  <div class="fil"><span>🏔</span>Montaña</div>
-  <div class="fil"><span>🌊</span>Playa</div>
-  <div class="fil"><span>🌴</span>Selva</div>
-  <div class="fil"><span>🏜</span>Desierto</div>
-  <div class="fil"><span>🛶</span>Río</div>
-  <div class="fil"><span>🏕</span>Camping</div>
-  <div class="fil"><span>🪵</span>Cabaña</div>
-  <div class="fil"><span>🎨</span>Artesanal</div>
-  <div class="fil"><span>🌾</span>Granja</div>
-  <div class="fil"><span>🧘</span>Retiro</div>
-  <div class="fil"><span>📚</span>Cultural</div>
-  <div class="fil"><span>🩺</span>Wellness</div>
+  <div class="fil active"><span aria-hidden="true">🏠</span>Todos</div>
+  <div class="fil"><span aria-hidden="true">🏡</span>Comunidad</div>
+  <div class="fil"><span aria-hidden="true">🌳</span>Eco-Lodge</div>
+  <div class="fil"><span aria-hidden="true">🏔</span>Montaña</div>
+  <div class="fil"><span aria-hidden="true">🌊</span>Playa</div>
+  <div class="fil"><span aria-hidden="true">🌴</span>Selva</div>
+  <div class="fil"><span aria-hidden="true">🏜</span>Desierto</div>
+  <div class="fil"><span aria-hidden="true">🛶</span>Río</div>
+  <div class="fil"><span aria-hidden="true">🏕</span>Camping</div>
+  <div class="fil"><span aria-hidden="true">🪵</span>Cabaña</div>
+  <div class="fil"><span aria-hidden="true">🎨</span>Artesanal</div>
+  <div class="fil"><span aria-hidden="true">🌾</span>Granja</div>
+  <div class="fil"><span aria-hidden="true">🧘</span>Retiro</div>
+  <div class="fil"><span aria-hidden="true">📚</span>Cultural</div>
+  <div class="fil"><span aria-hidden="true">🩺</span>Wellness</div>
 </div>
 
+<main id="main">
 <!-- CONTENT -->
 <div class="content">
 
   <!-- CTA -->
   <div class="cta">
-    <div class="cta-icon">🌍</div>
+    <div class="cta-icon" aria-hidden="true">🌍</div>
     <div class="cta-text">
       <h3>Turismo que Fortalece Comunidades</h3>
       <p>90% del pago va directo al anfitrión indígena via BDET Bank. Sin intermediarios. Sin comisiones abusivas. Soberanía económica real.</p>
@@ -152,7 +157,7 @@
   </div>
 
   <!-- Featured Listings -->
-  <div class="sec-h"><h2>✨ Destacados de la Semana</h2><a>Ver todos</a></div>
+  <div class="sec-h"><h2><span aria-hidden="true">✨</span> Destacados de la Semana</h2><a>Ver todos</a></div>
   <div class="grid">
 
     <div class="listing">
@@ -224,7 +229,7 @@
   </div>
 
   <!-- Experiences -->
-  <div class="sec-h"><h2>🌟 Experiencias Soberanas</h2><a>Ver todas</a></div>
+  <div class="sec-h"><h2><span aria-hidden="true">🌟</span> Experiencias Soberanas</h2><a>Ver todas</a></div>
   <div class="exp-grid">
     <div class="exp">
       <div class="exp-img" style="background:linear-gradient(135deg,#201510,#0a2015)">🏺🔥</div>
@@ -283,5 +288,6 @@
   </div>
 
 </div>
+</main>
 </body>
 </html>

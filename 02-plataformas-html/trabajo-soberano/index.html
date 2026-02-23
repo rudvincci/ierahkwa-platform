@@ -65,11 +65,15 @@
 @media(max-width:1024px){.content{grid-template-columns:1fr 300px}.profile-card,.side-widget{display:none}}
 @media(max-width:768px){.content{grid-template-columns:1fr}.right-col{display:none}}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:2px}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-nav">Skip to main content</a>
 <div class="nav">
-  <div class="nav-brand"><span>💼</span><h1>TrabajoSoberano</h1></div>
+  <div class="nav-brand"><span aria-hidden="true">💼</span><h1>TrabajoSoberano</h1></div>
   <div class="nav-search"><input placeholder="Buscar trabajos, personas, empresas..." /></div>
   <div class="nav-items">
     <div class="nv a"><span>🏠</span>Inicio</div>
@@ -80,6 +84,7 @@
   </div>
 </div>
 
+<main id="main">
 <div class="content">
 
 <!-- LEFT -->
@@ -152,5 +157,6 @@
 </div>
 
 </div>
+</main>
 </body>
 </html>

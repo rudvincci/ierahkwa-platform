@@ -79,20 +79,24 @@
 @media(max-width:1024px){.rp{display:none}.app{grid-template-columns:240px 1fr}}
 @media(max-width:768px){.sb{display:none}.app{grid-template-columns:1fr}}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-nav">Skip to main content</a>
 <div class="app">
 
 <!-- SIDEBAR -->
 <div class="sb">
-  <div class="logo"><span>📈</span><h1>InvertirSoberano</h1></div>
-  <div class="ni a"><span>📊</span> Portfolio</div>
-  <div class="ni"><span>🔍</span> Explorar</div>
-  <div class="ni"><span>📰</span> Noticias</div>
-  <div class="ni"><span>🔄</span> Transacciones</div>
-  <div class="ni"><span>💎</span> BDET Wallet</div>
-  <div class="ni"><span>🏦</span> Depósitos</div>
+  <div class="logo"><span aria-hidden="true">📈</span><h1>InvertirSoberano</h1></div>
+  <div class="ni a"><span aria-hidden="true">📊</span> Portfolio</div>
+  <div class="ni"><span aria-hidden="true">🔍</span> Explorar</div>
+  <div class="ni"><span aria-hidden="true">📰</span> Noticias</div>
+  <div class="ni"><span aria-hidden="true">🔄</span> Transacciones</div>
+  <div class="ni"><span aria-hidden="true">💎</span> BDET Wallet</div>
+  <div class="ni"><span aria-hidden="true">🏦</span> Depósitos</div>
   <div class="sep"></div>
   <div class="st">Watchlist</div>
   <div class="watchlist">
@@ -113,6 +117,7 @@
 </div>
 
 <!-- MAIN -->
+<main id="main">
 <div class="mn">
   <div class="port-header">
     <div class="port-label">Valor Total del Portfolio</div>
@@ -191,6 +196,7 @@
     </div>
   </div>
 </div>
+</main>
 
 <!-- RIGHT PANEL -->
 <div class="rp">

@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.1] — 2026-02-23
+
+### Security
+- **Remove tracked `.env-development` files** — 4 files with secrets (VAULT_ROOT_TOKEN, RABBITMQ_PASSWORD) removed from git tracking
+- **Parameterize docker-compose.dev.yml** — Hardcoded Postgres credentials replaced with `${POSTGRES_USER:-mamey}` env vars
+
+### Fixed
+- **GAAD accessibility remediation** — Inject skip-nav, `<main id="main">`, `prefers-reduced-motion`, `aria-hidden`, and `:focus-visible` into 34-48 legacy HTML platforms
+- **Cloud Soberana** — Create missing `index.html` for platform #20 (was listed in README but had no UI)
+- **Naming convention** — Rename `RECIBIR_CRYPTOHOST_CONVERTIR_USDT` to `recibir-cryptohost-convertir-usdt` (kebab-case)
+- **Backend completeness** — Add missing `package.json` for `03-backend/shared/` and `03-backend/trading/`
+
+### Added
+- **`.dockerignore`** for all 20 backend services — prevents COPY of node_modules, .git, tests into containers
+
+### Removed
+- **`README-indice-plataformas.md`** — Obsolete v2.1 platforms index (superseded by README.md flagship table)
+
 ## [2.4.0] — 2026-02-23
 
 ### Added
@@ -110,7 +128,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LICENSE (MIT) for open-source distribution
 - Security policy (SECURITY.md) with vulnerability reporting process
 
-[Unreleased]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.4.1...HEAD
+[2.4.1]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.4.0...v2.4.1
+[2.4.0]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.1.0...v2.3.0
 [2.1.0]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/rudvincci/ierahkwa-platform/compare/v1.0.0...v2.0.0

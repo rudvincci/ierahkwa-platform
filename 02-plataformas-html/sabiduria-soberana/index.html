@@ -56,11 +56,15 @@
 .lang.a{border-color:var(--tq);color:var(--tq);background:rgba(45,212,168,0.08)}
 
 @media(max-width:900px){.main{grid-template-columns:1fr}.sidebar-r{display:none}.body .infobox{float:none;width:100%;margin:0 0 16px 0}}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-nav">Skip to main content</a>
 <div class="nav">
-  <div class="nav-brand"><span style="font-size:20px">📚</span><h1>SovereignWisdom</h1></div>
+  <div class="nav-brand"><span style="font-size:20px" aria-hidden="true">📚</span><h1>SovereignWisdom</h1></div>
   <div class="nav-search"><input placeholder="Search indigenous knowledge..." /></div>
   <div class="nav-r">
     <button class="nb">🌐 Languages</button>
@@ -69,6 +73,7 @@
   </div>
 </div>
 
+<main id="main">
 <div class="main">
 <div class="article">
   <div class="article-header">
@@ -171,5 +176,6 @@
   </div>
 </div>
 </div>
+</main>
 </body>
 </html>

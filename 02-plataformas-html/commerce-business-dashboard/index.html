@@ -452,13 +452,17 @@
             .header-stats { display: none; }
             .platforms-grid { grid-template-columns: 1fr; }
         }
+        .skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+        :focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
     </style>
 </head>
 <body>
+    <a href="#main" class="skip-nav">Skip to main content</a>
     <header class="header">
         <div class="header-content">
             <div class="logo">
-                <div class="logo-icon">🛒</div>
+                <div class="logo-icon" aria-hidden="true">🛒</div>
                 <div class="logo-text">
                     <h1>COMMERCE & BUSINESS</h1>
                     <p>Ierahkwa Futurehead Dashboard</p>
@@ -486,7 +490,7 @@
         </div>
     </header>
     
-    <main class="main">
+    <main id="main" class="main">
         <!-- KPI Metrics -->
         <div class="section-header">
             <div class="section-icon"><i class="bi bi-graph-up"></i></div>

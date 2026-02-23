@@ -76,10 +76,15 @@
 .z-btn:hover{background:var(--bg3);color:var(--txt)}
 
 @media(max-width:768px){.panel{display:none}}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-nav">Skip to main content</a>
 <div class="app">
+<main id="main">
   <div class="map">
     <div class="map-grid"></div>
     <div class="map-content">
@@ -112,10 +117,10 @@
       <div class="marker" style="top:480px;left:320px"><div class="dot" style="background:var(--red)">🪶</div><div class="label">Mapuche · Chile</div><div class="info"><div class="i-name">Comunidad Mapuche</div><div class="i-type">Chile/Argentina · 1.7M personas</div><div class="i-desc">ArtesaníaSoberana: platería Mapuche. Mapudungun en Atabey.</div></div></div>
     </div>
   </div>
-
+</main>
   <!-- TOPBAR -->
   <div class="topbar">
-    <div class="tb-brand"><span>🗺</span><h1>MapaSoberano</h1></div>
+    <div class="tb-brand"><span aria-hidden="true">🗺</span><h1>MapaSoberano</h1></div>
     <div class="search"><input placeholder="Buscar comunidades, servicios, nodos..." /></div>
     <div class="tb-r">
       <button class="tb-btn active">🛰 Satélite</button>
