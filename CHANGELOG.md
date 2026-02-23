@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] — 2026-02-22
+
+### Added
+- **9 GitHub Agentic Workflows** for Continuous AI (triage, docs, testing, security, quality, reporting, translation, performance, supply chain)
+- **17 new test suites** with 275+ test cases across 11 backend services
+- **ACCESSIBILITY.md** — GAAD Pledge compliance, WCAG 2.2 AA standards
+- **Accessibility middleware** (`03-backend/shared/accessibility.js`) with HTML audit, error handling, a11y headers
+- **Accessibility audit tool** (`04-infraestructura/accessibility/a11y-audit.js`) scanning 51 platforms
+- **Playwright E2E test suite** — platform smoke tests, WCAG checks, keyboard trap detection, API health
+- **Supply chain security** — Shai-Hulud defense with lifecycle script auditing, SBOM generation, secret scanning
+- **Supply chain audit tool** (`07-scripts/supply-chain-audit.js`) detecting malicious patterns
+- **Robótica Soberana** — Sovereign robotics platform (replaces ROS/NVIDIA Isaac)
+- **Ecosistema Abierto** — Open source ecosystem showcase (replaces GitHub Collections)
+- **Copilot instructions** (`.github/copilot-instructions.md`) with full architecture patterns
+- **Dependabot** monitoring npm, NuGet, Cargo, Docker, and GitHub Actions
+- **2 new issue templates** — accessibility barriers, agentic workflow requests
+- **Accessibility CI workflow** running WCAG checks on HTML platform PRs
+- **Supply chain security CI workflow** with dependency audit, artifact validation, SBOM
+
+### Changed
+- **14 HTML platforms** updated with skip-nav, `<main>` landmarks, focus-visible, reduced-motion
+- **CI/CD pipeline** expanded with accessibility and expanded-tests jobs
+- **`.npmrc`** hardened: ignore-scripts, save-exact, audit-level=high, namespace protection
+- **`SECURITY.md`** updated with supply chain security control matrix
+
+### Fixed
+- Missing semantic landmarks across sovereign HTML platforms
+- Missing keyboard focus indicators on interactive elements
+- Missing `prefers-reduced-motion` media query support
+
 ## [2.1.0] - 2026-02-22
 
 ### Added
@@ -55,7 +85,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LICENSE (MIT) for open-source distribution
 - Security policy (SECURITY.md) with vulnerability reporting process
 
-[Unreleased]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.1.0...v2.3.0
 [2.1.0]: https://github.com/rudvincci/ierahkwa-platform/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/rudvincci/ierahkwa-platform/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/rudvincci/ierahkwa-platform/releases/tag/v1.0.0
