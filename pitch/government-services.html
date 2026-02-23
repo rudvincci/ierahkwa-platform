@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Government Services — Sovereign Government of Ierahkwa Ne Kanienke</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#060609;--card:#0d1117;--card2:#161b22;
+  --gold:#d4a853;--teal:#2dd4a8;--purple:#9b6dff;
+  --text:#e6edf3;--muted:#8b949e;--border:#21262d;
+  --gold-glow:rgba(212,168,83,.15);--teal-glow:rgba(45,212,168,.12);--purple-glow:rgba(155,109,255,.12);
+}
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6;overflow-x:hidden}
+a{color:var(--gold);text-decoration:none}
+
+/* Slides */
+.slide{min-height:100vh;scroll-snap-align:start;display:flex;align-items:center;justify-content:center;position:relative;padding:2rem}
+.slide-inner{max-width:1100px;width:100%;margin:0 auto;position:relative;z-index:2}
+
+/* Progress bar */
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--teal),var(--purple));z-index:1000;transition:width .3s ease;width:0}
+
+/* Nav dots */
+#nav-dots{position:fixed;right:1.5rem;top:50%;transform:translateY(-50%);z-index:999;display:flex;flex-direction:column;gap:.75rem}
+.nav-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--muted);background:transparent;cursor:pointer;transition:all .3s ease;padding:0}
+.nav-dot.active{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px var(--gold)}
+.nav-dot:hover{border-color:var(--gold)}
+
+/* Typography */
+h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:700;letter-spacing:-.02em;line-height:1.15}
+h2{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:700;letter-spacing:-.01em;line-height:1.2}
+h3{font-size:1.15rem;font-weight:600;color:var(--text);margin-bottom:.5rem}
+.subtitle{font-size:clamp(1rem,2vw,1.25rem);color:var(--muted);margin-top:.75rem;font-weight:400}
+.accent-gold{color:var(--gold)}
+.accent-teal{color:var(--teal)}
+.accent-purple{color:var(--purple)}
+
+/* Seal / Emblem */
+.seal{width:140px;height:140px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 2rem;position:relative;background:radial-gradient(circle,rgba(212,168,83,.08),transparent 70%)}
+.seal::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(212,168,83,.25)}
+.seal::after{content:'';position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(212,168,83,.1)}
+.seal svg{width:64px;height:64px}
+
+/* Cards */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-top:2rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:all .35s ease;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);opacity:0;transition:opacity .35s}
+.card:hover{border-color:rgba(212,168,83,.3);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.card:hover::before{opacity:1}
+.card-teal::before{background:linear-gradient(90deg,var(--teal),transparent)}
+.card-teal:hover{border-color:rgba(45,212,168,.3)}
+.card-purple::before{background:linear-gradient(90deg,var(--purple),transparent)}
+.card-purple:hover{border-color:rgba(155,109,255,.3)}
+.card-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
+.card-icon.gold-bg{background:var(--gold-glow)}
+.card-icon.teal-bg{background:var(--teal-glow)}
+.card-icon.purple-bg{background:var(--purple-glow)}
+.card-icon svg{width:24px;height:24px}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1.25rem;margin:2rem 0}
+.stat{text-align:center;padding:1.25rem;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.stat-number{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+.stat-label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:.25rem}
+
+/* Badges / Tags */
+.badge{display:inline-block;padding:.25rem .7rem;border-radius:20px;font-size:.75rem;font-weight:600;letter-spacing:.03em}
+.badge-gold{background:rgba(212,168,83,.12);color:var(--gold);border:1px solid rgba(212,168,83,.25)}
+.badge-teal{background:rgba(45,212,168,.1);color:var(--teal);border:1px solid rgba(45,212,168,.2)}
+.badge-purple{background:rgba(155,109,255,.1);color:var(--purple);border:1px solid rgba(155,109,255,.2)}
+
+/* Feature list */
+.feature-list{list-style:none;margin-top:1rem}
+.feature-list li{padding:.5rem 0;padding-left:1.5rem;position:relative;color:var(--muted);font-size:.95rem}
+.feature-list li::before{content:'';position:absolute;left:0;top:.85rem;width:8px;height:8px;border-radius:50%;background:var(--gold)}
+.feature-list.teal li::before{background:var(--teal)}
+.feature-list.purple li::before{background:var(--purple)}
+
+/* Allocation bars */
+.alloc-item{display:flex;align-items:center;gap:1rem;margin:.6rem 0}
+.alloc-label{width:120px;font-size:.85rem;color:var(--muted);text-align:right;flex-shrink:0}
+.alloc-bar-wrap{flex:1;height:22px;background:var(--card2);border-radius:6px;overflow:hidden;position:relative}
+.alloc-bar{height:100%;border-radius:6px;transition:width 1.5s ease;display:flex;align-items:center;padding-left:.6rem;font-size:.7rem;font-weight:600;color:#fff}
+.alloc-pct{margin-left:auto;padding-right:.5rem;font-size:.7rem;opacity:.9}
+
+/* Divider */
+.divider{width:60px;height:2px;background:linear-gradient(90deg,var(--gold),transparent);margin:1.5rem 0}
+.divider-center{margin-left:auto;margin-right:auto}
+
+/* Slide BG decorations */
+.bg-glow{position:absolute;border-radius:50%;filter:blur(120px);opacity:.08;pointer-events:none}
+.bg-glow-gold{background:var(--gold);width:500px;height:500px}
+.bg-glow-teal{background:var(--teal);width:400px;height:400px}
+.bg-glow-purple{background:var(--purple);width:400px;height:400px}
+
+/* Borders for section headers */
+.section-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+.section-num{font-size:.8rem;font-weight:700;color:var(--gold);border:1px solid rgba(212,168,83,.3);border-radius:6px;padding:.25rem .6rem;letter-spacing:.05em}
+
+/* CTA */
+.cta-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 2rem;border-radius:8px;font-weight:600;font-size:1rem;transition:all .3s ease;border:none;cursor:pointer}
+.cta-gold{background:linear-gradient(135deg,var(--gold),#c49a3f);color:#060609}
+.cta-gold:hover{box-shadow:0 4px 24px rgba(212,168,83,.35);transform:translateY(-1px)}
+.cta-outline{border:1px solid var(--gold);color:var(--gold);background:transparent}
+.cta-outline:hover{background:rgba(212,168,83,.08)}
+
+/* Fade-in animation */
+.fade-in{opacity:0;transform:translateY(20px);transition:all .7s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+.fade-in.d1{transition-delay:.1s}.fade-in.d2{transition-delay:.2s}.fade-in.d3{transition-delay:.3s}.fade-in.d4{transition-delay:.4s}
+
+/* Slide title */
+.slide-title-row{display:flex;align-items:flex-start;gap:1.2rem;margin-bottom:.5rem}
+.slide-title-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.slide-title-icon svg{width:28px;height:28px}
+
+/* Responsive */
+@media(max-width:768px){
+  .slide{padding:1.5rem 1rem}
+  .card-grid{grid-template-columns:1fr}
+  #nav-dots{right:.75rem;gap:.5rem}
+  .nav-dot{width:8px;height:8px}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .alloc-label{width:80px;font-size:.75rem}
+  .seal{width:110px;height:110px}
+  .seal svg{width:48px;height:48px}
+  .section-header{flex-wrap:wrap}
+}
+@media(max-width:480px){
+  .stats-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav id="nav-dots" aria-label="Slide navigation">
+  <button class="nav-dot active" data-slide="0" aria-label="Slide 1"></button>
+  <button class="nav-dot" data-slide="1" aria-label="Slide 2"></button>
+  <button class="nav-dot" data-slide="2" aria-label="Slide 3"></button>
+  <button class="nav-dot" data-slide="3" aria-label="Slide 4"></button>
+  <button class="nav-dot" data-slide="4" aria-label="Slide 5"></button>
+  <button class="nav-dot" data-slide="5" aria-label="Slide 6"></button>
+  <button class="nav-dot" data-slide="6" aria-label="Slide 7"></button>
+  <button class="nav-dot" data-slide="7" aria-label="Slide 8"></button>
+  <button class="nav-dot" data-slide="8" aria-label="Slide 9"></button>
+  <button class="nav-dot" data-slide="9" aria-label="Slide 10"></button>
+</nav>
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<section class="slide" id="slide-0">
+  <div class="bg-glow bg-glow-gold" style="top:-10%;left:-10%"></div>
+  <div class="bg-glow bg-glow-purple" style="bottom:-15%;right:-10%"></div>
+  <div class="slide-inner" style="text-align:center">
+    <div class="fade-in">
+      <div class="seal">
+        <svg viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="28" stroke="#d4a853" stroke-width="1.5"/>
+          <path d="M32 8 L36 20 H48 L38 28 L42 40 L32 32 L22 40 L26 28 L16 20 H28Z" fill="none" stroke="#d4a853" stroke-width="1.2"/>
+          <circle cx="32" cy="32" r="10" stroke="#d4a853" stroke-width="1" stroke-dasharray="3 2"/>
+          <path d="M32 22v20M22 32h20" stroke="#d4a853" stroke-width=".8" opacity=".5"/>
+          <path d="M20 44 Q32 52 44 44" stroke="#d4a853" stroke-width="1" fill="none"/>
+          <circle cx="24" cy="28" r="2" fill="#d4a853" opacity=".4"/>
+          <circle cx="40" cy="28" r="2" fill="#d4a853" opacity=".4"/>
+        </svg>
+      </div>
+    </div>
+    <div class="fade-in d1">
+      <div style="margin-bottom:.5rem">
+        <span class="badge badge-gold">OFFICIAL GOVERNMENT DOCUMENT</span>
+      </div>
+      <h1 style="margin-top:1rem">Sovereign Government of<br><span class="accent-gold">Ierahkwa Ne Kanienke</span></h1>
+      <div class="divider divider-center" style="margin:1.25rem auto"></div>
+      <h2 style="font-size:clamp(1.1rem,2.5vw,1.6rem);font-weight:400;color:var(--muted)">Government Services &amp; Civic Infrastructure</h2>
+    </div>
+    <div class="fade-in d2" style="margin-top:2rem">
+      <p style="font-size:1.1rem;color:var(--teal);font-weight:500;letter-spacing:.08em;text-transform:uppercase">The World's First Digital Indigenous Nation</p>
+    </div>
+    <div class="fade-in d3 stats-row" style="max-width:700px;margin:2.5rem auto 0">
+      <div class="stat">
+        <div class="stat-number" data-target="72" data-suffix="M">0</div>
+        <div class="stat-label">Citizens Served</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" data-target="19">0</div>
+        <div class="stat-label">Countries</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" data-target="296">0</div>
+        <div class="stat-label">Platforms</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" data-target="574">0</div>
+        <div class="stat-label">Tribal Nations</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: THE VISION ============ -->
+<section class="slide" id="slide-1">
+  <div class="bg-glow bg-glow-teal" style="top:10%;right:-15%"></div>
+  <div class="slide-inner">
+    <div class="fade-in">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <span class="badge badge-teal">FOUNDING VISION</span>
+      </div>
+      <div class="slide-title-row">
+        <div class="slide-title-icon" style="background:var(--teal-glow)">
+          <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="#2dd4a8" stroke-width="1.5"/><path d="M14 6v16M8 10l6-4 6 4M8 18l6 4 6-4" stroke="#2dd4a8" stroke-width="1.2"/></svg>
+        </div>
+        <div>
+          <h2>The Vision — <span class="accent-teal">Gayanashagowa</span></h2>
+          <p class="subtitle">A digital nation founded on the Great Law of Peace</p>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="fade-in d1">
+      <p style="font-size:1.05rem;color:var(--muted);max-width:750px;margin-bottom:1.5rem">A sovereign nation where 72 million indigenous people across 19 countries exercise full digital sovereignty over their identity, governance, education, healthcare, and economy — governed by the principles of the Gayanashagowa, the Great Law of Peace.</p>
+    </div>
+    <div class="fade-in d2 card-grid">
+      <div class="card card-teal">
+        <div class="card-icon teal-bg">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#2dd4a8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Zero Taxes</h3>
+        <p style="font-size:.9rem;color:var(--muted)">Citizens pay no taxes. Revenue is generated through sustainable platform fees on commercial services, not from the people.</p>
+      </div>
+      <div class="card card-teal">
+        <div class="card-icon teal-bg">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="#2dd4a8" stroke-width="1.5" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="#2dd4a8" stroke-width="1.5"/><path d="M8 7h8M8 11h5" stroke="#2dd4a8" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Free Education</h3>
+        <p style="font-size:.9rem;color:var(--muted)">Universal access to K-12 and university education in 43 languages, including 37 indigenous languages. AI-powered curriculum.</p>
+      </div>
+      <div class="card card-teal">
+        <div class="card-icon teal-bg">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 21a9 9 0 100-18 9 9 0 000 18z" stroke="#2dd4a8" stroke-width="1.5"/><path d="M12 8v4l3 3" stroke="#2dd4a8" stroke-width="1.5" stroke-linecap="round"/><path d="M8 2h8M12 2v3" stroke="#2dd4a8" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Free Healthcare</h3>
+        <p style="font-size:.9rem;color:var(--muted)">Telemedicine, prescription management, and integration with indigenous healing practices — universally accessible at no cost.</p>
+      </div>
+      <div class="card card-teal">
+        <div class="card-icon teal-bg">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="10" rx="2" stroke="#2dd4a8" stroke-width="1.5"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="#2dd4a8" stroke-width="1.5"/><circle cx="12" cy="16" r="1.5" fill="#2dd4a8"/></svg>
+        </div>
+        <h3>Self-Governed Technology</h3>
+        <p style="font-size:.9rem;color:var(--muted)">All infrastructure is owned and operated by the nation. No external dependencies. Full digital sovereignty over data and systems.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: SOBERANO ID ============ -->
+<section class="slide" id="slide-2">
+  <div class="bg-glow bg-glow-purple" style="top:5%;left:-10%"></div>
+  <div class="slide-inner">
+    <div class="fade-in">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <span class="badge badge-purple">CITIZEN IDENTITY</span>
+      </div>
+      <div class="slide-title-row">
+        <div class="slide-title-icon" style="background:var(--purple-glow)">
+          <svg viewBox="0 0 28 28" fill="none"><rect x="3" y="5" width="22" height="18" rx="3" stroke="#9b6dff" stroke-width="1.5"/><circle cx="11" cy="13" r="3.5" stroke="#9b6dff" stroke-width="1.2"/><path d="M5 20c0-2.5 2.5-4 6-4s6 1.5 6 4" stroke="#9b6dff" stroke-width="1.2"/><path d="M19 10h3M19 13h3M19 16h2" stroke="#9b6dff" stroke-width="1" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h2>Soberano ID — <span class="accent-purple">FWID</span></h2>
+          <p class="subtitle">Self-sovereign digital identity for every citizen</p>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="fade-in d1" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.5rem;align-items:start">
+      <div>
+        <p style="font-size:.95rem;color:var(--muted);margin-bottom:1.5rem">FutureWampum ID (FWID) is a self-sovereign identity system built on Decentralized Identifiers (DID) and Self-Sovereign Identity (SSI) standards. No central authority controls your identity.</p>
+        <ul class="feature-list purple">
+          <li>Biometric authentication with privacy preservation</li>
+          <li>DID/SSI compliant — W3C standards</li>
+          <li>Zero-knowledge proof verification</li>
+          <li>No central authority controls your data</li>
+          <li>Works across all 296 sovereign platforms</li>
+          <li>Portable across 19 countries</li>
+        </ul>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;text-align:center">
+        <svg viewBox="0 0 200 120" fill="none" style="width:100%;max-width:280px">
+          <rect x="10" y="10" width="180" height="100" rx="12" stroke="#9b6dff" stroke-width="1.5" fill="rgba(155,109,255,.04)"/>
+          <rect x="10" y="10" width="180" height="28" rx="12" fill="rgba(155,109,255,.08)"/>
+          <text x="100" y="29" text-anchor="middle" fill="#9b6dff" font-size="9" font-weight="700" letter-spacing="1">SOBERANO IDENTITY CARD</text>
+          <circle cx="50" cy="68" r="18" stroke="#9b6dff" stroke-width="1" fill="rgba(155,109,255,.06)"/>
+          <circle cx="50" cy="63" r="6" fill="rgba(155,109,255,.3)"/>
+          <path d="M38 80c0-6 5-10 12-10s12 4 12 10" stroke="#9b6dff" stroke-width=".8" fill="none"/>
+          <text x="90" y="55" fill="#8b949e" font-size="6">FWID</text>
+          <rect x="90" y="58" width="80" height="6" rx="2" fill="rgba(155,109,255,.12)"/>
+          <text x="90" y="76" fill="#8b949e" font-size="6">DID</text>
+          <rect x="90" y="79" width="65" height="6" rx="2" fill="rgba(155,109,255,.08)"/>
+          <text x="90" y="96" fill="#8b949e" font-size="6">STATUS</text>
+          <circle cx="106" cy="102" r="3" fill="#2dd4a8"/>
+          <text x="112" y="105" fill="#2dd4a8" font-size="6" font-weight="600">VERIFIED</text>
+        </svg>
+        <p style="font-size:.8rem;color:var(--muted);margin-top:1rem">Sovereign Digital Identity Card</p>
+      </div>
+    </div>
+    <div class="fade-in d2 stats-row" style="margin-top:1.5rem">
+      <div class="stat"><div class="stat-number" data-target="296">0</div><div class="stat-label">Connected Platforms</div></div>
+      <div class="stat"><div class="stat-number" style="color:var(--purple)" data-target="100" data-suffix="%">0</div><div class="stat-label">Privacy Preserving</div></div>
+      <div class="stat"><div class="stat-number" style="color:var(--teal)" data-target="0">0</div><div class="stat-label">Central Authorities</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: GOVERNMENT PORTAL ============ -->
+<section class="slide" id="slide-3">
+  <div class="bg-glow bg-glow-gold" style="bottom:0;right:-10%"></div>
+  <div class="slide-inner">
+    <div class="fade-in">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <span class="badge badge-gold">CITIZEN PORTAL</span>
+      </div>
+      <div class="slide-title-row">
+        <div class="slide-title-icon" style="background:var(--gold-glow)">
+          <svg viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="22" height="22" rx="4" stroke="#d4a853" stroke-width="1.5"/><path d="M3 10h22" stroke="#d4a853" stroke-width="1.2"/><circle cx="7" cy="6.5" r="1" fill="#d4a853"/><circle cx="10.5" cy="6.5" r="1" fill="#d4a853" opacity=".5"/><rect x="6" y="13" width="7" height="4" rx="1" stroke="#d4a853" stroke-width=".8"/><rect x="15" y="13" width="7" height="4" rx="1" stroke="#d4a853" stroke-width=".8"/><rect x="6" y="19" width="7" height="3" rx="1" stroke="#d4a853" stroke-width=".8"/><rect x="15" y="19" width="7" height="3" rx="1" stroke="#d4a853" stroke-width=".8"/></svg>
+        </div>
+        <div>
+          <h2>Government Portal</h2>
+          <p class="subtitle">Unified access to all sovereign services</p>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="fade-in d1">
+      <p style="font-size:.95rem;color:var(--muted);max-width:700px;margin-bottom:1.5rem">A single citizen portal for accessing every government service. Built with Blazor on .NET 10 for maximum performance, security, and native-quality user experience.</p>
+    </div>
+    <div class="fade-in d2 card-grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+      <div class="card">
+        <div class="card-icon gold-bg">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="#d4a853" stroke-width="1.5"/><path d="M14 2v6h6M8 13h8M8 17h5" stroke="#d4a853" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Service Desk</h3>
+        <p style="font-size:.85rem;color:var(--muted)">Submit requests, track progress, and receive resolutions for any government service.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon gold-bg">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="#d4a853" stroke-width="1.5"/><rect x="9" y="3" width="6" height="4" rx="1" stroke="#d4a853" stroke-width="1.2"/><path d="M9 14l2 2 4-4" stroke="#d4a853" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Document Flow</h3>
+        <p style="font-size:.85rem;color:var(--muted)">Digitized document management with version control and approval workflows.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon gold-bg">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#d4a853" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>e-Signature</h3>
+        <p style="font-size:.85rem;color:var(--muted)">Legally binding digital signatures for all official documents and contracts.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon gold-bg">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#d4a853" stroke-width="1.5"/><path d="M8 9h8M8 13h4" stroke="#d4a853" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Contract Management</h3>
+        <p style="font-size:.85rem;color:var(--muted)">Smart-contract-backed agreements with automated enforcement and tracking.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon gold-bg">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="#d4a853" stroke-width="1.5"/><circle cx="9" cy="7" r="4" stroke="#d4a853" stroke-width="1.5"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#d4a853" stroke-width="1.5"/></svg>
+        </div>
+        <h3>Meeting Hub</h3>
+        <p style="font-size:.85rem;color:var(--muted)">Secure video conferencing and collaboration for governance assemblies.</p>
+      </div>
+    </div>
+    <div class="fade-in d3" style="margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap">
+      <span class="badge badge-gold">Blazor / .NET 10</span>
+      <span class="badge badge-teal">End-to-End Encrypted</span>
+      <span class="badge badge-purple">43 Languages</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: DEMOCRATIC GOVERNANCE ============ -->
+<section class="slide" id="slide-4">
+  <div class="bg-glow bg-glow-teal" style="top:-10%;left:20%"></div>
+  <div class="slide-inner">
+    <div class="fade-in">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <span class="badge badge-teal">DEMOCRATIC GOVERNANCE</span>
+      </div>
+      <div class="slide-title-row">
+        <div class="slide-title-icon" style="background:var(--teal-glow)">
+          <svg viewBox="0 0 28 28" fill="none"><path d="M14 4L4 10v8l10 6 10-6v-8L14 4z" stroke="#2dd4a8" stroke-width="1.5"/><path d="M14 10v8M10 12l4-2 4 2M10 16l4 2 4-2" stroke="#2dd4a8" stroke-width="1"/></svg>
+        </div>
+        <div>
+          <h2>Voto Soberano — <span class="accent-teal">Democratic Governance</span></h2>
+          <p class="subtitle">Blockchain-based voting and decentralized decision-making</p>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="fade-in d1" style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;margin-top:1.5rem;align-items:start">
+      <div>
+        <p style="font-size:.95rem;color:var(--muted);margin-bottom:1.5rem">Every citizen's voice matters. Voto Soberano is a blockchain-based voting system running on MameyNode, ensuring that every vote is transparent, immutable, and verifiable. GovernanceDAO enables decentralized decision-making at every level.</p>
+        <div class="card card-teal" style="margin-bottom:1rem">
+          <h3 style="color:var(--teal)">Voto Soberano</h3>
+          <ul class="feature-list teal">
+            <li>Blockchain-based voting on MameyNode</li>
+            <li>574 tribal nations participate equally</li>
+            <li>Transparent and immutable ballot records</li>
+            <li>Cryptographic verification of every vote</li>
+            <li>Zero fraud — mathematically guaranteed</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="card card-teal" style="margin-bottom:1rem">
+          <h3 style="color:var(--teal)">GovernanceDAO</h3>
+          <ul class="feature-list teal">
+            <li>Decentralized decision-making framework</li>
+            <li>Proposal submission by any citizen</li>
+            <li>Multi-tiered consensus mechanism</li>
+            <li>Automated execution of passed resolutions</li>
+            <li>Full audit trail of all governance actions</li>
+          </ul>
+        </div>
+        <div class="stats-row" style="grid-template-columns:1fr 1fr;margin:1rem 0 0">
+          <div class="stat"><div class="stat-number" style="color:var(--teal)" data-target="574">0</div><div class="stat-label">Tribal Nations</div></div>
+          <div class="stat"><div class="stat-number" style="color:var(--teal)" data-target="0">0</div><div class="stat-label">Fraud Incidents</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: FISCAL SYSTEM ============ -->
+<section class="slide" id="slide-5">
+  <div class="bg-glow bg-glow-gold" style="top:20%;right:-15%"></div>
+  <div class="slide-inner">
+    <div class="fade-in">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <span class="badge badge-gold">FISCAL SYSTEM</span>
+      </div>
+      <div class="slide-title-row">
+        <div class="slide-title-icon" style="background:var(--gold-glow)">
+          <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="#d4a853" stroke-width="1.5"/><text x="14" y="18" text-anchor="middle" fill="#d4a853" font-size="13" font-weight="700">$</text></svg>
+        </div>
+        <div>
+          <h2>Fiscal System — <span class="accent-gold">Zero Tax</span></h2>
+          <p class="subtitle">Sustainable revenue without citizen taxation</p>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="fade-in d1" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1rem;align-items:start">
+      <div>
+        <p style="font-size:.95rem;color:var(--muted);margin-bottom:1.25rem">Citizens pay zero taxes. Revenue is generated exclusively from platform fees (5-12%) on commercial entities. Every dollar is automatically allocated through transparent smart contracts.</p>
+        <h3 style="color:var(--gold);margin-bottom:.75rem">Automatic Budget Allocation</h3>
+        <div class="alloc-item"><span class="alloc-label">Education</span><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:0;background:linear-gradient(90deg,#2dd4a8,#1a9e7d)" data-width="100%"><span class="alloc-pct">25%</span></div></div></div>
+        <div class="alloc-item"><span class="alloc-label">Healthcare</span><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:0;background:linear-gradient(90deg,#2dd4a8,#1a9e7d)" data-width="100%"><span class="alloc-pct">25%</span></div></div></div>
+        <div class="alloc-item"><span class="alloc-label">Infrastructure</span><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:0;background:linear-gradient(90deg,#9b6dff,#7a50d4)" data-width="80%"><span class="alloc-pct">20%</span></div></div></div>
+        <div class="alloc-item"><span class="alloc-label">Technology</span><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:0;background:linear-gradient(90deg,#d4a853,#b8923e)" data-width="60%"><span class="alloc-pct">15%</span></div></div></div>
+        <div class="alloc-item"><span class="alloc-label">Security</span><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:0;background:linear-gradient(90deg,#6e7681,#555)" data-width="40%"><span class="alloc-pct">10%</span></div></div></div>
+        <div class="alloc-item"><span class="alloc-label">Reserve</span><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:0;background:linear-gradient(90deg,#484f58,#3a3f47)" data-width="20%"><span class="alloc-pct">5%</span></div></div></div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:1rem">
+          <div class="card-icon gold-bg">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="18" rx="2" stroke="#d4a853" stroke-width="1.5"/><path d="M2 9h20M6 15h4M14 15h4" stroke="#d4a853" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Fiscal Transparency Dashboard</h3>
+          <p style="font-size:.85rem;color:var(--muted)">Real-time visibility into every dollar collected and spent. Fully auditable by any citizen at any time.</p>
+        </div>
+        <div class="card" style="margin-bottom:1rem">
+          <div class="card-icon gold-bg">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20" stroke="#d4a853" stroke-width="1.5"/><path d="M12 2a15 15 0 014 10 15 15 0 01-4 10 15 15 0 01-4-10A15 15 0 0112 2z" stroke="#d4a853" stroke-width="1.2"/></svg>
+          </div>
+          <h3>Budget Control Microservice</h3>
+          <p style="font-size:.85rem;color:var(--muted)">Automated allocation engine using smart contracts. Enforces spending limits and compliance.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon gold-bg">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="#d4a853" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Tax Authority</h3>
+          <p style="font-size:.85rem;color:var(--muted)">Applies only to non-citizen commercial entities operating on sovereign platforms.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: EDUCATION ============ -->
+<section class="slide" id="slide-6">
+  <div class="bg-glow bg-glow-purple" style="bottom:-10%;left:-10%"></div>
+  <div class="slide-inner">
+    <div class="fade-in">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <span class="badge badge-purple">EDUCATION</span>
+      </div>
+      <div class="slide-title-row">
+        <div class="slide-title-icon" style="background:var(--purple-glow)">
+          <svg viewBox="0 0 28 28" fill="none"><path d="M14 4L2 10l12 6 12-6-12-6z" stroke="#9b6dff" stroke-width="1.5"/><path d="M6 13v6c0 2 3.5 4 8 4s8-2 8-4v-6" stroke="#9b6dff" stroke-width="1.5"/><path d="M24 10v8" stroke="#9b6dff" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h2>Education — <span class="accent-purple">Free &amp; Universal</span></h2>
+          <p class="subtitle">From K-12 through university in 43 languages</p>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="fade-in d1 card-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+      <div class="card card-purple">
+        <div class="card-icon purple-bg">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" stroke="#9b6dff" stroke-width="1.5"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" stroke="#9b6dff" stroke-width="1.5"/></svg>
+        </div>
+        <h3>Universidad Soberana</h3>
+        <p style="font-size:.85rem;color:var(--muted)">Free sovereign university offering degree programs, research opportunities, and professional development for all citizens.</p>
+      </div>
+      <div class="card card-purple">
+        <div class="card-icon purple-bg">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="#9b6dff" stroke-width="1.5"/><path d="M8 6h8M8 10h8M8 14h5" stroke="#9b6dff" stroke-width="1.2" stroke-linecap="round"/><circle cx="16" cy="18" r="2" stroke="#9b6dff" stroke-width="1"/></svg>
+        </div>
+        <h3>Pupitre Soberano</h3>
+        <p style="font-size:.85rem;color:var(--muted)">Free K-12 education platform with interactive curriculum, indigenous knowledge integration, and progress tracking.</p>
+      </div>
+      <div class="card card-purple">
+        <div class="card-icon purple-bg">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="#9b6dff" stroke-width="1.5"/><path d="M8 21h8M12 17v4" stroke="#9b6dff" stroke-width="1.5" stroke-linecap="round"/><path d="M7 8l3 3 5-5" stroke="#9b6dff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Smart School</h3>
+        <p style="font-size:.85rem;color:var(--muted)">AI-powered adaptive learning platform that personalizes education paths for every student's unique needs.</p>
+      </div>
+    </div>
+    <div class="fade-in d2" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.5rem;align-items:start">
+      <div class="card" style="border-color:rgba(155,109,255,.2)">
+        <h3 style="color:var(--purple)">Indigenous Curriculum</h3>
+        <ul class="feature-list purple">
+          <li>37 indigenous languages supported</li>
+          <li>6 additional global languages (43 total)</li>
+          <li>Traditional knowledge preservation</li>
+          <li>Cultural heritage integration</li>
+          <li>Elder-guided curriculum development</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(155,109,255,.2)">
+        <h3 style="color:var(--purple)">AI Translation — Atabey</h3>
+        <ul class="feature-list purple">
+          <li>Real-time translation across 43 languages</li>
+          <li>Preserves indigenous language nuance</li>
+          <li>AI-powered curriculum adaptation</li>
+          <li>Education dashboard for outcomes</li>
+          <li>Accessible on any device</li>
+        </ul>
+      </div>
+    </div>
+    <div class="fade-in d3 stats-row" style="margin-top:1rem">
+      <div class="stat"><div class="stat-number" style="color:var(--purple)" data-target="43">0</div><div class="stat-label">Languages</div></div>
+      <div class="stat"><div class="stat-number" style="color:var(--purple)" data-target="37">0</div><div class="stat-label">Indigenous Languages</div></div>
+      <div class="stat"><div class="stat-number" style="color:var(--teal)" data-target="100" data-suffix="%">0</div><div class="stat-label">Free Access</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8: HEALTHCARE ============ -->
+<section class="slide" id="slide-7">
+  <div class="bg-glow bg-glow-teal" style="top:30%;right:-15%"></div>
+  <div class="slide-inner">
+    <div class="fade-in">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <span class="badge badge-teal">HEALTHCARE</span>
+      </div>
+      <div class="slide-title-row">
+        <div class="slide-title-icon" style="background:var(--teal-glow)">
+          <svg viewBox="0 0 28 28" fill="none"><path d="M14 4C8.5 4 4 8.5 4 14s4.5 10 10 10 10-4.5 10-10S19.5 4 14 4z" stroke="#2dd4a8" stroke-width="1.5"/><path d="M14 9v10M9 14h10" stroke="#2dd4a8" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h2>Soberano Doctor — <span class="accent-teal">Free Healthcare</span></h2>
+          <p class="subtitle">Universal telemedicine and indigenous healing</p>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="fade-in d1" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.5rem">
+      <div>
+        <p style="font-size:.95rem;color:var(--muted);margin-bottom:1.5rem">Soberano Doctor provides free telemedicine to every citizen, integrating modern medical practice with indigenous healing traditions. All health records are stored on blockchain with privacy-first architecture.</p>
+        <div class="card card-teal" style="margin-bottom:1rem">
+          <h3 style="color:var(--teal)">Core Services</h3>
+          <ul class="feature-list teal">
+            <li>Free telemedicine consultations</li>
+            <li>Digital prescription management</li>
+            <li>Integration with indigenous healing practices</li>
+            <li>Health records on blockchain (privacy-first)</li>
+            <li>Available in 43 languages</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="card card-teal" style="margin-bottom:1rem">
+          <div class="card-icon teal-bg">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="#2dd4a8" stroke-width="1.5"/><path d="M8 21h8M12 17v4" stroke="#2dd4a8" stroke-width="1.5" stroke-linecap="round"/><path d="M6 10h3v3H6zM10 8h4v5h-4zM15 9h3v4h-3z" stroke="#2dd4a8" stroke-width=".8" fill="rgba(45,212,168,.1)"/></svg>
+          </div>
+          <h3>Healthcare Dashboard</h3>
+          <p style="font-size:.85rem;color:var(--muted)">Real-time monitoring of population health outcomes, resource allocation, and service accessibility across all communities.</p>
+        </div>
+        <div class="card card-teal">
+          <div class="card-icon teal-bg">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#2dd4a8" stroke-width="1.5"/><path d="M9 12l2 2 4-4" stroke="#2dd4a8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Privacy-First Health Records</h3>
+          <p style="font-size:.85rem;color:var(--muted)">Blockchain-secured medical records ensure that only the patient and their authorized providers can access health data.</p>
+        </div>
+      </div>
+    </div>
+    <div class="fade-in d2 stats-row" style="margin-top:1rem">
+      <div class="stat"><div class="stat-number" style="color:var(--teal)" data-target="100" data-suffix="%">0</div><div class="stat-label">Free Access</div></div>
+      <div class="stat"><div class="stat-number" style="color:var(--teal)" data-target="43">0</div><div class="stat-label">Languages</div></div>
+      <div class="stat"><div class="stat-number" style="color:var(--teal)" data-target="24" data-suffix="/7">0</div><div class="stat-label">Availability</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9: JUSTICE & LAW ============ -->
+<section class="slide" id="slide-8">
+  <div class="bg-glow bg-glow-gold" style="top:-5%;left:10%"></div>
+  <div class="slide-inner">
+    <div class="fade-in">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <span class="badge badge-gold">JUSTICE &amp; LAW</span>
+      </div>
+      <div class="slide-title-row">
+        <div class="slide-title-icon" style="background:var(--gold-glow)">
+          <svg viewBox="0 0 28 28" fill="none"><path d="M14 3v22" stroke="#d4a853" stroke-width="1.5" stroke-linecap="round"/><path d="M6 8l8-3 8 3" stroke="#d4a853" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 14a4 4 0 004 4M20 14a4 4 0 004 4M4 14a4 4 0 014-4M20 14a4 4 0 00-4-4" stroke="#d4a853" stroke-width="1.2"/><path d="M8 25h12" stroke="#d4a853" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h2>Justicia Soberano — <span class="accent-gold">Justice &amp; Law</span></h2>
+          <p class="subtitle">Dispute resolution founded on the Great Law of Peace</p>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="fade-in d1" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.5rem;align-items:start">
+      <div>
+        <p style="font-size:.95rem;color:var(--muted);margin-bottom:1.5rem">Justicia Soberano is a justice system rooted in the principles of the Gayanashagowa — the Great Law of Peace. It combines ancient wisdom with modern technology to deliver fair, transparent, and efficient dispute resolution.</p>
+        <div class="card" style="margin-bottom:1rem">
+          <h3 style="color:var(--gold)">Foundations</h3>
+          <ul class="feature-list">
+            <li>Based on Gayanashagowa (Great Law of Peace)</li>
+            <li>Restorative justice principles</li>
+            <li>DAO-based governance integration</li>
+            <li>Smart contracts for enforcement</li>
+            <li>Complete audit trail for transparency</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:1rem">
+          <div class="card-icon gold-bg">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#d4a853" stroke-width="1.5"/><path d="M12 8v4l2 2" stroke="#d4a853" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Dispute Resolution</h3>
+          <p style="font-size:.85rem;color:var(--muted)">Mediation-first approach based on indigenous peacemaking traditions. Fair outcomes for all parties through community consensus.</p>
+        </div>
+        <div class="card" style="margin-bottom:1rem">
+          <div class="card-icon gold-bg">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="#d4a853" stroke-width="1.5"/><circle cx="9" cy="7" r="4" stroke="#d4a853" stroke-width="1.5"/><path d="M20 8v6M23 11h-6" stroke="#d4a853" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Advocate Office</h3>
+          <p style="font-size:.85rem;color:var(--muted)">Free legal advocacy for all citizens. Ensures equal access to justice regardless of economic status.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon gold-bg">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#d4a853" stroke-width="1.5"/><path d="M12 8v4M12 16h.01" stroke="#d4a853" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Smart Contract Enforcement</h3>
+          <p style="font-size:.85rem;color:var(--muted)">Automated contract execution and enforcement through blockchain, eliminating the need for costly litigation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: JOIN THE NATION ============ -->
+<section class="slide" id="slide-9">
+  <div class="bg-glow bg-glow-gold" style="top:10%;left:20%"></div>
+  <div class="bg-glow bg-glow-teal" style="bottom:10%;right:10%"></div>
+  <div class="bg-glow bg-glow-purple" style="top:50%;left:-10%"></div>
+  <div class="slide-inner" style="text-align:center">
+    <div class="fade-in">
+      <div class="seal">
+        <svg viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="28" stroke="#d4a853" stroke-width="1.5"/>
+          <path d="M32 8 L36 20 H48 L38 28 L42 40 L32 32 L22 40 L26 28 L16 20 H28Z" fill="none" stroke="#d4a853" stroke-width="1.2"/>
+          <circle cx="32" cy="32" r="10" stroke="#d4a853" stroke-width="1" stroke-dasharray="3 2"/>
+          <path d="M32 22v20M22 32h20" stroke="#d4a853" stroke-width=".8" opacity=".5"/>
+          <path d="M20 44 Q32 52 44 44" stroke="#d4a853" stroke-width="1" fill="none"/>
+          <circle cx="24" cy="28" r="2" fill="#d4a853" opacity=".4"/>
+          <circle cx="40" cy="28" r="2" fill="#d4a853" opacity=".4"/>
+        </svg>
+      </div>
+    </div>
+    <div class="fade-in d1">
+      <h1><span class="accent-gold">Skennen'kowa</span></h1>
+      <p style="font-size:1.25rem;color:var(--muted);margin-top:.5rem;font-style:italic">The Great Peace</p>
+      <div class="divider divider-center" style="margin:1.5rem auto"></div>
+    </div>
+    <div class="fade-in d2" style="max-width:700px;margin:0 auto">
+      <h2 style="font-size:1.5rem;margin-bottom:2rem">Join the Nation</h2>
+      <div class="card-grid" style="grid-template-columns:repeat(3,1fr);text-align:center">
+        <div class="card" style="text-align:center">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--gold-glow);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.2rem;font-weight:700;color:var(--gold)">1</div>
+          <h3>Visit the Platform</h3>
+          <p style="font-size:.85rem;color:var(--muted)">Access the sovereign digital platform and explore available services.</p>
+        </div>
+        <div class="card card-teal" style="text-align:center">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--teal-glow);border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.2rem;font-weight:700;color:var(--teal)">2</div>
+          <h3>Get a Soberano ID</h3>
+          <p style="font-size:.85rem;color:var(--muted)">Create your self-sovereign digital identity with FWID verification.</p>
+        </div>
+        <div class="card card-purple" style="text-align:center">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--purple-glow);border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.2rem;font-weight:700;color:var(--purple)">3</div>
+          <h3>Join Your Community</h3>
+          <p style="font-size:.85rem;color:var(--muted)">Connect with your tribal nation and participate in governance.</p>
+        </div>
+      </div>
+    </div>
+    <div class="fade-in d3" style="margin-top:2.5rem">
+      <p style="font-size:1.1rem;color:var(--muted);margin-bottom:1.5rem">
+        <span class="accent-gold" style="font-weight:700">72 million people.</span>&ensp;
+        <span class="accent-teal" style="font-weight:700">19 countries.</span>&ensp;
+        <span class="accent-purple" style="font-weight:700">One sovereign nation.</span>
+      </p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <a href="https://github.com/rudvincci/ierahkwa-platform" target="_blank" class="cta-btn cta-gold">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 016.02 0c2.28-1.55 3.28-1.23 3.28-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58A12.01 12.01 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub Repository
+        </a>
+        <button class="cta-btn cta-outline" onclick="document.getElementById('slide-0').scrollIntoView({behavior:'smooth'})">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          View Again
+        </button>
+      </div>
+    </div>
+    <div class="fade-in d4" style="margin-top:3rem">
+      <p style="font-size:.75rem;color:var(--muted);opacity:.6">Sovereign Government of Ierahkwa Ne Kanienke &mdash; Official Government Services Presentation</p>
+      <p style="font-size:.7rem;color:var(--muted);opacity:.4;margin-top:.25rem">github.com/rudvincci/ierahkwa-platform</p>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  'use strict';
+
+  // ── Slide management ──
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.nav-dot');
+  const progress = document.getElementById('progress');
+  const totalSlides = slides.length;
+  let currentSlide = 0;
+  let isScrolling = false;
+
+  function updateProgress(){
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progress.style.width = pct + '%';
+  }
+
+  function updateActiveDot(){
+    const scrollPos = window.scrollY + window.innerHeight / 2;
+    let active = 0;
+    slides.forEach(function(s, i){
+      if(scrollPos >= s.offsetTop) active = i;
+    });
+    if(active !== currentSlide){
+      currentSlide = active;
+      dots.forEach(function(d, i){
+        d.classList.toggle('active', i === active);
+      });
+    }
+  }
+
+  // Scroll listener (throttled)
+  let ticking = false;
+  window.addEventListener('scroll', function(){
+    if(!ticking){
+      requestAnimationFrame(function(){
+        updateProgress();
+        updateActiveDot();
+        checkVisibility();
+        checkAllocBars();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, {passive: true});
+
+  // Nav dots click
+  dots.forEach(function(dot){
+    dot.addEventListener('click', function(){
+      var idx = parseInt(this.dataset.slide);
+      slides[idx].scrollIntoView({behavior: 'smooth'});
+    });
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' '){
+      e.preventDefault();
+      if(currentSlide < totalSlides - 1){
+        slides[currentSlide + 1].scrollIntoView({behavior: 'smooth'});
+      }
+    } else if(e.key === 'ArrowUp' || e.key === 'PageUp'){
+      e.preventDefault();
+      if(currentSlide > 0){
+        slides[currentSlide - 1].scrollIntoView({behavior: 'smooth'});
+      }
+    } else if(e.key === 'Home'){
+      e.preventDefault();
+      slides[0].scrollIntoView({behavior: 'smooth'});
+    } else if(e.key === 'End'){
+      e.preventDefault();
+      slides[totalSlides - 1].scrollIntoView({behavior: 'smooth'});
+    }
+  });
+
+  // ── Fade-in on scroll ──
+  var fadeEls = document.querySelectorAll('.fade-in');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {threshold: 0.15, rootMargin: '0px 0px -50px 0px'});
+
+  fadeEls.forEach(function(el){ observer.observe(el); });
+
+  function checkVisibility(){
+    fadeEls.forEach(function(el){
+      var rect = el.getBoundingClientRect();
+      if(rect.top < window.innerHeight * 0.85){
+        el.classList.add('visible');
+      }
+    });
+  }
+
+  // ── Animated counters ──
+  var countersAnimated = new Set();
+  var counterEls = document.querySelectorAll('.stat-number[data-target]');
+
+  var counterObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting && !countersAnimated.has(entry.target)){
+        countersAnimated.add(entry.target);
+        animateCounter(entry.target);
+      }
+    });
+  }, {threshold: 0.5});
+
+  counterEls.forEach(function(el){ counterObserver.observe(el); });
+
+  function animateCounter(el){
+    var target = parseInt(el.dataset.target);
+    var suffix = el.dataset.suffix || '';
+    var duration = 1800;
+    var start = performance.now();
+
+    if(target === 0){
+      el.textContent = '0' + suffix;
+      return;
+    }
+
+    function step(now){
+      var elapsed = now - start;
+      var pct = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      var ease = 1 - Math.pow(1 - pct, 3);
+      var current = Math.round(target * ease);
+      el.textContent = current.toLocaleString() + suffix;
+      if(pct < 1) requestAnimationFrame(step);
+      else el.textContent = target.toLocaleString() + suffix;
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ── Allocation bar animation ──
+  var allocAnimated = false;
+  function checkAllocBars(){
+    if(allocAnimated) return;
+    var bars = document.querySelectorAll('.alloc-bar[data-width]');
+    if(bars.length === 0) return;
+    var first = bars[0];
+    var rect = first.getBoundingClientRect();
+    if(rect.top < window.innerHeight * 0.8){
+      allocAnimated = true;
+      bars.forEach(function(bar, i){
+        setTimeout(function(){
+          bar.style.width = bar.dataset.width;
+        }, i * 120);
+      });
+    }
+  }
+
+  // Initial checks
+  setTimeout(function(){
+    checkVisibility();
+    updateProgress();
+    checkAllocBars();
+  }, 100);
+
+})();
+</script>
+</body>
+</html>

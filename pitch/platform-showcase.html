@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ierahkwa Ne Kanienke — 296 Sovereign Platforms</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#060609;--card:#0d1117;--card2:#161b22;--gold:#d4a853;--teal:#2dd4a8;--purple:#9b6dff;--red:#ff4757;--green:#2dd4a8;--text:#e6edf3;--muted:#8b949e;--font:'Segoe UI',system-ui,-apple-system,sans-serif}
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden}
+.slide{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;position:relative;overflow:hidden}
+.slide::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 0%,rgba(155,109,255,.06) 0%,transparent 60%);pointer-events:none}
+
+/* Progress Bar */
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--teal),var(--purple));z-index:1000;transition:width .3s;width:0}
+
+/* Navigation Dots */
+#nav-dots{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:999;display:flex;flex-direction:column;gap:12px}
+.nav-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--muted);background:transparent;cursor:pointer;transition:all .3s;padding:0}
+.nav-dot.active{background:var(--gold);border-color:var(--gold);transform:scale(1.3)}
+.nav-dot:hover{border-color:var(--gold)}
+
+/* Slide Title */
+.slide-title{font-size:clamp(1.6rem,4vw,2.8rem);font-weight:800;text-align:center;margin-bottom:8px;background:linear-gradient(135deg,var(--gold),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.slide-subtitle{font-size:clamp(.9rem,2vw,1.15rem);color:var(--muted);text-align:center;margin-bottom:40px;max-width:700px}
+
+/* Cards Grid */
+.cards{display:grid;gap:20px;max-width:1200px;width:100%;padding:0 20px}
+.cards-3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.cards-4{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.cards-5{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+
+.card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:28px 24px;position:relative;overflow:hidden;transition:all .4s cubic-bezier(.25,.46,.45,.94);opacity:0;transform:translateY(30px)}
+.card.visible{opacity:1;transform:translateY(0)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--teal));opacity:0;transition:opacity .3s}
+.card:hover{transform:translateY(-6px);border-color:rgba(212,168,83,.25);box-shadow:0 8px 40px rgba(212,168,83,.1),0 0 60px rgba(212,168,83,.04)}
+.card:hover::before{opacity:1}
+
+.card-icon{width:48px;height:48px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:rgba(212,168,83,.08)}
+.card-icon svg{width:28px;height:28px}
+.card-name{font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.card-replaces{font-size:.8rem;color:var(--gold);margin-bottom:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.card-desc{font-size:.88rem;color:var(--muted);line-height:1.55;margin-bottom:14px}
+.card-payout{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:.8rem;font-weight:700;background:rgba(45,212,168,.1);color:var(--teal);border:1px solid rgba(45,212,168,.2)}
+
+/* Title Slide */
+.hero-badge{display:inline-block;padding:8px 20px;border-radius:30px;font-size:.8rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(212,168,83,.3);color:var(--gold);margin-bottom:30px;background:rgba(212,168,83,.05)}
+.hero-title{font-size:clamp(2.2rem,6vw,4.5rem);font-weight:900;text-align:center;line-height:1.1;margin-bottom:20px}
+.hero-title .gold{color:var(--gold)}
+.hero-title .teal{color:var(--teal)}
+.hero-title .white{color:#fff}
+.hero-sub{font-size:clamp(1rem,2.5vw,1.4rem);color:var(--muted);text-align:center;max-width:750px;line-height:1.6}
+.hero-stats{display:flex;gap:40px;margin-top:40px;flex-wrap:wrap;justify-content:center}
+.hero-stat{text-align:center}
+.hero-stat-num{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;background:linear-gradient(135deg,var(--gold),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-stat-label{font-size:.8rem;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+
+/* Chart Slide */
+.chart-container{max-width:1000px;width:100%;padding:0 20px}
+.chart-row{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.chart-label{width:140px;font-size:.85rem;text-align:right;color:var(--muted);flex-shrink:0}
+.chart-bars{flex:1;display:flex;flex-direction:column;gap:5px}
+.chart-bar{height:26px;border-radius:6px;display:flex;align-items:center;padding:0 12px;font-size:.75rem;font-weight:700;color:#fff;position:relative;transition:width 1.5s cubic-bezier(.25,.46,.45,.94);width:0}
+.chart-bar.sov{background:linear-gradient(90deg,var(--teal),#1ab394)}
+.chart-bar.tech{background:linear-gradient(90deg,var(--red),#c0392b)}
+.chart-bar span{position:absolute;right:10px;white-space:nowrap}
+.chart-bar.visible.sov{width:var(--w)}
+.chart-bar.visible.tech{width:var(--w)}
+.chart-legend{display:flex;gap:30px;justify-content:center;margin-top:30px}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.legend-dot{width:12px;height:12px;border-radius:3px}
+
+/* Summary Slide */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px;max-width:900px;margin:30px 0}
+.summary-item{text-align:center;padding:24px 16px;border-radius:14px;background:var(--card);border:1px solid rgba(255,255,255,.05)}
+.summary-num{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:900;color:var(--gold)}
+.summary-label{font-size:.8rem;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:.5px}
+.cta-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 36px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#c4983f);color:#000;font-size:1rem;font-weight:700;text-decoration:none;margin-top:30px;transition:all .3s;border:none;cursor:pointer}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,168,83,.3)}
+
+/* Scroll Indicator */
+.scroll-hint{position:absolute;bottom:30px;display:flex;flex-direction:column;align-items:center;gap:8px;animation:bounce 2s infinite;color:var(--muted);font-size:.75rem}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+.scroll-arrow{width:20px;height:20px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg)}
+
+/* Floating particles */
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.particle{position:absolute;border-radius:50%;background:var(--gold);opacity:.15;animation:float linear infinite}
+@keyframes float{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:.15}90%{opacity:.15}100%{transform:translateY(-10vh) rotate(720deg);opacity:0}}
+
+/* Responsive */
+@media(max-width:768px){
+  .slide{padding:30px 12px}
+  .cards{gap:14px;padding:0 10px}
+  #nav-dots{right:8px;gap:8px}
+  .nav-dot{width:8px;height:8px}
+  .hero-stats{gap:20px}
+  .chart-label{width:90px;font-size:.72rem}
+  .card{padding:20px 16px}
+}
+@media(max-width:480px){
+  .cards-3,.cards-4,.cards-5{grid-template-columns:1fr}
+}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .8s ease forwards}
+.delay-1{animation-delay:.1s}
+.delay-2{animation-delay:.2s}
+.delay-3{animation-delay:.3s}
+.delay-4{animation-delay:.4s}
+.delay-5{animation-delay:.5s}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<nav id="nav-dots"></nav>
+
+<div class="particles" id="particles"></div>
+
+<!-- Slide 1: Title -->
+<section class="slide" id="slide-0">
+  <div class="hero-badge">Ierahkwa Ne Kanienke</div>
+  <h1 class="hero-title">
+    <span class="gold">296</span> <span class="white">Sovereign Platforms</span><br>
+    <span class="teal">Replacing Big Tech</span>
+  </h1>
+  <p class="hero-sub">Every platform you use, rebuilt for indigenous sovereignty. No ads. No surveillance. No data harvesting. Post-quantum encryption. 43 languages.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num">296+</div><div class="hero-stat-label">Platforms</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">0%</div><div class="hero-stat-label">Tax Rate</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">43</div><div class="hero-stat-label">Languages</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">PQ</div><div class="hero-stat-label">Encryption</div></div>
+  </div>
+  <div class="scroll-hint"><span>Scroll to explore</span><div class="scroll-arrow"></div></div>
+</section>
+
+<!-- Slide 2: Communication -->
+<section class="slide" id="slide-1">
+  <h2 class="slide-title">Communication Platforms</h2>
+  <p class="slide-subtitle">Sovereign messaging, email, and social networking with post-quantum encryption</p>
+  <div class="cards cards-3">
+    <div class="card" data-delay="0">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg></div>
+      <div class="card-name">Correo Soberano</div>
+      <div class="card-replaces">Replaces Gmail</div>
+      <div class="card-desc">Post-quantum encrypted email with end-to-end encryption. Full sovereignty over your communications. Available in 43 indigenous and world languages.</div>
+    </div>
+    <div class="card" data-delay="1">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2dd4a8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12a4 4 0 0 0 8 0"/><circle cx="9" cy="9" r="1" fill="#2dd4a8"/><circle cx="15" cy="9" r="1" fill="#2dd4a8"/></svg></div>
+      <div class="card-name">Red Soberana</div>
+      <div class="card-replaces">Replaces Facebook</div>
+      <div class="card-desc">Community-first social network. No ads. No data harvesting. No algorithmic manipulation. Built to strengthen indigenous communities, not exploit them.</div>
+    </div>
+    <div class="card" data-delay="2">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9b6dff" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c-1.66 0-3-4.03-3-9s1.34-9 3-9m0 18c1.66 0 3-4.03 3-9s-1.34-9-3-9m-9 9a9 9 0 0 1 9-9"/></svg></div>
+      <div class="card-name">Voz Soberana</div>
+      <div class="card-replaces">Replaces Twitter / X</div>
+      <div class="card-desc">Microblogging for sovereign voices. True free speech without corporate censorship or algorithmic suppression. Your voice, your sovereignty.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 3: Commerce & Banking -->
+<section class="slide" id="slide-2">
+  <h2 class="slide-title">Commerce & Banking</h2>
+  <p class="slide-subtitle">Sovereign financial infrastructure with zero fees and the WAMPUM token</p>
+  <div class="cards cards-4">
+    <div class="card" data-delay="0">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><circle cx="7" cy="15" r="1.5" fill="#d4a853"/></svg></div>
+      <div class="card-name">BDET Bank</div>
+      <div class="card-replaces">Replaces PayPal / Banks</div>
+      <div class="card-desc">Sovereign banking powered by the WAMPUM token. Zero transaction fees for citizens. Full financial sovereignty.</div>
+      <div class="card-payout">0% fees for citizens</div>
+    </div>
+    <div class="card" data-delay="1">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2dd4a8" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+      <div class="card-name">Comercio Soberano</div>
+      <div class="card-replaces">Replaces Shopify</div>
+      <div class="card-desc">Full e-commerce platform. Sellers keep 88% of revenue. Indigenous-first marketplace with sovereign payment rails.</div>
+      <div class="card-payout">88% to sellers</div>
+    </div>
+    <div class="card" data-delay="2">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9b6dff" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <div class="card-name">Artesania Soberana</div>
+      <div class="card-replaces">Replaces Etsy</div>
+      <div class="card-desc">Artisan marketplace celebrating indigenous craftsmanship. Creators keep 88% of every sale. No corporate middlemen.</div>
+      <div class="card-payout">88% to creators</div>
+    </div>
+    <div class="card" data-delay="3">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4"/><line x1="8" y1="12" x2="8" y2="12.01"/></svg></div>
+      <div class="card-name">Soberano POS</div>
+      <div class="card-replaces">Replaces Square</div>
+      <div class="card-desc">Point of sale for sovereign businesses. Accept WAMPUM, crypto, and fiat. Full integration with BDET Bank.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 4: Education & Healthcare -->
+<section class="slide" id="slide-3">
+  <h2 class="slide-title">Education & Healthcare</h2>
+  <p class="slide-subtitle">Free education and healthcare for all citizens, in 43 languages</p>
+  <div class="cards cards-3">
+    <div class="card" data-delay="0">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg></div>
+      <div class="card-name">Universidad Soberana</div>
+      <div class="card-replaces">Replaces Coursera</div>
+      <div class="card-desc">FREE university education for all citizens. Accredited degrees in 43 languages. Indigenous knowledge systems integrated with modern curriculum.</div>
+      <div class="card-payout">100% FREE</div>
+    </div>
+    <div class="card" data-delay="1">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2dd4a8" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+      <div class="card-name">Pupitre Soberano</div>
+      <div class="card-replaces">Replaces Khan Academy</div>
+      <div class="card-desc">FREE K-12 education platform. Indigenous curriculum honoring traditional knowledge. Interactive lessons in 43 languages.</div>
+      <div class="card-payout">100% FREE</div>
+    </div>
+    <div class="card" data-delay="2">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9b6dff" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+      <div class="card-name">Soberano Doctor</div>
+      <div class="card-replaces">Replaces Teladoc</div>
+      <div class="card-desc">FREE telemedicine for citizens. Integration of indigenous healing practices with modern medicine. 24/7 access to healthcare professionals.</div>
+      <div class="card-payout">100% FREE</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 5: Media & Entertainment -->
+<section class="slide" id="slide-4">
+  <h2 class="slide-title">Media & Entertainment</h2>
+  <p class="slide-subtitle">Creator-first platforms where artists and creators keep the majority of revenue</p>
+  <div class="cards cards-4">
+    <div class="card" data-delay="0">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="card-name">Canal Soberano</div>
+      <div class="card-replaces">Replaces YouTube</div>
+      <div class="card-desc">Video platform where creators keep 92% of revenue. No demonetization. No censorship. Sovereign content hosting.</div>
+      <div class="card-payout">92% to creators</div>
+    </div>
+    <div class="card" data-delay="1">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2dd4a8" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4m10-10h-4M6 12H2"/></svg></div>
+      <div class="card-name">Musica Soberana</div>
+      <div class="card-replaces">Replaces Spotify</div>
+      <div class="card-desc">Music streaming where artists keep 90% of revenue. Compare that to Spotify's roughly 30%. Fair compensation for indigenous artists.</div>
+      <div class="card-payout">90% to artists</div>
+    </div>
+    <div class="card" data-delay="2">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9b6dff" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M8 12l3-6 3 6"/><circle cx="12" cy="16" r="1" fill="#9b6dff"/></svg></div>
+      <div class="card-name">Cortos Indigenas</div>
+      <div class="card-replaces">Replaces TikTok</div>
+      <div class="card-desc">Short-form video without the surveillance. No data harvesting. No addictive algorithms. Share culture, not data.</div>
+    </div>
+    <div class="card" data-delay="3">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg></div>
+      <div class="card-name">Radio Soberana</div>
+      <div class="card-replaces">Replaces iHeartRadio</div>
+      <div class="card-desc">Community radio platform. Indigenous voices broadcasting to the world. Local content, sovereign infrastructure.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 6: Services & Work -->
+<section class="slide" id="slide-5">
+  <h2 class="slide-title">Services & Work</h2>
+  <p class="slide-subtitle">Gig economy and professional platforms where workers keep what they earn</p>
+  <div class="cards cards-4">
+    <div class="card" data-delay="0">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></div>
+      <div class="card-name">Trabajo Soberano</div>
+      <div class="card-replaces">Replaces LinkedIn</div>
+      <div class="card-desc">Professional network built for indigenous professionals. No data mining. No recruiter spam. Real connections.</div>
+    </div>
+    <div class="card" data-delay="1">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2dd4a8" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10"/><path d="M16 4l4 0 0 4"/><path d="M20 4l-6 6"/></svg></div>
+      <div class="card-name">Soberano Uber</div>
+      <div class="card-replaces">Replaces Uber</div>
+      <div class="card-desc">Rideshare where drivers keep 95% of fares compared to Uber's roughly 70%. Drivers are partners, not exploited labor.</div>
+      <div class="card-payout">95% to drivers</div>
+    </div>
+    <div class="card" data-delay="2">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9b6dff" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
+      <div class="card-name">Soberano Eats</div>
+      <div class="card-replaces">Replaces DoorDash</div>
+      <div class="card-desc">Food delivery where restaurants keep 90% versus DoorDash's roughly 70%. Supporting local indigenous businesses.</div>
+      <div class="card-payout">90% to restaurants</div>
+    </div>
+    <div class="card" data-delay="3">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+      <div class="card-name">Soberano Freelance</div>
+      <div class="card-replaces">Replaces Fiverr</div>
+      <div class="card-desc">Freelancer marketplace where talent keeps 92% of earnings versus Fiverr's roughly 80%. Sovereign work, sovereign pay.</div>
+      <div class="card-payout">92% to freelancers</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 7: Technology & Tools -->
+<section class="slide" id="slide-6">
+  <h2 class="slide-title">Technology & Tools</h2>
+  <p class="slide-subtitle">Sovereign alternatives to every major tech tool, with privacy by default</p>
+  <div class="cards cards-5">
+    <div class="card" data-delay="0">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <div class="card-name">Busqueda Soberana</div>
+      <div class="card-replaces">Replaces Google Search</div>
+      <div class="card-desc">Private search engine. Zero tracking. No filter bubbles. No ad-driven results.</div>
+    </div>
+    <div class="card" data-delay="1">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2dd4a8" stroke-width="2"><polygon points="1,6 1,22 8,18 16,22 23,18 23,2 16,6 8,2"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div>
+      <div class="card-name">Mapa Soberano</div>
+      <div class="card-replaces">Replaces Google Maps</div>
+      <div class="card-desc">No location tracking. No movement profiling. Indigenous place names and sacred site respect.</div>
+    </div>
+    <div class="card" data-delay="2">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9b6dff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="9" y1="15" x2="15" y2="15"/><line x1="9" y1="11" x2="13" y2="11"/></svg></div>
+      <div class="card-name">Docs Soberanos</div>
+      <div class="card-replaces">Replaces Google Docs</div>
+      <div class="card-desc">Sovereign document collaboration. Real-time editing. Post-quantum encrypted.</div>
+    </div>
+    <div class="card" data-delay="3">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div>
+      <div class="card-name">Cloud Soberana</div>
+      <div class="card-replaces">Replaces AWS / GCP</div>
+      <div class="card-desc">Sovereign cloud infrastructure. Data stays sovereign. No third-party access.</div>
+    </div>
+    <div class="card" data-delay="4">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2dd4a8" stroke-width="2"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/><line x1="14" y1="4" x2="10" y2="20"/></svg></div>
+      <div class="card-name">Code Soberano</div>
+      <div class="card-replaces">Replaces GitHub</div>
+      <div class="card-desc">Sovereign code hosting and collaboration. Version control without corporate oversight.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 8: Government & Civic -->
+<section class="slide" id="slide-7">
+  <h2 class="slide-title">Government & Civic</h2>
+  <p class="slide-subtitle">Digital governance infrastructure for a sovereign nation</p>
+  <div class="cards cards-4">
+    <div class="card" data-delay="0">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+      <div class="card-name">Voto Soberano</div>
+      <div class="card-replaces">Digital Voting</div>
+      <div class="card-desc">Blockchain-based voting. Fully transparent. Immutable records. Every vote verifiable, every election auditable.</div>
+    </div>
+    <div class="card" data-delay="1">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2dd4a8" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div class="card-name">Censo Soberano</div>
+      <div class="card-replaces">Digital Census</div>
+      <div class="card-desc">Privacy-first digital census. Encrypted demographic data. Sovereign population records with community control.</div>
+    </div>
+    <div class="card" data-delay="2">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9b6dff" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="11" r="3"/><path d="M7 20c0-2.76 2.24-5 5-5s5 2.24 5 5"/><line x1="7" y1="4" x2="7" y2="0"/><line x1="17" y1="4" x2="17" y2="0"/></svg></div>
+      <div class="card-name">Soberano ID</div>
+      <div class="card-replaces">Digital Identity</div>
+      <div class="card-desc">Self-sovereign identity via FWID. Biometric authentication combined with decentralized identifiers (DID). You own your identity.</div>
+    </div>
+    <div class="card" data-delay="3">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#d4a853" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+      <div class="card-name">Justicia Soberano</div>
+      <div class="card-replaces">Dispute Resolution</div>
+      <div class="card-desc">Transparent dispute resolution via DAO governance. Community-driven justice. Immutable records on-chain.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 9: Revenue Comparison Chart -->
+<section class="slide" id="slide-8">
+  <h2 class="slide-title">Creator & Worker Revenue Comparison</h2>
+  <p class="slide-subtitle">What creators and workers actually keep: Ierahkwa vs Big Tech</p>
+  <div class="chart-container">
+    <div class="chart-row">
+      <div class="chart-label">Video (YouTube)</div>
+      <div class="chart-bars">
+        <div class="chart-bar sov" style="--w:92%"><span>Ierahkwa 92%</span></div>
+        <div class="chart-bar tech" style="--w:55%"><span>YouTube 55%</span></div>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-label">Music (Spotify)</div>
+      <div class="chart-bars">
+        <div class="chart-bar sov" style="--w:90%"><span>Ierahkwa 90%</span></div>
+        <div class="chart-bar tech" style="--w:30%"><span>Spotify 30%</span></div>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-label">Rideshare (Uber)</div>
+      <div class="chart-bars">
+        <div class="chart-bar sov" style="--w:95%"><span>Ierahkwa 95%</span></div>
+        <div class="chart-bar tech" style="--w:70%"><span>Uber 70%</span></div>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-label">Delivery (DoorDash)</div>
+      <div class="chart-bars">
+        <div class="chart-bar sov" style="--w:90%"><span>Ierahkwa 90%</span></div>
+        <div class="chart-bar tech" style="--w:70%"><span>DoorDash 70%</span></div>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-label">Freelance (Fiverr)</div>
+      <div class="chart-bars">
+        <div class="chart-bar sov" style="--w:92%"><span>Ierahkwa 92%</span></div>
+        <div class="chart-bar tech" style="--w:80%"><span>Fiverr 80%</span></div>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-label">E-Commerce (Shopify)</div>
+      <div class="chart-bars">
+        <div class="chart-bar sov" style="--w:88%"><span>Ierahkwa 88%</span></div>
+        <div class="chart-bar tech" style="--w:75%"><span>Shopify ~75%*</span></div>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-label">Artisan (Etsy)</div>
+      <div class="chart-bars">
+        <div class="chart-bar sov" style="--w:88%"><span>Ierahkwa 88%</span></div>
+        <div class="chart-bar tech" style="--w:73%"><span>Etsy ~73%</span></div>
+      </div>
+    </div>
+    <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>Ierahkwa Ne Kanienke</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Big Tech Incumbent</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 10: Summary -->
+<section class="slide" id="slide-9">
+  <div class="hero-badge">The Future Is Sovereign</div>
+  <h2 class="slide-title" style="font-size:clamp(1.8rem,5vw,3.2rem)">Built for Sovereignty. Built for the People.</h2>
+  <div class="summary-grid">
+    <div class="summary-item"><div class="summary-num">35</div><div class="summary-label">Flagship Platforms</div></div>
+    <div class="summary-item"><div class="summary-num">296+</div><div class="summary-label">Total Platforms</div></div>
+    <div class="summary-item"><div class="summary-num">0%</div><div class="summary-label">Taxes</div></div>
+    <div class="summary-item"><div class="summary-num">43</div><div class="summary-label">Languages</div></div>
+    <div class="summary-item"><div class="summary-num">PQ</div><div class="summary-label">Post-Quantum Encryption</div></div>
+    <div class="summary-item"><div class="summary-num">100%</div><div class="summary-label">Data Sovereignty</div></div>
+  </div>
+  <p class="hero-sub" style="margin-top:10px">35 flagship platforms. 296+ total. Zero taxes. 43 languages. Post-quantum encryption. Built for sovereignty.</p>
+  <a href="https://github.com/Ierahkwa-Ne-Kanienke" class="cta-btn" target="_blank" rel="noopener">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
+    View on GitHub
+  </a>
+</section>
+
+<script>
+(function(){
+  const TOTAL_SLIDES = 10;
+
+  // Generate nav dots
+  const dotsContainer = document.getElementById('nav-dots');
+  for(let i = 0; i < TOTAL_SLIDES; i++){
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    dot.addEventListener('click', () => {
+      document.getElementById('slide-' + i).scrollIntoView({behavior:'smooth'});
+    });
+    dotsContainer.appendChild(dot);
+  }
+
+  // Generate floating particles
+  const particlesEl = document.getElementById('particles');
+  for(let i = 0; i < 20; i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 4 + 1;
+    p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*20+15}s;animation-delay:${Math.random()*20}s;`;
+    particlesEl.appendChild(p);
+  }
+
+  // Progress bar
+  const progressBar = document.getElementById('progress');
+  function updateProgress(){
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = pct + '%';
+  }
+
+  // Active dot tracking
+  const slides = [];
+  for(let i = 0; i < TOTAL_SLIDES; i++){
+    slides.push(document.getElementById('slide-' + i));
+  }
+  const dots = dotsContainer.querySelectorAll('.nav-dot');
+
+  function updateActiveDot(){
+    const scrollTop = window.scrollY + window.innerHeight / 2;
+    let active = 0;
+    for(let i = 0; i < slides.length; i++){
+      if(slides[i].offsetTop <= scrollTop) active = i;
+    }
+    dots.forEach((d, idx) => d.classList.toggle('active', idx === active));
+  }
+
+  // Intersection observer for card animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        const cards = entry.target.querySelectorAll('.card');
+        cards.forEach((card, i) => {
+          setTimeout(() => card.classList.add('visible'), (parseInt(card.dataset.delay)||0) * 120 + 100);
+        });
+        // Chart bars
+        const bars = entry.target.querySelectorAll('.chart-bar');
+        bars.forEach((bar, i) => {
+          setTimeout(() => bar.classList.add('visible'), i * 100 + 200);
+        });
+      }
+    });
+  }, {threshold: 0.2});
+
+  slides.forEach(s => observer.observe(s));
+
+  // Scroll events
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if(!ticking){
+      requestAnimationFrame(() => {
+        updateProgress();
+        updateActiveDot();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    const scrollTop = window.scrollY + window.innerHeight / 2;
+    let current = 0;
+    for(let i = 0; i < slides.length; i++){
+      if(slides[i].offsetTop <= scrollTop) current = i;
+    }
+    if(e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' '){
+      e.preventDefault();
+      if(current < slides.length - 1){
+        slides[current + 1].scrollIntoView({behavior:'smooth'});
+      }
+    } else if(e.key === 'ArrowUp' || e.key === 'PageUp'){
+      e.preventDefault();
+      if(current > 0){
+        slides[current - 1].scrollIntoView({behavior:'smooth'});
+      }
+    } else if(e.key === 'Home'){
+      e.preventDefault();
+      slides[0].scrollIntoView({behavior:'smooth'});
+    } else if(e.key === 'End'){
+      e.preventDefault();
+      slides[slides.length - 1].scrollIntoView({behavior:'smooth'});
+    }
+  });
+
+  // Touch swipe support
+  let touchStartY = 0;
+  let touchEndY = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartY = e.changedTouches[0].screenY;
+  }, {passive: true});
+  document.addEventListener('touchend', (e) => {
+    touchEndY = e.changedTouches[0].screenY;
+    const diff = touchStartY - touchEndY;
+    if(Math.abs(diff) < 50) return;
+    const scrollTop = window.scrollY + window.innerHeight / 2;
+    let current = 0;
+    for(let i = 0; i < slides.length; i++){
+      if(slides[i].offsetTop <= scrollTop) current = i;
+    }
+    if(diff > 0 && current < slides.length - 1){
+      slides[current + 1].scrollIntoView({behavior:'smooth'});
+    } else if(diff < 0 && current > 0){
+      slides[current - 1].scrollIntoView({behavior:'smooth'});
+    }
+  }, {passive: true});
+
+  // Initial state
+  updateProgress();
+  updateActiveDot();
+  // Trigger first slide cards
+  setTimeout(() => {
+    slides[0].querySelectorAll('.card').forEach((c,i) => setTimeout(() => c.classList.add('visible'), i*120));
+  }, 300);
+})();
+</script>
+</body>
+</html>

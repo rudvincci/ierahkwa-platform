@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ierahkwa Sovereign Platform — Technology Deep Dive</title>
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #060609;
+  --card: #0d1117;
+  --card-alt: #161b22;
+  --gold: #d4a853;
+  --teal: #2dd4a8;
+  --purple: #9b6dff;
+  --red: #ff6b6b;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --border: #21262d;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+}
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.6; overflow-x: hidden; }
+
+/* ========== SLIDE CONTAINER ========== */
+.slide {
+  min-height: 100vh; width: 100%; scroll-snap-align: start;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  padding: 60px 40px; position: relative; overflow: hidden;
+}
+.slide::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(212,168,83,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+.slide-inner { max-width: 1200px; width: 100%; position: relative; z-index: 2; }
+.slide-number {
+  position: absolute; top: 20px; right: 30px;
+  font-size: 0.8rem; color: var(--text-muted); font-family: var(--mono);
+}
+
+/* ========== PROGRESS BAR ========== */
+#progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px; z-index: 1000;
+  background: linear-gradient(90deg, var(--gold), var(--teal), var(--purple));
+  transition: width 0.3s ease; width: 0%;
+}
+
+/* ========== NAV DOTS ========== */
+#nav-dots {
+  position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+  z-index: 1000; display: flex; flex-direction: column; gap: 10px;
+}
+.nav-dot {
+  width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--text-muted);
+  background: transparent; cursor: pointer; transition: all 0.3s ease; padding: 0;
+}
+.nav-dot.active { background: var(--gold); border-color: var(--gold); transform: scale(1.3); }
+.nav-dot:hover { border-color: var(--gold); }
+
+/* ========== TYPOGRAPHY ========== */
+h1 { font-size: 3rem; font-weight: 700; letter-spacing: -0.5px; }
+h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 12px; }
+h3 { font-size: 1.3rem; font-weight: 600; margin-bottom: 8px; }
+.gold { color: var(--gold); }
+.teal { color: var(--teal); }
+.purple { color: var(--purple); }
+.red { color: var(--red); }
+.muted { color: var(--text-muted); }
+.subtitle { font-size: 1.25rem; color: var(--text-muted); margin-top: 8px; }
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 12px;
+  font-size: 0.75rem; font-weight: 600; font-family: var(--mono);
+}
+.badge-gold { background: rgba(212,168,83,0.15); color: var(--gold); border: 1px solid rgba(212,168,83,0.3); }
+.badge-teal { background: rgba(45,212,168,0.12); color: var(--teal); border: 1px solid rgba(45,212,168,0.25); }
+.badge-purple { background: rgba(155,109,255,0.12); color: var(--purple); border: 1px solid rgba(155,109,255,0.25); }
+.badge-red { background: rgba(255,107,107,0.12); color: var(--red); border: 1px solid rgba(255,107,107,0.25); }
+
+/* ========== CARDS ========== */
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px; transition: transform 0.2s, border-color 0.2s;
+}
+.card:hover { border-color: rgba(212,168,83,0.3); }
+.card-alt { background: var(--card-alt); }
+.card-grid { display: grid; gap: 16px; }
+.card-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.card-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.card-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* ========== CODE BLOCKS ========== */
+.code-block {
+  background: #0a0e14; border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden; font-family: var(--mono); font-size: 0.82rem; line-height: 1.7;
+}
+.code-header {
+  display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+  background: var(--card-alt); border-bottom: 1px solid var(--border);
+}
+.code-dot { width: 10px; height: 10px; border-radius: 50%; }
+.code-dot-r { background: #ff5f56; }
+.code-dot-y { background: #ffbd2e; }
+.code-dot-g { background: #27c93f; }
+.code-title { margin-left: 8px; font-size: 0.75rem; color: var(--text-muted); }
+.code-body { padding: 16px 20px; overflow-x: auto; }
+.code-body code { white-space: pre; }
+
+/* Syntax highlighting */
+.kw { color: #ff7b72; }           /* keywords */
+.str { color: #a5d6ff; }          /* strings */
+.fn { color: #d2a8ff; }           /* functions */
+.cm { color: #8b949e; }           /* comments */
+.typ { color: #79c0ff; }          /* types */
+.num { color: #f0883e; }          /* numbers */
+.attr { color: #7ee787; }         /* attributes/props */
+.op { color: #ff7b72; }           /* operators */
+.dec { color: #ffa657; }          /* decorators */
+.var { color: #e6edf3; }          /* variables */
+
+/* ========== TERMINAL BLOCK ========== */
+.terminal {
+  background: #0a0e14; border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden; font-family: var(--mono);
+}
+.terminal-header {
+  display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+  background: #1a1e24; border-bottom: 1px solid var(--border);
+}
+.terminal-body { padding: 16px 20px; font-size: 0.85rem; line-height: 1.8; }
+.terminal-prompt { color: var(--teal); }
+.terminal-cmd { color: var(--text); }
+.terminal-output { color: var(--text-muted); }
+.terminal-cursor {
+  display: inline-block; width: 8px; height: 16px; background: var(--gold);
+  animation: blink 1s step-end infinite; vertical-align: text-bottom;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ========== SPEC TABLE ========== */
+.spec-table { width: 100%; border-collapse: collapse; }
+.spec-table td {
+  padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem;
+}
+.spec-table td:first-child { color: var(--text-muted); width: 200px; font-family: var(--mono); font-size: 0.82rem; }
+.spec-table td:last-child { font-weight: 600; }
+.spec-table tr:last-child td { border-bottom: none; }
+
+/* ========== MICROSERVICE GRID ========== */
+.ms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 8px; }
+.ms-item {
+  background: var(--card-alt); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; font-size: 0.75rem; font-family: var(--mono);
+  display: flex; align-items: center; gap: 6px; transition: border-color 0.2s;
+}
+.ms-item:hover { border-color: var(--purple); }
+.ms-icon { font-size: 1rem; }
+
+/* ========== PORT MAP ========== */
+.port-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.port-item {
+  background: var(--card-alt); border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+}
+.port-num {
+  background: rgba(45,212,168,0.1); color: var(--teal); border: 1px solid rgba(45,212,168,0.25);
+  border-radius: 6px; padding: 4px 8px; font-family: var(--mono); font-size: 0.78rem;
+  white-space: nowrap; font-weight: 600;
+}
+.port-label { font-size: 0.85rem; }
+
+/* ========== ARCHITECTURE DIAGRAM ========== */
+.arch-svg { width: 100%; max-width: 1100px; margin: 0 auto; display: block; }
+
+/* ========== AI ENGINE GRID ========== */
+.ai-cat { margin-bottom: 16px; }
+.ai-cat-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.ai-cat-items { display: flex; flex-wrap: wrap; gap: 6px; }
+.ai-tag {
+  background: var(--card-alt); border: 1px solid var(--border); border-radius: 6px;
+  padding: 4px 10px; font-size: 0.75rem; font-family: var(--mono);
+}
+
+/* ========== SECURITY FLOW ========== */
+.flow-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 16px 0; }
+.flow-box {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px 20px; text-align: center; min-width: 140px;
+}
+.flow-arrow { color: var(--gold); font-size: 1.5rem; }
+
+/* ========== STATS ROW ========== */
+.stats-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin: 20px 0; }
+.stat-box {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 20px 28px; text-align: center; min-width: 130px;
+}
+.stat-num { font-size: 2rem; font-weight: 800; font-family: var(--mono); }
+.stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+
+/* ========== TYPING ANIMATION ========== */
+.type-animate .code-body code { opacity: 0; }
+.type-animate.visible .code-body code {
+  opacity: 1; animation: fadeInCode 0.6s ease forwards;
+}
+@keyframes fadeInCode { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ========== FADE IN ========== */
+.fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+.fade-in-delay-1 { transition-delay: 0.1s; }
+.fade-in-delay-2 { transition-delay: 0.2s; }
+.fade-in-delay-3 { transition-delay: 0.3s; }
+.fade-in-delay-4 { transition-delay: 0.4s; }
+
+/* ========== GLOW ACCENTS ========== */
+.glow-gold { box-shadow: 0 0 30px rgba(212,168,83,0.08); }
+.glow-teal { box-shadow: 0 0 30px rgba(45,212,168,0.08); }
+.glow-purple { box-shadow: 0 0 30px rgba(155,109,255,0.08); }
+
+/* ========== TITLE DECORATION ========== */
+.title-line {
+  width: 60px; height: 3px; border-radius: 2px; margin-bottom: 16px;
+  background: linear-gradient(90deg, var(--gold), var(--teal));
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+  .slide { padding: 40px 20px; }
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.6rem; }
+  .card-grid-2, .card-grid-3, .card-grid-4 { grid-template-columns: 1fr; }
+  .ms-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .port-grid { grid-template-columns: 1fr; }
+  .flow-row { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+  #nav-dots { display: none; }
+  .stats-row { gap: 10px; }
+  .stat-box { padding: 14px 18px; min-width: 100px; }
+  .stat-num { font-size: 1.5rem; }
+}
+@media (max-width: 600px) {
+  .slide { padding: 30px 14px; }
+  h1 { font-size: 1.6rem; }
+  .ms-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- Navigation Dots -->
+<nav id="nav-dots"></nav>
+
+<!-- ===== SLIDE 1: TITLE ===== -->
+<section class="slide" id="slide-1">
+  <div class="slide-inner" style="text-align:center;">
+    <div class="fade-in">
+      <!-- Sovereign Crest SVG -->
+      <svg width="80" height="80" viewBox="0 0 80 80" style="margin-bottom:24px;">
+        <defs>
+          <linearGradient id="crest-g" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#d4a853"/>
+            <stop offset="100%" stop-color="#2dd4a8"/>
+          </linearGradient>
+        </defs>
+        <circle cx="40" cy="40" r="36" fill="none" stroke="url(#crest-g)" stroke-width="2.5"/>
+        <polygon points="40,16 48,32 66,34 52,48 56,66 40,57 24,66 28,48 14,34 32,32" fill="none" stroke="url(#crest-g)" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="8" fill="url(#crest-g)" opacity="0.7"/>
+      </svg>
+    </div>
+    <h1 class="fade-in fade-in-delay-1">
+      <span class="gold">Ierahkwa</span> Sovereign Platform
+    </h1>
+    <p class="subtitle fade-in fade-in-delay-2" style="font-size:1.6rem; margin-top:12px;">
+      Technology Deep Dive
+    </p>
+    <p class="fade-in fade-in-delay-3" style="color:var(--text-muted); margin-top:20px; font-size:1.1rem;">
+      A Multi-Stack Sovereign Architecture
+    </p>
+    <div class="stats-row fade-in fade-in-delay-4" style="margin-top:40px;">
+      <div class="stat-box glow-gold"><div class="stat-num gold">139</div><div class="stat-label">.NET Projects</div></div>
+      <div class="stat-box glow-teal"><div class="stat-num teal">37</div><div class="stat-label">Microservices</div></div>
+      <div class="stat-box glow-purple"><div class="stat-num purple">42</div><div class="stat-label">AI Engines</div></div>
+      <div class="stat-box"><div class="stat-num red">16</div><div class="stat-label">Node.js Services</div></div>
+    </div>
+    <p class="fade-in fade-in-delay-4" style="color:var(--text-muted); margin-top:40px; font-size:0.85rem;">
+      Sovereign Government of Ierahkwa Ne Kanienke &mdash; 2026
+    </p>
+  </div>
+  <span class="slide-number">01 / 12</span>
+</section>
+
+<!-- ===== SLIDE 2: ARCHITECTURE OVERVIEW ===== -->
+<section class="slide" id="slide-2">
+  <div class="slide-inner">
+    <div class="title-line fade-in"></div>
+    <h2 class="fade-in">Architecture <span class="gold">Overview</span></h2>
+    <p class="subtitle fade-in fade-in-delay-1">Multi-layer sovereign infrastructure on Docker sovereign-net (172.28.0.0/16)</p>
+
+    <div class="fade-in fade-in-delay-2" style="margin-top:28px;">
+      <svg class="arch-svg" viewBox="0 0 1100 520" xmlns="http://www.w3.org/2000/svg">
+        <!-- Background grid -->
+        <defs>
+          <linearGradient id="ag1" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#d4a853" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#d4a853" stop-opacity="0.3"/>
+          </linearGradient>
+          <linearGradient id="ag2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#2dd4a8" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#2dd4a8" stop-opacity="0.3"/>
+          </linearGradient>
+          <linearGradient id="ag3" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#9b6dff" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#9b6dff" stop-opacity="0.3"/>
+          </linearGradient>
+          <linearGradient id="ag4" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#ff6b6b" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#ff6b6b" stop-opacity="0.3"/>
+          </linearGradient>
+          <linearGradient id="ag5" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#d4a853" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#2dd4a8" stop-opacity="0.6"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Layer labels -->
+        <text x="20" y="52" fill="#d4a853" font-size="13" font-family="Segoe UI, system-ui" font-weight="600">FRONTEND</text>
+        <text x="20" y="152" fill="#2dd4a8" font-size="13" font-family="Segoe UI, system-ui" font-weight="600">API GATEWAY</text>
+        <text x="20" y="262" fill="#9b6dff" font-size="13" font-family="Segoe UI, system-ui" font-weight="600">BACKEND SERVICES</text>
+        <text x="20" y="372" fill="#ff6b6b" font-size="13" font-family="Segoe UI, system-ui" font-weight="600">DATA LAYER</text>
+        <text x="20" y="472" fill="#d4a853" font-size="13" font-family="Segoe UI, system-ui" font-weight="600">BLOCKCHAIN</text>
+
+        <!-- Frontend layer -->
+        <rect x="140" y="20" width="920" height="65" rx="8" fill="#0d1117" stroke="#d4a853" stroke-opacity="0.3" stroke-width="1"/>
+        <rect x="160" y="34" width="140" height="36" rx="6" fill="#161b22" stroke="#d4a853" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="230" y="57" fill="#e6edf3" font-size="12" font-family="monospace" text-anchor="middle">HTML/CSS/JS</text>
+        <rect x="320" y="34" width="140" height="36" rx="6" fill="#161b22" stroke="#d4a853" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="390" y="57" fill="#e6edf3" font-size="12" font-family="monospace" text-anchor="middle">Blazor WASM</text>
+        <rect x="480" y="34" width="140" height="36" rx="6" fill="#161b22" stroke="#d4a853" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="550" y="57" fill="#e6edf3" font-size="12" font-family="monospace" text-anchor="middle">React/Next.js</text>
+        <rect x="640" y="34" width="140" height="36" rx="6" fill="#161b22" stroke="#d4a853" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="710" y="57" fill="#e6edf3" font-size="12" font-family="monospace" text-anchor="middle">Mobile PWA</text>
+        <rect x="800" y="34" width="140" height="36" rx="6" fill="#161b22" stroke="#d4a853" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="870" y="57" fill="#e6edf3" font-size="12" font-family="monospace" text-anchor="middle">Admin Portal</text>
+
+        <!-- Arrows down -->
+        <line x1="550" y1="85" x2="550" y2="120" stroke="url(#ag1)" stroke-width="2" marker-end="url(#arrowGold)"/>
+        <defs><marker id="arrowGold" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#d4a853" opacity="0.6"/></marker></defs>
+
+        <!-- API Gateway -->
+        <rect x="140" y="120" width="920" height="65" rx="8" fill="#0d1117" stroke="#2dd4a8" stroke-opacity="0.3" stroke-width="1"/>
+        <rect x="200" y="134" width="200" height="36" rx="6" fill="#161b22" stroke="#2dd4a8" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="300" y="157" fill="#2dd4a8" font-size="12" font-family="monospace" text-anchor="middle">Nginx Reverse Proxy</text>
+        <rect x="420" y="134" width="160" height="36" rx="6" fill="#161b22" stroke="#2dd4a8" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="500" y="157" fill="#2dd4a8" font-size="12" font-family="monospace" text-anchor="middle">Rate Limiter</text>
+        <rect x="600" y="134" width="160" height="36" rx="6" fill="#161b22" stroke="#2dd4a8" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="680" y="157" fill="#2dd4a8" font-size="12" font-family="monospace" text-anchor="middle">JWT Auth</text>
+        <rect x="780" y="134" width="160" height="36" rx="6" fill="#161b22" stroke="#2dd4a8" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="860" y="157" fill="#2dd4a8" font-size="12" font-family="monospace" text-anchor="middle">Load Balancer</text>
+
+        <!-- Arrows down -->
+        <line x1="550" y1="185" x2="550" y2="225" stroke="url(#ag2)" stroke-width="2" marker-end="url(#arrowTeal)"/>
+        <defs><marker id="arrowTeal" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#2dd4a8" opacity="0.6"/></marker></defs>
+
+        <!-- Backend Services -->
+        <rect x="140" y="225" width="920" height="80" rx="8" fill="#0d1117" stroke="#9b6dff" stroke-opacity="0.3" stroke-width="1"/>
+        <rect x="160" y="240" width="180" height="48" rx="6" fill="#161b22" stroke="#9b6dff" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="250" y="260" fill="#9b6dff" font-size="11" font-family="monospace" text-anchor="middle">.NET 10</text>
+        <text x="250" y="276" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">37 Microservices</text>
+        <rect x="360" y="240" width="180" height="48" rx="6" fill="#161b22" stroke="#9b6dff" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="450" y="260" fill="#9b6dff" font-size="11" font-family="monospace" text-anchor="middle">Node.js</text>
+        <text x="450" y="276" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">16 Services</text>
+        <rect x="560" y="240" width="180" height="48" rx="6" fill="#161b22" stroke="#9b6dff" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="650" y="260" fill="#9b6dff" font-size="11" font-family="monospace" text-anchor="middle">Rust</text>
+        <text x="650" y="276" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">MameyForge + SDK</text>
+        <rect x="760" y="240" width="180" height="48" rx="6" fill="#161b22" stroke="#9b6dff" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="850" y="260" fill="#9b6dff" font-size="11" font-family="monospace" text-anchor="middle">Go</text>
+        <text x="850" y="276" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">Gateway + SDK</text>
+
+        <!-- Arrows down -->
+        <line x1="550" y1="305" x2="550" y2="340" stroke="url(#ag3)" stroke-width="2" marker-end="url(#arrowPurp)"/>
+        <defs><marker id="arrowPurp" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#9b6dff" opacity="0.6"/></marker></defs>
+
+        <!-- Data Layer -->
+        <rect x="140" y="340" width="920" height="65" rx="8" fill="#0d1117" stroke="#ff6b6b" stroke-opacity="0.3" stroke-width="1"/>
+        <rect x="200" y="354" width="200" height="36" rx="6" fill="#161b22" stroke="#ff6b6b" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="300" y="377" fill="#ff6b6b" font-size="12" font-family="monospace" text-anchor="middle">PostgreSQL 16</text>
+        <rect x="420" y="354" width="160" height="36" rx="6" fill="#161b22" stroke="#ff6b6b" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="500" y="377" fill="#ff6b6b" font-size="12" font-family="monospace" text-anchor="middle">Redis 7</text>
+        <rect x="600" y="354" width="160" height="36" rx="6" fill="#161b22" stroke="#ff6b6b" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="680" y="377" fill="#ff6b6b" font-size="12" font-family="monospace" text-anchor="middle">Blob Storage</text>
+        <rect x="780" y="354" width="180" height="36" rx="6" fill="#161b22" stroke="#ff6b6b" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="870" y="377" fill="#ff6b6b" font-size="12" font-family="monospace" text-anchor="middle">Message Queue</text>
+
+        <!-- Arrows down -->
+        <line x1="550" y1="405" x2="550" y2="440" stroke="url(#ag4)" stroke-width="2" marker-end="url(#arrowRed)"/>
+        <defs><marker id="arrowRed" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#ff6b6b" opacity="0.6"/></marker></defs>
+
+        <!-- Blockchain -->
+        <rect x="140" y="440" width="920" height="65" rx="8" fill="#0d1117" stroke="#d4a853" stroke-opacity="0.3" stroke-width="1"/>
+        <rect x="240" y="454" width="260" height="36" rx="6" fill="#161b22" stroke="#d4a853" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="370" y="477" fill="#d4a853" font-size="12" font-family="monospace" text-anchor="middle">MameyNode (Chain 777777)</text>
+        <rect x="520" y="454" width="200" height="36" rx="6" fill="#161b22" stroke="#d4a853" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="620" y="477" fill="#d4a853" font-size="12" font-family="monospace" text-anchor="middle">WAMPUM Token</text>
+        <rect x="740" y="454" width="200" height="36" rx="6" fill="#161b22" stroke="#d4a853" stroke-opacity="0.25" stroke-width="1"/>
+        <text x="840" y="477" fill="#d4a853" font-size="12" font-family="monospace" text-anchor="middle">Smart Contracts</text>
+
+        <!-- Network label -->
+        <rect x="380" y="508" width="340" height="10" rx="5" fill="none" stroke="url(#ag5)" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="550" y="516" fill="#8b949e" font-size="9" font-family="monospace" text-anchor="middle">sovereign-net  172.28.0.0/16</text>
+      </svg>
+    </div>
+  </div>
+  <span class="slide-number">02 / 12</span>
+</section>
+
+<!-- ===== SLIDE 3: MAMEYNODE BLOCKCHAIN ===== -->
+<section class="slide" id="slide-3">
+  <div class="slide-inner">
+    <div class="title-line fade-in"></div>
+    <h2 class="fade-in"><span class="gold">MameyNode</span> Blockchain</h2>
+    <p class="subtitle fade-in fade-in-delay-1">Sovereign-grade Layer 1 with Proof-of-Sovereignty consensus</p>
+
+    <div class="card-grid card-grid-2 fade-in fade-in-delay-2" style="margin-top:24px;">
+      <div class="card glow-gold">
+        <h3 class="gold" style="margin-bottom:16px;">Technical Specifications</h3>
+        <table class="spec-table">
+          <tr><td>Chain ID</td><td class="gold" style="font-family:var(--mono);">777777</td></tr>
+          <tr><td>Consensus</td><td>Proof-of-Sovereignty</td></tr>
+          <tr><td>Throughput</td><td><span class="teal" style="font-family:var(--mono);">12,847 TPS</span></td></tr>
+          <tr><td>Block Time</td><td style="font-family:var(--mono);">2 seconds</td></tr>
+          <tr><td>Max Validators</td><td style="font-family:var(--mono);">574</td></tr>
+          <tr><td>Native Token</td><td><span class="gold">WAMPUM</span> (WMP)</td></tr>
+          <tr><td>Total Supply</td><td style="font-family:var(--mono);">720,000,000 WMP</td></tr>
+          <tr><td>Smart Contracts</td><td>Solidity (EVM-compatible)</td></tr>
+          <tr><td>SDK Languages</td><td>Rust, TypeScript, Go, Python</td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="code-block type-animate" style="height:100%;">
+          <div class="code-header">
+            <span class="code-dot code-dot-r"></span>
+            <span class="code-dot code-dot-y"></span>
+            <span class="code-dot code-dot-g"></span>
+            <span class="code-title">connect-mameynode.ts</span>
+          </div>
+          <div class="code-body"><code><span class="kw">import</span> { <span class="var">MameyClient</span> } <span class="kw">from</span> <span class="str">'@mamey/sdk'</span>;
+
+<span class="cm">// Connect to MameyNode sovereign chain</span>
+<span class="kw">const</span> <span class="var">client</span> = <span class="kw">new</span> <span class="fn">MameyClient</span>({
+  <span class="attr">chainId</span>: <span class="num">777777</span>,
+  <span class="attr">rpcUrl</span>: <span class="str">'https://rpc.mameynode.sovereign'</span>,
+  <span class="attr">consensus</span>: <span class="str">'proof-of-sovereignty'</span>,
+});
+
+<span class="cm">// Query chain status</span>
+<span class="kw">const</span> <span class="var">status</span> = <span class="kw">await</span> <span class="var">client</span>.<span class="fn">getChainStatus</span>();
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`Block: </span><span class="kw">${</span><span class="var">status</span>.<span class="attr">blockHeight</span><span class="kw">}</span><span class="str">`</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`TPS:   </span><span class="kw">${</span><span class="var">status</span>.<span class="attr">currentTps</span><span class="kw">}</span><span class="str">`</span>);
+
+<span class="cm">// Get WAMPUM balance</span>
+<span class="kw">const</span> <span class="var">balance</span> = <span class="kw">await</span> <span class="var">client</span>.<span class="fn">getBalance</span>(
+  <span class="str">'0xSovereign...Address'</span>
+);
+</code></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">03 / 12</span>
+</section>
+
+<!-- ===== SLIDE 4: MAMEY FRAMEWORK ===== -->
+<section class="slide" id="slide-4">
+  <div class="slide-inner">
+    <div class="title-line fade-in"></div>
+    <h2 class="fade-in"><span class="purple">Mamey Framework</span> <span class="muted" style="font-size:1.2rem;">.NET 10</span></h2>
+    <p class="subtitle fade-in fade-in-delay-1">139 projects in a single solution &mdash; sovereign-grade modular architecture</p>
+
+    <div class="card-grid card-grid-2 fade-in fade-in-delay-2" style="margin-top:24px; align-items:start;">
+      <div>
+        <div class="card" style="margin-bottom:12px;">
+          <h3><span class="badge badge-gold">CORE</span></h3>
+          <p style="font-family:var(--mono); font-size:0.82rem; margin-top:8px; color:var(--text-muted);">Mamey.Core &middot; Mamey.Shared &middot; Mamey.Abstractions &middot; Mamey.Domain &middot; Mamey.Application</p>
+        </div>
+        <div class="card" style="margin-bottom:12px;">
+          <h3><span class="badge badge-teal">IDENTITY</span></h3>
+          <p style="font-family:var(--mono); font-size:0.82rem; margin-top:8px; color:var(--text-muted);">FWID (First World ID) &middot; DID/SSI &middot; Biometrics &middot; Post-Quantum Auth &middot; Zero-Knowledge Proofs</p>
+        </div>
+        <div class="card" style="margin-bottom:12px;">
+          <h3><span class="badge badge-purple">BANKING</span></h3>
+          <p style="font-family:var(--mono); font-size:0.82rem; margin-top:8px; color:var(--text-muted);">INKG Bank &middot; Treasury &middot; DeFi &middot; Forex &middot; Payment Processing &middot; Tax Authority</p>
+        </div>
+        <div class="card" style="margin-bottom:12px;">
+          <h3><span class="badge badge-red">GOVERNMENT</span></h3>
+          <p style="font-family:var(--mono); font-size:0.82rem; margin-top:8px; color:var(--text-muted);">Portal &middot; Pupitre &middot; Citizen CRM &middot; Voting System &middot; Governance DAO &middot; HRM</p>
+        </div>
+        <div class="card">
+          <h3><span class="badge badge-gold">INFRASTRUCTURE</span></h3>
+          <p style="font-family:var(--mono); font-size:0.82rem; margin-top:8px; color:var(--text-muted);">Docker &middot; Kubernetes &middot; Terraform &middot; CI/CD &middot; Monitoring &middot; Logging</p>
+        </div>
+      </div>
+      <div class="code-block type-animate">
+        <div class="code-header">
+          <span class="code-dot code-dot-r"></span>
+          <span class="code-dot code-dot-y"></span>
+          <span class="code-dot code-dot-g"></span>
+          <span class="code-title">Program.cs &mdash; .NET 10 Service</span>
+        </div>
+        <div class="code-body"><code><span class="kw">using</span> <span class="typ">Mamey.Core</span>;
+<span class="kw">using</span> <span class="typ">Mamey.Identity.FWID</span>;
+<span class="kw">using</span> <span class="typ">Mamey.Banking.INKG</span>;
+
+<span class="kw">var</span> <span class="var">builder</span> = <span class="typ">WebApplication</span>.<span class="fn">CreateBuilder</span>(<span class="var">args</span>);
+
+<span class="cm">// Sovereign service configuration</span>
+<span class="var">builder</span>.<span class="attr">Services</span>
+  .<span class="fn">AddMameyCore</span>()
+  .<span class="fn">AddSovereignIdentity</span>(opts => {
+    opts.<span class="attr">UseFWID</span> = <span class="kw">true</span>;
+    opts.<span class="attr">PostQuantum</span> = <span class="kw">true</span>;
+    opts.<span class="attr">Algorithm</span> = <span class="str">"ML-DSA-65"</span>;
+  })
+  .<span class="fn">AddINKGBanking</span>()
+  .<span class="fn">AddMameyNode</span>(<span class="num">777777</span>)
+  .<span class="fn">AddPostgreSQL</span>(<span class="var">builder</span>.<span class="attr">Configuration</span>)
+  .<span class="fn">AddRedisCache</span>();
+
+<span class="kw">var</span> <span class="var">app</span> = <span class="var">builder</span>.<span class="fn">Build</span>();
+
+<span class="var">app</span>.<span class="fn">MapMameyEndpoints</span>();
+<span class="var">app</span>.<span class="fn">UseSovereignAuth</span>();
+<span class="var">app</span>.<span class="fn">Run</span>();
+</code></div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">04 / 12</span>
+</section>
+
+<!-- ===== SLIDE 5: 37 .NET MICROSERVICES ===== -->
+<section class="slide" id="slide-5">
+  <div class="slide-inner">
+    <div class="title-line fade-in"></div>
+    <h2 class="fade-in"><span class="purple">37</span> .NET Microservices</h2>
+    <p class="subtitle fade-in fade-in-delay-1">Each service runs as an independent container on sovereign-net</p>
+
+    <div class="ms-grid fade-in fade-in-delay-2" style="margin-top:24px;">
+      <div class="ms-item"><span class="ms-icon">&#129302;</span> AIFraudDetection</div>
+      <div class="ms-item"><span class="ms-icon">&#128736;</span> AppBuilder</div>
+      <div class="ms-item"><span class="ms-icon">&#128065;</span> BioMetrics</div>
+      <div class="ms-item"><span class="ms-icon">&#128176;</span> BudgetControl</div>
+      <div class="ms-item"><span class="ms-icon">&#128101;</span> CitizenCRM</div>
+      <div class="ms-item"><span class="ms-icon">&#128220;</span> ContractManager</div>
+      <div class="ms-item"><span class="ms-icon">&#128202;</span> DataHub</div>
+      <div class="ms-item"><span class="ms-icon">&#9878;</span> DeFiSoberano</div>
+      <div class="ms-item"><span class="ms-icon">&#128274;</span> DigitalVault</div>
+      <div class="ms-item"><span class="ms-icon">&#128196;</span> DocumentFlow</div>
+      <div class="ms-item"><span class="ms-icon">&#9999;</span> ESignature</div>
+      <div class="ms-item"><span class="ms-icon">&#127806;</span> FarmFactory</div>
+      <div class="ms-item"><span class="ms-icon">&#128203;</span> FormBuilder</div>
+      <div class="ms-item"><span class="ms-icon">&#127963;</span> GovernanceDAO</div>
+      <div class="ms-item"><span class="ms-icon">&#128100;</span> HRM</div>
+      <div class="ms-item"><span class="ms-icon">&#128640;</span> IDOFactory</div>
+      <div class="ms-item"><span class="ms-icon">&#128230;</span> InventoryManager</div>
+      <div class="ms-item"><span class="ms-icon">&#128197;</span> MeetingHub</div>
+      <div class="ms-item"><span class="ms-icon">&#128279;</span> MultichainBridge</div>
+      <div class="ms-item"><span class="ms-icon">&#127915;</span> NFTCertificates</div>
+      <div class="ms-item"><span class="ms-icon">&#128276;</span> NotifyHub</div>
+      <div class="ms-item"><span class="ms-icon">&#128722;</span> ProcurementHub</div>
+      <div class="ms-item"><span class="ms-icon">&#128200;</span> ProjectHub</div>
+      <div class="ms-item"><span class="ms-icon">&#128202;</span> ReportEngine</div>
+      <div class="ms-item"><span class="ms-icon">&#127919;</span> RewardEngine</div>
+      <div class="ms-item"><span class="ms-icon">&#128736;</span> ServiceDesk</div>
+      <div class="ms-item"><span class="ms-icon">&#127891;</span> SmartSchool</div>
+      <div class="ms-item"><span class="ms-icon">&#128178;</span> TaxAuthority</div>
+      <div class="ms-item"><span class="ms-icon">&#128200;</span> TradeX</div>
+      <div class="ms-item"><span class="ms-icon">&#128737;</span> TreasuryCore</div>
+      <div class="ms-item"><span class="ms-icon">&#9989;</span> VotingSystem</div>
+      <div class="ms-item"><span class="ms-icon">&#9881;</span> WorkflowEngine</div>
+      <div class="ms-item"><span class="ms-icon">&#128218;</span> LegalRegistry</div>
+      <div class="ms-item"><span class="ms-icon">&#127973;</span> LandRegistry</div>
+      <div class="ms-item"><span class="ms-icon">&#128138;</span> HealthConnect</div>
+      <div class="ms-item"><span class="ms-icon">&#128295;</span> MaintenanceHub</div>
+      <div class="ms-item"><span class="ms-icon">&#128225;</span> CommsBridge</div>
+    </div>
+  </div>
+  <span class="slide-number">05 / 12</span>
+</section>
+
+<!-- ===== SLIDE 6: 16 NODE.JS SERVICES ===== -->
+<section class="slide" id="slide-6">
+  <div class="slide-inner">
+    <div class="title-line fade-in"></div>
+    <h2 class="fade-in"><span class="teal">16</span> Node.js Services</h2>
+    <p class="subtitle fade-in fade-in-delay-1">High-performance Express.js services mapped to dedicated ports</p>
+
+    <div class="card-grid card-grid-2 fade-in fade-in-delay-2" style="margin-top:24px; align-items:start;">
+      <div class="port-grid" style="grid-template-columns: 1fr;">
+        <div class="port-item"><span class="port-num">:3001</span><span class="port-label">BDET Bank &mdash; Digital Banking</span></div>
+        <div class="port-item"><span class="port-num">:3002</span><span class="port-label">Voz Soberana &mdash; Sovereign Voice</span></div>
+        <div class="port-item"><span class="port-num">:3003</span><span class="port-label">Red Social &mdash; Social Network</span></div>
+        <div class="port-item"><span class="port-num">:3004</span><span class="port-label">Correo &mdash; Sovereign Email</span></div>
+        <div class="port-item"><span class="port-num">:3005</span><span class="port-label">Reservas &mdash; Booking System</span></div>
+        <div class="port-item"><span class="port-num">:3006</span><span class="port-label">Voto &mdash; Voting Platform</span></div>
+        <div class="port-item"><span class="port-num">:3007</span><span class="port-label">Trading &mdash; Exchange Engine</span></div>
+        <div class="port-item"><span class="port-num">:3030</span><span class="port-label">POS &mdash; Point of Sale</span></div>
+        <div class="port-item"><span class="port-num">:3100</span><span class="port-label">Shop &mdash; E-Commerce</span></div>
+        <div class="port-item"><span class="port-num">:3200</span><span class="port-label">Inventory &mdash; Stock Manager</span></div>
+        <div class="port-item"><span class="port-num">:3300</span><span class="port-label">Image Upload &mdash; Media Service</span></div>
+        <div class="port-item"><span class="port-num">:3400</span><span class="port-label">Forex &mdash; Currency Exchange</span></div>
+        <div class="port-item"><span class="port-num">:3500</span><span class="port-label">Smart School &mdash; Education</span></div>
+      </div>
+      <div class="code-block type-animate">
+        <div class="code-header">
+          <span class="code-dot code-dot-r"></span>
+          <span class="code-dot code-dot-y"></span>
+          <span class="code-dot code-dot-g"></span>
+          <span class="code-title">health-check.js &mdash; Express.js</span>
+        </div>
+        <div class="code-body"><code><span class="kw">const</span> <span class="var">express</span> = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> <span class="var">app</span> = <span class="fn">express</span>();
+
+<span class="cm">// Sovereign health check endpoint</span>
+<span class="var">app</span>.<span class="fn">get</span>(<span class="str">'/api/health'</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+  <span class="var">res</span>.<span class="fn">json</span>({
+    <span class="attr">status</span>: <span class="str">'sovereign-active'</span>,
+    <span class="attr">service</span>: <span class="var">process</span>.<span class="attr">env</span>.<span class="attr">SERVICE_NAME</span>,
+    <span class="attr">version</span>: <span class="str">'2.1.0'</span>,
+    <span class="attr">chain</span>: {
+      <span class="attr">id</span>: <span class="num">777777</span>,
+      <span class="attr">connected</span>: <span class="kw">true</span>,
+      <span class="attr">blockHeight</span>: <span class="kw">await</span> <span class="fn">getBlockHeight</span>()
+    },
+    <span class="attr">uptime</span>: <span class="var">process</span>.<span class="fn">uptime</span>(),
+    <span class="attr">timestamp</span>: <span class="kw">new</span> <span class="fn">Date</span>().<span class="fn">toISOString</span>()
+  });
+});
+
+<span class="var">app</span>.<span class="fn">listen</span>(<span class="var">process</span>.<span class="attr">env</span>.<span class="attr">PORT</span>, () => {
+  <span class="fn">console</span>.<span class="fn">log</span>(
+    <span class="str">`Sovereign service on :</span><span class="kw">${</span><span class="var">process</span>.<span class="attr">env</span>.<span class="attr">PORT</span><span class="kw">}</span><span class="str">`</span>
+  );
+});
+</code></div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">06 / 12</span>
+</section>
+
+<!-- ===== SLIDE 7: RUST COMPONENTS ===== -->
+<section class="slide" id="slide-7">
+  <div class="slide-inner">
+    <div class="title-line fade-in"></div>
+    <h2 class="fade-in"><span class="red">Rust</span> Components</h2>
+    <p class="subtitle fade-in fade-in-delay-1">MameyForge CLI + MameyNode gRPC SDK &mdash; systems-level performance</p>
+
+    <div class="card-grid card-grid-2 fade-in fade-in-delay-2" style="margin-top:24px; align-items:start;">
+      <div>
+        <div class="card glow-purple" style="margin-bottom:16px;">
+          <h3 style="display:flex; align-items:center; gap:8px;">
+            <span class="badge badge-red">CLI</span> MameyForge
+          </h3>
+          <p style="color:var(--text-muted); margin-top:10px; font-size:0.9rem;">
+            Sovereign project scaffolding, deployment orchestration, and chain management CLI built in Rust for maximum throughput.
+          </p>
+          <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:6px;">
+            <span class="badge badge-gold">Project Generation</span>
+            <span class="badge badge-teal">Docker Deploy</span>
+            <span class="badge badge-purple">Chain Interaction</span>
+            <span class="badge badge-red">Validator Mgmt</span>
+          </div>
+        </div>
+        <div class="card glow-purple">
+          <h3 style="display:flex; align-items:center; gap:8px;">
+            <span class="badge badge-purple">SDK</span> MameyNode Rust gRPC
+          </h3>
+          <p style="color:var(--text-muted); margin-top:10px; font-size:0.9rem;">
+            High-performance gRPC client for direct MameyNode chain interaction. Tonic-based async runtime with zero-copy serialization.
+          </p>
+          <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:6px;">
+            <span class="badge badge-gold">Tonic gRPC</span>
+            <span class="badge badge-teal">Tokio Async</span>
+            <span class="badge badge-purple">Prost Codegen</span>
+          </div>
+        </div>
+      </div>
+      <div class="code-block type-animate">
+        <div class="code-header">
+          <span class="code-dot code-dot-r"></span>
+          <span class="code-dot code-dot-y"></span>
+          <span class="code-dot code-dot-g"></span>
+          <span class="code-title">mamey_client.rs &mdash; gRPC SDK</span>
+        </div>
+        <div class="code-body"><code><span class="kw">use</span> <span class="typ">mameynode_sdk</span>::{
+    <span class="typ">MameyClient</span>, <span class="typ">ChainConfig</span>, <span class="typ">TxRequest</span>
+};
+<span class="kw">use</span> <span class="typ">tonic</span>::<span class="typ">transport</span>::<span class="typ">Channel</span>;
+
+<span class="dec">#[tokio::main]</span>
+<span class="kw">async fn</span> <span class="fn">main</span>() -> <span class="typ">Result</span>&lt;(), <span class="typ">Box</span>&lt;<span class="kw">dyn</span> <span class="typ">std</span>::<span class="typ">error</span>::<span class="typ">Error</span>&gt;&gt; {
+    <span class="cm">// Connect to sovereign chain</span>
+    <span class="kw">let</span> <span class="var">channel</span> = <span class="typ">Channel</span>::<span class="fn">from_static</span>(
+        <span class="str">"https://grpc.mameynode.sovereign"</span>
+    ).<span class="fn">connect</span>().<span class="kw">await</span>?;
+
+    <span class="kw">let</span> <span class="kw">mut</span> <span class="var">client</span> = <span class="typ">MameyClient</span>::<span class="fn">new</span>(
+        <span class="var">channel</span>,
+        <span class="typ">ChainConfig</span> {
+            <span class="attr">chain_id</span>: <span class="num">777777</span>,
+            <span class="attr">consensus</span>: <span class="str">"proof-of-sovereignty"</span>,
+        }
+    );
+
+    <span class="cm">// Query latest block</span>
+    <span class="kw">let</span> <span class="var">block</span> = <span class="var">client</span>
+        .<span class="fn">get_latest_block</span>()
+        .<span class="kw">await</span>?;
+
+    <span class="fn">println!</span>(<span class="str">"Height: {}"</span>, <span class="var">block</span>.<span class="attr">height</span>);
+    <span class="typ">Ok</span>(())
+}
+</code></div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">07 / 12</span>
+</section>
+
+<!-- ===== SLIDE 8: AI ENGINE ===== -->
+<section class="slide" id="slide-8">
+  <div class="slide-inner">
+    <div class="title-line fade-in"></div>
+    <h2 class="fade-in"><span class="teal">MameyFutureAI</span> &mdash; AI Engine</h2>
+    <p class="subtitle fade-in fade-in-delay-1">42 AI engines &mdash; Python-based with REST API gateway</p>
+
+    <div class="stats-row fade-in fade-in-delay-2" style="margin-bottom:24px;">
+      <div class="stat-box glow-teal"><div class="stat-num teal">42</div><div class="stat-label">AI Engines</div></div>
+      <div class="stat-box"><div class="stat-num gold">37</div><div class="stat-label">Indigenous Languages</div></div>
+      <div class="stat-box"><div class="stat-num purple">REST</div><div class="stat-label">API Gateway</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--text);">Python</div><div class="stat-label">Primary Runtime</div></div>
+    </div>
+
+    <div class="card-grid card-grid-3 fade-in fade-in-delay-3" style="align-items:start;">
+      <div class="card">
+        <h3 class="gold" style="font-size:1rem;">Fraud Detection</h3>
+        <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:4px;">
+          <span class="ai-tag">Transaction Analysis</span>
+          <span class="ai-tag">Anomaly Detection</span>
+          <span class="ai-tag">Pattern Recognition</span>
+          <span class="ai-tag">Real-time Scoring</span>
+          <span class="ai-tag">Risk Assessment</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="teal" style="font-size:1rem;">Code Generation</h3>
+        <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:4px;">
+          <span class="ai-tag">Smart Contracts</span>
+          <span class="ai-tag">API Scaffolding</span>
+          <span class="ai-tag">Test Generation</span>
+          <span class="ai-tag">Code Review</span>
+          <span class="ai-tag">Documentation</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="purple" style="font-size:1rem;">Atabey Translation</h3>
+        <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:4px;">
+          <span class="ai-tag">Kanien'keha</span>
+          <span class="ai-tag">Quechua</span>
+          <span class="ai-tag">Nahuatl</span>
+          <span class="ai-tag">Guarani</span>
+          <span class="ai-tag">+33 more</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="red" style="font-size:1rem;">Biometric Analysis</h3>
+        <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:4px;">
+          <span class="ai-tag">Facial Recognition</span>
+          <span class="ai-tag">Voice Auth</span>
+          <span class="ai-tag">Fingerprint</span>
+          <span class="ai-tag">Liveness Detection</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="gold" style="font-size:1rem;">Document Processing</h3>
+        <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:4px;">
+          <span class="ai-tag">OCR Engine</span>
+          <span class="ai-tag">Classification</span>
+          <span class="ai-tag">Data Extraction</span>
+          <span class="ai-tag">Legal Analysis</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="teal" style="font-size:1rem;">Predictive Analytics</h3>
+        <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:4px;">
+          <span class="ai-tag">Economic Forecast</span>
+          <span class="ai-tag">Resource Planning</span>
+          <span class="ai-tag">Population Models</span>
+          <span class="ai-tag">Climate Analysis</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">08 / 12</span>
+</section>
+
+<!-- ===== SLIDE 9: POST-QUANTUM SECURITY ===== -->
+<section class="slide" id="slide-9">
+  <div class="slide-inner">
+    <div class="title-line fade-in"></div>
+    <h2 class="fade-in"><span class="red">Post-Quantum</span> Security</h2>
+    <p class="subtitle fade-in fade-in-delay-1">NIST-standardized algorithms &mdash; quantum-resistant by design</p>
+
+    <div class="card-grid card-grid-2 fade-in fade-in-delay-2" style="margin-top:24px; align-items:start;">
+      <div>
+        <div class="card" style="margin-bottom:12px;">
+          <h3 style="display:flex; gap:8px; align-items:center;">
+            <span class="badge badge-red">SIGNATURES</span> ML-DSA-65
+          </h3>
+          <p style="color:var(--text-muted); font-size:0.88rem; margin-top:8px;">
+            Module Lattice Digital Signature Algorithm (FIPS 204). Replaces RSA/ECDSA for all sovereign document signing, identity attestation, and chain transactions.
+          </p>
+        </div>
+        <div class="card" style="margin-bottom:12px;">
+          <h3 style="display:flex; gap:8px; align-items:center;">
+            <span class="badge badge-purple">ENCRYPTION</span> ML-KEM-1024
+          </h3>
+          <p style="color:var(--text-muted); font-size:0.88rem; margin-top:8px;">
+            Module Lattice Key Encapsulation Mechanism (FIPS 203). Secures all TLS connections, data-at-rest encryption, and inter-service communication.
+          </p>
+        </div>
+        <div class="card" style="margin-bottom:12px;">
+          <h3 style="display:flex; gap:8px; align-items:center;">
+            <span class="badge badge-teal">IDENTITY</span> Zero-Knowledge Proofs
+          </h3>
+          <p style="color:var(--text-muted); font-size:0.88rem; margin-top:8px;">
+            Prove identity attributes without revealing underlying data. Age verification, citizenship, and credential proofs without data exposure.
+          </p>
+        </div>
+        <div class="card">
+          <h3 style="display:flex; gap:8px; align-items:center;">
+            <span class="badge badge-gold">NETWORK</span> Isolation
+          </h3>
+          <p style="color:var(--text-muted); font-size:0.88rem; margin-top:8px;">
+            All services bind to 127.0.0.1. Docker sovereign-net (172.28.0.0/16) provides network-level isolation. Zero external attack surface.
+          </p>
+        </div>
+      </div>
+      <div>
+        <!-- Encryption Flow Diagram -->
+        <div class="card glow-purple" style="text-align:center;">
+          <h3 class="muted" style="font-size:0.85rem; margin-bottom:20px;">ENCRYPTION FLOW</h3>
+          <svg viewBox="0 0 400 380" style="width:100%; max-width:380px; margin:0 auto; display:block;">
+            <!-- Client -->
+            <rect x="130" y="10" width="140" height="44" rx="8" fill="#161b22" stroke="#2dd4a8" stroke-opacity="0.5"/>
+            <text x="200" y="37" fill="#2dd4a8" font-size="12" font-family="monospace" text-anchor="middle">Client Request</text>
+            <!-- Arrow -->
+            <line x1="200" y1="54" x2="200" y2="80" stroke="#d4a853" stroke-opacity="0.5" stroke-width="1.5"/>
+            <polygon points="195,78 200,86 205,78" fill="#d4a853" opacity="0.5"/>
+            <!-- ML-KEM -->
+            <rect x="100" y="86" width="200" height="50" rx="8" fill="#161b22" stroke="#9b6dff" stroke-opacity="0.5"/>
+            <text x="200" y="107" fill="#9b6dff" font-size="11" font-family="monospace" text-anchor="middle">ML-KEM-1024</text>
+            <text x="200" y="125" fill="#8b949e" font-size="9" font-family="monospace" text-anchor="middle">Key Encapsulation</text>
+            <!-- Arrow -->
+            <line x1="200" y1="136" x2="200" y2="162" stroke="#d4a853" stroke-opacity="0.5" stroke-width="1.5"/>
+            <polygon points="195,160 200,168 205,160" fill="#d4a853" opacity="0.5"/>
+            <!-- ML-DSA -->
+            <rect x="100" y="168" width="200" height="50" rx="8" fill="#161b22" stroke="#ff6b6b" stroke-opacity="0.5"/>
+            <text x="200" y="189" fill="#ff6b6b" font-size="11" font-family="monospace" text-anchor="middle">ML-DSA-65</text>
+            <text x="200" y="207" fill="#8b949e" font-size="9" font-family="monospace" text-anchor="middle">Digital Signature</text>
+            <!-- Arrow -->
+            <line x1="200" y1="218" x2="200" y2="244" stroke="#d4a853" stroke-opacity="0.5" stroke-width="1.5"/>
+            <polygon points="195,242 200,250 205,242" fill="#d4a853" opacity="0.5"/>
+            <!-- ZKP -->
+            <rect x="100" y="250" width="200" height="50" rx="8" fill="#161b22" stroke="#2dd4a8" stroke-opacity="0.5"/>
+            <text x="200" y="271" fill="#2dd4a8" font-size="11" font-family="monospace" text-anchor="middle">Zero-Knowledge Proof</text>
+            <text x="200" y="289" fill="#8b949e" font-size="9" font-family="monospace" text-anchor="middle">Identity Verification</text>
+            <!-- Arrow -->
+            <line x1="200" y1="300" x2="200" y2="326" stroke="#d4a853" stroke-opacity="0.5" stroke-width="1.5"/>
+            <polygon points="195,324 200,332 205,324" fill="#d4a853" opacity="0.5"/>
+            <!-- Sovereign Service -->
+            <rect x="110" y="332" width="180" height="44" rx="8" fill="#161b22" stroke="#d4a853" stroke-opacity="0.5"/>
+            <text x="200" y="358" fill="#d4a853" font-size="12" font-family="monospace" text-anchor="middle">Sovereign Service</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">09 / 12</span>
+</section>
+
+<!-- ===== SLIDE 10: INFRASTRUCTURE ===== -->
+<section class="slide" id="slide-10">
+  <div class="slide-inner">
+    <div class="title-line fade-in"></div>
+    <h2 class="fade-in"><span class="gold">Infrastructure</span></h2>
+    <p class="subtitle fade-in fade-in-delay-1">Container-native deployment with sovereign network isolation</p>
+
+    <div class="card-grid card-grid-3 fade-in fade-in-delay-2" style="margin-top:24px; align-items:start;">
+      <div class="card">
+        <h3 class="teal" style="font-size:1rem;">Docker Compose</h3>
+        <table class="spec-table" style="margin-top:10px;">
+          <tr><td style="width:120px;">Configs</td><td>sovereign, dev, infra</td></tr>
+          <tr><td>Services</td><td class="teal" style="font-family:var(--mono);">53+</td></tr>
+          <tr><td>Network</td><td style="font-family:var(--mono);">172.28.0.0/16</td></tr>
+          <tr><td>Volumes</td><td>Persistent + tmpfs</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="purple" style="font-size:1rem;">Orchestration</h3>
+        <table class="spec-table" style="margin-top:10px;">
+          <tr><td style="width:120px;">K8s</td><td>Manifests + Helm</td></tr>
+          <tr><td>Terraform</td><td>IaC provisioning</td></tr>
+          <tr><td>CI/CD</td><td>GitHub Actions</td></tr>
+          <tr><td>Registry</td><td>Private container</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="red" style="font-size:1rem;">Monitoring</h3>
+        <table class="spec-table" style="margin-top:10px;">
+          <tr><td style="width:120px;">Metrics</td><td>Prometheus</td></tr>
+          <tr><td>Dashboards</td><td>Grafana</td></tr>
+          <tr><td>Logs</td><td>Structured JSON</td></tr>
+          <tr><td>Alerts</td><td>PagerDuty + Slack</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="fade-in fade-in-delay-3" style="margin-top:20px;">
+      <!-- Network Topology SVG -->
+      <div class="card" style="text-align:center;">
+        <h3 class="muted" style="font-size:0.85rem; margin-bottom:16px;">SOVEREIGN-NET TOPOLOGY</h3>
+        <svg viewBox="0 0 900 200" style="width:100%; max-width:900px;">
+          <!-- Central node -->
+          <circle cx="450" cy="100" r="35" fill="#161b22" stroke="#d4a853" stroke-opacity="0.5" stroke-width="1.5"/>
+          <text x="450" y="96" fill="#d4a853" font-size="10" font-family="monospace" text-anchor="middle">Nginx</text>
+          <text x="450" y="110" fill="#8b949e" font-size="8" font-family="monospace" text-anchor="middle">Gateway</text>
+
+          <!-- .NET cluster -->
+          <line x1="415" y1="100" x2="180" y2="55" stroke="#9b6dff" stroke-opacity="0.3" stroke-width="1"/>
+          <circle cx="150" cy="50" r="30" fill="#161b22" stroke="#9b6dff" stroke-opacity="0.4" stroke-width="1"/>
+          <text x="150" y="47" fill="#9b6dff" font-size="9" font-family="monospace" text-anchor="middle">.NET 10</text>
+          <text x="150" y="59" fill="#8b949e" font-size="8" font-family="monospace" text-anchor="middle">37 svc</text>
+
+          <!-- Node.js cluster -->
+          <line x1="415" y1="100" x2="180" y2="155" stroke="#2dd4a8" stroke-opacity="0.3" stroke-width="1"/>
+          <circle cx="150" cy="155" r="30" fill="#161b22" stroke="#2dd4a8" stroke-opacity="0.4" stroke-width="1"/>
+          <text x="150" y="152" fill="#2dd4a8" font-size="9" font-family="monospace" text-anchor="middle">Node.js</text>
+          <text x="150" y="164" fill="#8b949e" font-size="8" font-family="monospace" text-anchor="middle">16 svc</text>
+
+          <!-- PostgreSQL -->
+          <line x1="485" y1="100" x2="620" y2="45" stroke="#ff6b6b" stroke-opacity="0.3" stroke-width="1"/>
+          <circle cx="650" cy="40" r="28" fill="#161b22" stroke="#ff6b6b" stroke-opacity="0.4" stroke-width="1"/>
+          <text x="650" y="37" fill="#ff6b6b" font-size="9" font-family="monospace" text-anchor="middle">PG 16</text>
+          <text x="650" y="49" fill="#8b949e" font-size="8" font-family="monospace" text-anchor="middle">Data</text>
+
+          <!-- Redis -->
+          <line x1="485" y1="100" x2="620" y2="100" stroke="#ff6b6b" stroke-opacity="0.3" stroke-width="1"/>
+          <circle cx="650" cy="100" r="28" fill="#161b22" stroke="#ff6b6b" stroke-opacity="0.4" stroke-width="1"/>
+          <text x="650" y="97" fill="#ff6b6b" font-size="9" font-family="monospace" text-anchor="middle">Redis 7</text>
+          <text x="650" y="109" fill="#8b949e" font-size="8" font-family="monospace" text-anchor="middle">Cache</text>
+
+          <!-- MameyNode -->
+          <line x1="485" y1="100" x2="620" y2="160" stroke="#d4a853" stroke-opacity="0.3" stroke-width="1"/>
+          <circle cx="650" cy="160" r="28" fill="#161b22" stroke="#d4a853" stroke-opacity="0.4" stroke-width="1"/>
+          <text x="650" y="157" fill="#d4a853" font-size="8" font-family="monospace" text-anchor="middle">MameyNode</text>
+          <text x="650" y="169" fill="#8b949e" font-size="8" font-family="monospace" text-anchor="middle">Chain</text>
+
+          <!-- Monitoring -->
+          <line x1="450" y1="65" x2="450" y2="25" stroke="#d4a853" stroke-opacity="0.2" stroke-width="1" stroke-dasharray="3,3"/>
+          <rect x="400" y="4" width="100" height="22" rx="4" fill="#161b22" stroke="#d4a853" stroke-opacity="0.3"/>
+          <text x="450" y="19" fill="#d4a853" font-size="8" font-family="monospace" text-anchor="middle">Prometheus</text>
+
+          <!-- Rust -->
+          <line x1="415" y1="85" x2="300" y2="30" stroke="#ff6b6b" stroke-opacity="0.3" stroke-width="1"/>
+          <circle cx="280" cy="25" r="22" fill="#161b22" stroke="#ff6b6b" stroke-opacity="0.4" stroke-width="1"/>
+          <text x="280" y="28" fill="#ff6b6b" font-size="8" font-family="monospace" text-anchor="middle">Rust</text>
+
+          <!-- AI -->
+          <line x1="415" y1="115" x2="300" y2="170" stroke="#2dd4a8" stroke-opacity="0.3" stroke-width="1"/>
+          <circle cx="280" cy="175" r="22" fill="#161b22" stroke="#2dd4a8" stroke-opacity="0.4" stroke-width="1"/>
+          <text x="280" y="178" fill="#2dd4a8" font-size="8" font-family="monospace" text-anchor="middle">AI/ML</text>
+
+          <!-- Network label -->
+          <text x="450" y="195" fill="#8b949e" font-size="9" font-family="monospace" text-anchor="middle">sovereign-net  172.28.0.0/16  |  All services bind 127.0.0.1</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">10 / 12</span>
+</section>
+
+<!-- ===== SLIDE 11: SDKs & APIs ===== -->
+<section class="slide" id="slide-11">
+  <div class="slide-inner">
+    <div class="title-line fade-in"></div>
+    <h2 class="fade-in"><span class="teal">SDKs</span> & <span class="purple">APIs</span></h2>
+    <p class="subtitle fade-in fade-in-delay-1">OpenAPI 3.0 + gRPC + WebSocket &mdash; multi-protocol sovereign APIs</p>
+
+    <div class="card-grid card-grid-2 fade-in fade-in-delay-2" style="margin-top:24px; align-items:start;">
+      <div>
+        <div class="card" style="margin-bottom:12px;">
+          <h3 style="font-size:1rem;">Protocol Support</h3>
+          <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:6px;">
+            <span class="badge badge-teal">REST / OpenAPI 3.0</span>
+            <span class="badge badge-purple">gRPC / Protobuf</span>
+            <span class="badge badge-gold">WebSocket</span>
+            <span class="badge badge-red">GraphQL</span>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:12px;">
+          <h3 style="font-size:1rem;">SDK Languages</h3>
+          <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:6px;">
+            <span class="badge badge-teal">Go</span>
+            <span class="badge badge-purple">Python</span>
+            <span class="badge badge-gold">TypeScript</span>
+            <span class="badge badge-red">Rust</span>
+            <span class="badge badge-teal">C#</span>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:12px;">
+          <h3 style="font-size:1rem;">Security</h3>
+          <table class="spec-table" style="margin-top:8px;">
+            <tr><td style="width:120px;">Auth</td><td>JWT Bearer tokens</td></tr>
+            <tr><td>Rate Limit</td><td style="font-family:var(--mono);">100 req / 15 min</td></tr>
+            <tr><td>Encryption</td><td>ML-KEM-1024 TLS</td></tr>
+            <tr><td>Signing</td><td>ML-DSA-65</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="code-block type-animate">
+        <div class="code-header">
+          <span class="code-dot code-dot-r"></span>
+          <span class="code-dot code-dot-y"></span>
+          <span class="code-dot code-dot-g"></span>
+          <span class="code-title">api-endpoints.yaml &mdash; OpenAPI 3.0</span>
+        </div>
+        <div class="code-body"><code><span class="cm"># Sovereign API Endpoints</span>
+
+<span class="attr">GET</span>  <span class="str">/api/v1/chain/status</span>
+  <span class="cm"># Chain health + block height</span>
+
+<span class="attr">POST</span> <span class="str">/api/v1/identity/verify</span>
+  <span class="cm"># FWID zero-knowledge verification</span>
+
+<span class="attr">POST</span> <span class="str">/api/v1/tx/submit</span>
+  <span class="cm"># Submit signed transaction</span>
+
+<span class="attr">GET</span>  <span class="str">/api/v1/wallet/{address}/balance</span>
+  <span class="cm"># WAMPUM token balance</span>
+
+<span class="attr">POST</span> <span class="str">/api/v1/contracts/deploy</span>
+  <span class="cm"># Deploy Solidity smart contract</span>
+
+<span class="attr">WS</span>   <span class="str">/ws/v1/blocks/subscribe</span>
+  <span class="cm"># Real-time block stream</span>
+
+<span class="attr">gRPC</span> <span class="str">mameynode.Chain/GetBlock</span>
+  <span class="cm"># Protobuf block query</span>
+
+<span class="attr">gRPC</span> <span class="str">mameynode.Tx/Submit</span>
+  <span class="cm"># Protobuf transaction submit</span>
+
+<span class="cm"># Rate limit: 100 requests / 15 min</span>
+<span class="cm"># Auth: Bearer {jwt_token}</span>
+<span class="cm"># TLS: ML-KEM-1024 post-quantum</span>
+</code></div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">11 / 12</span>
+</section>
+
+<!-- ===== SLIDE 12: GETTING STARTED ===== -->
+<section class="slide" id="slide-12">
+  <div class="slide-inner" style="text-align:center;">
+    <div class="title-line fade-in" style="margin:0 auto 16px;"></div>
+    <h2 class="fade-in"><span class="gold">Getting Started</span></h2>
+    <p class="subtitle fade-in fade-in-delay-1" style="margin-bottom:32px;">Clone, configure, and launch the full sovereign platform in minutes</p>
+
+    <div class="fade-in fade-in-delay-2" style="max-width:700px; margin:0 auto;">
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="code-dot code-dot-r"></span>
+          <span class="code-dot code-dot-y"></span>
+          <span class="code-dot code-dot-g"></span>
+          <span class="code-title" style="color:var(--teal);">sovereign-terminal</span>
+        </div>
+        <div class="terminal-body" id="terminal-body">
+          <div><span class="terminal-prompt">$ </span><span class="terminal-cmd">git clone https://github.com/rudvincci/ierahkwa-platform.git</span></div>
+          <div class="terminal-output">Cloning into 'ierahkwa-platform'... done.</div>
+          <div style="margin-top:6px;"><span class="terminal-prompt">$ </span><span class="terminal-cmd">cd ierahkwa-platform</span></div>
+          <div style="margin-top:6px;"><span class="terminal-prompt">$ </span><span class="terminal-cmd">./setup.sh</span></div>
+          <div class="terminal-output">[+] Installing sovereign dependencies...</div>
+          <div class="terminal-output">[+] Configuring MameyNode (chain 777777)...</div>
+          <div class="terminal-output">[+] Setting up PostgreSQL 16 + Redis 7...</div>
+          <div class="terminal-output">[+] Building 53 Docker containers...</div>
+          <div class="terminal-output" style="color:var(--teal);">[OK] Setup complete.</div>
+          <div style="margin-top:6px;"><span class="terminal-prompt">$ </span><span class="terminal-cmd">make start</span></div>
+          <div class="terminal-output">[+] Starting sovereign-net (172.28.0.0/16)...</div>
+          <div class="terminal-output">[+] Launching 37 .NET microservices...</div>
+          <div class="terminal-output">[+] Launching 16 Node.js services...</div>
+          <div class="terminal-output">[+] Connecting MameyNode blockchain...</div>
+          <div class="terminal-output" style="color:var(--teal);">[OK] All services running.</div>
+          <div style="margin-top:6px;"><span class="terminal-prompt">$ </span><span class="terminal-cmd">make status</span></div>
+          <div class="terminal-output" style="color:var(--gold);">
+  Sovereign Platform Status
+  -------------------------
+  .NET Services:    37/37  <span style="color:var(--teal);">ACTIVE</span>
+  Node.js Services: 16/16  <span style="color:var(--teal);">ACTIVE</span>
+  AI Engines:       42/42  <span style="color:var(--teal);">ACTIVE</span>
+  MameyNode:        Chain 777777  <span style="color:var(--teal);">SYNCED</span>
+  PostgreSQL:       v16    <span style="color:var(--teal);">CONNECTED</span>
+  Redis:            v7     <span style="color:var(--teal);">CONNECTED</span>
+          </div>
+          <div style="margin-top:6px;"><span class="terminal-prompt">$ </span><span class="terminal-cursor"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fade-in fade-in-delay-3" style="margin-top:32px;">
+      <a href="https://github.com/rudvincci/ierahkwa-platform" target="_blank" rel="noopener"
+         style="display:inline-flex; align-items:center; gap:10px; padding:14px 32px;
+                background:linear-gradient(135deg, rgba(212,168,83,0.15), rgba(45,212,168,0.1));
+                border:1px solid rgba(212,168,83,0.35); border-radius:10px;
+                color:var(--gold); text-decoration:none; font-weight:600; font-size:1rem;
+                transition: border-color 0.2s, transform 0.2s;">
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        github.com/rudvincci/ierahkwa-platform
+      </a>
+    </div>
+
+    <p class="fade-in fade-in-delay-4" style="color:var(--text-muted); margin-top:36px; font-size:0.85rem;">
+      Sovereign Government of Ierahkwa Ne Kanienke &mdash; Technology Division &mdash; 2026
+    </p>
+  </div>
+  <span class="slide-number">12 / 12</span>
+</section>
+
+<script>
+(function() {
+  'use strict';
+
+  // ===== NAVIGATION DOTS =====
+  const totalSlides = 12;
+  const dotsContainer = document.getElementById('nav-dots');
+  for (let i = 1; i <= totalSlides; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot';
+    dot.dataset.slide = i;
+    dot.title = 'Slide ' + i;
+    dot.addEventListener('click', function() {
+      document.getElementById('slide-' + i).scrollIntoView({ behavior: 'smooth' });
+    });
+    dotsContainer.appendChild(dot);
+  }
+
+  // ===== PROGRESS BAR + ACTIVE DOT =====
+  const progressBar = document.getElementById('progress-bar');
+  const dots = document.querySelectorAll('.nav-dot');
+
+  function updateProgress() {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+
+    // Determine active slide
+    let activeIdx = 0;
+    for (let i = 1; i <= totalSlides; i++) {
+      const el = document.getElementById('slide-' + i);
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.4) {
+          activeIdx = i - 1;
+        }
+      }
+    }
+    dots.forEach(function(d, idx) {
+      d.classList.toggle('active', idx === activeIdx);
+    });
+  }
+
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // ===== KEYBOARD NAVIGATION =====
+  let currentSlide = 1;
+
+  function getCurrentSlide() {
+    for (let i = totalSlides; i >= 1; i--) {
+      const el = document.getElementById('slide-' + i);
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.5) {
+          return i;
+        }
+      }
+    }
+    return 1;
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+      e.preventDefault();
+      currentSlide = getCurrentSlide();
+      if (currentSlide < totalSlides) {
+        document.getElementById('slide-' + (currentSlide + 1)).scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      currentSlide = getCurrentSlide();
+      if (currentSlide > 1) {
+        document.getElementById('slide-' + (currentSlide - 1)).scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      document.getElementById('slide-1').scrollIntoView({ behavior: 'smooth' });
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      document.getElementById('slide-' + totalSlides).scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  // ===== FADE-IN OBSERVER =====
+  const fadeObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    threshold: 0.15,
+    rootMargin: '0px 0px -40px 0px'
+  });
+
+  document.querySelectorAll('.fade-in, .type-animate').forEach(function(el) {
+    fadeObserver.observe(el);
+  });
+
+  // ===== TYPING ANIMATION FOR CODE BLOCKS =====
+  const codeObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        const block = entry.target;
+        if (!block.dataset.animated) {
+          block.dataset.animated = 'true';
+          const codeEl = block.querySelector('code');
+          if (codeEl) {
+            const fullHTML = codeEl.innerHTML;
+            codeEl.innerHTML = '';
+            codeEl.style.opacity = '1';
+            let charIdx = 0;
+            const speed = 8;
+            // We animate by revealing innerHTML progressively
+            // Use a simple approach: show characters progressively
+            const textContent = codeEl.textContent;
+            codeEl.innerHTML = fullHTML;
+            codeEl.style.opacity = '0';
+            setTimeout(function() {
+              codeEl.style.transition = 'opacity 0.4s ease';
+              codeEl.style.opacity = '1';
+            }, 150);
+          }
+        }
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('.type-animate').forEach(function(el) {
+    codeObserver.observe(el);
+  });
+
+})();
+</script>
+
+</body>
+</html>

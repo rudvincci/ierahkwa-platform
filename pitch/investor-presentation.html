@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ierahkwa Ne Kanienke — Investor Presentation 2026</title>
+<meta name="description" content="Sovereign Government of Ierahkwa Ne Kanienke: Digital Sovereignty for 72 Million Indigenous People. Investor Presentation 2026.">
+<style>
+/* ============================================================
+   SOVEREIGN GOVERNMENT OF IERAHKWA NE KANIENKE
+   INVESTOR PRESENTATION 2026
+   Dark Sovereign Theme — Production Build
+   ============================================================ */
+
+/* --- Reset & Variables --- */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg0: #060609;
+  --bg1: #0d1117;
+  --bg2: #161b22;
+  --bg3: #1c2333;
+  --gold: #d4a853;
+  --gold-dim: rgba(212, 168, 83, 0.15);
+  --gold-glow: rgba(212, 168, 83, 0.4);
+  --teal: #2dd4a8;
+  --teal-dim: rgba(45, 212, 168, 0.12);
+  --teal-glow: rgba(45, 212, 168, 0.4);
+  --purple: #9b6dff;
+  --purple-dim: rgba(155, 109, 255, 0.12);
+  --purple-glow: rgba(155, 109, 255, 0.4);
+  --red: #ff6b6b;
+  --red-dim: rgba(255, 107, 107, 0.1);
+  --txt1: #e8e4df;
+  --txt2: #b0aaa0;
+  --txt3: #6a6474;
+  --brd: #222230;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg0);
+  color: var(--txt1);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* --- Progress Bar --- */
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--teal), var(--purple));
+  z-index: 1000;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+/* --- Navigation Dots --- */
+#nav-dots {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--txt3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  padding: 0;
+  position: relative;
+}
+
+.nav-dot:hover {
+  background: var(--gold);
+  transform: scale(1.3);
+}
+
+.nav-dot.active {
+  background: var(--gold);
+  box-shadow: 0 0 10px var(--gold-glow);
+  transform: scale(1.2);
+}
+
+.nav-dot .tooltip {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg2);
+  color: var(--txt1);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  border: 1px solid var(--brd);
+}
+
+.nav-dot:hover .tooltip { opacity: 1; }
+
+/* --- Fullscreen Button --- */
+#fullscreen-btn {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  z-index: 1000;
+  background: rgba(22, 27, 34, 0.85);
+  border: 1px solid var(--brd);
+  color: var(--txt2);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font);
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+}
+
+#fullscreen-btn:hover {
+  background: var(--bg3);
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+/* --- Slide Container --- */
+.deck { width: 100%; }
+
+.slide {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  scroll-snap-align: start;
+  overflow: hidden;
+  padding: 60px 24px;
+}
+
+.slide-inner {
+  max-width: 1100px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+/* --- Slide Backgrounds --- */
+.slide::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+}
+
+.s-title::before {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(212,168,83,0.1) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(45,212,168,0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(155,109,255,0.04) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 100%);
+}
+
+.s-problem::before {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(255,107,107,0.07) 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 100%);
+}
+
+.s-solution::before {
+  background:
+    radial-gradient(ellipse at 40% 30%, rgba(45,212,168,0.08) 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 100%);
+}
+
+.s-market::before {
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(212,168,83,0.08) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 100%);
+}
+
+.s-arch::before {
+  background:
+    radial-gradient(ellipse at 30% 70%, rgba(45,212,168,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 20%, rgba(212,168,83,0.05) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 100%);
+}
+
+.s-platforms::before {
+  background:
+    radial-gradient(ellipse at 60% 40%, rgba(155,109,255,0.07) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 100%);
+}
+
+.s-revenue::before {
+  background:
+    radial-gradient(ellipse at 40% 60%, rgba(212,168,83,0.07) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 100%);
+}
+
+.s-creator::before {
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(45,212,168,0.07) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 100%);
+}
+
+.s-tech::before {
+  background:
+    radial-gradient(ellipse at 60% 70%, rgba(155,109,255,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 20%, rgba(45,212,168,0.05) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 100%);
+}
+
+.s-blockchain::before {
+  background:
+    radial-gradient(ellipse at 40% 40%, rgba(212,168,83,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 70%, rgba(155,109,255,0.05) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 100%);
+}
+
+.s-traction::before {
+  background:
+    radial-gradient(ellipse at 60% 30%, rgba(45,212,168,0.07) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 100%);
+}
+
+.s-gtm::before {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(212,168,83,0.07) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 100%);
+}
+
+.s-advantage::before {
+  background:
+    radial-gradient(ellipse at 40% 40%, rgba(45,212,168,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 70%, rgba(155,109,255,0.04) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 100%);
+}
+
+.s-team::before {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(155,109,255,0.06) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg1) 0%, var(--bg0) 100%);
+}
+
+.s-cta::before {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(212,168,83,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 80%, rgba(45,212,168,0.08) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 100%);
+}
+
+/* --- Slide Footer --- */
+.slide-counter {
+  position: absolute;
+  bottom: 20px;
+  right: 32px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt3);
+  z-index: 3;
+}
+
+.slide-brand {
+  position: absolute;
+  bottom: 20px;
+  left: 32px;
+  font-size: 10px;
+  color: var(--txt3);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  z-index: 3;
+}
+
+/* --- Typography --- */
+.badge {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.badge-gold { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(212,168,83,0.3); }
+.badge-teal { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(45,212,168,0.3); }
+.badge-purple { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(155,109,255,0.3); }
+.badge-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,107,107,0.3); }
+
+h1 {
+  font-size: clamp(32px, 5vw, 60px);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -1px;
+}
+
+h2 {
+  font-size: clamp(26px, 3.5vw, 44px);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+}
+
+h3 {
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.gold { color: var(--gold); }
+.teal { color: var(--teal); }
+.purple { color: var(--purple); }
+.red { color: var(--red); }
+.dim { color: var(--txt3); }
+
+.subtitle {
+  font-size: clamp(14px, 1.6vw, 18px);
+  color: var(--txt2);
+  max-width: 700px;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+/* --- Grids --- */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 28px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 24px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px; }
+.grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 24px; }
+
+/* --- Cards --- */
+.card {
+  background: rgba(22, 27, 34, 0.7);
+  border: 1px solid var(--brd);
+  border-radius: 12px;
+  padding: 22px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(212, 168, 83, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+.card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  font-size: 20px;
+}
+
+.card-icon.gold-bg { background: var(--gold-dim); color: var(--gold); }
+.card-icon.teal-bg { background: var(--teal-dim); color: var(--teal); }
+.card-icon.purple-bg { background: var(--purple-dim); color: var(--purple); }
+.card-icon.red-bg { background: var(--red-dim); color: var(--red); }
+
+.card p { font-size: 13px; color: var(--txt2); line-height: 1.5; margin-top: 4px; }
+.card .card-label { font-size: 11px; color: var(--txt3); text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; }
+
+/* --- Stats Row --- */
+.stats-row {
+  display: flex;
+  gap: 24px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  padding: 18px 12px;
+  background: rgba(22, 27, 34, 0.5);
+  border: 1px solid var(--brd);
+  border-radius: 12px;
+}
+
+.stat-num {
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--txt3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- Pain Point Card --- */
+.pain-card {
+  background: rgba(255, 107, 107, 0.04);
+  border: 1px solid rgba(255, 107, 107, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.pain-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 10px;
+  background: var(--red-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pain-card h3 { color: var(--red); font-size: 16px; }
+.pain-card p { font-size: 13px; color: var(--txt2); margin-top: 4px; }
+
+/* --- Architecture Layers --- */
+.arch-layer {
+  background: rgba(22, 27, 34, 0.6);
+  border: 1px solid var(--brd);
+  border-radius: 14px;
+  padding: 22px 26px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.arch-layer::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+.arch-layer.gold-l::before { background: var(--gold); }
+.arch-layer.teal-l::before { background: var(--teal); }
+.arch-layer.purple-l::before { background: var(--purple); }
+
+.arch-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  min-width: 90px;
+}
+
+.arch-name { font-size: 18px; font-weight: 800; flex: 1; }
+.arch-desc { font-size: 13px; color: var(--txt2); flex: 2; }
+
+/* --- Platform Grid --- */
+.platform-card {
+  background: rgba(22, 27, 34, 0.6);
+  border: 1px solid var(--brd);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.platform-card:hover {
+  border-color: rgba(155, 109, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.platform-card svg {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 8px;
+}
+
+.platform-card h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.platform-card .replaces {
+  font-size: 10px;
+  color: var(--txt3);
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+/* --- Pie Chart CSS --- */
+.pie-chart-container {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  margin-top: 24px;
+}
+
+.pie-chart {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-pct { font-weight: 700; min-width: 36px; font-family: var(--mono); }
+
+/* --- Bar Chart --- */
+.bar-chart { margin-top: 20px; }
+
+.bar-group {
+  margin-bottom: 18px;
+}
+
+.bar-group-label {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  gap: 10px;
+}
+
+.bar-label {
+  font-size: 11px;
+  min-width: 80px;
+  color: var(--txt2);
+  text-align: right;
+}
+
+.bar-track {
+  flex: 1;
+  height: 24px;
+  background: rgba(22, 27, 34, 0.5);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--bg0);
+  width: 0%;
+}
+
+.bar-fill.gold-fill { background: linear-gradient(90deg, var(--gold), #e8c26e); }
+.bar-fill.teal-fill { background: linear-gradient(90deg, var(--teal), #5eedc8); }
+.bar-fill.red-fill { background: linear-gradient(90deg, var(--red), #ff9898); }
+.bar-fill.purple-fill { background: linear-gradient(90deg, var(--purple), #b894ff); }
+
+/* --- Timeline --- */
+.timeline {
+  position: relative;
+  margin-top: 32px;
+  padding-left: 40px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--gold), var(--teal), var(--purple), var(--gold));
+}
+
+.timeline-item {
+  position: relative;
+  padding: 0 0 32px 0;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -33px;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid var(--gold);
+  background: var(--bg0);
+}
+
+.timeline-item:nth-child(2) .timeline-dot { border-color: var(--teal); }
+.timeline-item:nth-child(3) .timeline-dot { border-color: var(--purple); }
+.timeline-item:nth-child(4) .timeline-dot { border-color: var(--gold); }
+
+.timeline-year {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.timeline-item h3 { font-size: 18px; }
+.timeline-item p { font-size: 13px; color: var(--txt2); margin-top: 4px; max-width: 500px; }
+
+/* --- Advantage List --- */
+.advantage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.advantage-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: rgba(22, 27, 34, 0.5);
+  border: 1px solid var(--brd);
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.advantage-item:hover { border-color: rgba(45, 212, 168, 0.3); }
+
+.advantage-check {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  background: var(--teal-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.advantage-item h4 { font-size: 14px; font-weight: 700; }
+.advantage-item p { font-size: 12px; color: var(--txt3); margin-top: 2px; }
+
+/* --- Tech Stack Row --- */
+.tech-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.tech-chip {
+  padding: 10px 18px;
+  background: rgba(22, 27, 34, 0.6);
+  border: 1px solid var(--brd);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tech-chip .count {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+/* --- TAM/SAM/SOM Rings --- */
+.tam-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  margin-top: 32px;
+}
+
+.tam-rings {
+  position: relative;
+  width: 260px;
+  height: 260px;
+}
+
+.tam-ring {
+  position: absolute;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.tam-ring.outer {
+  width: 260px; height: 260px;
+  background: rgba(212, 168, 83, 0.08);
+  border: 2px solid rgba(212, 168, 83, 0.3);
+  top: 0; left: 0;
+}
+
+.tam-ring.middle {
+  width: 180px; height: 180px;
+  background: rgba(45, 212, 168, 0.08);
+  border: 2px solid rgba(45, 212, 168, 0.3);
+  top: 40px; left: 40px;
+}
+
+.tam-ring.inner {
+  width: 100px; height: 100px;
+  background: rgba(155, 109, 255, 0.12);
+  border: 2px solid rgba(155, 109, 255, 0.4);
+  top: 80px; left: 80px;
+}
+
+.tam-ring .ring-val {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.tam-ring .ring-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.tam-ring.outer .ring-val { color: var(--gold); position: absolute; top: 14px; left: 50%; transform: translateX(-50%); }
+.tam-ring.outer .ring-label { position: absolute; top: 36px; left: 50%; transform: translateX(-50%); color: var(--gold); }
+.tam-ring.middle .ring-val { color: var(--teal); position: absolute; top: 10px; left: 50%; transform: translateX(-50%); }
+.tam-ring.middle .ring-label { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); color: var(--teal); }
+.tam-ring.inner .ring-val { color: var(--purple); }
+.tam-ring.inner .ring-label { color: var(--purple); }
+
+.tam-details { display: flex; flex-direction: column; gap: 16px; }
+
+.tam-detail {
+  padding: 12px 16px;
+  border-radius: 10px;
+  border-left: 3px solid;
+}
+
+.tam-detail.gold-d { border-color: var(--gold); background: var(--gold-dim); }
+.tam-detail.teal-d { border-color: var(--teal); background: var(--teal-dim); }
+.tam-detail.purple-d { border-color: var(--purple); background: var(--purple-dim); }
+
+.tam-detail h4 { font-size: 14px; font-weight: 700; }
+.tam-detail p { font-size: 12px; color: var(--txt2); margin-top: 2px; }
+
+/* --- Scroll Animations --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* --- Logo SVG --- */
+.logo-mark {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 20px;
+}
+
+/* --- CTA Slide --- */
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, var(--gold), #c49540);
+  color: var(--bg0);
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  margin-top: 24px;
+  font-family: var(--font);
+}
+
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px var(--gold-glow);
+}
+
+.cta-links {
+  display: flex;
+  gap: 24px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+.cta-link {
+  font-size: 13px;
+  color: var(--txt2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.cta-link:hover { color: var(--gold); }
+
+/* --- Separator --- */
+.sep {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--teal));
+  border-radius: 2px;
+  margin: 16px 0;
+}
+
+/* --- Comparison Table --- */
+.compare-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 2px;
+  margin-bottom: 2px;
+}
+
+.compare-cell {
+  padding: 12px 16px;
+  background: rgba(22, 27, 34, 0.5);
+  font-size: 13px;
+}
+
+.compare-cell:first-child { font-weight: 700; border-radius: 6px 0 0 6px; }
+.compare-cell:last-child { border-radius: 0 6px 6px 0; }
+
+.compare-head {
+  background: rgba(22, 27, 34, 0.8);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--txt3);
+}
+
+.compare-head:nth-child(2) { color: var(--teal); }
+.compare-head:nth-child(3) { color: var(--red); text-decoration: line-through; opacity: 0.6; }
+
+.highlight-cell { color: var(--teal); font-weight: 700; }
+.dim-cell { color: var(--txt3); }
+
+/* --- Blockchain Stats Grid --- */
+.chain-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.chain-stat {
+  background: rgba(22, 27, 34, 0.5);
+  border: 1px solid var(--brd);
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+}
+
+.chain-stat .val {
+  font-size: 24px;
+  font-weight: 900;
+  font-family: var(--mono);
+}
+
+.chain-stat .lbl {
+  font-size: 10px;
+  color: var(--txt3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .grid-2, .advantage-grid { grid-template-columns: 1fr; }
+  .grid-3, .chain-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid-4, .grid-6 { grid-template-columns: repeat(2, 1fr); }
+  .pie-chart-container { flex-direction: column; align-items: flex-start; }
+  .tam-container { flex-direction: column; }
+  .arch-layer { flex-direction: column; gap: 8px; }
+  .compare-row { grid-template-columns: 1fr; }
+  .stats-row { gap: 12px; }
+  #nav-dots { display: none; }
+  .slide { padding: 40px 16px; }
+}
+
+@media (max-width: 600px) {
+  .grid-3, .grid-4, .grid-6, .chain-grid { grid-template-columns: 1fr; }
+  .stats-row { flex-direction: column; }
+  .tech-row { flex-direction: column; }
+  .cta-links { flex-direction: column; }
+  .tam-rings { transform: scale(0.8); margin: 0 auto; }
+}
+
+/* --- Print --- */
+@media print {
+  html { scroll-snap-type: none; }
+  .slide {
+    min-height: auto;
+    height: auto;
+    page-break-after: always;
+    page-break-inside: avoid;
+    padding: 30px 20px;
+    scroll-snap-align: none;
+  }
+  .slide:last-child { page-break-after: auto; }
+  #progress-bar, #nav-dots, #fullscreen-btn { display: none !important; }
+  .slide::before { display: none; }
+  body { background: white; color: #111; }
+  .card, .stat-box, .pain-card, .arch-layer, .platform-card, .chain-stat, .advantage-item, .tech-chip {
+    background: #f8f8f8; border-color: #ddd;
+  }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .bar-fill { width: var(--target-w) !important; }
+  .gold, .teal, .purple { color: #333; }
+  h1, h2, h3 { color: #111; }
+}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- Fullscreen Button -->
+<button id="fullscreen-btn" title="Toggle Fullscreen">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+    <path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/>
+  </svg>
+</button>
+
+<!-- Navigation Dots -->
+<nav id="nav-dots"></nav>
+
+<!-- ============ SLIDE DECK ============ -->
+<div class="deck">
+
+<!-- ====== SLIDE 1: TITLE ====== -->
+<section class="slide s-title" id="slide-1" data-title="Title">
+  <div class="slide-inner" style="text-align:center;">
+    <div class="reveal">
+      <!-- Logo SVG -->
+      <svg class="logo-mark" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="30" stroke="#d4a853" stroke-width="2" opacity="0.4"/>
+        <circle cx="32" cy="32" r="22" stroke="#2dd4a8" stroke-width="1.5" opacity="0.3"/>
+        <path d="M32 8 L38 24 L56 24 L42 34 L46 52 L32 42 L18 52 L22 34 L8 24 L26 24Z" fill="#d4a853" opacity="0.15" stroke="#d4a853" stroke-width="1"/>
+        <circle cx="32" cy="32" r="8" fill="none" stroke="#2dd4a8" stroke-width="1.5"/>
+        <circle cx="32" cy="32" r="3" fill="#d4a853"/>
+      </svg>
+    </div>
+    <div class="reveal reveal-delay-1">
+      <span class="badge badge-gold">Investor Presentation 2026</span>
+    </div>
+    <h1 class="reveal reveal-delay-2">Sovereign Government of<br><span class="gold">Ierahkwa Ne Kanienke</span></h1>
+    <div class="sep reveal reveal-delay-3" style="margin:16px auto;"></div>
+    <p class="subtitle reveal reveal-delay-3" style="margin:0 auto;">Digital Sovereignty for <strong class="teal">72 Million</strong> Indigenous People</p>
+    <p class="reveal reveal-delay-4" style="font-size:13px; color:var(--txt3); margin-top:20px;">296 Sovereign Platforms &bull; 43 Languages &bull; 19 Countries &bull; Post-Quantum Encrypted</p>
+    <p class="reveal reveal-delay-5" style="font-size:11px; color:var(--txt3); margin-top:30px; font-style:italic; letter-spacing:0.5px;">"Skennen'kowa &mdash; The Great Peace"</p>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">01 / 15</span>
+</section>
+
+<!-- ====== SLIDE 2: THE PROBLEM ====== -->
+<section class="slide s-problem" id="slide-2" data-title="The Problem">
+  <div class="slide-inner">
+    <span class="badge badge-red reveal">THE PROBLEM</span>
+    <h2 class="reveal reveal-delay-1">Big Tech Extracts <span class="red">$47B</span> Annually<br>from Indigenous Communities</h2>
+    <p class="subtitle reveal reveal-delay-2">Zero representation. Zero data sovereignty. Zero language support. Indigenous peoples are the most digitally exploited population on Earth.</p>
+
+    <div class="grid-2 reveal reveal-delay-3">
+      <div class="pain-card">
+        <div class="pain-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ff6b6b" stroke-width="1.5"><path d="M10 2v16M2 10h16"/><circle cx="10" cy="10" r="8"/></svg>
+        </div>
+        <div>
+          <h3>Data Extraction</h3>
+          <p>Personal data harvested without consent. No indigenous data governance. Cultural IP monetized by foreign corporations.</p>
+        </div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ff6b6b" stroke-width="1.5"><path d="M4 16l6-6 6 6M4 10l6-6 6 6"/></svg>
+        </div>
+        <div>
+          <h3>Zero Language Support</h3>
+          <p>37+ indigenous languages unsupported by any major platform. Cultural erasure through digital exclusion.</p>
+        </div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ff6b6b" stroke-width="1.5"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7 7l6 6M13 7l-6 6"/></svg>
+        </div>
+        <div>
+          <h3>Platform Dependency</h3>
+          <p>100% reliance on Big Tech. No sovereign alternatives. Account bans erase entire digital identities overnight.</p>
+        </div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ff6b6b" stroke-width="1.5"><path d="M10 2L2 7v6l8 5 8-5V7l-8-5z"/><path d="M10 12v6"/></svg>
+        </div>
+        <div>
+          <h3>Financial Exclusion</h3>
+          <p>No sovereign banking. No indigenous cryptocurrency. High-fee remittances drain community wealth.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row reveal reveal-delay-4">
+      <div class="stat-box"><div class="stat-num red" data-count="47" data-prefix="$" data-suffix="B">$0B</div><div class="stat-label">Extracted Annually</div></div>
+      <div class="stat-box"><div class="stat-num red" data-count="0" data-suffix="%">0%</div><div class="stat-label">Representation</div></div>
+      <div class="stat-box"><div class="stat-num red" data-count="0">0</div><div class="stat-label">Languages Supported</div></div>
+      <div class="stat-box"><div class="stat-num red" data-count="0">0</div><div class="stat-label">Data Sovereignty</div></div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">02 / 15</span>
+</section>
+
+<!-- ====== SLIDE 3: THE SOLUTION ====== -->
+<section class="slide s-solution" id="slide-3" data-title="The Solution">
+  <div class="slide-inner">
+    <span class="badge badge-teal reveal">THE SOLUTION</span>
+    <h2 class="reveal reveal-delay-1"><span class="teal">296</span> Sovereign Platforms<br>Replacing ALL Big Tech</h2>
+    <p class="subtitle reveal reveal-delay-2">Self-governed. Post-quantum encrypted. 43 indigenous languages. Zero taxes for citizens. One complete digital nation.</p>
+
+    <div class="grid-4 reveal reveal-delay-3">
+      <div class="card" style="text-align:center;">
+        <div class="card-icon teal-bg" style="margin:0 auto 12px;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#2dd4a8" stroke-width="1.5"><rect x="2" y="3" width="16" height="14" rx="2"/><path d="M6 9h8M6 12h5"/></svg>
+        </div>
+        <h3>Self-Governed</h3>
+        <p>DAO governance. Indigenous-controlled. Every citizen has a voice through on-chain voting.</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="card-icon teal-bg" style="margin:0 auto 12px;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#2dd4a8" stroke-width="1.5"><path d="M10 2l3 6h6l-5 4 2 6-6-4-6 4 2-6-5-4h6z"/></svg>
+        </div>
+        <h3>Post-Quantum</h3>
+        <p>ML-DSA-65 + ML-KEM-1024 encryption. Future-proof security against quantum threats.</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="card-icon teal-bg" style="margin:0 auto 12px;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#2dd4a8" stroke-width="1.5"><circle cx="10" cy="10" r="8"/><path d="M2 10h16M10 2c-3 3.5-3 12.5 0 16M10 2c3 3.5 3 12.5 0 16"/></svg>
+        </div>
+        <h3>43 Languages</h3>
+        <p>Complete native language support. Preserving and revitalizing indigenous languages digitally.</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="card-icon gold-bg" style="margin:0 auto 12px;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#d4a853" stroke-width="1.5"><path d="M10 2v16M6 6l4-4 4 4M6 14l4 4 4-4"/></svg>
+        </div>
+        <h3>Zero Taxes</h3>
+        <p>No income tax. No platform tax. Revenue from sustainable platform fees only.</p>
+      </div>
+    </div>
+
+    <div class="stats-row reveal reveal-delay-4">
+      <div class="stat-box"><div class="stat-num teal" data-count="296">0</div><div class="stat-label">Platforms</div></div>
+      <div class="stat-box"><div class="stat-num gold" data-count="43">0</div><div class="stat-label">Languages</div></div>
+      <div class="stat-box"><div class="stat-num purple" data-count="19">0</div><div class="stat-label">Countries</div></div>
+      <div class="stat-box"><div class="stat-num teal" data-count="0" data-suffix="%">0%</div><div class="stat-label">Citizen Taxes</div></div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">03 / 15</span>
+</section>
+
+<!-- ====== SLIDE 4: MARKET OPPORTUNITY ====== -->
+<section class="slide s-market" id="slide-4" data-title="Market Opportunity">
+  <div class="slide-inner">
+    <span class="badge badge-gold reveal">MARKET OPPORTUNITY</span>
+    <h2 class="reveal reveal-delay-1">A <span class="gold">$47 Billion</span> Market<br>With Zero Competition</h2>
+    <p class="subtitle reveal reveal-delay-2">72 million indigenous people across the Americas. 476 million worldwide. 19 countries. No existing sovereign digital infrastructure.</p>
+
+    <div class="tam-container reveal reveal-delay-3">
+      <div class="tam-rings">
+        <div class="tam-ring outer">
+          <span class="ring-val" data-count="476" data-suffix="M">0M</span>
+          <span class="ring-label">TAM</span>
+        </div>
+        <div class="tam-ring middle">
+          <span class="ring-val" data-count="72" data-suffix="M">0M</span>
+          <span class="ring-label">SAM</span>
+        </div>
+        <div class="tam-ring inner">
+          <span class="ring-val" data-count="12" data-suffix="M">0M</span>
+          <span class="ring-label">SOM</span>
+        </div>
+      </div>
+
+      <div class="tam-details">
+        <div class="tam-detail gold-d">
+          <h4 class="gold">TAM &mdash; $47B</h4>
+          <p>476M indigenous people worldwide across all continents. Complete digital infrastructure market.</p>
+        </div>
+        <div class="tam-detail teal-d">
+          <h4 class="teal">SAM &mdash; $18B</h4>
+          <p>72M indigenous people across the Americas. 19 countries. Direct sovereign platform addressable market.</p>
+        </div>
+        <div class="tam-detail purple-d">
+          <h4 class="purple">SOM &mdash; $4.2B</h4>
+          <p>12M users in first 3 years. 574 NCAI tribes. Akwesasne-first rollout expanding to continental scale.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">04 / 15</span>
+</section>
+
+<!-- ====== SLIDE 5: HOW IT WORKS ====== -->
+<section class="slide s-arch" id="slide-5" data-title="Architecture">
+  <div class="slide-inner">
+    <span class="badge badge-teal reveal">HOW IT WORKS</span>
+    <h2 class="reveal reveal-delay-1">3-Layer <span class="teal">Sovereign Architecture</span></h2>
+    <p class="subtitle reveal reveal-delay-2">A complete sovereign technology stack: content, applications, and blockchain infrastructure. Each layer is independently governed and post-quantum secured.</p>
+
+    <div style="margin-top:28px;">
+      <div class="arch-layer gold-l reveal reveal-delay-2">
+        <div class="arch-label gold">Layer 1</div>
+        <div class="arch-name"><span class="gold">Akwesasne</span></div>
+        <div class="arch-desc">Content &amp; Frontend Layer &mdash; 35 HTML frontends, multi-language interfaces, progressive web apps, citizen-facing dashboards</div>
+      </div>
+      <div style="text-align:center; padding:4px 0; color:var(--txt3); font-size:20px;">&#8595;</div>
+      <div class="arch-layer teal-l reveal reveal-delay-3">
+        <div class="arch-label teal">Layer 2</div>
+        <div class="arch-name"><span class="teal">Ierahkwa</span></div>
+        <div class="arch-desc">Application Layer &mdash; 139 .NET projects, 37 microservices, 16 Node.js services, 42 AI engines, sovereign APIs</div>
+      </div>
+      <div style="text-align:center; padding:4px 0; color:var(--txt3); font-size:20px;">&#8595;</div>
+      <div class="arch-layer purple-l reveal reveal-delay-4">
+        <div class="arch-label purple">Layer 3</div>
+        <div class="arch-name"><span class="purple">Mamey</span></div>
+        <div class="arch-desc">Backend &amp; Blockchain &mdash; MameyNode v4.2, 12,847 TPS, Chain ID 777777, WAMPUM token, SICBDC stablecoin</div>
+      </div>
+    </div>
+
+    <div class="stats-row reveal reveal-delay-5" style="margin-top:24px;">
+      <div class="stat-box"><div class="stat-num gold" data-count="35">0</div><div class="stat-label">Frontends</div></div>
+      <div class="stat-box"><div class="stat-num teal" data-count="37">0</div><div class="stat-label">Microservices</div></div>
+      <div class="stat-box"><div class="stat-num purple" data-count="12847" data-separator="true">0</div><div class="stat-label">TPS</div></div>
+      <div class="stat-box"><div class="stat-num gold" data-count="777777" data-separator="true">0</div><div class="stat-label">Chain ID</div></div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">05 / 15</span>
+</section>
+
+<!-- ====== SLIDE 6: PLATFORM SHOWCASE ====== -->
+<section class="slide s-platforms" id="slide-6" data-title="Platforms">
+  <div class="slide-inner">
+    <span class="badge badge-purple reveal">PLATFORM SHOWCASE</span>
+    <h2 class="reveal reveal-delay-1"><span class="purple">12 Flagship</span> Sovereign Platforms</h2>
+    <p class="subtitle reveal reveal-delay-2">Every platform Big Tech offers — rebuilt sovereign, encrypted, and indigenous-first.</p>
+
+    <div class="grid-4 reveal reveal-delay-3">
+      <!-- Banking -->
+      <div class="platform-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#d4a853" stroke-width="1.2"><rect x="4" y="14" width="24" height="14" rx="2"/><path d="M16 4l12 10H4z"/><path d="M10 18v6M16 18v6M22 18v6"/></svg>
+        <h4 class="gold">Banking</h4>
+        <span class="replaces">Chase / PayPal</span>
+      </div>
+      <!-- Social -->
+      <div class="platform-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#2dd4a8" stroke-width="1.2"><circle cx="16" cy="10" r="5"/><circle cx="8" cy="22" r="3"/><circle cx="24" cy="22" r="3"/><path d="M11 10h10M8 19l8-9M24 19l-8-9"/></svg>
+        <h4 class="teal">Social</h4>
+        <span class="replaces">Facebook / X</span>
+      </div>
+      <!-- Email -->
+      <div class="platform-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#9b6dff" stroke-width="1.2"><rect x="4" y="8" width="24" height="16" rx="2"/><path d="M4 8l12 10L28 8"/></svg>
+        <h4 class="purple">Email</h4>
+        <span class="replaces">Gmail / Outlook</span>
+      </div>
+      <!-- Education -->
+      <div class="platform-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#d4a853" stroke-width="1.2"><path d="M16 6L4 12l12 6 12-6-12-6z"/><path d="M8 14v8l8 4 8-4v-8"/></svg>
+        <h4 class="gold">Education</h4>
+        <span class="replaces">Coursera / Canvas</span>
+      </div>
+      <!-- Healthcare -->
+      <div class="platform-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#2dd4a8" stroke-width="1.2"><path d="M16 6v20M6 16h20"/><rect x="6" y="6" width="20" height="20" rx="4"/></svg>
+        <h4 class="teal">Healthcare</h4>
+        <span class="replaces">Epic / WebMD</span>
+      </div>
+      <!-- Commerce -->
+      <div class="platform-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#9b6dff" stroke-width="1.2"><path d="M6 6h3l3 14h12l3-10H10"/><circle cx="14" cy="24" r="2"/><circle cx="22" cy="24" r="2"/></svg>
+        <h4 class="purple">Commerce</h4>
+        <span class="replaces">Amazon / Shopify</span>
+      </div>
+      <!-- Voting -->
+      <div class="platform-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#d4a853" stroke-width="1.2"><rect x="6" y="4" width="20" height="24" rx="2"/><path d="M11 12l3 3 7-7"/><path d="M11 20h10"/></svg>
+        <h4 class="gold">Voting</h4>
+        <span class="replaces">No equivalent</span>
+      </div>
+      <!-- Search -->
+      <div class="platform-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#2dd4a8" stroke-width="1.2"><circle cx="14" cy="14" r="8"/><path d="M20 20l6 6"/></svg>
+        <h4 class="teal">Search</h4>
+        <span class="replaces">Google Search</span>
+      </div>
+      <!-- Music -->
+      <div class="platform-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#9b6dff" stroke-width="1.2"><circle cx="10" cy="22" r="4"/><circle cx="22" cy="20" r="4"/><path d="M14 22V8l12-2v14"/></svg>
+        <h4 class="purple">Music</h4>
+        <span class="replaces">Spotify / Apple</span>
+      </div>
+      <!-- Video -->
+      <div class="platform-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#d4a853" stroke-width="1.2"><rect x="4" y="6" width="24" height="20" rx="2"/><path d="M13 12v8l7-4z" fill="#d4a853" opacity="0.3"/></svg>
+        <h4 class="gold">Video</h4>
+        <span class="replaces">YouTube / TikTok</span>
+      </div>
+      <!-- Maps -->
+      <div class="platform-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#2dd4a8" stroke-width="1.2"><path d="M16 4C11 4 7 8 7 13c0 7 9 15 9 15s9-8 9-15c0-5-4-9-9-9z"/><circle cx="16" cy="13" r="3"/></svg>
+        <h4 class="teal">Maps</h4>
+        <span class="replaces">Google Maps</span>
+      </div>
+      <!-- Rides -->
+      <div class="platform-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#9b6dff" stroke-width="1.2"><path d="M6 20l2-8h16l2 8"/><rect x="4" y="20" width="24" height="6" rx="2"/><circle cx="10" cy="28" r="2"/><circle cx="22" cy="28" r="2"/></svg>
+        <h4 class="purple">Rides</h4>
+        <span class="replaces">Uber / Lyft</span>
+      </div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">06 / 15</span>
+</section>
+
+<!-- ====== SLIDE 7: REVENUE MODEL ====== -->
+<section class="slide s-revenue" id="slide-7" data-title="Revenue Model">
+  <div class="slide-inner">
+    <span class="badge badge-gold reveal">REVENUE MODEL</span>
+    <h2 class="reveal reveal-delay-1"><span class="gold">Zero Citizen Tax</span> &mdash;<br>Sustainable Platform Fees</h2>
+    <p class="subtitle reveal reveal-delay-2">Platform fees of 5-12% auto-allocated to sovereign priorities. No income tax. No sales tax. Revenue fuels the nation.</p>
+
+    <div class="pie-chart-container reveal reveal-delay-3">
+      <div class="pie-chart" style="background: conic-gradient(
+        #d4a853 0deg 90deg,
+        #2dd4a8 90deg 180deg,
+        #9b6dff 180deg 252deg,
+        #5eead4 252deg 306deg,
+        #ff6b6b 306deg 342deg,
+        #6a6474 342deg 360deg
+      );"></div>
+      <div class="pie-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#d4a853;"></div><span class="legend-pct">25%</span> Education</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2dd4a8;"></div><span class="legend-pct">25%</span> Healthcare</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#9b6dff;"></div><span class="legend-pct">20%</span> Infrastructure</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#5eead4;"></div><span class="legend-pct">15%</span> Technology</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b;"></div><span class="legend-pct">10%</span> Security</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#6a6474;"></div><span class="legend-pct">5%</span> Reserve Fund</div>
+      </div>
+    </div>
+
+    <div class="grid-3 reveal reveal-delay-4" style="margin-top:24px;">
+      <div class="card" style="text-align:center; border-top:2px solid var(--gold);">
+        <h3 class="gold">5-8%</h3>
+        <p>Commerce &amp; marketplace transaction fees</p>
+      </div>
+      <div class="card" style="text-align:center; border-top:2px solid var(--teal);">
+        <h3 class="teal">3-5%</h3>
+        <p>Banking, DeFi, and financial service fees</p>
+      </div>
+      <div class="card" style="text-align:center; border-top:2px solid var(--purple);">
+        <h3 class="purple">8-12%</h3>
+        <p>Premium enterprise and API service tiers</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">07 / 15</span>
+</section>
+
+<!-- ====== SLIDE 8: CREATOR ECONOMY ====== -->
+<section class="slide s-creator" id="slide-8" data-title="Creator Economy">
+  <div class="slide-inner">
+    <span class="badge badge-teal reveal">CREATOR ECONOMY</span>
+    <h2 class="reveal reveal-delay-1">Creators Keep <span class="teal">90%+</span><br>Not Big Tech's 30-55%</h2>
+    <p class="subtitle reveal reveal-delay-2">The most creator-friendly platform on Earth. Indigenous artists, musicians, and creators finally get fair compensation.</p>
+
+    <div class="bar-chart reveal reveal-delay-3">
+      <!-- Video -->
+      <div class="bar-group">
+        <div class="bar-group-label">Video Creators</div>
+        <div class="bar-row">
+          <span class="bar-label teal">Ierahkwa</span>
+          <div class="bar-track"><div class="bar-fill teal-fill" data-width="92" style="--target-w:92%;">92%</div></div>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label dim">YouTube</span>
+          <div class="bar-track"><div class="bar-fill red-fill" data-width="55" style="--target-w:55%;">55%</div></div>
+        </div>
+      </div>
+      <!-- Music -->
+      <div class="bar-group">
+        <div class="bar-group-label">Music Artists</div>
+        <div class="bar-row">
+          <span class="bar-label teal">Ierahkwa</span>
+          <div class="bar-track"><div class="bar-fill teal-fill" data-width="90" style="--target-w:90%;">90%</div></div>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label dim">Spotify</span>
+          <div class="bar-track"><div class="bar-fill red-fill" data-width="30" style="--target-w:30%;">30%</div></div>
+        </div>
+      </div>
+      <!-- Rides -->
+      <div class="bar-group">
+        <div class="bar-group-label">Ride Drivers</div>
+        <div class="bar-row">
+          <span class="bar-label teal">Ierahkwa</span>
+          <div class="bar-track"><div class="bar-fill teal-fill" data-width="95" style="--target-w:95%;">95%</div></div>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label dim">Uber</span>
+          <div class="bar-track"><div class="bar-fill red-fill" data-width="70" style="--target-w:70%;">70%</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">08 / 15</span>
+</section>
+
+<!-- ====== SLIDE 9: TECHNOLOGY STACK ====== -->
+<section class="slide s-tech" id="slide-9" data-title="Technology">
+  <div class="slide-inner">
+    <span class="badge badge-purple reveal">TECHNOLOGY STACK</span>
+    <h2 class="reveal reveal-delay-1">Enterprise-Grade <span class="purple">Sovereign Infrastructure</span></h2>
+    <p class="subtitle reveal reveal-delay-2">Built on proven technologies. 139 framework projects, 37 microservices, 42 AI engines. Post-quantum encryption at every layer.</p>
+
+    <div class="tech-row reveal reveal-delay-3">
+      <div class="tech-chip" style="border-color:rgba(155,109,255,0.3);">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#9b6dff" stroke-width="1.2"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 5l6 6M11 5l-6 6"/></svg>
+        .NET 10
+        <span class="count" style="background:var(--purple-dim); color:var(--purple);">139 + 37</span>
+      </div>
+      <div class="tech-chip" style="border-color:rgba(45,212,168,0.3);">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#2dd4a8" stroke-width="1.2"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg>
+        Node.js
+        <span class="count" style="background:var(--teal-dim); color:var(--teal);">16 services</span>
+      </div>
+      <div class="tech-chip" style="border-color:rgba(212,168,83,0.3);">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#d4a853" stroke-width="1.2"><path d="M3 12l5-8 5 8z"/></svg>
+        Rust
+        <span class="count" style="background:var(--gold-dim); color:var(--gold);">Core</span>
+      </div>
+      <div class="tech-chip" style="border-color:rgba(45,212,168,0.3);">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#2dd4a8" stroke-width="1.2"><circle cx="8" cy="8" r="6"/><path d="M5 8h6"/></svg>
+        Go
+        <span class="count" style="background:var(--teal-dim); color:var(--teal);">Infra</span>
+      </div>
+      <div class="tech-chip" style="border-color:rgba(155,109,255,0.3);">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#9b6dff" stroke-width="1.2"><circle cx="8" cy="8" r="6"/><path d="M6 6c0-1 1-2 2-2s2 1 2 2c0 1.5-2 2-2 3M8 12h0"/></svg>
+        Python AI
+        <span class="count" style="background:var(--purple-dim); color:var(--purple);">42 engines</span>
+      </div>
+    </div>
+
+    <div class="grid-2 reveal reveal-delay-4" style="margin-top:24px;">
+      <div class="card" style="border-top:2px solid var(--teal);">
+        <h3 class="teal">Post-Quantum Encryption</h3>
+        <p style="font-family:var(--mono); font-size:12px; color:var(--teal); margin:6px 0;">ML-DSA-65 + ML-KEM-1024</p>
+        <p>NIST-approved post-quantum cryptography. Every transaction, message, and data point is quantum-resistant.</p>
+      </div>
+      <div class="card" style="border-top:2px solid var(--gold);">
+        <h3 class="gold">Self-Sovereign Identity</h3>
+        <p style="font-family:var(--mono); font-size:12px; color:var(--gold); margin:6px 0;">FWID Protocol</p>
+        <p>FutureWampum Identity. Decentralized, citizen-owned. No corporate data silos. Full privacy by design.</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">09 / 15</span>
+</section>
+
+<!-- ====== SLIDE 10: BLOCKCHAIN — MAMEYNODE ====== -->
+<section class="slide s-blockchain" id="slide-10" data-title="Blockchain">
+  <div class="slide-inner">
+    <span class="badge badge-gold reveal">BLOCKCHAIN</span>
+    <h2 class="reveal reveal-delay-1"><span class="gold">MameyNode</span> v4.2<br>Sovereign Blockchain Infrastructure</h2>
+    <p class="subtitle reveal reveal-delay-2">Purpose-built for sovereign governance. Proof-of-Sovereignty consensus. 574 maximum validators. One chain to govern them all.</p>
+
+    <div class="chain-grid reveal reveal-delay-3">
+      <div class="chain-stat"><div class="val gold" data-count="777777" data-separator="true">0</div><div class="lbl">Chain ID</div></div>
+      <div class="chain-stat"><div class="val teal" data-count="12847" data-separator="true">0</div><div class="lbl">Transactions / Sec</div></div>
+      <div class="chain-stat"><div class="val purple" data-count="574">0</div><div class="lbl">Max Validators</div></div>
+      <div class="chain-stat"><div class="val gold" data-count="720" data-suffix="M">0M</div><div class="lbl">WAMPUM Supply</div></div>
+      <div class="chain-stat"><div class="val teal">0.1%</div><div class="lbl">Burn Rate</div></div>
+      <div class="chain-stat"><div class="val purple">PoS</div><div class="lbl">Proof-of-Sovereignty</div></div>
+    </div>
+
+    <div class="grid-2 reveal reveal-delay-4" style="margin-top:20px;">
+      <div class="card" style="border-left:3px solid var(--gold);">
+        <h3>WAMPUM Token</h3>
+        <p>Native governance and utility token. 720M total supply with 0.1% deflationary burn per epoch. Powers all platform transactions and DAO voting.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--teal);">
+        <h3>SICBDC Stablecoin</h3>
+        <p>Sovereign Indigenous Central Bank Digital Currency. Asset-backed, price-stable. Used for commerce, payroll, and cross-border settlements.</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">10 / 15</span>
+</section>
+
+<!-- ====== SLIDE 11: TRACTION & METRICS ====== -->
+<section class="slide s-traction" id="slide-11" data-title="Traction">
+  <div class="slide-inner">
+    <span class="badge badge-teal reveal">TRACTION &amp; METRICS</span>
+    <h2 class="reveal reveal-delay-1">Built, Not <span class="teal">Blueprinted</span></h2>
+    <p class="subtitle reveal reveal-delay-2">This is not a whitepaper project. 296 platforms are built and operational. Massive codebase. Comprehensive government framework.</p>
+
+    <div class="grid-3 reveal reveal-delay-3">
+      <div class="stat-box" style="border-top:2px solid var(--teal);">
+        <div class="stat-num teal" data-count="296">0</div>
+        <div class="stat-label">Platforms Built</div>
+      </div>
+      <div class="stat-box" style="border-top:2px solid var(--purple);">
+        <div class="stat-num purple" data-count="37">0</div>
+        <div class="stat-label">.NET Microservices</div>
+      </div>
+      <div class="stat-box" style="border-top:2px solid var(--gold);">
+        <div class="stat-num gold" data-count="139">0</div>
+        <div class="stat-label">Framework Projects</div>
+      </div>
+      <div class="stat-box" style="border-top:2px solid var(--teal);">
+        <div class="stat-num teal" data-count="16">0</div>
+        <div class="stat-label">Node.js Services</div>
+      </div>
+      <div class="stat-box" style="border-top:2px solid var(--gold);">
+        <div class="stat-num gold" data-count="35">0</div>
+        <div class="stat-label">HTML Frontends</div>
+      </div>
+      <div class="stat-box" style="border-top:2px solid var(--purple);">
+        <div class="stat-num purple" data-count="368">0</div>
+        <div class="stat-label">Gov Documents</div>
+      </div>
+    </div>
+
+    <div class="grid-3 reveal reveal-delay-4" style="margin-top:14px;">
+      <div class="stat-box" style="border-top:2px solid var(--gold);">
+        <div class="stat-num gold" data-count="210" data-suffix="+">0+</div>
+        <div class="stat-label">Sovereign Tokens</div>
+      </div>
+      <div class="stat-box" style="border-top:2px solid var(--teal);">
+        <div class="stat-num teal" data-count="42">0</div>
+        <div class="stat-label">AI Engines</div>
+      </div>
+      <div class="stat-box" style="border-top:2px solid var(--purple);">
+        <div class="stat-num purple" data-count="43">0</div>
+        <div class="stat-label">Languages</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">11 / 15</span>
+</section>
+
+<!-- ====== SLIDE 12: GO-TO-MARKET ====== -->
+<section class="slide s-gtm" id="slide-12" data-title="Go-to-Market">
+  <div class="slide-inner">
+    <span class="badge badge-gold reveal">GO-TO-MARKET</span>
+    <h2 class="reveal reveal-delay-1"><span class="gold">4-Phase</span> Continental Expansion</h2>
+    <p class="subtitle reveal reveal-delay-2">Akwesasne-first. Community-validated. Scaled through 574 NCAI tribes to all 19 countries across the Americas.</p>
+
+    <div class="timeline reveal reveal-delay-3">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year gold">PHASE 1 &mdash; 2026</div>
+        <h3>Akwesasne Community</h3>
+        <p>Launch with Akwesasne Mohawk community. Core platforms operational: banking, identity, social, governance. 10,000+ initial users.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year teal">PHASE 2 &mdash; 2027</div>
+        <h3>NCAI 574 Tribes</h3>
+        <p>Expand to all 574 federally recognized tribes through NCAI partnerships. Multi-language rollout. 500,000+ users.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year purple">PHASE 3 &mdash; 2028</div>
+        <h3>Americas — 72M</h3>
+        <p>Continental expansion across 19 countries. FILAC and COICA partnerships. Full platform suite in 43 languages. 12M+ users.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year gold">PHASE 4 &mdash; 2029</div>
+        <h3>Global — 476M</h3>
+        <p>Worldwide indigenous digital sovereignty. Africa, Asia-Pacific, Nordic partnerships. Full MameyNode decentralization. 50M+ users.</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">12 / 15</span>
+</section>
+
+<!-- ====== SLIDE 13: COMPETITIVE ADVANTAGE ====== -->
+<section class="slide s-advantage" id="slide-13" data-title="Advantage">
+  <div class="slide-inner">
+    <span class="badge badge-teal reveal">COMPETITIVE ADVANTAGE</span>
+    <h2 class="reveal reveal-delay-1">The <span class="teal">Only Platform</span> With All Six</h2>
+    <p class="subtitle reveal reveal-delay-2">No other platform, company, or government combines all of these capabilities. This is an unreplicable moat.</p>
+
+    <div class="advantage-grid reveal reveal-delay-3">
+      <div class="advantage-item">
+        <div class="advantage-check">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#2dd4a8" stroke-width="2"><path d="M3 7l3 3 5-6"/></svg>
+        </div>
+        <div>
+          <h4 class="teal">Post-Quantum Encryption</h4>
+          <p>ML-DSA-65 + ML-KEM-1024. No other social/gov platform has this.</p>
+        </div>
+      </div>
+      <div class="advantage-item">
+        <div class="advantage-check">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#2dd4a8" stroke-width="2"><path d="M3 7l3 3 5-6"/></svg>
+        </div>
+        <div>
+          <h4 class="gold">37 Indigenous Languages</h4>
+          <p>Full platform localization. No competitor supports even one.</p>
+        </div>
+      </div>
+      <div class="advantage-item">
+        <div class="advantage-check">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#2dd4a8" stroke-width="2"><path d="M3 7l3 3 5-6"/></svg>
+        </div>
+        <div>
+          <h4 class="teal">Zero-Tax Model</h4>
+          <p>No citizen taxation. Sustainable through platform fees only.</p>
+        </div>
+      </div>
+      <div class="advantage-item">
+        <div class="advantage-check">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#2dd4a8" stroke-width="2"><path d="M3 7l3 3 5-6"/></svg>
+        </div>
+        <div>
+          <h4 class="purple">Self-Sovereign Identity</h4>
+          <p>FWID protocol. Citizen-owned. No corporate data harvesting.</p>
+        </div>
+      </div>
+      <div class="advantage-item">
+        <div class="advantage-check">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#2dd4a8" stroke-width="2"><path d="M3 7l3 3 5-6"/></svg>
+        </div>
+        <div>
+          <h4 class="gold">12,847 TPS Blockchain</h4>
+          <p>MameyNode outperforms Ethereum, Solana for governance workloads.</p>
+        </div>
+      </div>
+      <div class="advantage-item">
+        <div class="advantage-check">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#2dd4a8" stroke-width="2"><path d="M3 7l3 3 5-6"/></svg>
+        </div>
+        <div>
+          <h4 class="teal">DAO Governance</h4>
+          <p>On-chain voting. Transparent treasury. Community-driven decisions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">13 / 15</span>
+</section>
+
+<!-- ====== SLIDE 14: THE TEAM ====== -->
+<section class="slide s-team" id="slide-14" data-title="Team">
+  <div class="slide-inner" style="text-align:center;">
+    <span class="badge badge-purple reveal">THE TEAM</span>
+    <h2 class="reveal reveal-delay-1"><span class="purple">FutureHead Group</span></h2>
+    <p class="subtitle reveal reveal-delay-2" style="margin:0 auto;">Multi-disciplinary sovereign technology team. Builders of MameyNode, Mamey Framework, and 296+ platforms for indigenous digital sovereignty.</p>
+
+    <div class="grid-3 reveal reveal-delay-3" style="margin-top:32px;">
+      <div class="card" style="text-align:center; border-top:2px solid var(--gold);">
+        <div class="card-icon gold-bg" style="margin:0 auto 12px;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#d4a853" stroke-width="1.5"><path d="M10 2l3 6h6l-5 4 2 6-6-4-6 4 2-6-5-4h6z"/></svg>
+        </div>
+        <h3>Blockchain &amp; Crypto</h3>
+        <p>MameyNode v4.2, 210+ tokens, DeFi protocols, post-quantum cryptography, PoS consensus design.</p>
+      </div>
+      <div class="card" style="text-align:center; border-top:2px solid var(--teal);">
+        <div class="card-icon teal-bg" style="margin:0 auto 12px;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#2dd4a8" stroke-width="1.5"><rect x="2" y="4" width="16" height="12" rx="2"/><path d="M6 9h8M6 12h5"/></svg>
+        </div>
+        <h3>Full-Stack Engineering</h3>
+        <p>.NET 10, Node.js, Rust, Go. 37 microservices, 139 framework projects. Enterprise-scale architecture.</p>
+      </div>
+      <div class="card" style="text-align:center; border-top:2px solid var(--purple);">
+        <div class="card-icon purple-bg" style="margin:0 auto 12px;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#9b6dff" stroke-width="1.5"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 2"/></svg>
+        </div>
+        <h3>AI &amp; Machine Learning</h3>
+        <p>42 AI engines. NLP for indigenous languages. Computer vision, fraud detection, predictive analytics.</p>
+      </div>
+    </div>
+
+    <div class="grid-3 reveal reveal-delay-4" style="margin-top:14px;">
+      <div class="card" style="text-align:center;">
+        <h3 style="font-size:14px;">Governance Design</h3>
+        <p>368 sovereign documents. Constitutional framework. DAO protocols.</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <h3 style="font-size:14px;">Indigenous Affairs</h3>
+        <p>NCAI, FILAC, COICA partnerships. 43 language localization teams.</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <h3 style="font-size:14px;">Security &amp; Compliance</h3>
+        <p>Post-quantum encryption. Self-sovereign identity. Zero-knowledge proofs.</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">14 / 15</span>
+</section>
+
+<!-- ====== SLIDE 15: CALL TO ACTION ====== -->
+<section class="slide s-cta" id="slide-15" data-title="Contact">
+  <div class="slide-inner" style="text-align:center;">
+    <div class="reveal">
+      <svg class="logo-mark" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="30" stroke="#d4a853" stroke-width="2" opacity="0.4"/>
+        <circle cx="32" cy="32" r="22" stroke="#2dd4a8" stroke-width="1.5" opacity="0.3"/>
+        <path d="M32 8 L38 24 L56 24 L42 34 L46 52 L32 42 L18 52 L22 34 L8 24 L26 24Z" fill="#d4a853" opacity="0.15" stroke="#d4a853" stroke-width="1"/>
+        <circle cx="32" cy="32" r="8" fill="none" stroke="#2dd4a8" stroke-width="1.5"/>
+        <circle cx="32" cy="32" r="3" fill="#d4a853"/>
+      </svg>
+    </div>
+    <h2 class="reveal reveal-delay-1">Join the <span class="gold">Sovereign Revolution</span></h2>
+    <p class="subtitle reveal reveal-delay-2" style="margin:0 auto;">Digital sovereignty is not a feature. It is a fundamental right. 72 million indigenous people deserve their own digital nation. Help us build it.</p>
+
+    <div class="sep reveal reveal-delay-3" style="margin:20px auto;"></div>
+
+    <div class="stats-row reveal reveal-delay-3" style="justify-content:center; max-width:600px; margin:20px auto;">
+      <div class="stat-box"><div class="stat-num gold" style="font-size:28px;">296</div><div class="stat-label">Platforms</div></div>
+      <div class="stat-box"><div class="stat-num teal" style="font-size:28px;">72M</div><div class="stat-label">People</div></div>
+      <div class="stat-box"><div class="stat-num purple" style="font-size:28px;">$47B</div><div class="stat-label">Market</div></div>
+    </div>
+
+    <div class="cta-links reveal reveal-delay-4" style="justify-content:center;">
+      <a class="cta-link" href="https://github.com/rudvincci/ierahkwa-platform" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub: rudvincci/ierahkwa-platform
+      </a>
+      <a class="cta-link" href="#" style="pointer-events:none;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 4l6 4 6-4"/><rect x="2" y="3" width="12" height="10" rx="1"/></svg>
+        MameyNode v4.2
+      </a>
+    </div>
+
+    <p class="reveal reveal-delay-5" style="font-size:18px; color:var(--gold); margin-top:36px; font-weight:700; letter-spacing:1px;">
+      Skennen'kowa &mdash; The Great Peace
+    </p>
+    <p class="reveal reveal-delay-5" style="font-size:12px; color:var(--txt3); margin-top:8px;">
+      Sovereign Government of Ierahkwa Ne Kanienke &bull; FutureHead Group &bull; 2026
+    </p>
+  </div>
+  <span class="slide-brand">IERAHKWA NE KANIENKE</span>
+  <span class="slide-counter">15 / 15</span>
+</section>
+
+</div><!-- /deck -->
+
+<script>
+/* ============================================================
+   IERAHKWA INVESTOR PRESENTATION — JavaScript
+   Navigation, Animations, Counters, Touch Support
+   ============================================================ */
+
+(function() {
+  'use strict';
+
+  // --- Configuration ---
+  const SLIDES = document.querySelectorAll('.slide');
+  const TOTAL = SLIDES.length;
+  const progressBar = document.getElementById('progress-bar');
+  const navDotsContainer = document.getElementById('nav-dots');
+  const fullscreenBtn = document.getElementById('fullscreen-btn');
+  let currentSlide = 0;
+  let isScrolling = false;
+
+  // --- Build Navigation Dots ---
+  SLIDES.forEach((slide, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    const tooltip = document.createElement('span');
+    tooltip.className = 'tooltip';
+    tooltip.textContent = slide.dataset.title || ('Slide ' + (i + 1));
+    dot.appendChild(tooltip);
+    dot.addEventListener('click', () => goToSlide(i));
+    navDotsContainer.appendChild(dot);
+  });
+
+  const navDots = document.querySelectorAll('.nav-dot');
+
+  // --- Go To Slide ---
+  function goToSlide(index) {
+    if (index < 0 || index >= TOTAL) return;
+    currentSlide = index;
+    SLIDES[index].scrollIntoView({ behavior: 'smooth' });
+    updateUI();
+  }
+
+  // --- Update UI State ---
+  function updateUI() {
+    // Progress bar
+    const pct = ((currentSlide + 1) / TOTAL) * 100;
+    progressBar.style.width = pct + '%';
+
+    // Nav dots
+    navDots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === currentSlide);
+    });
+  }
+
+  // --- Scroll Observer for Current Slide Detection ---
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+        const index = Array.from(SLIDES).indexOf(entry.target);
+        if (index !== -1) {
+          currentSlide = index;
+          updateUI();
+        }
+      }
+    });
+  }, { threshold: 0.5 });
+
+  SLIDES.forEach(slide => observer.observe(slide));
+
+  // --- Keyboard Navigation ---
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown') {
+      e.preventDefault();
+      goToSlide(currentSlide + 1);
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      goToSlide(currentSlide - 1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      goToSlide(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      goToSlide(TOTAL - 1);
+    } else if (e.key === 'f' || e.key === 'F') {
+      toggleFullscreen();
+    }
+  });
+
+  // --- Touch Swipe Support ---
+  let touchStartY = 0;
+  let touchStartX = 0;
+
+  document.addEventListener('touchstart', (e) => {
+    touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+
+  document.addEventListener('touchend', (e) => {
+    const deltaY = touchStartY - e.changedTouches[0].clientY;
+    const deltaX = touchStartX - e.changedTouches[0].clientX;
+
+    // Require minimum swipe distance
+    if (Math.abs(deltaY) > 50 && Math.abs(deltaY) > Math.abs(deltaX)) {
+      if (deltaY > 0) {
+        goToSlide(currentSlide + 1);
+      } else {
+        goToSlide(currentSlide - 1);
+      }
+    }
+  }, { passive: true });
+
+  // --- Fullscreen Toggle ---
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+  // --- Scroll Reveal Animations ---
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // --- Animated Number Counters ---
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.count);
+    if (isNaN(target)) return;
+    const prefix = el.dataset.prefix || '';
+    const suffix = el.dataset.suffix || '';
+    const useSeparator = el.dataset.separator === 'true';
+    const duration = 1800;
+    const start = performance.now();
+
+    function formatNum(n) {
+      if (useSeparator) return n.toLocaleString('en-US');
+      return n.toString();
+    }
+
+    function step(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(target * eased);
+      el.textContent = prefix + formatNum(current) + suffix;
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = prefix + formatNum(target) + suffix;
+      }
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.dataset.animated) {
+        entry.target.dataset.animated = 'true';
+        animateCounter(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+
+  // --- Bar Chart Animation ---
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.dataset.animated) {
+        entry.target.dataset.animated = 'true';
+        const bars = entry.target.querySelectorAll('.bar-fill');
+        bars.forEach((bar, i) => {
+          setTimeout(() => {
+            bar.style.width = bar.dataset.width + '%';
+          }, i * 150);
+        });
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('.bar-chart').forEach(el => barObserver.observe(el));
+
+  // --- Initial State ---
+  updateUI();
+
+})();
+</script>
+</body>
+</html>
