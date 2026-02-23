@@ -1,0 +1,54 @@
+{
+  "$schema": "https://ierahkwa.sovereign/schemas/sast-rules-v1.json",
+  "version": "1.0.0",
+  "description": "Ierahkwa Platform Custom SAST Rules",
+  "rules": [
+    {
+      "id": "CUSTOM-001",
+      "name": "Sovereign Middleware Required",
+      "severity": "HIGH",
+      "pattern": "require\\('express'\\)(?![\\s\\S]*require\\('\\.\\./shared/security'\\))",
+      "multiline": true,
+      "filePattern": "03-backend/*/server.js",
+      "description": "All Express services must import shared security middleware",
+      "recommendation": "Add: const { applySecurityMiddleware } = require('../shared/security')"
+    },
+    {
+      "id": "CUSTOM-002",
+      "name": "Health Endpoint Required",
+      "severity": "HIGH",
+      "pattern": "app\\.listen(?![\\s\\S]*/health)",
+      "multiline": true,
+      "filePattern": "03-backend/*/server.js",
+      "description": "All services must expose a /health endpoint",
+      "recommendation": "Add: app.get('/health', (req, res) => res.json({ status: 'healthy' }))"
+    },
+    {
+      "id": "CUSTOM-003",
+      "name": "No Tracking Scripts",
+      "severity": "CRITICAL",
+      "pattern": "google-analytics|gtag|facebook.*pixel|hotjar|mixpanel|amplitude|segment\\.com",
+      "filePattern": "02-plataformas-html/**/*.html",
+      "description": "Sovereign platforms must not include third-party tracking",
+      "recommendation": "Remove all tracking scripts — use analitica-soberana instead"
+    },
+    {
+      "id": "CUSTOM-004",
+      "name": "Zero Tax Enforcement",
+      "severity": "HIGH",
+      "pattern": "tax(?:Rate|_rate|Percent)\\s*[:=]\\s*(?!0)[0-9]",
+      "filePattern": "03-backend/**/*.js",
+      "description": "Platform enforces 0% tax rate — sovereign policy",
+      "recommendation": "Set tax rate to 0 per sovereign economic policy"
+    },
+    {
+      "id": "CUSTOM-005",
+      "name": "WAMPUM Token Reference",
+      "severity": "LOW",
+      "pattern": "(?:USD|EUR|GBP)(?!.*WMP|.*WAMPUM)",
+      "filePattern": "03-backend/**/*.js",
+      "description": "Financial services should reference WAMPUM (WMP) token alongside fiat currencies",
+      "recommendation": "Include WMP/WAMPUM as a supported currency"
+    }
+  ]
+}
