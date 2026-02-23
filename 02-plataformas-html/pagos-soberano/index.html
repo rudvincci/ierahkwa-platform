@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagos Soberano — Sovereign Payment Processing Platform | Ierahkwa</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--gold-d:rgba(212,168,83,0.1);--tq:#2dd4a8;--tq-d:rgba(45,212,168,0.1);--wp:#9b6dff;--red:#ff4d6a;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:10px;--accent:#00c853;--accent-d:rgba(0,200,83,0.1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* SKIP NAV */
+.skip-nav{position:absolute;top:-100%;left:16px;padding:12px 24px;background:var(--accent);color:#09090d;font-weight:700;border-radius:0 0 var(--r) var(--r);z-index:200;font-size:14px;text-decoration:none}
+.skip-nav:focus{top:0}
+
+/* FOCUS STYLES */
+:focus{outline:2px solid var(--accent);outline-offset:2px}
+:focus:not(:focus-visible){outline:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:14px 32px;display:flex;align-items:center;gap:16px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand span{font-size:24px}
+.nav-brand h1{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:1.5px}
+.nav-links{display:flex;gap:6px;margin-left:auto}
+.nav-btn{padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.nav-btn:hover{background:var(--bg3);color:var(--txt)}
+.nav-btn.primary{background:var(--accent);color:#09090d;border-color:var(--accent)}
+.nav-btn.primary:hover{filter:brightness(1.15)}
+
+/* HERO */
+.hero{text-align:center;padding:80px 32px 60px;position:relative}
+.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,200,83,0.06),transparent 70%);pointer-events:none}
+.hero-icon{font-size:56px;margin-bottom:16px;display:block}
+.hero h2{font-family:'Bebas Neue',sans-serif;font-size:56px;line-height:1.05;letter-spacing:2px;margin-bottom:16px}
+.hero h2 em{background:linear-gradient(135deg,var(--accent),var(--tq));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.hero p{font-size:18px;color:var(--txt2);max-width:600px;margin:0 auto 32px;line-height:1.6}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-btn{padding:14px 32px;border-radius:24px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.cta-btn.primary{background:var(--accent);color:#09090d}
+.cta-btn.primary:hover{filter:brightness(1.15);box-shadow:0 4px 20px rgba(0,200,83,0.3)}
+.cta-btn.secondary{background:none;border:1px solid var(--txt3);color:var(--txt)}
+.cta-btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.hero-tag{margin-top:24px;font-size:12px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+
+/* STATS */
+.stats{display:flex;justify-content:center;gap:48px;padding:40px 32px;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);flex-wrap:wrap;margin-top:40px}
+.stat{text-align:center}
+.stat .num{font-family:'IBM Plex Mono',monospace;font-size:36px;font-weight:700;color:var(--accent)}
+.stat .label{font-size:12px;color:var(--txt2);margin-top:4px}
+
+/* FEATURES */
+.features{max-width:1100px;margin:0 auto;padding:60px 32px}
+.section-header{text-align:center;margin-bottom:40px}
+.section-header h2,.section-header h3{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1.5px;margin-bottom:8px}
+.section-header p{font-size:15px;color:var(--txt2);max-width:560px;margin:0 auto}
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.feature-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:24px;transition:all 0.25s}
+.feature-card:hover{border-color:rgba(0,200,83,0.3);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.feature-card .icon{font-size:32px;margin-bottom:12px;display:block}
+.feature-card h4{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--txt)}
+.feature-card p{font-size:13px;color:var(--txt2);line-height:1.5}
+
+/* WHY SOVEREIGN */
+.why-section{max-width:1100px;margin:0 auto;padding:60px 32px}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.why-card{background:linear-gradient(135deg,var(--accent-d),rgba(45,212,168,0.04));border:1px solid rgba(0,200,83,0.15);border-radius:var(--r);padding:28px;text-align:center}
+.why-card .icon{font-size:36px;margin-bottom:12px;display:block}
+.why-card h4{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--accent)}
+.why-card p{font-size:13px;color:var(--txt2);line-height:1.6}
+
+/* FOOTER */
+.footer{text-align:center;padding:40px 32px;border-top:1px solid var(--brd)}
+.footer .brand{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);letter-spacing:1px;margin-bottom:8px}
+.footer p{font-size:12px;color:var(--txt3);line-height:1.8}
+.footer .powered{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt3);margin-top:12px}
+
+/* REDUCED MOTION */
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  .feature-card:hover{transform:none}
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .feature-grid{grid-template-columns:repeat(2,1fr)}
+  .why-grid{grid-template-columns:1fr}
+  .hero h2{font-size:40px}
+}
+@media(max-width:600px){
+  .feature-grid{grid-template-columns:1fr}
+  .hero{padding:48px 20px 40px}
+  .hero h2{font-size:32px}
+  .stats{gap:24px}
+  .stat .num{font-size:28px}
+  .nav{padding:12px 16px}
+  .features,.why-section{padding-left:16px;padding-right:16px}
+}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-nav">Skip to main content</a>
+
+<!-- NAV -->
+<nav class="nav" aria-label="Main navigation">
+  <div class="nav-brand">
+    <span aria-hidden="true">💳</span>
+    <h1>PAGOS SOBERANO</h1>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn">Features</button>
+    <button class="nav-btn">Documentation</button>
+    <button class="nav-btn primary">Get Started</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <span class="hero-icon" aria-hidden="true">💰💳</span>
+  <h2>SOVEREIGN <em>PAYMENT PROCESSING</em><br>PLATFORM</h2>
+  <p>Open-source payment infrastructure replacing Stripe, Square, PayPal, and Mercado Pago. Full control of your transactions, your funds, your economic sovereignty.</p>
+  <div class="hero-cta">
+    <button class="cta-btn primary">Start Accepting Payments</button>
+    <button class="cta-btn secondary">Explore the API</button>
+  </div>
+  <div class="hero-tag">v2.0.0 // WAMPUM Native // 3-Second Settlement // 150+ Currencies</div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+
+<!-- STATS -->
+<section class="stats" aria-label="Platform statistics">
+  <div class="stat"><div class="num">0%</div><div class="label">Transaction Fee</div></div>
+  <div class="stat"><div class="num">WAMPUM</div><div class="label">Native Token</div></div>
+  <div class="stat"><div class="num">3s</div><div class="label">Settlement Time</div></div>
+  <div class="stat"><div class="num">150+</div><div class="label">Currencies Supported</div></div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" aria-label="Platform features">
+  <div class="section-header">
+    <h2>SOVEREIGN PAYMENT TOOLKIT</h2>
+    <p>Everything you need to process payments, manage subscriptions, and build economic sovereignty without corporate intermediaries.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🔌</span>
+      <h3>Payment Gateway</h3>
+      <p>Sovereign payment gateway with end-to-end encryption. Accept credit cards, bank transfers, and digital currencies through one unified API.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🪙</span>
+      <h3>WAMPUM Token Payments</h3>
+      <p>Native support for WAMPUM token transactions. Instant settlement, zero fees, and full economic sovereignty for indigenous communities.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">📱</span>
+      <h3>QR Code Payments</h3>
+      <p>Generate and scan QR codes for instant point-of-sale payments. Works offline with mesh network support for remote communities.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">📄</span>
+      <h3>Invoice Generation</h3>
+      <p>Professional invoice creation with automatic tracking and payment reminders. Multi-language support with indigenous language templates.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🔄</span>
+      <h3>Subscription Billing</h3>
+      <p>Recurring billing engine with flexible plans, prorations, and trial periods. Community-friendly pricing models with collective discount support.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🌍</span>
+      <h3>Multi-Currency Support</h3>
+      <p>Process payments in 150+ fiat currencies and indigenous digital tokens. Real-time exchange rates with transparent conversion fees.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">📊</span>
+      <h3>Merchant Dashboard</h3>
+      <p>Real-time revenue analytics, transaction history, and settlement tracking. Customizable reports with community economic health indicators.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🛡️</span>
+      <h3>Fraud Detection</h3>
+      <p>AI-powered fraud prevention with community-trained models. Sovereign risk scoring that protects merchants without sharing data externally.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHY SOVEREIGN -->
+<section class="why-section" aria-label="Why sovereign payments">
+  <div class="section-header">
+    <h2>WHY SOVEREIGN PAYMENTS?</h2>
+    <p>Your economic activity should empower your community, not enrich payment processors.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🆓</span>
+      <h3>Zero Platform Fees</h3>
+      <p>No transaction fees, no monthly charges, no hidden costs. Every cent of your revenue stays in your community where it belongs.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🪶</span>
+      <h3>Indigenous Economic Sovereignty</h3>
+      <p>Payment infrastructure designed by and for indigenous communities. Economic self-determination without dependence on colonial financial systems.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🪙</span>
+      <h3>WAMPUM Token Native</h3>
+      <p>First-class support for WAMPUM tokens as a medium of exchange. Build circular economies within indigenous communities and beyond.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🔒</span>
+      <h3>No Data Selling</h3>
+      <p>Your transaction data is never sold, shared, or mined. No behavioral profiling, no targeted ads, no surveillance capitalism.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🏦</span>
+      <h3>Community Banking Integration</h3>
+      <p>Direct integration with community banks, credit unions, and cooperative financial institutions. Strengthen local financial ecosystems.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🌐</span>
+      <h3>Cross-Border Freedom</h3>
+      <p>Send and receive payments across borders without excessive fees or delays. Economic connection between indigenous nations worldwide.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="brand">PAGOS SOBERANO</div>
+  <p>Sovereign payment processing for a self-determined economic future.<br>No tracking. No platform fees. No corporate control over your money.</p>
+  <div class="powered">Powered by Ierahkwa | MameyNode Network | WAMPUM Token Economy</div>
+</footer>
+
+</body>
+</html>

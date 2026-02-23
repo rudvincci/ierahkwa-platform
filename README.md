@@ -8,7 +8,7 @@
 <p align="center">
   <a href="https://github.com/rudvincci/ierahkwa-platform/actions"><img src="https://github.com/rudvincci/ierahkwa-platform/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Sovereign--1.0-gold.svg" alt="License"></a>
-  <a href="#platforms"><img src="https://img.shields.io/badge/Platforms-310+-2dd4a8.svg" alt="Platforms"></a>
+  <a href="#platforms"><img src="https://img.shields.io/badge/Platforms-318+-2dd4a8.svg" alt="Platforms"></a>
   <a href="#blockchain"><img src="https://img.shields.io/badge/MameyNode-v4.2-purple.svg" alt="MameyNode"></a>
   <a href="#languages"><img src="https://img.shields.io/badge/Languages-43-9b6dff.svg" alt="Languages"></a>
   <a href="#zero-tax"><img src="https://img.shields.io/badge/Tax_Rate-0%25-ff6b4a.svg" alt="Zero Tax"></a>
@@ -22,12 +22,12 @@
 </p>
 
 <p align="center">
-  <strong>51+ sovereign platforms replacing Big Tech for indigenous communities across 19 countries.</strong><br>
+  <strong>59+ sovereign platforms replacing Big Tech for indigenous communities across 19 countries.</strong><br>
   <strong>Zero taxes. Free schools. Free hospitals. Post-quantum encryption.</strong>
 </p>
 
 <p align="center">
-  <em>51+ plataformas soberanas reemplazando Big Tech para comunidades indigenas en 19 paises.</em><br>
+  <em>59+ plataformas soberanas reemplazando Big Tech para comunidades indigenas en 19 paises.</em><br>
   <em>Cero impuestos. Escuelas gratis. Hospitales gratis. Encriptacion post-cuantica.</em>
 </p>
 
@@ -39,7 +39,7 @@
 - [Quick Start](#quick-start)
 - [Architecture](#architecture)
 - [Project Structure](#project-structure)
-- [Platforms (310+)](#platforms)
+- [Platforms (318+)](#platforms)
 - [Services & Ports](#services--ports)
 - [Technology Stack](#tech-stack)
 - [Continuous AI](#-continuous-ai--agentic-workflows)
@@ -67,7 +67,7 @@ All services run on **MameyNode**, a post-quantum blockchain with **12,847 TPS**
 | Indigenous people served | **72M+** across the Americas |
 | Countries | **19** |
 | Tribal nations | **574** (NCAI recognized) |
-| Platforms | **310+** (51 flagship) |
+| Platforms | **318+** (59 flagship) |
 | Languages | **43** (37 indigenous + 6 global) |
 | Tax rate | **0%** |
 | Blockchain TPS | **12,847** |
@@ -181,7 +181,7 @@ All services bind to `127.0.0.1` only. All traffic encrypted with post-quantum a
 ```
 ierahkwa-platform/
 ├── 01-documentos/              Legal framework, investors, whitepapers
-├── 02-plataformas-html/        51 platform front-end UIs
+├── 02-plataformas-html/        59 platform front-end UIs
 ├── 03-backend/                 19 Node.js services
 │   ├── api-gateway/            API Gateway
 │   ├── blockchain-api/         MameyNode RPC interface
@@ -248,7 +248,7 @@ ierahkwa-platform/
 ---
 
 <a name="platforms"></a>
-## Platforms (51 Flagship)
+## Platforms (59 Flagship)
 
 | # | Platform | Replaces | Category |
 |---|----------|----------|----------|
@@ -300,6 +300,14 @@ ierahkwa-platform/
 | 46 | Conferencia Soberana | Jitsi Meet | Video Conferencing |
 | 47 | Robótica Soberana | ROS/NVIDIA Isaac | Sovereign Robotics & Automation |
 | 48 | Ecosistema Abierto | GitHub Collections | Sovereign Open Source Ecosystem |
+| 49 | Analítica Soberana | Google Analytics/Mixpanel | Sovereign Analytics & Business Intelligence |
+| 50 | CDN Soberano | Cloudflare/AWS CloudFront | Sovereign Content Delivery Network |
+| 51 | Dev Soberano | Dev.to/Medium Engineering | Sovereign Developer Portal & Engineering Hub |
+| 52 | Gobierno Soberano | Gov.uk/Code for America | Sovereign Civic Technology Platform |
+| 53 | Pagos Soberano | Stripe/PayPal/Square | Sovereign Payment Processing Platform |
+| 54 | IoT Soberano | AWS IoT/Azure IoT Hub | Sovereign Internet of Things Platform |
+| 55 | Marketing Soberano | HubSpot/Mailchimp | Sovereign Marketing & Community Engagement |
+| 56 | Datos Soberano | Snowflake/BigQuery/Tableau | Sovereign Data Platform & Warehouse |
 
 ---
 
@@ -366,7 +374,7 @@ ierahkwa-platform/
 | **Backend** | Rust | MameyForge CLI + gRPC blockchain SDK |
 | **Backend** | Go | Microservices + API SDKs |
 | **AI** | Python | MameyFutureAI (42 engines), fraud detection |
-| **Frontend** | HTML/CSS/JS | 310+ responsive platforms |
+| **Frontend** | HTML/CSS/JS | 318+ responsive platforms |
 | **Frontend** | Blazor | MameyNode.UI + Pupitre education |
 | **Database** | PostgreSQL 16 | Primary relational data |
 | **Cache** | Redis 7 | Sessions, rate limiting, pub/sub |

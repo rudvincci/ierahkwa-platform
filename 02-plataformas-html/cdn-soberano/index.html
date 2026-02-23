@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CDN Soberano — Sovereign Content Delivery Network | Ierahkwa</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--gold-d:rgba(212,168,83,0.1);--tq:#2dd4a8;--tq-d:rgba(45,212,168,0.1);--wp:#9b6dff;--red:#ff4d6a;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:10px;--accent:#f50057;--accent-d:rgba(245,0,87,0.1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* SKIP NAV */
+.skip-nav{position:absolute;top:-100%;left:16px;padding:12px 24px;background:var(--accent);color:#fff;font-weight:700;border-radius:0 0 var(--r) var(--r);z-index:200;font-size:14px;text-decoration:none}
+.skip-nav:focus{top:0}
+
+/* FOCUS STYLES */
+:focus{outline:2px solid var(--accent);outline-offset:2px}
+:focus:not(:focus-visible){outline:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:14px 32px;display:flex;align-items:center;gap:16px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand span{font-size:24px}
+.nav-brand h1{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:1.5px}
+.nav-links{display:flex;gap:6px;margin-left:auto}
+.nav-btn{padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.nav-btn:hover{background:var(--bg3);color:var(--txt)}
+.nav-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.nav-btn.primary:hover{filter:brightness(1.15)}
+
+/* HERO */
+.hero{text-align:center;padding:80px 32px 60px;position:relative}
+.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(245,0,87,0.06),transparent 70%);pointer-events:none}
+.hero-icon{font-size:56px;margin-bottom:16px;display:block}
+.hero h2{font-family:'Bebas Neue',sans-serif;font-size:56px;line-height:1.05;letter-spacing:2px;margin-bottom:16px}
+.hero h2 em{background:linear-gradient(135deg,var(--accent),var(--tq));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.hero p{font-size:18px;color:var(--txt2);max-width:600px;margin:0 auto 32px;line-height:1.6}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-btn{padding:14px 32px;border-radius:24px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.cta-btn.primary{background:var(--accent);color:#fff}
+.cta-btn.primary:hover{filter:brightness(1.15);box-shadow:0 4px 20px rgba(245,0,87,0.3)}
+.cta-btn.secondary{background:none;border:1px solid var(--txt3);color:var(--txt)}
+.cta-btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.hero-tag{margin-top:24px;font-size:12px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+
+/* STATS */
+.stats{display:flex;justify-content:center;gap:48px;padding:40px 32px;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);flex-wrap:wrap;margin-top:40px}
+.stat{text-align:center}
+.stat .num{font-family:'IBM Plex Mono',monospace;font-size:36px;font-weight:700;color:var(--accent)}
+.stat .label{font-size:12px;color:var(--txt2);margin-top:4px}
+
+/* FEATURES */
+.features{max-width:1100px;margin:0 auto;padding:60px 32px}
+.section-header{text-align:center;margin-bottom:40px}
+.section-header h2,.section-header h3{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1.5px;margin-bottom:8px}
+.section-header p{font-size:15px;color:var(--txt2);max-width:560px;margin:0 auto}
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.feature-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:24px;transition:all 0.25s}
+.feature-card:hover{border-color:rgba(245,0,87,0.3);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.feature-card .icon{font-size:32px;margin-bottom:12px;display:block}
+.feature-card h4{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--txt)}
+.feature-card p{font-size:13px;color:var(--txt2);line-height:1.5}
+
+/* WHY SOVEREIGN */
+.why-section{max-width:1100px;margin:0 auto;padding:60px 32px}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.why-card{background:linear-gradient(135deg,var(--accent-d),rgba(45,212,168,0.04));border:1px solid rgba(245,0,87,0.15);border-radius:var(--r);padding:28px;text-align:center}
+.why-card .icon{font-size:36px;margin-bottom:12px;display:block}
+.why-card h4{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--accent)}
+.why-card p{font-size:13px;color:var(--txt2);line-height:1.6}
+
+/* FOOTER */
+.footer{text-align:center;padding:40px 32px;border-top:1px solid var(--brd)}
+.footer .brand{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);letter-spacing:1px;margin-bottom:8px}
+.footer p{font-size:12px;color:var(--txt3);line-height:1.8}
+.footer .powered{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt3);margin-top:12px}
+
+/* REDUCED MOTION */
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  .feature-card:hover{transform:none}
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .feature-grid{grid-template-columns:repeat(2,1fr)}
+  .why-grid{grid-template-columns:1fr}
+  .hero h2{font-size:40px}
+}
+@media(max-width:600px){
+  .feature-grid{grid-template-columns:1fr}
+  .hero{padding:48px 20px 40px}
+  .hero h2{font-size:32px}
+  .stats{gap:24px}
+  .stat .num{font-size:28px}
+  .nav{padding:12px 16px}
+  .features,.why-section{padding-left:16px;padding-right:16px}
+}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-nav">Skip to main content</a>
+
+<!-- NAV -->
+<nav class="nav" aria-label="Main navigation">
+  <div class="nav-brand">
+    <span aria-hidden="true">🌐</span>
+    <h1>CDN SOBERANO</h1>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn">Features</button>
+    <button class="nav-btn">Documentation</button>
+    <button class="nav-btn primary">Get Started</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <span class="hero-icon" aria-hidden="true">🌐⚡</span>
+  <h2>SOVEREIGN <em>CONTENT DELIVERY</em><br>NETWORK</h2>
+  <p>Open-source CDN replacing Cloudflare, AWS CloudFront, and Akamai. Full control of your traffic, your routes, your infrastructure.</p>
+  <div class="hero-cta">
+    <button class="cta-btn primary">Activate Your CDN</button>
+    <button class="cta-btn secondary">Explore the Network</button>
+  </div>
+  <div class="hero-tag">v4.2.0 // Global Edge Network // Zero Surveillance // Sovereign DNS</div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+
+<!-- STATS -->
+<section class="stats" aria-label="Platform statistics">
+  <div class="stat"><div class="num">&lt;50ms</div><div class="label">Global Latency</div></div>
+  <div class="stat"><div class="num">99.99%</div><div class="label">Uptime</div></div>
+  <div class="stat"><div class="num">Sovereign</div><div class="label">DNS</div></div>
+  <div class="stat"><div class="num">Zero</div><div class="label">Surveillance</div></div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" aria-label="Platform features">
+  <div class="section-header">
+    <h2>SOVEREIGN CDN TOOLKIT</h2>
+    <p>Everything you need to deliver content globally at blazing speed without corporate gatekeepers controlling your traffic.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🌍</span>
+      <h3>Global Edge Network</h3>
+      <p>Distributed edge nodes across sovereign territories worldwide. Content cached at the network edge for sub-50ms delivery to any region.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🛡️</span>
+      <h3>DDoS Protection</h3>
+      <p>Multi-layer DDoS mitigation with traffic scrubbing, rate limiting, and intelligent challenge pages. Protection without surveillance.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🔗</span>
+      <h3>DNS Management</h3>
+      <p>Sovereign DNS with DNSSEC, geo-routing, and failover. Sub-millisecond resolution on sovereign root servers independent of ICANN control.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🔒</span>
+      <h3>SSL/TLS Automation</h3>
+      <p>Automatic certificate provisioning, renewal, and deployment. Wildcard SSL, HTTP/3, and QUIC protocol support out of the box.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">⚖️</span>
+      <h3>Load Balancing</h3>
+      <p>Intelligent traffic distribution with health checks, weighted routing, and geographic load balancing. Zero single points of failure.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🖼️</span>
+      <h3>Image Optimization</h3>
+      <p>On-the-fly image resizing, WebP/AVIF conversion, and lazy loading integration. Serve perfectly optimized assets for every device.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🔌</span>
+      <h3>WebSocket Proxy</h3>
+      <p>Full WebSocket and Server-Sent Events proxying for real-time applications. Low-latency bidirectional communication through the edge.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🚦</span>
+      <h3>Rate Limiting</h3>
+      <p>Granular rate limiting by IP, API key, or custom rules. Protect your origin servers while maintaining fair access for all users.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHY SOVEREIGN -->
+<section class="why-section" aria-label="Why sovereign CDN">
+  <div class="section-header">
+    <h2>WHY SOVEREIGN CDN?</h2>
+    <p>Your content delivery should serve your users, not surveil them.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🚫</span>
+      <h4>No Traffic Surveillance</h4>
+      <p>Zero traffic inspection, zero metadata harvesting, zero user profiling. Your traffic data is never analyzed for advertising purposes.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🪶</span>
+      <h4>Indigenous Data Routes</h4>
+      <p>Traffic routed through indigenous-controlled infrastructure. Data paths that respect territorial sovereignty and community jurisdiction.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🌐</span>
+      <h4>Sovereign DNS Roots</h4>
+      <p>Independent DNS root servers not controlled by any corporation or government. True domain name sovereignty for your digital identity.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🏘️</span>
+      <h4>Community Infrastructure</h4>
+      <p>Edge nodes owned and operated by local communities. Infrastructure investment stays in the community and builds collective capacity.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🔓</span>
+      <h4>Zero Censorship Risk</h4>
+      <p>No single entity can deplatform your content. Decentralized governance ensures no corporate or state censorship of legitimate speech.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🔀</span>
+      <h4>Decentralized Nodes</h4>
+      <p>Fully decentralized node network with no central point of control. Community-operated nodes with transparent governance and shared revenue.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="brand">CDN SOBERANO</div>
+  <p>Sovereign content delivery for a self-determined future.<br>No surveillance. No censorship. No corporate gatekeeping of your traffic.</p>
+  <div class="powered">Powered by Ierahkwa | MameyNode Network | WAMPUM Token Economy</div>
+</footer>
+
+</body>
+</html>
