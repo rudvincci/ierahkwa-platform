@@ -470,3 +470,59 @@ jobs:
           done
           echo ""
           echo "Audit completed. $AUDIT_ISSUES service(s) with critical vulnerabilities."
+
+  # ──────────────────────────────────────────────
+  # Accessibility Audit
+  # ──────────────────────────────────────────────
+  accessibility:
+    name: Accessibility Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run Accessibility Audit
+        run: node 04-infraestructura/accessibility/a11y-audit.js --report
+      - name: Check Audit Score
+        run: |
+          SCORE=$(node -e "
+            const { auditAll } = require('./04-infraestructura/accessibility/a11y-audit.js');
+            const audits = auditAll();
+            const avg = Math.round(audits.reduce((s, a) => s + a.score, 0) / audits.length);
+            console.log(avg);
+          ")
+          echo "Accessibility Score: $SCORE%"
+          if [ "$SCORE" -lt 70 ]; then
+            echo "::error::Accessibility score $SCORE% is below minimum threshold of 70%"
+            exit 1
+          fi
+      - name: Upload Audit Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-report
+          path: ACCESSIBILITY-REPORT.md
+
+  # ──────────────────────────────────────────────
+  # Expanded Service Tests
+  # ──────────────────────────────────────────────
+  expanded-tests:
+    name: Expanded Service Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [conferencia-soberana, empresa-soberana, vigilancia-soberana, blockchain-api, voto-soberano]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: |
+          cd 03-backend/${{ matrix.service }}
+          npm install --if-present
+      - name: Run tests
+        run: |
+          cd 03-backend/${{ matrix.service }}
+          npx jest --passWithNoTests --forceExit

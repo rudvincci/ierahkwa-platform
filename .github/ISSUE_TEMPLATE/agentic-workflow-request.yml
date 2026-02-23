@@ -1,0 +1,71 @@
+name: Agentic Workflow Request
+description: Request a new Continuous AI workflow for the repository
+title: "[Workflow] "
+labels: ["continuous-ai", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🤖 Agentic Workflow Request
+        Suggest a new automated workflow powered by GitHub Agentic Workflows.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Workflow Category
+      options:
+        - Continuous Triage (issue management)
+        - Continuous Documentation (docs sync)
+        - Continuous Testing (test coverage)
+        - Continuous Security (vulnerability monitoring)
+        - Continuous Quality (code review)
+        - Continuous Reporting (status reports)
+        - Continuous Translation (i18n/l10n)
+        - Continuous Accessibility (a11y auditing)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What should this workflow do?
+      description: Describe the outcome you want in plain language
+      placeholder: |
+        Example: "Every time a new platform is added to 02-plataformas-html/,
+        automatically verify it has all required sections (hero, features, footer)
+        and meets our sovereign branding guidelines."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: trigger
+    attributes:
+      label: When should it run?
+      options:
+        - On every push to main
+        - On pull request
+        - Daily
+        - Weekly
+        - On new issues
+        - On schedule (custom)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: output
+    attributes:
+      label: What should it produce?
+      options:
+        - Issue with findings
+        - Comment on PR
+        - Pull request with fixes
+        - Status report
+        - Labels on issues
+
+  - type: textarea
+    id: guardrails
+    attributes:
+      label: Safety constraints
+      description: What should this workflow NOT be allowed to do?
+      placeholder: "Should not auto-merge, should not modify security-critical files"
