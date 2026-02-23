@@ -104,10 +104,13 @@
 @media(max-width:768px){.app{grid-template-columns:1fr}.sidebar{display:none}.main{padding:12px}.video-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.video-grid{grid-template-columns:1fr}}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+:focus-visible{outline:2px solid #d4a853;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
-<div class="app">
+<a href="#main" class="skip-nav" style="position:absolute;top:-40px;left:0;background:#d4a853;color:#09090d;padding:8px 16px;z-index:10000;font-weight:700;transition:top .2s" onfocus="this.style.top='0'" onblur="this.style.top='-40px'">Skip to main content</a>
+<main id="main" class="app">
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -364,6 +367,6 @@
   </div>
 
 </div>
-</div>
+</main>
 </body>
 </html>

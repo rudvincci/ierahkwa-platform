@@ -103,9 +103,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-
   .threat-bar{gap:16px;padding:16px}
 }
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+:focus-visible{outline:2px solid #d4a853;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-nav" style="position:absolute;top:-40px;left:0;background:#d4a853;color:#09090d;padding:8px 16px;z-index:10000;font-weight:700;transition:top .2s" onfocus="this.style.top='0'" onblur="this.style.top='-40px'">Skip to main content</a>
 
 <!-- NAV -->
 <nav class="nav">
@@ -124,6 +127,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-
   </div>
 </nav>
 
+<main id="main">
 <!-- THREAT STATUS BAR -->
 <div class="threat-bar">
   <div class="threat-item"><span class="indicator green"></span> Network: Operational</div>
@@ -248,6 +252,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-
     </div>
   </div>
 </section>
+
+</main>
 
 <!-- FOOTER -->
 <footer class="footer">
