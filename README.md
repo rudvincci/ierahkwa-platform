@@ -8,7 +8,7 @@
 <p align="center">
   <a href="https://github.com/rudvincci/ierahkwa-platform/actions"><img src="https://github.com/rudvincci/ierahkwa-platform/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Sovereign--1.0-gold.svg" alt="License"></a>
-  <a href="#platforms"><img src="https://img.shields.io/badge/Platforms-296+-2dd4a8.svg" alt="Platforms"></a>
+  <a href="#platforms"><img src="https://img.shields.io/badge/Platforms-306+-2dd4a8.svg" alt="Platforms"></a>
   <a href="#blockchain"><img src="https://img.shields.io/badge/MameyNode-v4.2-purple.svg" alt="MameyNode"></a>
   <a href="#languages"><img src="https://img.shields.io/badge/Languages-43-9b6dff.svg" alt="Languages"></a>
   <a href="#zero-tax"><img src="https://img.shields.io/badge/Tax_Rate-0%25-ff6b4a.svg" alt="Zero Tax"></a>
@@ -22,12 +22,12 @@
 </p>
 
 <p align="center">
-  <strong>35+ sovereign platforms replacing Big Tech for indigenous communities across 19 countries.</strong><br>
+  <strong>46+ sovereign platforms replacing Big Tech for indigenous communities across 19 countries.</strong><br>
   <strong>Zero taxes. Free schools. Free hospitals. Post-quantum encryption.</strong>
 </p>
 
 <p align="center">
-  <em>35+ plataformas soberanas reemplazando Big Tech para comunidades indigenas en 19 paises.</em><br>
+  <em>46+ plataformas soberanas reemplazando Big Tech para comunidades indigenas en 19 paises.</em><br>
   <em>Cero impuestos. Escuelas gratis. Hospitales gratis. Encriptacion post-cuantica.</em>
 </p>
 
@@ -64,12 +64,12 @@ All services run on **MameyNode**, a post-quantum blockchain with **12,847 TPS**
 | Indigenous people served | **72M+** across the Americas |
 | Countries | **19** |
 | Tribal nations | **574** (NCAI recognized) |
-| Platforms | **296+** (35 flagship) |
+| Platforms | **306+** (46 flagship) |
 | Languages | **43** (37 indigenous + 6 global) |
 | Tax rate | **0%** |
 | Blockchain TPS | **12,847** |
 | .NET microservices | **37+** |
-| Node.js services | **16** |
+| Node.js services | **19** |
 | Mamey Framework projects | **139** |
 
 ---
@@ -178,8 +178,8 @@ All services bind to `127.0.0.1` only. All traffic encrypted with post-quantum a
 ```
 ierahkwa-platform/
 ├── 01-documentos/              Legal framework, investors, whitepapers
-├── 02-plataformas-html/        35 platform front-end UIs
-├── 03-backend/                 16 Node.js services
+├── 02-plataformas-html/        46 platform front-end UIs
+├── 03-backend/                 19 Node.js services
 │   ├── api-gateway/            API Gateway
 │   ├── blockchain-api/         MameyNode RPC interface
 │   ├── plataforma-principal/   BDET Bank core
@@ -245,7 +245,7 @@ ierahkwa-platform/
 ---
 
 <a name="platforms"></a>
-## Platforms (35 Flagship)
+## Platforms (46 Flagship)
 
 | # | Platform | Replaces | Category |
 |---|----------|----------|----------|
@@ -285,6 +285,16 @@ ierahkwa-platform/
 | 34 | Turismo Soberano | TripAdvisor | Cultural Tourism |
 | 35 | Soberano Freelance | Fiverr | Gig Marketplace |
 | 36 | Soberano POS | Square | Point of Sale |
+| 37 | Ofimatica Soberana | LibreOffice | Office Suite |
+| 38 | Media Soberana | VLC Media Player | Media Player |
+| 39 | Diseño Soberano | GIMP | Design Studio |
+| 40 | Navegador Soberano | Mozilla Firefox | Privacy Browser |
+| 41 | Llave Soberana | Bitwarden | Password Manager |
+| 42 | Transferencia Soberana | FileZilla | File Transfer |
+| 43 | Proyecto Soberano | OpenProject | Project Management |
+| 44 | Vigilancia Soberana | Wazuh | Security Monitoring (SIEM) |
+| 45 | Empresa Soberana | Odoo | ERP System |
+| 46 | Conferencia Soberana | Jitsi Meet | Video Conferencing |
 
 ---
 
@@ -322,6 +332,9 @@ ierahkwa-platform/
 | Image Upload | 3300 | Media upload service |
 | Forex Trading | 3400 | Forex trading engine |
 | Smart School | 3500 | Education platform |
+| Conferencia Soberana | 3090 | Video conferencing (replaces Zoom) |
+| Vigilancia Soberana | 3091 | Security monitoring (SIEM) |
+| Empresa Soberana | 3092 | Enterprise resource planning (ERP) |
 
 ### Infrastructure
 
@@ -344,7 +357,7 @@ ierahkwa-platform/
 | **Token** | Wampum (WMP) | 720M max supply, 0.1% burn, governance + gas |
 | **Stablecoin** | SICBDC | Central bank digital currency |
 | **Backend** | .NET 10 | 139 framework projects + 37 microservices |
-| **Backend** | Node.js 22 | 16 sovereign services |
+| **Backend** | Node.js 22 | 19 sovereign services |
 | **Backend** | Rust | MameyForge CLI + gRPC blockchain SDK |
 | **Backend** | Go | Microservices + API SDKs |
 | **AI** | Python | MameyFutureAI (42 engines), fraud detection |

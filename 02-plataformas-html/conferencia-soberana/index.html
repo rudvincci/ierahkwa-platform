@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConferenciaSoberana — Sovereign Video Conferencing | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--gold-d:rgba(212,168,83,0.1);--tq:#2dd4a8;--tq-d:rgba(45,212,168,0.1);--wp:#9b6dff;--red:#ff4d6a;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:10px;--accent:#2979ff;--accent-d:rgba(41,121,255,0.1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:14px 32px;display:flex;align-items:center;gap:16px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand span{font-size:24px}
+.nav-brand h1{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:1.5px}
+.nav-links{display:flex;gap:6px;margin-left:auto}
+.nav-btn{padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.nav-btn:hover{background:var(--bg3);color:var(--txt)}
+.nav-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.nav-btn.primary:hover{filter:brightness(1.15)}
+
+/* HERO */
+.hero{text-align:center;padding:80px 32px 60px;position:relative}
+.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(41,121,255,0.06),transparent 70%);pointer-events:none}
+.hero-icon{font-size:56px;margin-bottom:16px;display:block}
+.hero h2{font-family:'Bebas Neue',sans-serif;font-size:56px;line-height:1.05;letter-spacing:2px;margin-bottom:16px}
+.hero h2 em{background:linear-gradient(135deg,var(--accent),var(--tq));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.hero p{font-size:18px;color:var(--txt2);max-width:600px;margin:0 auto 32px;line-height:1.6}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-btn{padding:14px 32px;border-radius:24px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.cta-btn.primary{background:var(--accent);color:#fff}
+.cta-btn.primary:hover{filter:brightness(1.15);box-shadow:0 4px 20px rgba(41,121,255,0.3)}
+.cta-btn.secondary{background:none;border:1px solid var(--txt3);color:var(--txt)}
+.cta-btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.hero-tag{margin-top:24px;font-size:12px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+
+/* QUICK JOIN */
+.quick-join{max-width:520px;margin:-20px auto 0;padding:0 32px}
+.join-bar{display:flex;gap:8px;background:var(--bg2);border:1px solid var(--brd);border-radius:28px;padding:6px 6px 6px 20px;align-items:center}
+.join-bar input{flex:1;background:none;border:none;color:var(--txt);font-size:14px;font-family:'DM Sans',sans-serif;outline:none}
+.join-bar input::placeholder{color:var(--txt3)}
+.join-bar button{padding:10px 24px;border-radius:22px;background:var(--accent);color:#fff;border:none;font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:filter 0.2s;white-space:nowrap}
+.join-bar button:hover{filter:brightness(1.15)}
+
+/* STATS */
+.stats{display:flex;justify-content:center;gap:48px;padding:40px 32px;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);flex-wrap:wrap;margin-top:40px}
+.stat{text-align:center}
+.stat .num{font-family:'IBM Plex Mono',monospace;font-size:36px;font-weight:700;color:var(--accent)}
+.stat .label{font-size:12px;color:var(--txt2);margin-top:4px}
+
+/* FEATURES */
+.features{max-width:1100px;margin:0 auto;padding:60px 32px}
+.section-header{text-align:center;margin-bottom:40px}
+.section-header h3{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1.5px;margin-bottom:8px}
+.section-header p{font-size:15px;color:var(--txt2);max-width:560px;margin:0 auto}
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.feature-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:24px;transition:all 0.25s}
+.feature-card:hover{border-color:rgba(41,121,255,0.3);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.feature-card .icon{font-size:32px;margin-bottom:12px;display:block}
+.feature-card h4{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--txt)}
+.feature-card p{font-size:13px;color:var(--txt2);line-height:1.5}
+
+/* COMPARISON */
+.comparison{max-width:800px;margin:0 auto;padding:40px 32px 60px}
+.comp-table{width:100%;border-collapse:collapse}
+.comp-table th,.comp-table td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--brd);font-size:13px}
+.comp-table th{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);font-weight:700;background:var(--bg2)}
+.comp-table td:first-child{color:var(--txt2)}
+.comp-table .yes{color:var(--tq);font-weight:700}
+.comp-table .no{color:var(--txt3)}
+.comp-table .highlight{color:var(--accent);font-weight:700}
+
+/* WHY SOVEREIGN */
+.why-section{max-width:1100px;margin:0 auto;padding:60px 32px}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.why-card{background:linear-gradient(135deg,var(--accent-d),rgba(45,212,168,0.04));border:1px solid rgba(41,121,255,0.15);border-radius:var(--r);padding:28px;text-align:center}
+.why-card .icon{font-size:36px;margin-bottom:12px;display:block}
+.why-card h4{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--accent)}
+.why-card p{font-size:13px;color:var(--txt2);line-height:1.6}
+
+/* FOOTER */
+.footer{text-align:center;padding:40px 32px;border-top:1px solid var(--brd)}
+.footer .brand{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);letter-spacing:1px;margin-bottom:8px}
+.footer p{font-size:12px;color:var(--txt3);line-height:1.8}
+.footer .powered{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt3);margin-top:12px}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .feature-grid{grid-template-columns:repeat(2,1fr)}
+  .why-grid{grid-template-columns:1fr}
+  .hero h2{font-size:40px}
+  .comp-table{font-size:12px}
+}
+@media(max-width:600px){
+  .feature-grid{grid-template-columns:1fr}
+  .hero{padding:48px 20px 40px}
+  .hero h2{font-size:32px}
+  .stats{gap:24px}
+  .stat .num{font-size:28px}
+  .nav{padding:12px 16px}
+  .features,.why-section,.comparison{padding-left:16px;padding-right:16px}
+  .quick-join{padding:0 16px}
+  .comp-table th,.comp-table td{padding:8px 10px;font-size:11px}
+}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <span>📹</span>
+    <h1>CONFERENCIA SOBERANA</h1>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn">Features</button>
+    <button class="nav-btn">Self-Host</button>
+    <button class="nav-btn primary">Start a Meeting</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="hero-icon">📹🌍</span>
+  <h2>SOVEREIGN <em>VIDEO CONFERENCING</em><br>NO ACCOUNT NEEDED</h2>
+  <p>HD video calls, screen sharing, recording, and breakout rooms. End-to-end encrypted. No sign-up required. No corporate surveillance on your conversations.</p>
+  <div class="hero-cta">
+    <button class="cta-btn primary">Start Instant Meeting</button>
+    <button class="cta-btn secondary">Schedule a Conference</button>
+  </div>
+  <div class="hero-tag">v3.2.0 // E2E Encrypted // Up to 500 Participants</div>
+</section>
+
+<!-- QUICK JOIN -->
+<div class="quick-join">
+  <div class="join-bar">
+    <input type="text" placeholder="Enter a meeting code or link..." />
+    <button>Join Meeting</button>
+  </div>
+</div>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stat"><div class="num">1M+</div><div class="label">Meetings Hosted</div></div>
+  <div class="stat"><div class="num">500</div><div class="label">Max Participants</div></div>
+  <div class="stat"><div class="num">Zero</div><div class="label">Accounts Required</div></div>
+  <div class="stat"><div class="num">100%</div><div class="label">Open Source</div></div>
+  <div class="stat"><div class="num">E2E</div><div class="label">Encrypted Always</div></div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="section-header">
+    <h3>EVERYTHING FOR SOVEREIGN MEETINGS</h3>
+    <p>Professional video conferencing without sacrificing privacy or sovereignty.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="icon">📹</span>
+      <h4>HD Video & Audio</h4>
+      <p>Crystal-clear 1080p video with adaptive bitrate, noise suppression, and echo cancellation powered by sovereign AI.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">🖥️</span>
+      <h4>Screen Sharing</h4>
+      <p>Share your entire screen, a window, or a specific tab. Includes remote control and collaborative annotation tools.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">🔴</span>
+      <h4>Cloud Recording</h4>
+      <p>Record meetings to sovereign cloud storage. Automatic transcription in 14+ languages via Atabey AI translation.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">🚪</span>
+      <h4>Breakout Rooms</h4>
+      <p>Split meetings into breakout rooms for small group discussions. Auto-assign or manual, with timer support.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">💬</span>
+      <h4>Integrated Chat</h4>
+      <p>Real-time chat with file sharing, emojis, polls, and Q&A. Messages are encrypted and persist after meetings.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">🌍</span>
+      <h4>Live Captions</h4>
+      <p>Real-time AI captions in 14 indigenous languages and 30+ global languages. Powered by the Atabey translation engine.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">🎨</span>
+      <h4>Virtual Backgrounds</h4>
+      <p>Professional and cultural virtual backgrounds. Blur, custom images, or choose from sovereign-themed galleries.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">🔒</span>
+      <h4>E2E Encryption</h4>
+      <p>Every call is end-to-end encrypted by default. Post-quantum cryptography ensures calls stay private forever.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section class="comparison">
+  <div class="section-header">
+    <h3>HOW WE COMPARE</h3>
+    <p>ConferenciaSoberana vs. corporate video platforms.</p>
+  </div>
+  <table class="comp-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>ConferenciaSoberana</th>
+        <th>Zoom</th>
+        <th>Google Meet</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>E2E Encryption</td><td class="yes highlight">Always On</td><td class="no">Optional</td><td class="no">No</td></tr>
+      <tr><td>No Account Required</td><td class="yes highlight">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+      <tr><td>Self-Hostable</td><td class="yes highlight">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+      <tr><td>Open Source</td><td class="yes highlight">100%</td><td class="no">No</td><td class="no">No</td></tr>
+      <tr><td>Data Mining</td><td class="yes highlight">Zero</td><td class="no">Extensive</td><td class="no">Extensive</td></tr>
+      <tr><td>Indigenous Language Captions</td><td class="yes highlight">14 Languages</td><td class="no">No</td><td class="no">No</td></tr>
+      <tr><td>WAMPUM Payments</td><td class="yes highlight">Built-In</td><td class="no">No</td><td class="no">No</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- WHY SOVEREIGN -->
+<section class="why-section">
+  <div class="section-header">
+    <h3>WHY SOVEREIGN VIDEO?</h3>
+    <p>Your conversations are private. Your meetings are your own. No eavesdroppers.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="icon">🎙️</span>
+      <h4>Your Words Stay Yours</h4>
+      <p>Corporate platforms record, transcribe, and analyze your meetings for AI training. ConferenciaSoberana encrypts everything end-to-end.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon">🏠</span>
+      <h4>Self-Host Anywhere</h4>
+      <p>Run your own video server on sovereign infrastructure. No dependency on AWS, Google Cloud, or any Big Tech provider.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon">🗣️</span>
+      <h4>Language Sovereignty</h4>
+      <p>Live captions and translation in Quechua, Aymara, Maya, Nahuatl, and 10 more indigenous languages via Atabey AI.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="brand">CONFERENCIA SOBERANA</div>
+  <p>Sovereign video conferencing for a connected world.<br>No tracking. No sign-up. No corporate surveillance on your conversations.</p>
+  <div class="powered">Powered by Ierahkwa | MameyNode Network | WAMPUM Token Economy</div>
+</footer>
+
+</body>
+</html>

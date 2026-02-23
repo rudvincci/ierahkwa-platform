@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TransferenciaSoberana — Sovereign File Transfer | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--gold-d:rgba(212,168,83,0.1);--tq:#2dd4a8;--tq-d:rgba(45,212,168,0.1);--wp:#9b6dff;--red:#ff4d6a;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:10px;--accent:#00bcd4;--accent-d:rgba(0,188,212,0.1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:14px 32px;display:flex;align-items:center;gap:16px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand span{font-size:24px}
+.nav-brand h1{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:1.5px}
+.nav-links{display:flex;gap:6px;margin-left:auto}
+.nav-btn{padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.nav-btn:hover{background:var(--bg3);color:var(--txt)}
+.nav-btn.primary{background:var(--accent);color:#09090d;border-color:var(--accent)}
+.nav-btn.primary:hover{filter:brightness(1.15)}
+
+/* HERO */
+.hero{text-align:center;padding:80px 32px 60px;position:relative}
+.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,188,212,0.06),transparent 70%);pointer-events:none}
+.hero-icon{font-size:56px;margin-bottom:16px;display:block}
+.hero h2{font-family:'Bebas Neue',sans-serif;font-size:56px;line-height:1.05;letter-spacing:2px;margin-bottom:16px}
+.hero h2 em{background:linear-gradient(135deg,var(--accent),var(--tq));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.hero p{font-size:18px;color:var(--txt2);max-width:600px;margin:0 auto 32px;line-height:1.6}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-btn{padding:14px 32px;border-radius:24px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.cta-btn.primary{background:var(--accent);color:#09090d}
+.cta-btn.primary:hover{filter:brightness(1.15);box-shadow:0 4px 20px rgba(0,188,212,0.3)}
+.cta-btn.secondary{background:none;border:1px solid var(--txt3);color:var(--txt)}
+.cta-btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.hero-tag{margin-top:24px;font-size:12px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+
+/* STATS */
+.stats{display:flex;justify-content:center;gap:48px;padding:40px 32px;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);flex-wrap:wrap}
+.stat{text-align:center}
+.stat .num{font-family:'IBM Plex Mono',monospace;font-size:36px;font-weight:700;color:var(--accent)}
+.stat .label{font-size:12px;color:var(--txt2);margin-top:4px}
+
+/* FEATURES */
+.features{max-width:1100px;margin:0 auto;padding:60px 32px}
+.section-header{text-align:center;margin-bottom:40px}
+.section-header h3{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1.5px;margin-bottom:8px}
+.section-header p{font-size:15px;color:var(--txt2);max-width:560px;margin:0 auto}
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.feature-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:24px;transition:all 0.25s}
+.feature-card:hover{border-color:rgba(0,188,212,0.3);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.feature-card .icon{font-size:32px;margin-bottom:12px;display:block}
+.feature-card h4{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--txt)}
+.feature-card p{font-size:13px;color:var(--txt2);line-height:1.5}
+
+/* WHY SOVEREIGN */
+.why-section{max-width:1100px;margin:0 auto;padding:60px 32px}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.why-card{background:linear-gradient(135deg,var(--accent-d),rgba(45,212,168,0.04));border:1px solid rgba(0,188,212,0.15);border-radius:var(--r);padding:28px;text-align:center}
+.why-card .icon{font-size:36px;margin-bottom:12px;display:block}
+.why-card h4{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--accent)}
+.why-card p{font-size:13px;color:var(--txt2);line-height:1.6}
+
+/* PROTOCOLS */
+.protocols{max-width:1100px;margin:0 auto;padding:40px 32px 60px}
+.proto-bar{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.proto-chip{padding:10px 20px;border-radius:8px;background:var(--bg2);border:1px solid var(--brd);font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent);font-weight:600;transition:all 0.2s}
+.proto-chip:hover{border-color:var(--accent);background:var(--accent-d)}
+
+/* FOOTER */
+.footer{text-align:center;padding:40px 32px;border-top:1px solid var(--brd)}
+.footer .brand{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);letter-spacing:1px;margin-bottom:8px}
+.footer p{font-size:12px;color:var(--txt3);line-height:1.8}
+.footer .powered{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt3);margin-top:12px}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .feature-grid{grid-template-columns:repeat(2,1fr)}
+  .why-grid{grid-template-columns:1fr}
+  .hero h2{font-size:40px}
+}
+@media(max-width:600px){
+  .feature-grid{grid-template-columns:1fr}
+  .hero{padding:48px 20px 40px}
+  .hero h2{font-size:32px}
+  .stats{gap:24px}
+  .stat .num{font-size:28px}
+  .nav{padding:12px 16px}
+  .features,.why-section,.protocols{padding-left:16px;padding-right:16px}
+}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <span>📤</span>
+    <h1>TRANSFERENCIA SOBERANA</h1>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn">Documentation</button>
+    <button class="nav-btn">Protocols</button>
+    <button class="nav-btn primary">Download Free</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="hero-icon">📤📥</span>
+  <h2>Sovereign <em>File Transfer</em><br>Without Borders</h2>
+  <p>Enterprise-grade file transfer with military-level encryption. FTP, SFTP, SCP, and S3 — all in one sovereign platform. Zero tracking, zero surveillance, 100% yours.</p>
+  <div class="hero-cta">
+    <button class="cta-btn primary">Download TransferenciaSoberana</button>
+    <button class="cta-btn secondary">View Documentation</button>
+  </div>
+  <div class="hero-tag">v2.1.0 // MameyNode Verified // Post-Quantum E2E Encryption</div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stat"><div class="num">500K+</div><div class="label">Active Users</div></div>
+  <div class="stat"><div class="num">12B+</div><div class="label">Files Transferred</div></div>
+  <div class="stat"><div class="num">Zero</div><div class="label">Tracking / Telemetry</div></div>
+  <div class="stat"><div class="num">100%</div><div class="label">Open Source</div></div>
+  <div class="stat"><div class="num">E2E</div><div class="label">Encrypted Always</div></div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="section-header">
+    <h3>POWERFUL TRANSFER CAPABILITIES</h3>
+    <p>Everything you need for secure, fast, and reliable file transfers across the sovereign network.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="icon">🔗</span>
+      <h4>Multi-Protocol Support</h4>
+      <p>FTP, FTPS, SFTP, SCP, WebDAV, and S3-compatible storage all from a single unified interface.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">📤</span>
+      <h4>Drag & Drop Transfers</h4>
+      <p>Intuitive drag-and-drop interface with real-time progress indicators and transfer queue management.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">🔒</span>
+      <h4>Encrypted Tunnels</h4>
+      <p>Post-quantum E2E encryption on every transfer. AES-256 + Kyber1024 hybrid cryptography built in.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">📥</span>
+      <h4>Resumable Transfers</h4>
+      <p>Interrupted downloads resume automatically. Transfer terabytes without worry over unstable connections.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">📑</span>
+      <h4>Bookmark Manager</h4>
+      <p>Organize all your server connections with encrypted bookmark storage and one-click access.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">📊</span>
+      <h4>Bandwidth Control</h4>
+      <p>Fine-grained speed limits per transfer, per connection. Prioritize critical files automatically.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">☁️</span>
+      <h4>S3-Compatible Storage</h4>
+      <p>Connect to any S3-compatible object storage including sovereign cloud and MameyNode decentralized storage.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">🔄</span>
+      <h4>Directory Synchronization</h4>
+      <p>Two-way directory sync with conflict resolution. Keep local and remote files perfectly aligned.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROTOCOLS -->
+<section class="protocols">
+  <div class="section-header">
+    <h3>SUPPORTED PROTOCOLS</h3>
+    <p>Connect to any server using industry-standard and sovereign protocols.</p>
+  </div>
+  <div class="proto-bar">
+    <div class="proto-chip">FTP</div>
+    <div class="proto-chip">FTPS (TLS)</div>
+    <div class="proto-chip">SFTP</div>
+    <div class="proto-chip">SCP</div>
+    <div class="proto-chip">WebDAV</div>
+    <div class="proto-chip">S3 API</div>
+    <div class="proto-chip">MameyNode P2P</div>
+    <div class="proto-chip">IPFS</div>
+  </div>
+</section>
+
+<!-- WHY SOVEREIGN -->
+<section class="why-section">
+  <div class="section-header">
+    <h3>WHY SOVEREIGN FILE TRANSFER?</h3>
+    <p>Your files deserve sovereign infrastructure. No corporate surveillance, no metadata harvesting.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="icon">🛡️</span>
+      <h4>Digital Sovereignty</h4>
+      <p>Your files never touch Big Tech servers. Every transfer stays on sovereign infrastructure controlled by the community, not corporations.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon">🔐</span>
+      <h4>Zero-Knowledge Architecture</h4>
+      <p>We cannot see your files. Post-quantum encryption ensures that only the sender and receiver can access transferred data.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon">🌍</span>
+      <h4>Community Owned</h4>
+      <p>Built by indigenous technologists for global use. 100% open source under the Sovereign License. WAMPUM token economy sustains development.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="brand">TRANSFERENCIA SOBERANA</div>
+  <p>Sovereign file transfer for a sovereign world.<br>No tracking. No ads. No surveillance. Your data is yours.</p>
+  <div class="powered">Powered by Ierahkwa | MameyNode Network | WAMPUM Token Economy</div>
+</footer>
+
+</body>
+</html>

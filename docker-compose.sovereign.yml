@@ -415,6 +415,70 @@ services:
       retries: 3
 
   # ==========================================
+  # NODE.JS SERVICES — Sovereign Open-Source
+  # ==========================================
+  conferencia-soberana:
+    build:
+      context: ./03-backend/conferencia-soberana
+    container_name: conferencia-soberana
+    ports:
+      - "127.0.0.1:3090:3090"
+    environment:
+      - PORT=3090
+      - NODE_ENV=production
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3090}
+      - JWT_SECRET=${JWT_SECRET:-changeme}
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  vigilancia-soberana:
+    build:
+      context: ./03-backend/vigilancia-soberana
+    container_name: vigilancia-soberana
+    ports:
+      - "127.0.0.1:3091:3091"
+    environment:
+      - PORT=3091
+      - NODE_ENV=production
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3091}
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3091/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  empresa-soberana:
+    build:
+      context: ./03-backend/empresa-soberana
+    container_name: empresa-soberana
+    ports:
+      - "127.0.0.1:3092:3092"
+    environment:
+      - PORT=3092
+      - NODE_ENV=production
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3092}
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+    depends_on:
+      - postgres
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3092/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================
   # REVERSE PROXY — Nginx
   # ==========================================
   nginx-proxy:

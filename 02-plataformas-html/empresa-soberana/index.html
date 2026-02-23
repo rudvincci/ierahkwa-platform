@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmpresaSoberana — Sovereign Enterprise Platform | MameyNode</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--gold-d:rgba(212,168,83,0.1);--tq:#2dd4a8;--tq-d:rgba(45,212,168,0.1);--wp:#9b6dff;--red:#ff4d6a;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:10px;--accent:#ff9100;--accent-d:rgba(255,145,0,0.1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:14px 32px;display:flex;align-items:center;gap:16px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand span{font-size:24px}
+.nav-brand h1{font-family:'Syne',sans-serif;font-size:20px;color:var(--accent);letter-spacing:0.5px}
+.nav-links{display:flex;gap:6px;margin-left:auto}
+.nav-btn{padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.nav-btn:hover{background:var(--bg3);color:var(--txt)}
+.nav-btn.primary{background:var(--accent);color:#09090d;border-color:var(--accent)}
+.nav-btn.primary:hover{filter:brightness(1.15)}
+
+/* HERO */
+.hero{text-align:center;padding:80px 32px 60px;position:relative}
+.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(255,145,0,0.05),transparent 70%);pointer-events:none}
+.hero-icon{font-size:56px;margin-bottom:16px;display:block}
+.hero h2{font-family:'Syne',sans-serif;font-size:52px;line-height:1.08;margin-bottom:16px}
+.hero h2 em{background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.hero p{font-size:18px;color:var(--txt2);max-width:620px;margin:0 auto 32px;line-height:1.6}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-btn{padding:14px 32px;border-radius:24px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.cta-btn.primary{background:var(--accent);color:#09090d}
+.cta-btn.primary:hover{filter:brightness(1.15);box-shadow:0 4px 20px rgba(255,145,0,0.3)}
+.cta-btn.secondary{background:none;border:1px solid var(--txt3);color:var(--txt)}
+.cta-btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.hero-tag{margin-top:24px;font-size:12px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+
+/* STATS */
+.stats{display:flex;justify-content:center;gap:48px;padding:40px 32px;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);flex-wrap:wrap}
+.stat{text-align:center}
+.stat .num{font-family:'IBM Plex Mono',monospace;font-size:36px;font-weight:700;color:var(--accent)}
+.stat .label{font-size:12px;color:var(--txt2);margin-top:4px}
+
+/* MODULES BANNER */
+.modules-banner{max-width:1100px;margin:0 auto;padding:48px 32px 20px}
+.modules-banner .section-header{text-align:center;margin-bottom:28px}
+.mod-strip{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.mod-pill{display:flex;align-items:center;gap:6px;padding:10px 18px;border-radius:24px;background:var(--bg2);border:1px solid var(--brd);font-size:13px;font-weight:600;color:var(--txt2);transition:all 0.2s;cursor:default}
+.mod-pill:hover{border-color:rgba(255,145,0,0.3);color:var(--accent);background:var(--accent-d)}
+.mod-pill span{font-size:16px}
+
+/* FEATURES */
+.features{max-width:1100px;margin:0 auto;padding:48px 32px}
+.section-header{text-align:center;margin-bottom:40px}
+.section-header h3{font-family:'Syne',sans-serif;font-size:34px;margin-bottom:8px}
+.section-header p{font-size:15px;color:var(--txt2);max-width:560px;margin:0 auto}
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.feature-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:24px;transition:all 0.25s}
+.feature-card:hover{border-color:rgba(255,145,0,0.3);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.feature-card .icon{font-size:32px;margin-bottom:12px;display:block}
+.feature-card h4{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--txt)}
+.feature-card p{font-size:13px;color:var(--txt2);line-height:1.5}
+
+/* WHY SOVEREIGN */
+.why-section{max-width:1100px;margin:0 auto;padding:60px 32px}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.why-card{background:linear-gradient(135deg,var(--accent-d),rgba(212,168,83,0.04));border:1px solid rgba(255,145,0,0.15);border-radius:var(--r);padding:28px;text-align:center}
+.why-card .icon{font-size:36px;margin-bottom:12px;display:block}
+.why-card h4{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--accent)}
+.why-card p{font-size:13px;color:var(--txt2);line-height:1.6}
+
+/* FOOTER */
+.footer{text-align:center;padding:40px 32px;border-top:1px solid var(--brd)}
+.footer .brand{font-family:'Syne',sans-serif;font-size:18px;color:var(--accent);margin-bottom:8px}
+.footer p{font-size:12px;color:var(--txt3);line-height:1.8}
+.footer .powered{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt3);margin-top:12px}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .feature-grid{grid-template-columns:repeat(2,1fr)}
+  .why-grid{grid-template-columns:1fr}
+  .hero h2{font-size:38px}
+}
+@media(max-width:600px){
+  .feature-grid{grid-template-columns:1fr}
+  .hero{padding:48px 20px 40px}
+  .hero h2{font-size:30px}
+  .stats{gap:24px}
+  .stat .num{font-size:28px}
+  .nav{padding:12px 16px}
+  .features,.why-section,.modules-banner{padding-left:16px;padding-right:16px}
+}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <span>🏢</span>
+    <h1>EmpresaSoberana</h1>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn">Modules</button>
+    <button class="nav-btn">Pricing</button>
+    <button class="nav-btn primary">Start Free Trial</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="hero-icon">🏢💰</span>
+  <h2>The Sovereign <em>Enterprise Platform</em> You Own</h2>
+  <p>CRM, accounting, inventory, HR, manufacturing, and e-commerce in one modular platform. Built on sovereign infrastructure with WAMPUM token integration. Replace Odoo, SAP, and Salesforce.</p>
+  <div class="hero-cta">
+    <button class="cta-btn primary">Start Free Trial</button>
+    <button class="cta-btn secondary">Explore Modules</button>
+  </div>
+  <div class="hero-tag">v5.0.0 // 18 Integrated Modules // Multi-Company & Multi-Currency</div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stat"><div class="num">10K+</div><div class="label">Businesses Running</div></div>
+  <div class="stat"><div class="num">18</div><div class="label">Integrated Modules</div></div>
+  <div class="stat"><div class="num">Zero</div><div class="label">Vendor Lock-In</div></div>
+  <div class="stat"><div class="num">100%</div><div class="label">Open Source</div></div>
+  <div class="stat"><div class="num">WAMPUM</div><div class="label">Token Ready</div></div>
+</section>
+
+<!-- MODULE STRIP -->
+<section class="modules-banner">
+  <div class="section-header">
+    <h3>Modular by Design</h3>
+    <p>Install only what you need. Each module works independently or together as a complete ERP.</p>
+  </div>
+  <div class="mod-strip">
+    <div class="mod-pill"><span>💼</span> CRM</div>
+    <div class="mod-pill"><span>💰</span> Accounting</div>
+    <div class="mod-pill"><span>📦</span> Inventory</div>
+    <div class="mod-pill"><span>👥</span> HR</div>
+    <div class="mod-pill"><span>🏭</span> Manufacturing</div>
+    <div class="mod-pill"><span>🛒</span> E-Commerce</div>
+    <div class="mod-pill"><span>🧾</span> Invoicing</div>
+    <div class="mod-pill"><span>📊</span> BI & Reports</div>
+    <div class="mod-pill"><span>🔧</span> Helpdesk</div>
+    <div class="mod-pill"><span>📋</span> Projects</div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="section-header">
+    <h3>Enterprise-Grade Features</h3>
+    <p>Everything a modern business needs, without the corporate surveillance tax.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="icon">🏢</span>
+      <h4>Multi-Company</h4>
+      <p>Run multiple companies from a single instance. Shared resources, separate books, consolidated reporting across entities.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">💰</span>
+      <h4>Multi-Currency & WAMPUM</h4>
+      <p>Support for 160+ fiat currencies, crypto assets, and native WAMPUM token integration for sovereign commerce.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">📦</span>
+      <h4>Supply Chain</h4>
+      <p>End-to-end supply chain management with barcode scanning, lot tracking, automated reordering, and warehouse management.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">👥</span>
+      <h4>Human Resources</h4>
+      <p>Recruitment, onboarding, payroll, leave management, performance reviews, and employee self-service portal.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">🏭</span>
+      <h4>Manufacturing (MRP)</h4>
+      <p>Bills of materials, work orders, production planning, quality control, and shop floor management for makers.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">🛒</span>
+      <h4>E-Commerce</h4>
+      <p>Built-in sovereign storefront with product catalog, cart, checkout, BDET payments, and SoberanoMarket integration.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">📊</span>
+      <h4>Business Intelligence</h4>
+      <p>Real-time dashboards, custom reports, pivot tables, and KPI tracking. Data stays on your sovereign servers.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon">🔗</span>
+      <h4>API & Integrations</h4>
+      <p>RESTful API, webhooks, and pre-built connectors for BDET Bank, CorreoSoberano, and the full MameyNode ecosystem.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHY SOVEREIGN -->
+<section class="why-section">
+  <div class="section-header">
+    <h3>Why a Sovereign ERP?</h3>
+    <p>Your business data is your most valuable asset. Corporate ERPs monetize it. We protect it.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="icon">🔐</span>
+      <h4>Your Data, Your Servers</h4>
+      <p>Unlike cloud ERPs that hold your data hostage, EmpresaSoberana runs on your infrastructure. Export everything, anytime, no questions asked.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon">💎</span>
+      <h4>WAMPUM Economy</h4>
+      <p>Process payments, pay suppliers, and manage payroll with WAMPUM tokens. A fair token economy integrated into every business process.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon">🌍</span>
+      <h4>Built for Communities</h4>
+      <p>Designed for indigenous businesses, cooperatives, and community enterprises. Multi-language support with Atabey translator integration.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="brand">EmpresaSoberana</div>
+  <p>The sovereign enterprise platform for businesses that refuse to be products.<br>No surveillance. No vendor lock-in. No data hostage situations.</p>
+  <div class="powered">Powered by Ierahkwa | MameyNode Network | WAMPUM Token Economy</div>
+</footer>
+
+</body>
+</html>
