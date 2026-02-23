@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flujos Soberano — Sovereign Flow-Based Programming | Ierahkwa</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--gold-d:rgba(212,168,83,0.1);--tq:#2dd4a8;--tq-d:rgba(45,212,168,0.1);--wp:#9b6dff;--red:#ff4d6a;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:10px;--accent:#ff5252;--accent-d:rgba(255,82,82,0.1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* SKIP NAV */
+.skip-nav{position:absolute;top:-100%;left:16px;padding:12px 24px;background:var(--accent);color:#09090d;font-weight:700;border-radius:0 0 var(--r) var(--r);z-index:200;font-size:14px;text-decoration:none}
+.skip-nav:focus{top:0}
+
+/* FOCUS STYLES */
+:focus{outline:2px solid var(--accent);outline-offset:2px}
+:focus:not(:focus-visible){outline:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(9,9,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:14px 32px;display:flex;align-items:center;gap:16px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand span{font-size:24px}
+.nav-brand h1{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:1.5px}
+.nav-links{display:flex;gap:6px;margin-left:auto}
+.nav-btn{padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.nav-btn:hover{background:var(--bg3);color:var(--txt)}
+.nav-btn.primary{background:var(--accent);color:#09090d;border-color:var(--accent)}
+.nav-btn.primary:hover{filter:brightness(1.15)}
+
+/* HERO */
+.hero{text-align:center;padding:80px 32px 60px;position:relative}
+.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(255,82,82,0.06),transparent 70%);pointer-events:none}
+.hero-icon{font-size:56px;margin-bottom:16px;display:block}
+.hero h2{font-family:'Bebas Neue',sans-serif;font-size:56px;line-height:1.05;letter-spacing:2px;margin-bottom:16px}
+.hero h2 em{background:linear-gradient(135deg,var(--accent),var(--tq));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.hero p{font-size:18px;color:var(--txt2);max-width:600px;margin:0 auto 32px;line-height:1.6}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-btn{padding:14px 32px;border-radius:24px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.cta-btn.primary{background:var(--accent);color:#09090d}
+.cta-btn.primary:hover{filter:brightness(1.15);box-shadow:0 4px 20px rgba(255,82,82,0.3)}
+.cta-btn.secondary{background:none;border:1px solid var(--txt3);color:var(--txt)}
+.cta-btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.hero-tag{margin-top:24px;font-size:12px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+
+/* STATS */
+.stats{display:flex;justify-content:center;gap:48px;padding:40px 32px;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);flex-wrap:wrap;margin-top:40px}
+.stat{text-align:center}
+.stat .num{font-family:'IBM Plex Mono',monospace;font-size:36px;font-weight:700;color:var(--accent)}
+.stat .label{font-size:12px;color:var(--txt2);margin-top:4px}
+
+/* FEATURES */
+.features{max-width:1100px;margin:0 auto;padding:60px 32px}
+.section-header{text-align:center;margin-bottom:40px}
+.section-header h2,.section-header h3{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1.5px;margin-bottom:8px}
+.section-header p{font-size:15px;color:var(--txt2);max-width:560px;margin:0 auto}
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.feature-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:24px;transition:all 0.25s}
+.feature-card:hover{border-color:rgba(255,82,82,0.3);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.feature-card .icon{font-size:32px;margin-bottom:12px;display:block}
+.feature-card h4{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--txt)}
+.feature-card p{font-size:13px;color:var(--txt2);line-height:1.5}
+
+/* WHY SOVEREIGN */
+.why-section{max-width:1100px;margin:0 auto;padding:60px 32px}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.why-card{background:linear-gradient(135deg,var(--accent-d),rgba(255,82,82,0.04));border:1px solid rgba(255,82,82,0.15);border-radius:var(--r);padding:28px;text-align:center}
+.why-card .icon{font-size:36px;margin-bottom:12px;display:block}
+.why-card h4{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--accent)}
+.why-card p{font-size:13px;color:var(--txt2);line-height:1.6}
+
+/* FOOTER */
+.footer{text-align:center;padding:40px 32px;border-top:1px solid var(--brd)}
+.footer .brand{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);letter-spacing:1px;margin-bottom:8px}
+.footer p{font-size:12px;color:var(--txt3);line-height:1.8}
+.footer .powered{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt3);margin-top:12px}
+
+/* REDUCED MOTION */
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  .feature-card:hover{transform:none}
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .feature-grid{grid-template-columns:repeat(2,1fr)}
+  .why-grid{grid-template-columns:1fr}
+  .hero h2{font-size:40px}
+}
+@media(max-width:600px){
+  .feature-grid{grid-template-columns:1fr}
+  .hero{padding:48px 20px 40px}
+  .hero h2{font-size:32px}
+  .stats{gap:24px}
+  .stat .num{font-size:28px}
+  .nav{padding:12px 16px}
+  .features,.why-section{padding-left:16px;padding-right:16px}
+}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-nav">Skip to main content</a>
+
+<!-- NAV -->
+<nav class="nav" aria-label="Main navigation">
+  <div class="nav-brand">
+    <span aria-hidden="true">🔀</span>
+    <h1>FLUJOS SOBERANO</h1>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn">Features</button>
+    <button class="nav-btn">Documentation</button>
+    <button class="nav-btn primary">Get Started</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <span class="hero-icon" aria-hidden="true">🔀📡</span>
+  <h2>SOVEREIGN <em>FLOW-BASED</em><br>PROGRAMMING</h2>
+  <p>Open-source visual programming platform replacing Node-RED, Apache NiFi, and n8n. Wire together IoT devices, APIs, and services with a visual editor.</p>
+  <div class="hero-cta">
+    <button class="cta-btn primary">Wire Your Flows</button>
+    <button class="cta-btn secondary">Explore the Platform</button>
+  </div>
+  <div class="hero-tag">v1.0.0 // Visual Wiring // IoT Native // Edge-First</div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+
+<!-- STATS -->
+<section class="stats" aria-label="Platform statistics">
+  <div class="stat"><div class="num">500+</div><div class="label">Nodes</div></div>
+  <div class="stat"><div class="num">MQTT</div><div class="label">Native</div></div>
+  <div class="stat"><div class="num">IoT</div><div class="label">Ready</div></div>
+  <div class="stat"><div class="num">Zero</div><div class="label">Telemetry</div></div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" aria-label="Platform features">
+  <div class="section-header">
+    <h2>SOVEREIGN FLOW TOOLKIT</h2>
+    <p>Everything you need to wire, deploy, and manage flows without proprietary dependencies or telemetry.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🎨</span>
+      <h4>Visual Flow Editor</h4>
+      <p>Drag-and-drop wiring of hardware devices, APIs, and services. Build sophisticated integrations without writing code.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">📡</span>
+      <h4>IoT Protocol Support</h4>
+      <p>MQTT, CoAP, Modbus, OPC-UA built-in. Connect industrial sensors, smart devices, and edge hardware natively.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🔗</span>
+      <h4>API Orchestration</h4>
+      <p>Chain REST, GraphQL, and WebSocket endpoints. Orchestrate complex API interactions with visual flow logic.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🗄️</span>
+      <h4>Data Integration</h4>
+      <p>Connect databases, message queues, and file systems. Move data between any system with transformation nodes.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🤖</span>
+      <h4>AI Flow Nodes</h4>
+      <p>Integrate ML models and LLMs directly into flows. Add intelligence to your data pipelines with sovereign AI nodes.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">📊</span>
+      <h4>Dashboard Nodes</h4>
+      <p>Build real-time monitoring dashboards from flows. Visualize data as it moves through your sovereign infrastructure.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🔒</span>
+      <h4>Secure Messaging</h4>
+      <p>TLS-encrypted communication between all nodes. Every message, every connection, every flow is secured by default.</p>
+    </div>
+    <div class="feature-card">
+      <span class="icon" aria-hidden="true">🧩</span>
+      <h4>Custom Nodes</h4>
+      <p>Create sovereign nodes with JavaScript or Python. Extend the platform with nodes tailored to your specific needs.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHY SOVEREIGN -->
+<section class="why-section" aria-label="Why sovereign flows">
+  <div class="section-header">
+    <h2>WHY SOVEREIGN FLOWS?</h2>
+    <p>Your data flows should run on your infrastructure, not route through corporate clouds.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🏛️</span>
+      <h4>Edge Computing</h4>
+      <p>Run flows on edge devices without cloud dependency. Process data where it is generated, reducing latency and costs.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🔐</span>
+      <h4>Data Locality</h4>
+      <p>All data processing happens on your infrastructure. Sensitive IoT and operational data never leaves your control.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">📡</span>
+      <h4>Protocol Agnostic</h4>
+      <p>Connect any device or service regardless of protocol. MQTT, HTTP, CoAP, Modbus — all unified in one flow editor.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🧪</span>
+      <h4>Visual Debugging</h4>
+      <p>Step through flows visually to debug issues. See data transformations in real-time as messages traverse your flows.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">📈</span>
+      <h4>Horizontal Scaling</h4>
+      <p>Distribute flows across multiple sovereign nodes. Scale processing power by adding nodes to your sovereign mesh.</p>
+    </div>
+    <div class="why-card">
+      <span class="icon" aria-hidden="true">🪶</span>
+      <h4>Industrial Ready</h4>
+      <p>Battle-tested for SCADA, manufacturing, and agriculture. Reliable flow processing for mission-critical operations.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="brand">FLUJOS SOBERANO</div>
+  <p>Sovereign flow-based programming for a self-determined future.<br>No tracking. No telemetry. No corporate control over your data flows.</p>
+  <div class="powered">Powered by Ierahkwa | MameyNode Network | WAMPUM Token Economy</div>
+</footer>
+
+</body>
+</html>

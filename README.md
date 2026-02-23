@@ -8,7 +8,7 @@
 <p align="center">
   <a href="https://github.com/rudvincci/ierahkwa-platform/actions"><img src="https://github.com/rudvincci/ierahkwa-platform/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Sovereign--1.0-gold.svg" alt="License"></a>
-  <a href="#platforms"><img src="https://img.shields.io/badge/Platforms-318+-2dd4a8.svg" alt="Platforms"></a>
+  <a href="#platforms"><img src="https://img.shields.io/badge/Platforms-332+-2dd4a8.svg" alt="Platforms"></a>
   <a href="#blockchain"><img src="https://img.shields.io/badge/MameyNode-v4.2-purple.svg" alt="MameyNode"></a>
   <a href="#languages"><img src="https://img.shields.io/badge/Languages-43-9b6dff.svg" alt="Languages"></a>
   <a href="#zero-tax"><img src="https://img.shields.io/badge/Tax_Rate-0%25-ff6b4a.svg" alt="Zero Tax"></a>
@@ -22,12 +22,12 @@
 </p>
 
 <p align="center">
-  <strong>59+ sovereign platforms replacing Big Tech for indigenous communities across 19 countries.</strong><br>
+  <strong>70+ sovereign platforms replacing Big Tech for indigenous communities across 19 countries.</strong><br>
   <strong>Zero taxes. Free schools. Free hospitals. Post-quantum encryption.</strong>
 </p>
 
 <p align="center">
-  <em>59+ plataformas soberanas reemplazando Big Tech para comunidades indigenas en 19 paises.</em><br>
+  <em>70+ plataformas soberanas reemplazando Big Tech para comunidades indigenas en 19 paises.</em><br>
   <em>Cero impuestos. Escuelas gratis. Hospitales gratis. Encriptacion post-cuantica.</em>
 </p>
 
@@ -39,7 +39,7 @@
 - [Quick Start](#quick-start)
 - [Architecture](#architecture)
 - [Project Structure](#project-structure)
-- [Platforms (318+)](#platforms)
+- [Platforms (332+)](#platforms)
 - [Services & Ports](#services--ports)
 - [Technology Stack](#tech-stack)
 - [Continuous AI](#-continuous-ai--agentic-workflows)
@@ -67,7 +67,7 @@ All services run on **MameyNode**, a post-quantum blockchain with **12,847 TPS**
 | Indigenous people served | **72M+** across the Americas |
 | Countries | **19** |
 | Tribal nations | **574** (NCAI recognized) |
-| Platforms | **318+** (59 flagship) |
+| Platforms | **332+** (70 flagship) |
 | Languages | **43** (37 indigenous + 6 global) |
 | Tax rate | **0%** |
 | Blockchain TPS | **12,847** |
@@ -181,7 +181,7 @@ All services bind to `127.0.0.1` only. All traffic encrypted with post-quantum a
 ```
 ierahkwa-platform/
 ├── 01-documentos/              Legal framework, investors, whitepapers
-├── 02-plataformas-html/        59 platform front-end UIs
+├── 02-plataformas-html/        70 platform front-end UIs
 ├── 03-backend/                 19 Node.js services
 │   ├── api-gateway/            API Gateway
 │   ├── blockchain-api/         MameyNode RPC interface
@@ -248,7 +248,7 @@ ierahkwa-platform/
 ---
 
 <a name="platforms"></a>
-## Platforms (59 Flagship)
+## Platforms (70 Flagship)
 
 | # | Platform | Replaces | Category |
 |---|----------|----------|----------|
@@ -308,6 +308,20 @@ ierahkwa-platform/
 | 54 | IoT Soberano | AWS IoT/Azure IoT Hub | Sovereign Internet of Things Platform |
 | 55 | Marketing Soberano | HubSpot/Mailchimp | Sovereign Marketing & Community Engagement |
 | 56 | Datos Soberano | Snowflake/BigQuery/Tableau | Sovereign Data Platform & Warehouse |
+| 57 | Seguridad Soberana | Aikido/Snyk/SonarQube | Sovereign AppSec & SAST/SCA Platform |
+| 58 | IDE Soberano | Kiro.dev/VS Code/Cursor | Sovereign Agentic Development Environment |
+| 59 | Agente Soberano | OpenCode.ai/Qwen Code | Sovereign AI Coding Agent & CLI |
+| 60 | Nube Soberana | Nextcloud/Google Workspace | Sovereign Cloud & Collaboration |
+| 61 | Repositorio Soberano | Cloudsmith/Nexus/Artifactory | Sovereign Artifact Repository |
+| 62 | LowCode Soberano | Budibase/Retool/Appsmith | Sovereign Low-Code Application Platform |
+| 63 | Automatización Soberana | Huginn/Zapier/IFTTT | Sovereign Process Automation |
+| 64 | Flujos Soberano | Node-RED/Apache NiFi/n8n | Sovereign Flow-Based Programming |
+| 65 | ML Soberano | PyCaret/SageMaker/Vertex AI | Sovereign Machine Learning Platform |
+| 66 | DevOps Soberano | StackStorm/Ansible Tower | Sovereign DevOps Automation |
+| 67 | Plantillas Soberana | GrapeJS/Webflow/Squarespace | Sovereign Template & Page Builder |
+| 68 | Orquestador Soberano | Flowise/LangFlow/Dify | Sovereign LLM Orchestration Platform |
+| 69 | Colaboración Soberana | AppFlowy/Notion/Confluence | Sovereign Workspace & Collaboration |
+| 70 | Backend Soberano | Manifest.Build/Supabase/Firebase | Sovereign Low-Code Backend Platform |
 
 ---
 
@@ -374,7 +388,7 @@ ierahkwa-platform/
 | **Backend** | Rust | MameyForge CLI + gRPC blockchain SDK |
 | **Backend** | Go | Microservices + API SDKs |
 | **AI** | Python | MameyFutureAI (42 engines), fraud detection |
-| **Frontend** | HTML/CSS/JS | 318+ responsive platforms |
+| **Frontend** | HTML/CSS/JS | 332+ responsive platforms |
 | **Frontend** | Blazor | MameyNode.UI + Pupitre education |
 | **Database** | PostgreSQL 16 | Primary relational data |
 | **Cache** | Redis 7 | Sessions, rate limiting, pub/sub |
@@ -407,7 +421,7 @@ ierahkwa-platform/
 
 - WCAG 2.2 AA compliance across all platforms
 - Shared accessibility middleware (`03-backend/shared/accessibility.js`)
-- Automated a11y audit tool scanning 51 platforms (12 WCAG checks)
+- Automated a11y audit tool scanning 70 platforms (12 WCAG checks)
 - E2E accessibility testing with Playwright
 - Accessibility CI workflow on every PR touching HTML
 - See [ACCESSIBILITY.md](ACCESSIBILITY.md) for full details

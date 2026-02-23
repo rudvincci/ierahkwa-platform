@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] — 2026-02-23
+
+### Added
+- **Seguridad Soberana** — Sovereign AppSec platform (replaces Aikido, Snyk, SonarQube)
+- **IDE Soberano** — Sovereign agentic development environment (replaces Kiro.dev, VS Code, Cursor)
+- **Agente Soberano** — Sovereign AI coding agent with CLI and 8 skills (replaces OpenCode.ai, Qwen Code)
+- **SAST AutoFix Engine** (`07-scripts/sast-autofix.js`) — 8 fix patterns + 8 code quality rules
+- **Custom SAST Rules** (`07-scripts/custom-rules.json`) — 5 sovereign-specific SAST rules
+- **Nube Soberana** — Sovereign cloud & collaboration (replaces Nextcloud, Google Workspace)
+- **Repositorio Soberano** — Sovereign artifact repository (replaces Cloudsmith, Nexus, Artifactory)
+- **LowCode Soberano** — Sovereign low-code application platform (replaces Budibase, Retool)
+- **Automatización Soberana** — Sovereign process automation (replaces Huginn, Zapier, IFTTT)
+- **Flujos Soberano** — Sovereign flow-based programming (replaces Node-RED, n8n)
+- **ML Soberano** — Sovereign machine learning platform (replaces PyCaret, SageMaker)
+- **DevOps Soberano** — Sovereign DevOps automation (replaces StackStorm, Ansible Tower)
+- **Plantillas Soberana** — Sovereign template & page builder (replaces GrapeJS, Webflow)
+- **Orquestador Soberano** — Sovereign LLM orchestration (replaces Flowise, LangFlow, Dify)
+- **Colaboración Soberana** — Sovereign workspace & collaboration (replaces AppFlowy, Notion)
+- **Backend Soberano** — Sovereign low-code backend platform (replaces Manifest.Build, Supabase, Firebase)
+- AI coding agent CLI with skills system, session management, and MCP protocol support
+
+### Changed
+- Platform count updated from 59 to **70 flagship** (332+ total)
+- README.md updated with all new platform entries and counts
+
 ## [2.3.0] — 2026-02-22
 
 ### Added
