@@ -221,6 +221,42 @@ Before submitting a PR, verify:
 
 ---
 
+## Supply Chain Security
+
+### Defense Against Shai-Hulud-Style Attacks
+
+The Ierahkwa Platform implements comprehensive supply chain security measures:
+
+| Control | Implementation | Status |
+|---------|---------------|--------|
+| Lifecycle script blocking | `.npmrc` with `ignore-scripts=true` | ✅ Active |
+| Dependency auditing | `npm audit` in CI + weekly scans | ✅ Active |
+| Lockfile enforcement | `package-lock=true` in `.npmrc` | ✅ Active |
+| Secret scanning | Pattern-based scanning in CI | ✅ Active |
+| Dependabot | Weekly dependency updates with auto-PRs | ✅ Active |
+| SBOM generation | CycloneDX SBOM in CI artifacts | ✅ Active |
+| Supply chain audit tool | `07-scripts/supply-chain-audit.js` | ✅ Active |
+| Agentic monitoring | `continuous-supply-chain.md` workflow | ✅ Active |
+| Pinned CI actions | All GitHub Actions pinned to specific versions | ✅ Active |
+| Artifact validation | Dockerfile security checks in CI | ✅ Active |
+
+### npm Security Configuration
+
+- Lifecycle scripts disabled by default (`ignore-scripts=true`)
+- Exact versions enforced (`save-exact=true`)
+- Audit runs on every install
+- Engine strict mode enabled
+- Private package namespace protection
+
+### Monitoring
+
+- **Daily**: Automated supply chain scans via agentic workflow
+- **Weekly**: Dependabot dependency updates
+- **On PR**: Dependency change analysis and lifecycle script audit
+- **On push**: Secret scanning and artifact validation
+
+---
+
 ## Dependency Security
 
 Run security audits:

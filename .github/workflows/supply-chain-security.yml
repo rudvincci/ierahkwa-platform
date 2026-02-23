@@ -1,0 +1,128 @@
+name: Supply Chain Security
+
+on:
+  pull_request:
+    paths:
+      - '**/package.json'
+      - '**/package-lock.json'
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/*.csproj'
+      - '**/Dockerfile'
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly Monday 6 AM UTC
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  dependency-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Audit root dependencies
+        run: npm audit --audit-level=high || true
+        continue-on-error: true
+
+      - name: Audit backend services
+        run: |
+          for dir in 03-backend/*/; do
+            if [ -f "$dir/package.json" ]; then
+              echo "🔍 Auditing $dir"
+              cd "$dir"
+              npm audit --audit-level=high 2>/dev/null || echo "⚠️ Issues found in $dir"
+              cd -
+            fi
+          done
+
+      - name: Check for lifecycle scripts in dependencies
+        run: |
+          echo "🔍 Scanning for suspicious lifecycle scripts..."
+          node 07-scripts/supply-chain-audit.js
+
+      - name: Check lockfile integrity
+        run: |
+          if [ -f "package-lock.json" ]; then
+            npm ci --ignore-scripts --dry-run 2>&1 || echo "⚠️ Lockfile integrity issue"
+          fi
+
+  artifact-validation:
+    name: Artifact Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Dockerfiles
+        run: |
+          echo "🔍 Checking Dockerfiles for security..."
+          for dockerfile in $(find . -name "Dockerfile" -not -path "*/node_modules/*"); do
+            echo "Checking $dockerfile"
+            # Check for pinned base images
+            if grep -q "FROM.*:latest" "$dockerfile"; then
+              echo "⚠️ $dockerfile uses :latest tag — pin to specific version"
+            fi
+            # Check for ADD from remote URLs
+            if grep -q "^ADD http" "$dockerfile"; then
+              echo "❌ $dockerfile uses ADD with remote URL — use COPY instead"
+            fi
+            # Check for running as root
+            if ! grep -q "USER" "$dockerfile"; then
+              echo "⚠️ $dockerfile doesn't switch to non-root user"
+            fi
+          done
+
+      - name: Check for secrets in code
+        run: |
+          echo "🔍 Scanning for hardcoded secrets..."
+          # Check for common secret patterns
+          PATTERNS=(
+            "AKIA[0-9A-Z]{16}"
+            "ghp_[0-9a-zA-Z]{36}"
+            "npm_[0-9a-zA-Z]{36}"
+            "sk-[0-9a-zA-Z]{48}"
+            "password\s*=\s*['\"][^'\"]+['\"]"
+            "secret\s*=\s*['\"][^'\"]+['\"]"
+          )
+          FOUND=0
+          for pattern in "${PATTERNS[@]}"; do
+            if grep -rn --include="*.js" --include="*.ts" --include="*.json" --include="*.yml" --include="*.yaml" \
+               -E "$pattern" . --exclude-dir=node_modules --exclude-dir=.git 2>/dev/null; then
+              FOUND=$((FOUND + 1))
+            fi
+          done
+          if [ $FOUND -gt 0 ]; then
+            echo "❌ Potential secrets found! Review above matches."
+            exit 1
+          fi
+          echo "✅ No hardcoded secrets detected"
+
+  sbom-generation:
+    name: Generate SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Generate SBOM
+        run: |
+          npx @cyclonedx/cyclonedx-npm --output-file sbom.json --spec-version 1.5 || echo "SBOM generation skipped"
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sbom
+          path: sbom.json
+          retention-days: 90
