@@ -18,7 +18,12 @@
     "docs:serve": "npx http-server 16-docs -p 8080",
     "a11y:audit": "node 04-infraestructura/accessibility/a11y-audit.js",
     "a11y:report": "node 04-infraestructura/accessibility/a11y-audit.js --report",
-    "test:a11y": "jest --testPathPattern=accessibility"
+    "test:a11y": "jest --testPathPattern=accessibility",
+    "sast": "node 07-scripts/sast-scanner.js",
+    "sast:sarif": "node 07-scripts/sast-scanner.js --sarif",
+    "sca": "node 07-scripts/sca-scanner.js",
+    "sca:sbom": "node 07-scripts/sca-scanner.js --sbom",
+    "security:full": "npm run sast && npm run sca && node 07-scripts/supply-chain-audit.js"
   },
   "keywords": [
     "sovereign",
