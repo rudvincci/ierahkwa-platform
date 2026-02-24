@@ -1,0 +1,307 @@
+/* ============================================
+   Ierahkwa Design System — ierahkwa.css
+   Shared CSS for Sovereign Platforms
+   v2.8.0 — 24 Feb 2026
+   ============================================ */
+
+/* --- 1. CSS Custom Properties --- */
+:root {
+  /* Backgrounds */
+  --bg:  #09090d;
+  --bg2: #111116;
+  --bg3: #1a1a20;
+  --bg4: #232330;
+  /* Brand */
+  --gold: #d4a853;
+  --accent: #d4a853; /* override per-platform */
+  /* Text */
+  --txt:  #e8e4df;
+  --txt2: #8a8694;
+  /* Borders & Radius */
+  --brd: #2a2a36;
+  --r:   10px;
+  /* Tag Colors */
+  --ai:  #7c4dff;
+  --wam: #d4a853;
+  --sat: #00bcd4;
+  --bc:  #4a9eff;
+  --qt:  #e84040;
+  /* NEXUS Colors */
+  --nx-orbital:  #00bcd4;
+  --nx-escudo:   #f44336;
+  --nx-cerebro:  #7c4dff;
+  --nx-tesoro:   #ffd600;
+  --nx-voces:    #e040fb;
+  --nx-consejo:  #1565c0;
+  --nx-tierra:   #43a047;
+  --nx-forja:    #00e676;
+  --nx-urbe:     #ff9100;
+  --nx-raices:   #d4a853;
+}
+
+/* --- 2. Reset --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* --- 3. Base Typography --- */
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+a { color: var(--accent); text-decoration: none; }
+
+/* --- 4. Accessibility --- */
+.skip, .skip-nav {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #000;
+  padding: .7rem 1.5rem;
+  border-radius: var(--r);
+  font-weight: 700;
+  z-index: 1000;
+  transition: top .2s;
+  text-decoration: none;
+}
+.skip:focus, .skip-nav:focus { top: 1rem; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* --- 5. Navigation (NEXUS-style) --- */
+nav {
+  position: sticky;
+  top: 0;
+  background: rgba(9,9,13,.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--brd);
+  padding: .8rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 99;
+}
+.brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.btn {
+  background: var(--accent);
+  color: #000;
+  padding: .5rem 1.2rem;
+  border-radius: var(--r);
+  font-weight: 700;
+  font-size: .85rem;
+  border: none;
+  cursor: pointer;
+}
+.btn:hover { opacity: .9; }
+
+/* --- 6. Hero --- */
+.hero {
+  text-align: center;
+  padding: 5rem 2rem 3rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(212,168,83,.12), transparent 65%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.badge {
+  display: inline-block;
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  padding: .3rem .8rem;
+  border-radius: 2rem;
+  font-size: .75rem;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  margin-bottom: .5rem;
+}
+.hero h1 span {
+  background: linear-gradient(135deg, var(--accent), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero p {
+  color: var(--txt2);
+  max-width: 650px;
+  margin: 0 auto 1.5rem;
+}
+
+/* --- 7. Counters / Stats --- */
+.counters {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+.counter strong {
+  color: var(--accent);
+  font-size: 1.8rem;
+  display: block;
+}
+.counter span {
+  font-size: .7rem;
+  color: var(--txt2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- 8. Dashboard Cards --- */
+.dash {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  max-width: 1100px;
+  margin: 0 auto 3rem;
+  padding: 0 2rem;
+}
+.dash-card {
+  background: var(--bg2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  padding: 1.2rem;
+  text-align: center;
+}
+.dash-card strong {
+  color: var(--accent);
+  font-size: 1.4rem;
+  display: block;
+}
+.dash-card span { font-size: .7rem; color: var(--txt2); }
+
+/* --- 9. Sections --- */
+.section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+.section h2 {
+  font-size: 1.4rem;
+  margin-bottom: .3rem;
+  color: var(--accent);
+}
+.section .sub {
+  font-size: .8rem;
+  color: var(--txt2);
+  margin-bottom: 1.2rem;
+}
+
+/* --- 10. Grid & Cards --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  padding: 1.3rem;
+  transition: all .3s;
+}
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.card h3 { font-size: .95rem; margin-bottom: .3rem; }
+.card p { color: var(--txt2); font-size: .82rem; margin-bottom: .5rem; }
+
+/* --- 11. Tags --- */
+.tags { display: flex; gap: .3rem; flex-wrap: wrap; }
+.tag {
+  font-size: .6rem;
+  padding: .15rem .4rem;
+  border-radius: 2px;
+  font-weight: 600;
+}
+.tag.ai  { background: rgba(124,77,255,.12); color: var(--ai); }
+.tag.wam { background: rgba(212,168,83,.12); color: var(--wam); }
+.tag.sat { background: rgba(0,188,212,.12);  color: var(--sat); }
+.tag.bc  { background: rgba(74,158,255,.12); color: var(--bc); }
+.tag.qt  { background: rgba(232,64,64,.12);  color: var(--qt); }
+
+/* --- 12. Connections --- */
+.connections {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+.connections h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+}
+.conn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.conn {
+  background: var(--bg2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  padding: 1rem;
+  font-size: .85rem;
+}
+.conn strong { color: var(--accent); }
+
+/* --- 13. Footer --- */
+footer {
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid var(--brd);
+  color: var(--txt2);
+  font-size: .8rem;
+}
+footer span { color: var(--gold); }
+
+/* --- 14. Light Theme (opt-in via .light-theme) --- */
+.light-theme {
+  --bg:  #f5f3ef;
+  --bg2: #ffffff;
+  --bg3: #eae7e1;
+  --bg4: #ddd9d0;
+  --txt: #1a1a20;
+  --txt2: #6b6578;
+  --brd: #d4d0c8;
+}
+.light-theme .skip,
+.light-theme .skip-nav { color: #fff; }
+
+/* --- 15. Responsive --- */
+@media (max-width: 900px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+}
+@media (max-width: 600px) {
+  .counters { gap: 1rem; }
+  .hero { padding: 3rem 1rem 2rem; }
+  .dash { grid-template-columns: repeat(3, 1fr); }
+  .grid { grid-template-columns: 1fr; }
+  nav { padding: .8rem 1rem; }
+}
