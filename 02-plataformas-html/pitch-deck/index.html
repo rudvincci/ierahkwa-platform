@@ -80,5 +80,14 @@ slides.forEach((_,i)=>{const d=document.createElement('div');d.className='snav-d
 const deck=document.getElementById('deck');
 deck.addEventListener('scroll',()=>{const dots=nav.children;const idx=Math.round(deck.scrollTop/window.innerHeight);Array.from(dots).forEach((d,i)=>d.className='snav-dot'+(i===idx?' a':''))});
 </script>
+
+<script src="../shared/ierahkwa-api.js"></script>
+<script>
+// Auto-connect to /api/nexus
+window.PLATFORM_API = '/api/nexus';
+if (!Ierahkwa.auth.isLoggedIn()) {
+    console.log('[pitch-deck] Not logged in — showing login modal');
+}
+</script>
 </body>
 </html>

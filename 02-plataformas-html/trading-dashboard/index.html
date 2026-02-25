@@ -58,4 +58,13 @@ function update(){p+=rnd(-0.0005,0.0005);document.getElementById('px').textConte
 const a=document.getElementById('opx').value,b=document.getElementById('oamt').value;document.getElementById('otot').textContent=(a*b).toFixed(2);}
 genCandles();update();setInterval(update,2000);
 document.getElementById('opx').oninput=document.getElementById('oamt').oninput=()=>{document.getElementById('otot').textContent=(document.getElementById('opx').value*document.getElementById('oamt').value).toFixed(2);};
-</script></body></html>
+</script>
+<script src="../shared/ierahkwa-api.js"></script>
+<script>
+// Auto-connect to /api/nexus
+window.PLATFORM_API = '/api/nexus';
+if (!Ierahkwa.auth.isLoggedIn()) {
+    console.log('[trading-dashboard] Not logged in — showing login modal');
+}
+</script>
+</body></html>

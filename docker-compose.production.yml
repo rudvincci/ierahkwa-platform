@@ -1,0 +1,505 @@
+version: "3.9"
+
+# ============================================================
+# IERAHKWA SOVEREIGN PLATFORM — PRODUCTION DOCKER COMPOSE
+# 83 Microservices + API Gateway + SQL Server + Redis
+# ============================================================
+
+x-dotnet-service: &dotnet-defaults
+  restart: unless-stopped
+  networks:
+    - ierahkwa-net
+  environment:
+    - ASPNETCORE_ENVIRONMENT=Production
+    - ConnectionStrings__Default=Server=sqlserver;Database=IerahkwaDb;User=sa;Password=${SQL_PASSWORD:-Ierahkwa2026!};TrustServerCertificate=true
+  depends_on:
+    sqlserver:
+      condition: service_healthy
+  deploy:
+    resources:
+      limits:
+        memory: 256M
+        cpus: "0.25"
+
+services:
+
+  # ===================== INFRASTRUCTURE =====================
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ierahkwa-sqlserver
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${SQL_PASSWORD:-Ierahkwa2026!}
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - ierahkwa-net
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$${MSSQL_SA_PASSWORD}" -Q "SELECT 1" -C -No || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: ierahkwa-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - ierahkwa-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ===================== API GATEWAY =====================
+
+  gateway:
+    build:
+      context: ./08-dotnet/gateway/Ierahkwa.Gateway
+      dockerfile: Dockerfile
+    container_name: ierahkwa-gateway
+    <<: *dotnet-defaults
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_URLS=http://+:5000
+      - Jwt__Key=${JWT_KEY:-Ierahkwa-Sovereign-Platform-Secret-Key-2026-Min32Chars!!}
+      - Jwt__Issuer=ierahkwa.sovereign
+
+  # ===================== NEXUS ORBITAL — Science & Technology =====================
+
+  space-service:
+    build: ./08-dotnet/microservices/SpaceService
+    container_name: ierahkwa-space
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5100
+
+  telecom-service:
+    build: ./08-dotnet/microservices/TelecomService
+    container_name: ierahkwa-telecom
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5101
+
+  genomics-service:
+    build: ./08-dotnet/microservices/GenomicsService
+    container_name: ierahkwa-genomics
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5102
+
+  iot-robotics-service:
+    build: ./08-dotnet/microservices/IoTRoboticsService
+    container_name: ierahkwa-iot-robotics
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5103
+
+  quantum-service:
+    build: ./08-dotnet/microservices/QuantumService
+    container_name: ierahkwa-quantum
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5104
+
+  ai-engine-service:
+    build: ./08-dotnet/microservices/AIEngineService
+    container_name: ierahkwa-ai-engine
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5105
+
+  network-service:
+    build: ./08-dotnet/microservices/NetworkService
+    container_name: ierahkwa-network
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5106
+
+  devtools-service:
+    build: ./08-dotnet/microservices/DevToolsService
+    container_name: ierahkwa-devtools
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5107
+
+  # ===================== NEXUS ESCUDO — Defense & Security =====================
+
+  military-service:
+    build: ./08-dotnet/microservices/MilitaryService
+    container_name: ierahkwa-military
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5200
+
+  drones-service:
+    build: ./08-dotnet/microservices/DroneService
+    container_name: ierahkwa-drones
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5201
+
+  cybersec-service:
+    build: ./08-dotnet/microservices/CyberSecService
+    container_name: ierahkwa-cybersec
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5202
+
+  intelligence-service:
+    build: ./08-dotnet/microservices/IntelligenceService
+    container_name: ierahkwa-intelligence
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5203
+
+  emergency-service:
+    build: ./08-dotnet/microservices/EmergencyService
+    container_name: ierahkwa-emergency
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5204
+
+  # ===================== NEXUS CEREBRO — Education & Research =====================
+
+  education-service:
+    build: ./08-dotnet/microservices/EducationService
+    container_name: ierahkwa-education
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5300
+
+  research-service:
+    build: ./08-dotnet/microservices/ResearchService
+    container_name: ierahkwa-research
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5301
+
+  language-service:
+    build: ./08-dotnet/microservices/LanguageService
+    container_name: ierahkwa-language
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5302
+
+  search-service:
+    build: ./08-dotnet/microservices/SearchService
+    container_name: ierahkwa-search
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5303
+
+  # ===================== NEXUS TESORO — Economy & Finance =====================
+
+  commerce-service:
+    build: ./08-dotnet/microservices/CommerceService
+    container_name: ierahkwa-commerce
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5400
+
+  blockchain-service:
+    build: ./08-dotnet/microservices/BlockchainService
+    container_name: ierahkwa-blockchain
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5401
+
+  banking-service:
+    build: ./08-dotnet/microservices/BankingService
+    container_name: ierahkwa-banking
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5402
+
+  insurance-service:
+    build: ./08-dotnet/microservices/InsuranceService
+    container_name: ierahkwa-insurance
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5403
+
+  employment-service:
+    build: ./08-dotnet/microservices/EmploymentService
+    container_name: ierahkwa-employment
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5404
+
+  smart-factory-service:
+    build: ./08-dotnet/microservices/SmartFactoryService
+    container_name: ierahkwa-smart-factory
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5405
+
+  artisan-service:
+    build: ./08-dotnet/microservices/ArtisanService
+    container_name: ierahkwa-artisan
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5406
+
+  tourism-service:
+    build: ./08-dotnet/microservices/TourismService
+    container_name: ierahkwa-tourism
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5407
+
+  # ===================== NEXUS VOCES — Culture & Communication =====================
+
+  media-service:
+    build: ./08-dotnet/microservices/MediaContentService
+    container_name: ierahkwa-media
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5500
+
+  messaging-service:
+    build: ./08-dotnet/microservices/MessagingService
+    container_name: ierahkwa-messaging
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5501
+
+  culture-service:
+    build: ./08-dotnet/microservices/CultureArchiveService
+    container_name: ierahkwa-culture
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5502
+
+  sports-service:
+    build: ./08-dotnet/microservices/SportsService
+    container_name: ierahkwa-sports
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5503
+
+  social-service:
+    build: ./08-dotnet/microservices/SocialService
+    container_name: ierahkwa-social
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5504
+
+  # ===================== NEXUS CONSEJO — Governance & Law =====================
+
+  governance-service:
+    build: ./08-dotnet/microservices/GovernanceService
+    container_name: ierahkwa-governance
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5600
+
+  justice-service:
+    build: ./08-dotnet/microservices/JusticeService
+    container_name: ierahkwa-justice
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5601
+
+  diplomacy-service:
+    build: ./08-dotnet/microservices/DiplomacyService
+    container_name: ierahkwa-diplomacy
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5602
+
+  citizen-service:
+    build: ./08-dotnet/microservices/CitizenService
+    container_name: ierahkwa-citizen
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5603
+
+  social-welfare-service:
+    build: ./08-dotnet/microservices/SocialWelfareService
+    container_name: ierahkwa-social-welfare
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5604
+
+  # ===================== NEXUS TIERRA — Environment & Resources =====================
+
+  agriculture-service:
+    build: ./08-dotnet/microservices/AgricultureService
+    container_name: ierahkwa-agriculture
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5700
+
+  natural-resource-service:
+    build: ./08-dotnet/microservices/NaturalResourceService
+    container_name: ierahkwa-natural-resource
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5701
+
+  environment-service:
+    build: ./08-dotnet/microservices/EnvironmentService
+    container_name: ierahkwa-environment
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5702
+
+  waste-service:
+    build: ./08-dotnet/microservices/WasteService
+    container_name: ierahkwa-waste
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5703
+
+  energy-service:
+    build: ./08-dotnet/microservices/EnergyService
+    container_name: ierahkwa-energy
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5704
+
+  # ===================== NEXUS FORJA — Technology & Innovation =====================
+
+  devops-service:
+    build: ./08-dotnet/microservices/DevOpsService
+    container_name: ierahkwa-devops
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5800
+
+  lowcode-service:
+    build: ./08-dotnet/microservices/LowCodeDesignService
+    container_name: ierahkwa-lowcode
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5801
+
+  browser-service:
+    build: ./08-dotnet/microservices/BrowserService
+    container_name: ierahkwa-browser
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5802
+
+  productivity-service:
+    build: ./08-dotnet/microservices/ProductivityService
+    container_name: ierahkwa-productivity
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5803
+
+  cloud-service:
+    build: ./08-dotnet/microservices/CloudService
+    container_name: ierahkwa-cloud
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5804
+
+  # ===================== NEXUS URBE — Infrastructure & Urban =====================
+
+  urban-service:
+    build: ./08-dotnet/microservices/UrbanService
+    container_name: ierahkwa-urban
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5900
+
+  transport-service:
+    build: ./08-dotnet/microservices/TransportService
+    container_name: ierahkwa-transport
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5901
+
+  postal-maps-service:
+    build: ./08-dotnet/microservices/PostalMapsService
+    container_name: ierahkwa-postal-maps
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5902
+
+  housing-service:
+    build: ./08-dotnet/microservices/HousingService
+    container_name: ierahkwa-housing
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5903
+
+  # ===================== NEXUS RAÍCES — Identity & Heritage =====================
+
+  identity-service:
+    build: ./08-dotnet/microservices/IdentityService
+    container_name: ierahkwa-identity
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:6000
+
+  health-service:
+    build: ./08-dotnet/microservices/HealthService
+    container_name: ierahkwa-health
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:6001
+
+  nexus-service:
+    build: ./08-dotnet/microservices/NexusAggregationService
+    container_name: ierahkwa-nexus
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:6002
+
+  licensing-service:
+    build: ./08-dotnet/microservices/LicensingService
+    container_name: ierahkwa-licensing
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:6003
+
+  # ===================== EXISTING SERVICES (v1-v2) =====================
+
+  fwid-service:
+    build: ./08-dotnet/microservices/IdentityService
+    container_name: ierahkwa-fwid
+    <<: *dotnet-defaults
+    environment:
+      - ASPNETCORE_URLS=http://+:5001
+
+  # ===================== FRONTEND (Nginx) =====================
+
+  frontend:
+    image: nginx:alpine
+    container_name: ierahkwa-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./02-plataformas-html:/usr/share/nginx/html:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - ierahkwa-net
+    depends_on:
+      - gateway
+
+volumes:
+  sqlserver-data:
+  redis-data:
+
+networks:
+  ierahkwa-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

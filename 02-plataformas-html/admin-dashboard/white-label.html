@@ -1,0 +1,152 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>White-Label Management — Ierahkwa Admin</title>
+<link rel="stylesheet" href="../shared/ierahkwa.css">
+<style>
+:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--green:#34d399;--red:#ff4d6a;--blue:#60a5fa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.side{background:var(--bg2);border-right:1px solid var(--brd);padding:20px}
+.side h2{font-size:13px;color:var(--gold);margin-bottom:20px;letter-spacing:1px;text-transform:uppercase}
+.ni{padding:10px 14px;border-radius:var(--r);font-size:13px;color:var(--txt2);cursor:pointer;margin-bottom:4px;display:flex;align-items:center;gap:10px;transition:all .15s}
+.ni:hover{background:var(--bg3);color:var(--txt)}
+.ni.a{background:var(--bg3);color:var(--gold);font-weight:600}
+.main{padding:32px;overflow-y:auto}
+h1{font-size:24px;margin-bottom:24px}
+.tier-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.tier-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:24px;position:relative;transition:transform .2s}
+.tier-card:hover{transform:translateY(-2px)}
+.tier-card.recommended{border-color:var(--gold)}
+.tier-card .badge{position:absolute;top:-10px;right:16px;background:var(--gold);color:var(--bg);font-size:10px;padding:4px 10px;border-radius:12px;font-weight:700}
+.tier-name{font-size:18px;font-weight:700;margin-bottom:4px}
+.tier-price{font-size:28px;color:var(--gold);font-family:monospace;font-weight:700;margin:8px 0}
+.tier-platforms{font-size:12px;color:var(--txt2);margin-bottom:16px}
+.tier-features{list-style:none;font-size:12px;color:var(--txt2);line-height:2}
+.tier-features li::before{content:'✓ ';color:var(--green)}
+.btn{background:var(--gold);color:var(--bg);border:none;padding:10px 20px;border-radius:var(--r);font-weight:700;cursor:pointer;font-size:13px;margin-top:16px;width:100%;transition:opacity .15s}
+.btn:hover{opacity:.85}
+.btn-outline{background:transparent;border:1px solid var(--brd);color:var(--txt2)}
+.section{margin-bottom:32px}
+.section-title{font-size:16px;font-weight:700;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--brd)}
+.tbl{width:100%;border-collapse:collapse;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden}
+.tbl th,.tbl td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--brd);font-size:12px}
+.tbl th{background:var(--bg3);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--txt2)}
+.status-active{color:var(--green)}
+.status-trial{color:var(--gold)}
+.status-expired{color:var(--red)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:16px}
+.stat .label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--txt2)}
+.stat .value{font-size:24px;font-weight:700;color:var(--gold);font-family:monospace;margin:4px 0}
+.stat .delta{font-size:11px;color:var(--green)}
+</style>
+</head><body>
+<div class="side">
+  <h2>Admin Panel</h2>
+  <a href="index.html" class="ni">Dashboard</a>
+  <a href="white-label.html" class="ni a">White-Label</a>
+  <div class="ni">Tenants</div>
+  <div class="ni">Users & Tiers</div>
+  <div class="ni">Platforms (190)</div>
+  <div class="ni">Microservices (83)</div>
+  <div class="ni">NEXUS Domains</div>
+  <div class="ni">Revenue</div>
+  <div class="ni">Security</div>
+  <div class="ni">Monitoring</div>
+  <div class="ni">Config</div>
+</div>
+<main class="main">
+  <h1>White-Label License Management</h1>
+
+  <div class="stats">
+    <div class="stat"><div class="label">Active Licenses</div><div class="value">47</div><div class="delta">+12 this quarter</div></div>
+    <div class="stat"><div class="label">Monthly Revenue</div><div class="value">$2.1M</div><div class="delta">+34% MoM</div></div>
+    <div class="stat"><div class="label">Tenants Served</div><div class="value">284</div><div class="delta">19 countries</div></div>
+    <div class="stat"><div class="label">Platforms Deployed</div><div class="value">8,930</div><div class="delta">across all licensees</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">License Tiers</div>
+    <div class="tier-grid">
+      <div class="tier-card">
+        <div class="tier-name">Starter</div>
+        <div class="tier-price">$25K<span style="font-size:14px;color:var(--txt2)">/yr</span></div>
+        <div class="tier-platforms">Up to 10 platforms</div>
+        <ul class="tier-features">
+          <li>Basic customization</li>
+          <li>Email support</li>
+          <li>Standard SLA</li>
+          <li>Shared infrastructure</li>
+        </ul>
+        <button class="btn btn-outline">View Licensees</button>
+      </div>
+      <div class="tier-card recommended">
+        <div class="badge">POPULAR</div>
+        <div class="tier-name">Professional</div>
+        <div class="tier-price">$100K<span style="font-size:14px;color:var(--txt2)">/yr</span></div>
+        <div class="tier-platforms">Up to 50 platforms</div>
+        <ul class="tier-features">
+          <li>Full customization</li>
+          <li>Priority support</li>
+          <li>Custom domain</li>
+          <li>99.9% SLA</li>
+        </ul>
+        <button class="btn">View Licensees</button>
+      </div>
+      <div class="tier-card">
+        <div class="tier-name">Sovereign</div>
+        <div class="tier-price">$500K<span style="font-size:14px;color:var(--txt2)">/yr</span></div>
+        <div class="tier-platforms">All 190 platforms</div>
+        <ul class="tier-features">
+          <li>Sovereign branding</li>
+          <li>Dedicated success manager</li>
+          <li>Custom integrations</li>
+          <li>99.99% SLA</li>
+        </ul>
+        <button class="btn btn-outline">View Licensees</button>
+      </div>
+      <div class="tier-card">
+        <div class="tier-name">Enterprise</div>
+        <div class="tier-price">$1M+<span style="font-size:14px;color:var(--txt2)">/yr</span></div>
+        <div class="tier-platforms">All 190 + custom</div>
+        <ul class="tier-features">
+          <li>Dedicated infrastructure</li>
+          <li>Custom development</li>
+          <li>On-premise option</li>
+          <li>Unlimited SLA</li>
+        </ul>
+        <button class="btn btn-outline">View Licensees</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Active Licensees</div>
+    <table class="tbl">
+      <thead><tr><th>Tenant</th><th>Country</th><th>Tier</th><th>Platforms</th><th>Users</th><th>MRR</th><th>Status</th><th>Expires</th></tr></thead>
+      <tbody>
+        <tr><td>Navajo Nation</td><td>US</td><td>Sovereign</td><td>190</td><td>173,667</td><td>$41,667</td><td class="status-active">Active</td><td>2027-01-15</td></tr>
+        <tr><td>Cherokee Nation</td><td>US</td><td>Professional</td><td>48</td><td>141,000</td><td>$8,333</td><td class="status-active">Active</td><td>2026-12-01</td></tr>
+        <tr><td>Cree Nation</td><td>CA</td><td>Professional</td><td>50</td><td>87,000</td><td>$8,333</td><td class="status-active">Active</td><td>2027-03-20</td></tr>
+        <tr><td>Maya Nations</td><td>MX</td><td>Sovereign</td><td>190</td><td>6,100,000</td><td>$41,667</td><td class="status-active">Active</td><td>2027-06-01</td></tr>
+        <tr><td>Quechua Nations</td><td>PE</td><td>Sovereign</td><td>190</td><td>8,900,000</td><td>$41,667</td><td class="status-active">Active</td><td>2027-04-15</td></tr>
+        <tr><td>Mapuche Nation</td><td>CL</td><td>Professional</td><td>45</td><td>1,700,000</td><td>$8,333</td><td class="status-active">Active</td><td>2026-11-30</td></tr>
+        <tr><td>Māori Council</td><td>NZ</td><td>Starter</td><td>10</td><td>775,000</td><td>$2,083</td><td class="status-trial">Trial</td><td>2026-04-01</td></tr>
+        <tr><td>Aboriginal Council</td><td>AU</td><td>Professional</td><td>50</td><td>984,000</td><td>$8,333</td><td class="status-active">Active</td><td>2027-02-28</td></tr>
+        <tr><td>Garífuna Nation</td><td>HN</td><td>Starter</td><td>10</td><td>600,000</td><td>$2,083</td><td class="status-active">Active</td><td>2026-09-15</td></tr>
+        <tr><td>Guaraní Nation</td><td>PY</td><td>Professional</td><td>50</td><td>4,850,000</td><td>$8,333</td><td class="status-active">Active</td><td>2027-01-01</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Revenue by Tier</div>
+    <div class="stats">
+      <div class="stat" style="border-left:3px solid var(--green)"><div class="label">Starter ($25K/yr)</div><div class="value">18</div><div class="delta">$450K ARR</div></div>
+      <div class="stat" style="border-left:3px solid var(--blue)"><div class="label">Professional ($100K/yr)</div><div class="value">21</div><div class="delta">$2.1M ARR</div></div>
+      <div class="stat" style="border-left:3px solid var(--gold)"><div class="label">Sovereign ($500K/yr)</div><div class="value">6</div><div class="delta">$3M ARR</div></div>
+      <div class="stat" style="border-left:3px solid var(--red)"><div class="label">Enterprise ($1M+/yr)</div><div class="value">2</div><div class="delta">$2.5M ARR</div></div>
+    </div>
+  </div>
+</main>
+<script src="admin-api.js"></script>
+</body></html>
