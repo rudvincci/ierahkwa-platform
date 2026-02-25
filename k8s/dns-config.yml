@@ -1,0 +1,85 @@
+# DNS Configuration for Ierahkwa Sovereign Platform
+# Apply with: kubectl apply -f dns-config.yml
+#
+# Required DNS Records (configure at your registrar):
+#
+# TYPE    NAME                    VALUE                           TTL
+# A       ierahkwa.org            <LOAD_BALANCER_IP>              300
+# A       api.ierahkwa.org        <LOAD_BALANCER_IP>              300
+# CNAME   *.ierahkwa.org          ierahkwa.org                    300
+# CNAME   portal.ierahkwa.org     ierahkwa.org                    300
+# MX      ierahkwa.org            10 mail.ierahkwa.org            3600
+# TXT     ierahkwa.org            "v=spf1 include:_spf... ~all"   3600
+# CAA     ierahkwa.org            0 issue "letsencrypt.org"        3600
+#
+# White-label tenant subdomains (auto-provisioned):
+# CNAME   navajo.ierahkwa.org     ierahkwa.org                    300
+# CNAME   cherokee.ierahkwa.org   ierahkwa.org                    300
+# CNAME   maya.ierahkwa.org       ierahkwa.org                    300
+# ... (574 tribal nation subdomains via wildcard)
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ierahkwa-main-ingress
+  namespace: ierahkwa
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: SAMEORIGIN";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "X-XSS-Protection: 1; mode=block";
+      more_set_headers "Strict-Transport-Security: max-age=31536000; includeSubDomains";
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - ierahkwa.org
+        - "*.ierahkwa.org"
+      secretName: ierahkwa-tls
+  rules:
+    # Main API gateway
+    - host: api.ierahkwa.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  number: 5000
+    # Portal frontend
+    - host: ierahkwa.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+    # Wildcard for white-label tenants
+    - host: "*.ierahkwa.org"
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  number: 5000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80

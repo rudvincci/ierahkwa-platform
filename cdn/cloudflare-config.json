@@ -1,0 +1,64 @@
+{
+  "zone": "ierahkwa.org",
+  "plan": "business",
+  "settings": {
+    "ssl": "full_strict",
+    "min_tls_version": "1.2",
+    "always_use_https": true,
+    "automatic_https_rewrites": true,
+    "http2": true,
+    "http3": true,
+    "websockets": true,
+    "brotli": true,
+    "minify": { "css": true, "html": true, "js": true },
+    "browser_cache_ttl": 14400,
+    "challenge_ttl": 1800,
+    "security_level": "medium",
+    "waf": true
+  },
+  "page_rules": [
+    {
+      "targets": [{ "target": "url", "constraint": { "value": "*.ierahkwa.org/shared/*" } }],
+      "actions": [
+        { "id": "cache_level", "value": "cache_everything" },
+        { "id": "edge_cache_ttl", "value": 604800 },
+        { "id": "browser_cache_ttl", "value": 604800 }
+      ]
+    },
+    {
+      "targets": [{ "target": "url", "constraint": { "value": "*.ierahkwa.org/api/*" } }],
+      "actions": [
+        { "id": "cache_level", "value": "bypass" },
+        { "id": "ssl", "value": "full_strict" }
+      ]
+    },
+    {
+      "targets": [{ "target": "url", "constraint": { "value": "*.ierahkwa.org/*.html" } }],
+      "actions": [
+        { "id": "cache_level", "value": "cache_everything" },
+        { "id": "edge_cache_ttl", "value": 3600 },
+        { "id": "browser_cache_ttl", "value": 1800 }
+      ]
+    }
+  ],
+  "firewall_rules": [
+    {
+      "description": "Block known bad bots",
+      "expression": "(cf.client.bot) and not (cf.client.bot_management.verified_bot)",
+      "action": "challenge"
+    },
+    {
+      "description": "Rate limit API",
+      "expression": "http.request.uri.path matches \"^/api/\" and cf.edge.server_port eq 443",
+      "action": "rate_limit",
+      "ratelimit": { "requests_per_period": 100, "period": 60 }
+    }
+  ],
+  "dns_records": [
+    { "type": "A", "name": "@", "content": "LOAD_BALANCER_IP", "proxied": true },
+    { "type": "A", "name": "api", "content": "LOAD_BALANCER_IP", "proxied": true },
+    { "type": "CNAME", "name": "*", "content": "ierahkwa.org", "proxied": false },
+    { "type": "CNAME", "name": "portal", "content": "ierahkwa.org", "proxied": true },
+    { "type": "CNAME", "name": "monitor", "content": "ierahkwa.org", "proxied": true }
+  ]
+}
