@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Centro de Control de los 7 Agentes AI Soberanos — Monitoreo en tiempo real de Guardian, Pattern, Anomaly, Trust, Shield, Forensic y Evolution">
+<meta name="theme-color" content="#7c4dff">
+<link rel="canonical" href="https://ierahkwa.nation/agents-dashboard/">
+<meta property="og:title" content="Centro de Control — 7 Agentes AI Soberanos | Ierahkwa">
+<meta property="og:description" content="Dashboard analítico en tiempo real para los 7 agentes de inteligencia artificial soberana anti-fraude">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/agents-dashboard/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Centro de Control — 7 Agentes AI | Ierahkwa">
+<meta name="twitter:description" content="Dashboard analítico en tiempo real para los 7 agentes AI soberanos anti-fraude">
+<title>Centro de Control — 7 Agentes AI Soberanos | Ierahkwa</title>
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
+<style>
+/* === Dashboard Custom Properties === */
+:root {
+  --accent: #7c4dff;
+  --accent-glow: rgba(124,77,255,.3);
+  --guardian: #f44336;
+  --pattern: #00bcd4;
+  --anomaly: #ff9100;
+  --trust-color: #00FF41;
+  --shield: #1565c0;
+  --forensic: #e040fb;
+  --evolution: #ffd600;
+  --card-bg: rgba(13,26,45,.85);
+  --card-border: rgba(124,77,255,.25);
+}
+
+/* === Dashboard Layout === */
+.dashboard {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.25rem;
+}
+
+/* === Header === */
+.dash-header {
+  background: linear-gradient(135deg, rgba(124,77,255,.12) 0%, rgba(10,14,23,.98) 100%);
+  border-bottom: 2px solid var(--accent);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  backdrop-filter: blur(12px);
+}
+.dash-header .logo { display: flex; align-items: center; gap: .75rem; }
+.dash-header .logo-icon {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--accent), #5e35b1);
+  border-radius: 16px;
+  display: grid; place-items: center;
+  font-weight: 900; font-size: 1.3rem; color: #fff;
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+.dash-header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.15rem;
+  color: var(--accent);
+  letter-spacing: -.02em;
+  line-height: 1.2;
+}
+.dash-header h1 small {
+  display: block; font-size: .7rem;
+  color: var(--txt2); font-family: 'Exo 2', system-ui, sans-serif;
+  font-weight: 400; letter-spacing: 0;
+}
+.header-right { display: flex; align-items: center; gap: 1rem; }
+.status-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--trust-color);
+  box-shadow: 0 0 8px rgba(0,255,65,.5);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .4; }
+}
+.refresh-label {
+  font-size: .75rem; color: var(--txt2);
+  font-family: 'Exo 2', system-ui, sans-serif;
+}
+#last-refresh { color: var(--accent); font-weight: 600; }
+
+/* === Cards === */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  backdrop-filter: blur(8px);
+  transition: transform .2s, box-shadow .2s;
+  overflow: hidden;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px var(--accent-glow);
+}
+.card-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: .85rem;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  display: flex; align-items: center; gap: .5rem;
+  letter-spacing: -.01em;
+}
+.card-title .icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: grid; place-items: center;
+  font-size: .9rem; flex-shrink: 0;
+}
+
+/* === Agent Status Cards (top row) === */
+.agents-row { grid-column: 1 / -1; }
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1rem;
+}
+.agent-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all .3s;
+}
+.agent-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.agent-card[data-agent="guardian"]::before { background: var(--guardian); }
+.agent-card[data-agent="pattern"]::before { background: var(--pattern); }
+.agent-card[data-agent="anomaly"]::before { background: var(--anomaly); }
+.agent-card[data-agent="trust"]::before { background: var(--trust-color); }
+.agent-card[data-agent="shield"]::before { background: var(--shield); }
+.agent-card[data-agent="forensic"]::before { background: var(--forensic); }
+.agent-card[data-agent="evolution"]::before { background: var(--evolution); }
+.agent-card:hover { border-color: var(--accent); }
+.agent-icon {
+  font-size: 1.6rem; margin-bottom: .4rem;
+  display: block;
+}
+.agent-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: .75rem; color: #fff;
+  margin-bottom: .3rem;
+}
+.agent-status {
+  font-size: .65rem; font-weight: 700;
+  padding: .15rem .5rem; border-radius: 8px;
+  display: inline-block;
+}
+.agent-status.active { background: rgba(0,255,65,.15); color: #00FF41; }
+.agent-status.warning { background: rgba(255,145,0,.15); color: #ff9100; }
+.agent-status.critical { background: rgba(244,67,54,.15); color: #f44336; }
+.agent-metric {
+  font-size: 1.1rem; font-weight: 700;
+  margin-top: .5rem; color: #fff;
+}
+.agent-metric-label {
+  font-size: .6rem; color: var(--txt2);
+  text-transform: uppercase; letter-spacing: .5px;
+}
+
+/* === Trust Score Gauge === */
+.trust-section { grid-column: 1 / 5; }
+.gauge-container {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 1rem 0;
+}
+.gauge-svg { width: 200px; height: 120px; }
+.gauge-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.2rem; font-weight: 900;
+  text-anchor: middle;
+}
+.gauge-label {
+  font-size: .7rem; color: var(--txt2);
+  text-anchor: middle;
+}
+.trust-history {
+  margin-top: 1rem;
+  display: flex; flex-direction: column; gap: .3rem;
+}
+.trust-entry {
+  display: flex; justify-content: space-between;
+  font-size: .7rem; padding: .2rem .4rem;
+  border-radius: 6px;
+  background: rgba(255,255,255,.03);
+}
+.trust-delta.positive { color: #00FF41; }
+.trust-delta.negative { color: #f44336; }
+
+/* === Alert Feed === */
+.alert-section { grid-column: 5 / 9; }
+.alert-feed {
+  max-height: 300px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: .5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+.alert-item {
+  display: flex; gap: .6rem; align-items: flex-start;
+  padding: .6rem; border-radius: 10px;
+  background: rgba(255,255,255,.03);
+  border-left: 3px solid var(--guardian);
+  font-size: .75rem; line-height: 1.4;
+  animation: slideIn .3s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.alert-item.critical { border-left-color: #f44336; background: rgba(244,67,54,.08); }
+.alert-item.high { border-left-color: #ff9100; background: rgba(255,145,0,.06); }
+.alert-item.medium { border-left-color: #ffd600; background: rgba(255,214,0,.05); }
+.alert-severity {
+  font-size: .6rem; font-weight: 700;
+  padding: .1rem .4rem; border-radius: 6px;
+  text-transform: uppercase; white-space: nowrap;
+}
+.alert-severity.critical { background: rgba(244,67,54,.2); color: #ff8a80; }
+.alert-severity.high { background: rgba(255,145,0,.2); color: #ffcc80; }
+.alert-severity.medium { background: rgba(255,214,0,.2); color: #fff59d; }
+.alert-time { color: var(--txt2); font-size: .65rem; white-space: nowrap; }
+.alert-text { flex: 1; color: #ddd; }
+.alert-type { color: var(--accent); font-weight: 600; }
+
+/* === Anomaly Chart === */
+.anomaly-section { grid-column: 9 / 13; }
+.bar-chart {
+  display: flex; flex-direction: column; gap: .5rem;
+  padding: .5rem 0;
+}
+.bar-row {
+  display: flex; align-items: center; gap: .6rem;
+}
+.bar-label {
+  width: 110px; font-size: .7rem;
+  color: var(--txt2); text-align: right;
+  flex-shrink: 0;
+}
+.bar-track {
+  flex: 1; height: 22px; background: rgba(255,255,255,.05);
+  border-radius: 6px; overflow: hidden; position: relative;
+}
+.bar-fill {
+  height: 100%; border-radius: 6px;
+  background: linear-gradient(90deg, var(--anomaly), #ff6d00);
+  transition: width .8s ease;
+  display: flex; align-items: center;
+  padding-left: .5rem;
+  font-size: .65rem; font-weight: 700; color: #fff;
+  min-width: 24px;
+}
+
+/* === Evolution Timeline === */
+.evolution-section { grid-column: 1 / 7; }
+.timeline {
+  position: relative; padding-left: 1.5rem;
+  max-height: 280px; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--evolution) transparent;
+}
+.timeline::before {
+  content: ''; position: absolute;
+  left: 6px; top: 0; bottom: 0;
+  width: 2px; background: rgba(255,214,0,.2);
+}
+.timeline-item {
+  position: relative; padding: .6rem 0;
+  font-size: .75rem;
+}
+.timeline-item::before {
+  content: ''; position: absolute;
+  left: -1.5rem; top: .85rem;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--evolution);
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 6px rgba(255,214,0,.4);
+}
+.timeline-gen {
+  font-family: 'Orbitron', sans-serif;
+  font-size: .7rem; color: var(--evolution);
+  font-weight: 700;
+}
+.timeline-rule {
+  color: #ccc; margin-top: .15rem;
+}
+.timeline-meta {
+  color: var(--txt2); font-size: .65rem; margin-top: .1rem;
+}
+
+/* === Forensic Log === */
+.forensic-section { grid-column: 7 / 13; }
+.search-bar {
+  display: flex; gap: .5rem; margin-bottom: .75rem;
+}
+.search-bar input {
+  flex: 1; background: rgba(255,255,255,.06);
+  border: 1px solid var(--card-border);
+  border-radius: 10px; padding: .5rem .75rem;
+  color: #fff; font-size: .8rem;
+  font-family: 'Exo 2', system-ui, sans-serif;
+  outline: none; transition: border-color .2s;
+}
+.search-bar input:focus { border-color: var(--accent); }
+.search-bar input::placeholder { color: var(--txt2); }
+.forensic-table {
+  width: 100%; border-collapse: collapse;
+  font-size: .7rem;
+}
+.forensic-table thead th {
+  text-align: left; padding: .5rem .4rem;
+  color: var(--accent); font-family: 'Orbitron', sans-serif;
+  font-size: .65rem; border-bottom: 1px solid var(--card-border);
+  position: sticky; top: 0;
+  background: var(--card-bg);
+}
+.forensic-table tbody { max-height: 200px; }
+.forensic-table td {
+  padding: .4rem; color: #ccc;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  vertical-align: top;
+}
+.forensic-table tr:hover td { background: rgba(124,77,255,.06); }
+.forensic-scroll {
+  max-height: 220px; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--forensic) transparent;
+}
+
+/* === Pattern Analysis === */
+.pattern-section { grid-column: 1 / 5; }
+.hours-chart {
+  display: flex; align-items: flex-end;
+  gap: 2px; height: 100px; padding: .5rem 0;
+}
+.hour-bar {
+  flex: 1; min-width: 0; border-radius: 3px 3px 0 0;
+  background: linear-gradient(to top, var(--pattern), rgba(0,188,212,.4));
+  transition: height .6s ease;
+  position: relative;
+  cursor: default;
+}
+.hour-bar:hover { opacity: .8; }
+.hour-bar[aria-label]::after {
+  content: attr(aria-label);
+  position: absolute; bottom: calc(100% + 4px);
+  left: 50%; transform: translateX(-50%);
+  font-size: .55rem; color: #fff;
+  background: rgba(0,0,0,.85); padding: .15rem .35rem;
+  border-radius: 4px; white-space: nowrap;
+  pointer-events: none; opacity: 0;
+  transition: opacity .2s;
+}
+.hour-bar:hover::after { opacity: 1; }
+.hours-labels {
+  display: flex; gap: 2px;
+  font-size: .5rem; color: var(--txt2);
+  margin-top: .2rem;
+}
+.hours-labels span { flex: 1; text-align: center; min-width: 0; }
+.pattern-stats {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: .5rem; margin-top: .75rem;
+}
+.p-stat {
+  background: rgba(255,255,255,.04);
+  border-radius: 8px; padding: .5rem;
+  text-align: center;
+}
+.p-stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem; font-weight: 700;
+  color: var(--pattern);
+}
+.p-stat-label {
+  font-size: .6rem; color: var(--txt2);
+  text-transform: uppercase; margin-top: .1rem;
+}
+
+/* === Shield Status === */
+.shield-section { grid-column: 5 / 9; }
+.shield-status-main {
+  display: flex; align-items: center; gap: 1rem;
+  padding: .75rem; border-radius: 12px;
+  margin-bottom: .75rem;
+}
+.shield-status-main.normal { background: rgba(0,255,65,.08); border: 1px solid rgba(0,255,65,.2); }
+.shield-status-main.protected { background: rgba(255,145,0,.08); border: 1px solid rgba(255,145,0,.2); }
+.shield-status-main.blocked { background: rgba(244,67,54,.08); border: 1px solid rgba(244,67,54,.2); }
+.shield-icon-lg { font-size: 2rem; }
+.shield-text h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: .85rem; margin-bottom: .15rem;
+}
+.shield-text p { font-size: .7rem; color: var(--txt2); }
+.shield-log {
+  display: flex; flex-direction: column; gap: .3rem;
+  max-height: 180px; overflow-y: auto;
+  scrollbar-width: thin;
+}
+.shield-entry {
+  display: flex; justify-content: space-between;
+  align-items: center; font-size: .7rem;
+  padding: .35rem .5rem; border-radius: 8px;
+  background: rgba(255,255,255,.03);
+}
+.shield-entry-type { color: var(--shield); font-weight: 600; }
+.shield-entry-time { color: var(--txt2); font-size: .6rem; }
+.shield-entry-status { font-size: .6rem; font-weight: 700; }
+.shield-entry-status.ok { color: #00FF41; }
+.shield-entry-status.flagged { color: #ff9100; }
+
+/* === Cross-Platform Map === */
+.map-section { grid-column: 9 / 13; }
+.platform-map {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  gap: 4px; padding: .5rem 0;
+  max-height: 280px; overflow-y: auto;
+  scrollbar-width: thin;
+}
+.platform-node {
+  aspect-ratio: 1; border-radius: 8px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-size: .5rem; color: var(--txt2);
+  background: rgba(255,255,255,.04);
+  border: 1px solid transparent;
+  transition: all .3s;
+  cursor: default; text-align: center;
+  padding: 2px; overflow: hidden;
+  line-height: 1.1;
+}
+.platform-node.active-agent {
+  border-color: var(--accent);
+  background: rgba(124,77,255,.12);
+  color: #fff;
+}
+.platform-node.active-agent .node-dot {
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+.node-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  margin-bottom: 2px;
+}
+
+/* === Empty State === */
+.empty-state {
+  text-align: center; padding: 2rem 1rem;
+  color: var(--txt2); font-size: .8rem;
+}
+.empty-state .empty-icon { font-size: 2rem; margin-bottom: .5rem; display: block; }
+
+/* === Footer === */
+.dash-footer {
+  grid-column: 1 / -1;
+  text-align: center; padding: 1.5rem;
+  font-size: .7rem; color: var(--txt2);
+  border-top: 1px solid var(--card-border);
+}
+.dash-footer a { color: var(--accent); }
+
+/* === Responsive === */
+@media (max-width: 1024px) {
+  .trust-section, .alert-section, .anomaly-section,
+  .evolution-section, .forensic-section,
+  .pattern-section, .shield-section, .map-section {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 640px) {
+  .dashboard { padding: .75rem; gap: .75rem; }
+  .dash-header { padding: .75rem 1rem; }
+  .dash-header h1 { font-size: .95rem; }
+  .agents-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  .gauge-svg { width: 160px; height: 100px; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-nav">Ir al contenido principal</a>
+
+<!-- ===== HEADER ===== -->
+<header class="dash-header" role="banner">
+  <div class="logo">
+    <div class="logo-icon" aria-hidden="true">AI</div>
+    <h1>
+      Centro de Control — 7 Agentes AI Soberanos
+      <small>Ierahkwa Ne Kanienke — Monitoreo en Tiempo Real</small>
+    </h1>
+  </div>
+  <div class="header-right">
+    <div class="status-dot" aria-label="Sistema activo" title="Todos los agentes operativos"></div>
+    <span class="refresh-label">
+      Actualizado: <span id="last-refresh">--:--:--</span>
+    </span>
+    <a href="../index.html" class="btn" style="font-size:.75rem;padding:.4rem .8rem">Portal</a>
+  </div>
+</header>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main id="main-content" class="dashboard" role="main">
+
+  <!-- 1. Agent Status Cards -->
+  <section class="card agents-row" aria-labelledby="agents-title">
+    <div class="card-title" id="agents-title">
+      <span class="icon" style="background:rgba(124,77,255,.2);color:var(--accent)" aria-hidden="true">7</span>
+      Estado de Agentes
+    </div>
+    <div class="agents-grid" id="agents-grid" role="list">
+      <div class="agent-card" data-agent="guardian" role="listitem" aria-label="Agente Guardian">
+        <span class="agent-icon" aria-hidden="true">&#128737;</span>
+        <div class="agent-name">Guardian</div>
+        <span class="agent-status active" id="guardian-status">Activo</span>
+        <div class="agent-metric" id="guardian-metric">0</div>
+        <div class="agent-metric-label">Alertas</div>
+      </div>
+      <div class="agent-card" data-agent="pattern" role="listitem" aria-label="Agente Pattern">
+        <span class="agent-icon" aria-hidden="true">&#129504;</span>
+        <div class="agent-name">Pattern</div>
+        <span class="agent-status active" id="pattern-status">Aprendiendo</span>
+        <div class="agent-metric" id="pattern-metric">0</div>
+        <div class="agent-metric-label">Sesiones</div>
+      </div>
+      <div class="agent-card" data-agent="anomaly" role="listitem" aria-label="Agente Anomaly">
+        <span class="agent-icon" aria-hidden="true">&#128269;</span>
+        <div class="agent-name">Anomaly</div>
+        <span class="agent-status active" id="anomaly-status">Vigilando</span>
+        <div class="agent-metric" id="anomaly-metric">0</div>
+        <div class="agent-metric-label">Detectadas</div>
+      </div>
+      <div class="agent-card" data-agent="trust" role="listitem" aria-label="Agente Trust">
+        <span class="agent-icon" aria-hidden="true">&#11088;</span>
+        <div class="agent-name">Trust</div>
+        <span class="agent-status active" id="trust-status">Normal</span>
+        <div class="agent-metric" id="trust-metric">100</div>
+        <div class="agent-metric-label">Score</div>
+      </div>
+      <div class="agent-card" data-agent="shield" role="listitem" aria-label="Agente Shield">
+        <span class="agent-icon" aria-hidden="true">&#128274;</span>
+        <div class="agent-name">Shield</div>
+        <span class="agent-status active" id="shield-status-badge">Normal</span>
+        <div class="agent-metric" id="shield-metric">0</div>
+        <div class="agent-metric-label">Transacciones</div>
+      </div>
+      <div class="agent-card" data-agent="forensic" role="listitem" aria-label="Agente Forensic">
+        <span class="agent-icon" aria-hidden="true">&#128300;</span>
+        <div class="agent-name">Forensic</div>
+        <span class="agent-status active" id="forensic-status">Registrando</span>
+        <div class="agent-metric" id="forensic-metric">0</div>
+        <div class="agent-metric-label">Eventos</div>
+      </div>
+      <div class="agent-card" data-agent="evolution" role="listitem" aria-label="Agente Evolution">
+        <span class="agent-icon" aria-hidden="true">&#129516;</span>
+        <div class="agent-name">Evolution</div>
+        <span class="agent-status active" id="evolution-status">Evolucionando</span>
+        <div class="agent-metric" id="evolution-metric">1</div>
+        <div class="agent-metric-label">Generacion</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Trust Score Gauge -->
+  <section class="card trust-section" aria-labelledby="trust-title">
+    <div class="card-title" id="trust-title">
+      <span class="icon" style="background:rgba(0,255,65,.15);color:var(--trust-color)" aria-hidden="true">&#11088;</span>
+      Score de Confianza
+    </div>
+    <div class="gauge-container">
+      <svg class="gauge-svg" viewBox="0 0 200 120" role="img" aria-label="Medidor de confianza">
+        <defs>
+          <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#f44336"/>
+            <stop offset="35%" stop-color="#ff9100"/>
+            <stop offset="65%" stop-color="#ffd600"/>
+            <stop offset="100%" stop-color="#00FF41"/>
+          </linearGradient>
+        </defs>
+        <!-- Background arc -->
+        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="14" stroke-linecap="round"/>
+        <!-- Value arc -->
+        <path id="gauge-arc" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGrad)" stroke-width="14" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="0"/>
+        <!-- Value text -->
+        <text id="gauge-text" x="100" y="90" class="gauge-value" fill="#00FF41">100</text>
+        <text x="100" y="110" class="gauge-label" fill="#888">/100</text>
+      </svg>
+    </div>
+    <div class="trust-history" id="trust-history" aria-label="Historial de confianza">
+      <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">&#128202;</span>
+        Sin cambios recientes
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Real-time Alert Feed -->
+  <section class="card alert-section" aria-labelledby="alert-title">
+    <div class="card-title" id="alert-title">
+      <span class="icon" style="background:rgba(244,67,54,.15);color:var(--guardian)" aria-hidden="true">&#128737;</span>
+      Alertas en Tiempo Real
+    </div>
+    <div class="alert-feed" id="alert-feed" role="log" aria-live="polite" aria-label="Feed de alertas del agente Guardian">
+      <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">&#9989;</span>
+        Sin alertas — Todo seguro
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Anomaly Detection Chart -->
+  <section class="card anomaly-section" aria-labelledby="anomaly-title">
+    <div class="card-title" id="anomaly-title">
+      <span class="icon" style="background:rgba(255,145,0,.15);color:var(--anomaly)" aria-hidden="true">&#128269;</span>
+      Deteccion de Anomalias
+    </div>
+    <div class="bar-chart" id="anomaly-chart" role="img" aria-label="Grafico de barras de tipos de anomalias">
+      <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">&#128202;</span>
+        Sin anomalias registradas
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Evolution Timeline -->
+  <section class="card evolution-section" aria-labelledby="evolution-title">
+    <div class="card-title" id="evolution-title">
+      <span class="icon" style="background:rgba(255,214,0,.15);color:var(--evolution)" aria-hidden="true">&#129516;</span>
+      Linea de Evolucion
+    </div>
+    <div class="timeline" id="evolution-timeline" aria-label="Linea temporal de reglas evolucionadas">
+      <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">&#129516;</span>
+        Generacion 1 — Sin reglas evolucionadas aun
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Forensic Event Log -->
+  <section class="card forensic-section" aria-labelledby="forensic-title">
+    <div class="card-title" id="forensic-title">
+      <span class="icon" style="background:rgba(224,64,251,.15);color:var(--forensic)" aria-hidden="true">&#128300;</span>
+      Registro Forense
+    </div>
+    <div class="search-bar">
+      <input type="search" id="forensic-search" placeholder="Buscar eventos..." aria-label="Buscar en registro forense">
+    </div>
+    <div class="forensic-scroll">
+      <table class="forensic-table" aria-label="Tabla de eventos forenses">
+        <thead>
+          <tr>
+            <th scope="col">Hora</th>
+            <th scope="col">Agente</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Plataforma</th>
+            <th scope="col">Detalles</th>
+          </tr>
+        </thead>
+        <tbody id="forensic-tbody">
+          <tr><td colspan="5" class="empty-state">Sin eventos forenses</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 7. Pattern Analysis -->
+  <section class="card pattern-section" aria-labelledby="pattern-title">
+    <div class="card-title" id="pattern-title">
+      <span class="icon" style="background:rgba(0,188,212,.15);color:var(--pattern)" aria-hidden="true">&#129504;</span>
+      Analisis de Patrones
+    </div>
+    <div aria-label="Actividad por hora del dia">
+      <div class="hours-chart" id="hours-chart" role="img" aria-label="Distribucion de actividad por hora"></div>
+      <div class="hours-labels" id="hours-labels" aria-hidden="true"></div>
+    </div>
+    <div class="pattern-stats" id="pattern-stats">
+      <div class="p-stat">
+        <div class="p-stat-value" id="stat-sessions">0</div>
+        <div class="p-stat-label">Sesiones</div>
+      </div>
+      <div class="p-stat">
+        <div class="p-stat-value" id="stat-avg-duration">0m</div>
+        <div class="p-stat-label">Dur. Promedio</div>
+      </div>
+      <div class="p-stat">
+        <div class="p-stat-value" id="stat-clicks">0</div>
+        <div class="p-stat-label">Clicks/Sesion</div>
+      </div>
+      <div class="p-stat">
+        <div class="p-stat-value" id="stat-platforms">0</div>
+        <div class="p-stat-label">Plataformas</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Shield Status -->
+  <section class="card shield-section" aria-labelledby="shield-title">
+    <div class="card-title" id="shield-title">
+      <span class="icon" style="background:rgba(21,101,192,.15);color:var(--shield)" aria-hidden="true">&#128274;</span>
+      Estado de Proteccion
+    </div>
+    <div class="shield-status-main normal" id="shield-main" role="status">
+      <span class="shield-icon-lg" aria-hidden="true">&#128274;</span>
+      <div class="shield-text">
+        <h3 id="shield-mode-text" style="color:#00FF41">Modo Normal</h3>
+        <p id="shield-mode-desc">Todas las transacciones habilitadas</p>
+      </div>
+    </div>
+    <div class="shield-log" id="shield-log" aria-label="Historial de transacciones protegidas">
+      <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">&#128274;</span>
+        Sin transacciones registradas
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Cross-Platform Map -->
+  <section class="card map-section" aria-labelledby="map-title">
+    <div class="card-title" id="map-title">
+      <span class="icon" style="background:rgba(124,77,255,.15);color:var(--accent)" aria-hidden="true">&#127760;</span>
+      Mapa de Agentes Activos
+    </div>
+    <div class="platform-map" id="platform-map" role="img" aria-label="Mapa visual de plataformas con agentes activos"></div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="dash-footer">
+    <p>Ierahkwa AI Agents v1.0.0 — 7 Agentes Soberanos Anti-Fraude</p>
+    <p style="margin-top:.3rem">
+      <a href="../index.html">Portal Principal</a> &middot;
+      <a href="../nexus-cerebro/index.html">NEXUS Cerebro</a> &middot;
+      <a href="../admin-dashboard/index.html">Admin Dashboard</a>
+    </p>
+  </footer>
+
+</main>
+
+<!-- ===== AGENTS SCRIPT ===== -->
+<script src="../shared/ierahkwa-agents.js"></script>
+
+<!-- ===== DASHBOARD LOGIC ===== -->
+<script>
+(function() {
+  'use strict';
+
+  // ============================================================
+  // IndexedDB Configuration (matches ierahkwa-agents.js)
+  // ============================================================
+  var DB_NAME = 'ierahkwa-agents';
+  var DB_VERSION = 1;
+  var STORES = {
+    behaviors: 'agent-behaviors',
+    anomalies: 'agent-anomalies',
+    trust: 'agent-trust-scores',
+    rules: 'agent-evolved-rules',
+    forensics: 'agent-forensics',
+    sessions: 'agent-sessions'
+  };
+
+  // Platform list for the map
+  var KNOWN_PLATFORMS = [
+    'admin-dashboard','agents-dashboard','ai-agent-dev','ai-soberano','algo-trading',
+    'analitica-soberana','antivirus-soberano','artesania-soberana','astronomia-soberana',
+    'banca-soberana','biometria-soberana','blockchain-explorer','blockchain-soberana',
+    'ciberseguridad-soberana','clima-soberano','comercio-soberano','comunicaciones-soberanas',
+    'consejo-digital','cripto-exchange','cripto-soberana','crowdfunding-soberano',
+    'datos-soberanos','defi-soberano','defensa-soberana','deportes-soberano',
+    'drones-soberanos','educacion-soberana','emergencias-soberanas','energia-soberana',
+    'entretenimiento-soberano','espacio-soberano','firewall-soberano','forja-digital',
+    'gaming-soberano','gestion-territorial','gobierno-digital','identidad-soberana',
+    'infraestructura-soberana','iot-soberano','justicia-soberana','laboratorio-soberano',
+    'logistica-soberana','manufactura-soberana','marketplace-soberano','media-soberana',
+    'medicina-soberana','meteorologia-soberana','mineria-datos','monitoreo-ambiental',
+    'nexus-cerebro','nexus-consejo','nexus-escudo','nexus-forja','nexus-orbital',
+    'nexus-raices','nexus-tesoro','nexus-tierra','nexus-urbe','nexus-voces',
+    'nft-soberano','observatorio-soberano','open-source-soberano','orbital-comms',
+    'pasaporte-soberano','patrimonio-soberano','radio-soberana','red-mesh',
+    'registro-civil','robotica-soberana','salud-soberana','satelites-soberanos',
+    'seguridad-alimentaria','smart-contracts','soberania-datos','telemedicina-soberana',
+    'transporte-soberano','tribunal-digital','turismo-soberano','universidad-soberana',
+    'vigilancia-fronteriza','voto-soberano','wampum-pay','zk-identidad'
+  ];
+
+  var forensicData = [];
+
+  // ============================================================
+  // IndexedDB Reader
+  // ============================================================
+  function openDB() {
+    return new Promise(function(resolve, reject) {
+      var req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = function() {
+        var db = req.result;
+        var storeNames = Object.values(STORES);
+        for (var i = 0; i < storeNames.length; i++) {
+          if (!db.objectStoreNames.contains(storeNames[i])) {
+            db.createObjectStore(storeNames[i], { keyPath: 'id' });
+          }
+        }
+      };
+      req.onsuccess = function() { resolve(req.result); };
+      req.onerror = function() { reject(req.error); };
+    });
+  }
+
+  function readStore(db, storeName) {
+    return new Promise(function(resolve) {
+      try {
+        var tx = db.transaction(storeName, 'readonly');
+        var store = tx.objectStore(storeName);
+        var req = store.getAll();
+        req.onsuccess = function() { resolve(req.result || []); };
+        req.onerror = function() { resolve([]); };
+      } catch(e) {
+        resolve([]);
+      }
+    });
+  }
+
+  function readByKey(db, storeName, key) {
+    return new Promise(function(resolve) {
+      try {
+        var tx = db.transaction(storeName, 'readonly');
+        var store = tx.objectStore(storeName);
+        var req = store.get(key);
+        req.onsuccess = function() { resolve(req.result || null); };
+        req.onerror = function() { resolve(null); };
+      } catch(e) {
+        resolve(null);
+      }
+    });
+  }
+
+  // ============================================================
+  // Data Collectors
+  // ============================================================
+  function collectAllData() {
+    return openDB().then(function(db) {
+      var data = {
+        trustScore: 100,
+        trustHistory: [],
+        alerts: [],
+        anomalies: [],
+        forensics: [],
+        evolvedRules: [],
+        generation: 1,
+        sessions: 0,
+        avgDuration: 0,
+        avgClicks: 0,
+        typicalHours: new Array(24).fill(0),
+        commonPlatforms: {},
+        shieldMode: 'normal',
+        transactionsBlocked: false,
+        transactionLog: [],
+        activePlatforms: new Set(),
+        forensicTotal: 0
+      };
+
+      return Promise.all([
+        readByKey(db, STORES.trust, 'current-score'),
+        readStore(db, STORES.forensics),
+        readByKey(db, STORES.rules, 'evolved-rules'),
+        readByKey(db, STORES.behaviors, 'user-profile')
+      ]).then(function(results) {
+        var trustData = results[0];
+        var forensics = results[1];
+        var rulesData = results[2];
+        var profile = results[3];
+
+        // Trust score
+        if (trustData) {
+          data.trustScore = trustData.score || 100;
+          data.trustHistory = (trustData.history || []).slice(-10);
+        }
+
+        // Forensic events
+        data.forensics = forensics.sort(function(a,b) {
+          return (b.timestamp || 0) - (a.timestamp || 0);
+        }).slice(0, 200);
+
+        // Extract alerts from forensics
+        data.alerts = data.forensics.filter(function(e) {
+          return e.agent === 'Guardian';
+        });
+
+        // Extract anomalies
+        data.anomalies = data.forensics.filter(function(e) {
+          return e.agent === 'Anomaly';
+        });
+
+        // Extract transaction log
+        data.transactionLog = data.forensics.filter(function(e) {
+          return e.agent === 'Shield' && e.type === 'transaction';
+        });
+
+        // Evolved rules
+        if (rulesData) {
+          data.evolvedRules = rulesData.rules || [];
+          data.generation = rulesData.generation || 1;
+        }
+
+        // User profile (behaviors)
+        if (profile && profile.data) {
+          data.sessions = profile.data.totalSessions || 0;
+          data.avgDuration = profile.data.avgSessionDuration || 0;
+          data.avgClicks = profile.data.avgClicksPerSession || 0;
+          data.typicalHours = profile.data.typicalHours || new Array(24).fill(0);
+          data.commonPlatforms = profile.data.commonPlatforms || {};
+        }
+
+        // Active platforms from forensics
+        data.forensics.forEach(function(e) {
+          if (e.platform) data.activePlatforms.add(e.platform);
+        });
+
+        data.forensicTotal = data.forensics.length;
+
+        // Merge data from live agents if available
+        if (window.IerahkwaAgents) {
+          var agents = window.IerahkwaAgents;
+          var status = agents.getStatus();
+
+          if (agents.guardian && agents.guardian.alerts && agents.guardian.alerts.length > data.alerts.length) {
+            data.alerts = agents.guardian.alerts.slice();
+          }
+          data.trustScore = status.trustScore;
+          data.generation = Math.max(data.generation, status.generation);
+
+          if (agents.shield) {
+            data.shieldMode = agents.shield.transactionsBlocked ? 'blocked' :
+                             agents.shield.protectedMode ? 'protected' : 'normal';
+            if (agents.shield.transactionLog && agents.shield.transactionLog.length > 0) {
+              data.transactionLog = data.transactionLog.concat(agents.shield.transactionLog);
+            }
+          }
+          if (agents.forensic) {
+            data.forensicTotal = Math.max(data.forensics.length, status.forensicEvents);
+          }
+          if (agents.evolution && agents.evolution.evolvedRules && agents.evolution.evolvedRules.length > data.evolvedRules.length) {
+            data.evolvedRules = agents.evolution.evolvedRules.slice();
+          }
+
+          data.activePlatforms.add(status.platform);
+        }
+
+        db.close();
+        return data;
+      });
+    }).catch(function(e) {
+      console.warn('[Dashboard] Error collecting data:', e);
+      return {
+        trustScore: 100, trustHistory: [], alerts: [], anomalies: [],
+        forensics: [], evolvedRules: [], generation: 1, sessions: 0,
+        avgDuration: 0, avgClicks: 0, typicalHours: new Array(24).fill(0),
+        commonPlatforms: {}, shieldMode: 'normal', transactionsBlocked: false,
+        transactionLog: [], activePlatforms: new Set(), forensicTotal: 0
+      };
+    });
+  }
+
+  // ============================================================
+  // Render Functions
+  // ============================================================
+
+  function updateTimestamp() {
+    var now = new Date();
+    var el = document.getElementById('last-refresh');
+    if (el) {
+      el.textContent = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+  }
+
+  function renderAgentCards(data) {
+    // Guardian
+    var guardianMetric = document.getElementById('guardian-metric');
+    if (guardianMetric) guardianMetric.textContent = data.alerts.length;
+
+    // Pattern
+    var patternMetric = document.getElementById('pattern-metric');
+    if (patternMetric) patternMetric.textContent = data.sessions;
+
+    // Anomaly
+    var anomalyMetric = document.getElementById('anomaly-metric');
+    if (anomalyMetric) anomalyMetric.textContent = data.anomalies.length;
+
+    // Trust
+    var trustMetric = document.getElementById('trust-metric');
+    if (trustMetric) trustMetric.textContent = Math.round(data.trustScore);
+    var trustStatus = document.getElementById('trust-status');
+    if (trustStatus) {
+      if (data.trustScore >= 70) {
+        trustStatus.textContent = 'Normal';
+        trustStatus.className = 'agent-status active';
+      } else if (data.trustScore >= 30) {
+        trustStatus.textContent = 'Precaucion';
+        trustStatus.className = 'agent-status warning';
+      } else {
+        trustStatus.textContent = 'Critico';
+        trustStatus.className = 'agent-status critical';
+      }
+    }
+
+    // Shield
+    var shieldMetric = document.getElementById('shield-metric');
+    if (shieldMetric) shieldMetric.textContent = data.transactionLog.length;
+    var shieldBadge = document.getElementById('shield-status-badge');
+    if (shieldBadge) {
+      if (data.shieldMode === 'blocked') {
+        shieldBadge.textContent = 'Bloqueado';
+        shieldBadge.className = 'agent-status critical';
+      } else if (data.shieldMode === 'protected') {
+        shieldBadge.textContent = 'Protegido';
+        shieldBadge.className = 'agent-status warning';
+      } else {
+        shieldBadge.textContent = 'Normal';
+        shieldBadge.className = 'agent-status active';
+      }
+    }
+
+    // Forensic
+    var forensicMetric = document.getElementById('forensic-metric');
+    if (forensicMetric) forensicMetric.textContent = data.forensicTotal || data.forensics.length;
+
+    // Evolution
+    var evolutionMetric = document.getElementById('evolution-metric');
+    if (evolutionMetric) evolutionMetric.textContent = data.generation;
+    var evolutionStatus = document.getElementById('evolution-status');
+    if (evolutionStatus) {
+      evolutionStatus.textContent = 'Gen ' + data.generation + ' (' + data.evolvedRules.length + ' reglas)';
+    }
+  }
+
+  function renderTrustGauge(score) {
+    var arcLength = 251.3;
+    var offset = arcLength - (arcLength * (score / 100));
+    var arc = document.getElementById('gauge-arc');
+    if (arc) arc.setAttribute('stroke-dashoffset', offset);
+
+    var text = document.getElementById('gauge-text');
+    if (text) {
+      text.textContent = Math.round(score);
+      if (score >= 70) text.setAttribute('fill', '#00FF41');
+      else if (score >= 30) text.setAttribute('fill', '#ffd600');
+      else text.setAttribute('fill', '#f44336');
+    }
+  }
+
+  function renderTrustHistory(history) {
+    var container = document.getElementById('trust-history');
+    if (!container || !history || history.length === 0) return;
+
+    var html = '';
+    var items = history.slice(-8).reverse();
+    for (var i = 0; i < items.length; i++) {
+      var entry = items[i];
+      var time = entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' }) : '--';
+      var delta = entry.delta || 0;
+      var cls = delta >= 0 ? 'positive' : 'negative';
+      var sign = delta >= 0 ? '+' : '';
+      html += '<div class="trust-entry">' +
+        '<span>' + time + ' (' + escapeHtml(entry.platform || 'portal') + ')</span>' +
+        '<span class="trust-delta ' + cls + '">' + sign + delta + '</span>' +
+      '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  function renderAlertFeed(alerts) {
+    var container = document.getElementById('alert-feed');
+    if (!container) return;
+
+    if (!alerts || alerts.length === 0) {
+      container.innerHTML = '<div class="empty-state"><span class="empty-icon" aria-hidden="true">&#9989;</span>Sin alertas — Todo seguro</div>';
+      return;
+    }
+
+    var items = alerts.slice(-30).reverse();
+    var html = '';
+    for (var i = 0; i < items.length; i++) {
+      var alert = items[i];
+      var severity = alert.severity || 'medium';
+      var time = alert.timestamp ? new Date(alert.timestamp).toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : '--';
+      var type = alert.type || 'desconocido';
+      var details = '';
+      if (alert.details) {
+        if (typeof alert.details === 'string') details = alert.details;
+        else if (alert.details.url) details = alert.details.url;
+        else if (alert.details.src) details = alert.details.src;
+        else if (alert.details.message) details = alert.details.message;
+        else details = JSON.stringify(alert.details).substring(0, 80);
+      }
+
+      html += '<div class="alert-item ' + severity + '">' +
+        '<span class="alert-severity ' + severity + '">' + severity + '</span>' +
+        '<div class="alert-text"><span class="alert-type">' + escapeHtml(type) + '</span> ' + escapeHtml(details) + '</div>' +
+        '<span class="alert-time">' + time + '</span>' +
+      '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  function renderAnomalyChart(anomalies) {
+    var container = document.getElementById('anomaly-chart');
+    if (!container) return;
+
+    if (!anomalies || anomalies.length === 0) {
+      container.innerHTML = '<div class="empty-state"><span class="empty-icon" aria-hidden="true">&#128202;</span>Sin anomalias registradas</div>';
+      return;
+    }
+
+    // Group by type
+    var types = {};
+    for (var i = 0; i < anomalies.length; i++) {
+      var t = anomalies[i].type || 'desconocido';
+      types[t] = (types[t] || 0) + 1;
+    }
+
+    var vals = [];
+    var keys = Object.keys(types);
+    for (var j = 0; j < keys.length; j++) vals.push(types[keys[j]]);
+    var maxCount = Math.max.apply(null, vals.concat([1]));
+
+    // Sort descending
+    var sorted = [];
+    for (var k = 0; k < keys.length; k++) sorted.push([keys[k], types[keys[k]]]);
+    sorted.sort(function(a,b) { return b[1] - a[1]; });
+
+    var html = '';
+    for (var m = 0; m < sorted.length; m++) {
+      var label = sorted[m][0];
+      var count = sorted[m][1];
+      var pct = Math.max(8, (count / maxCount) * 100);
+      html += '<div class="bar-row">' +
+        '<span class="bar-label">' + escapeHtml(label) + '</span>' +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%" role="meter" aria-valuenow="' + count + '" aria-valuemin="0" aria-valuemax="' + maxCount + '">' + count + '</div></div>' +
+      '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  function renderEvolutionTimeline(rules, generation) {
+    var container = document.getElementById('evolution-timeline');
+    if (!container) return;
+
+    if (!rules || rules.length === 0) {
+      container.innerHTML = '<div class="empty-state"><span class="empty-icon" aria-hidden="true">&#129516;</span>Generacion ' + generation + ' — Sin reglas evolucionadas aun</div>';
+      return;
+    }
+
+    // Group by generation
+    var generations = {};
+    for (var i = 0; i < rules.length; i++) {
+      var r = rules[i];
+      var gen = r.generation || 1;
+      if (!generations[gen]) generations[gen] = [];
+      generations[gen].push(r);
+    }
+
+    var genKeys = Object.keys(generations).sort(function(a,b) { return b - a; });
+    var html = '';
+    for (var g = 0; g < genKeys.length; g++) {
+      var genNum = genKeys[g];
+      var genRules = generations[genNum];
+      for (var j = 0; j < genRules.length; j++) {
+        var rule = genRules[j];
+        var time = rule.created ? new Date(rule.created).toLocaleString('es-ES', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '--';
+        var actionLabel = rule.type === 'block' ? 'Auto-bloqueo' : rule.type === 'relax' ? 'Relajar umbral' : rule.type;
+        var confidence = rule.confidence ? Math.round(rule.confidence * 100) + '%' : '--';
+        html += '<div class="timeline-item">' +
+          '<div class="timeline-gen">Gen ' + genNum + ' — ' + escapeHtml(rule.id || '') + '</div>' +
+          '<div class="timeline-rule">' + escapeHtml(actionLabel) + ': <strong>' + escapeHtml(rule.trigger || '--') + '</strong></div>' +
+          '<div class="timeline-meta">Confianza: ' + confidence + ' &middot; ' + time + '</div>' +
+        '</div>';
+      }
+    }
+    container.innerHTML = html;
+  }
+
+  function renderForensicLog(forensics, filter) {
+    var container = document.getElementById('forensic-tbody');
+    if (!container) return;
+
+    var items = forensics;
+    if (filter) {
+      var q = filter.toLowerCase();
+      items = forensics.filter(function(e) {
+        return (e.agent || '').toLowerCase().indexOf(q) !== -1 ||
+               (e.type || '').toLowerCase().indexOf(q) !== -1 ||
+               (e.platform || '').toLowerCase().indexOf(q) !== -1 ||
+               JSON.stringify(e.details || {}).toLowerCase().indexOf(q) !== -1;
+      });
+    }
+
+    if (!items || items.length === 0) {
+      container.innerHTML = '<tr><td colspan="5" class="empty-state">Sin eventos forenses' + (filter ? ' para "' + escapeHtml(filter) + '"' : '') + '</td></tr>';
+      return;
+    }
+
+    var rows = items.slice(0, 100);
+    var html = '';
+    for (var i = 0; i < rows.length; i++) {
+      var e = rows[i];
+      var time = e.timestamp ? new Date(e.timestamp).toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : '--';
+      var agent = e.agent || '--';
+      var type = e.type || '--';
+      var platform = e.platform || '--';
+      var details = '';
+      if (e.details) {
+        if (typeof e.details === 'string') details = e.details;
+        else details = JSON.stringify(e.details).substring(0, 60);
+      }
+
+      html += '<tr>' +
+        '<td>' + time + '</td>' +
+        '<td style="color:var(--accent)">' + escapeHtml(agent) + '</td>' +
+        '<td>' + escapeHtml(type) + '</td>' +
+        '<td>' + escapeHtml(platform) + '</td>' +
+        '<td style="color:var(--txt2);font-size:.65rem">' + escapeHtml(details) + '</td>' +
+      '</tr>';
+    }
+    container.innerHTML = html;
+  }
+
+  function renderPatternAnalysis(data) {
+    // Hours chart
+    var hoursContainer = document.getElementById('hours-chart');
+    var labelsContainer = document.getElementById('hours-labels');
+    if (hoursContainer) {
+      var hours = data.typicalHours || new Array(24).fill(0);
+      var maxHour = Math.max.apply(null, hours.concat([1]));
+      var html = '';
+      var labelsHtml = '';
+      for (var i = 0; i < 24; i++) {
+        var h = hours[i] || 0;
+        var pct = Math.max(2, (h / maxHour) * 100);
+        html += '<div class="hour-bar" style="height:' + pct + '%" aria-label="' + i + 'h: ' + h + ' eventos" role="presentation"></div>';
+        if (i % 4 === 0) {
+          labelsHtml += '<span>' + String(i).padStart(2, '0') + '</span>';
+        } else {
+          labelsHtml += '<span></span>';
+        }
+      }
+      hoursContainer.innerHTML = html;
+      if (labelsContainer) labelsContainer.innerHTML = labelsHtml;
+    }
+
+    // Stats
+    var sessionsEl = document.getElementById('stat-sessions');
+    if (sessionsEl) sessionsEl.textContent = data.sessions || 0;
+
+    var durationEl = document.getElementById('stat-avg-duration');
+    if (durationEl) {
+      var mins = Math.round((data.avgDuration || 0) / 60000);
+      durationEl.textContent = mins + 'm';
+    }
+
+    var clicksEl = document.getElementById('stat-clicks');
+    if (clicksEl) clicksEl.textContent = Math.round(data.avgClicks || 0);
+
+    var platformsEl = document.getElementById('stat-platforms');
+    if (platformsEl) platformsEl.textContent = Object.keys(data.commonPlatforms || {}).length;
+  }
+
+  function renderShieldStatus(data) {
+    var mainEl = document.getElementById('shield-main');
+    var modeText = document.getElementById('shield-mode-text');
+    var modeDesc = document.getElementById('shield-mode-desc');
+
+    if (mainEl && modeText && modeDesc) {
+      mainEl.className = 'shield-status-main ' + data.shieldMode;
+      if (data.shieldMode === 'blocked') {
+        modeText.textContent = 'Transacciones Bloqueadas';
+        modeText.style.color = '#f44336';
+        modeDesc.textContent = 'Score de confianza critico — Todas las transacciones detenidas';
+      } else if (data.shieldMode === 'protected') {
+        modeText.textContent = 'Modo Protegido';
+        modeText.style.color = '#ff9100';
+        modeDesc.textContent = 'Verificacion adicional requerida para transacciones';
+      } else {
+        modeText.textContent = 'Modo Normal';
+        modeText.style.color = '#00FF41';
+        modeDesc.textContent = 'Todas las transacciones habilitadas';
+      }
+    }
+
+    var logEl = document.getElementById('shield-log');
+    if (logEl) {
+      if (!data.transactionLog || data.transactionLog.length === 0) {
+        logEl.innerHTML = '<div class="empty-state"><span class="empty-icon" aria-hidden="true">&#128274;</span>Sin transacciones registradas</div>';
+        return;
+      }
+
+      var items = data.transactionLog.slice(-15).reverse();
+      var html = '';
+      for (var i = 0; i < items.length; i++) {
+        var tx = items[i];
+        var details = tx.details || tx;
+        var time = (tx.timestamp || details.timestamp) ? new Date(tx.timestamp || details.timestamp).toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' }) : '--';
+        var plat = details.platform || tx.platform || '--';
+        html += '<div class="shield-entry">' +
+          '<span class="shield-entry-type">' + escapeHtml(plat) + '</span>' +
+          '<span class="shield-entry-time">' + time + '</span>' +
+          '<span class="shield-entry-status ok">OK</span>' +
+        '</div>';
+      }
+      logEl.innerHTML = html;
+    }
+  }
+
+  function renderPlatformMap(activePlatforms) {
+    var container = document.getElementById('platform-map');
+    if (!container) return;
+
+    var active = activePlatforms instanceof Set ? activePlatforms : new Set(activePlatforms || []);
+
+    var html = '';
+    for (var i = 0; i < KNOWN_PLATFORMS.length; i++) {
+      var p = KNOWN_PLATFORMS[i];
+      var isActive = active.has(p);
+      var label = p.replace(/-/g, ' ').replace(/soberan[oa]/, '').trim();
+      if (label.length > 10) label = label.substring(0, 9) + '.';
+      html += '<div class="platform-node' + (isActive ? ' active-agent' : '') + '" title="' + escapeHtml(p) + '">' +
+        '<div class="node-dot"></div>' +
+        '<span>' + escapeHtml(label) + '</span>' +
+      '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  // ============================================================
+  // Utility
+  // ============================================================
+  function escapeHtml(str) {
+    if (!str) return '';
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+  }
+
+  // ============================================================
+  // Master Refresh
+  // ============================================================
+  function refresh() {
+    collectAllData().then(function(data) {
+      updateTimestamp();
+      renderAgentCards(data);
+      renderTrustGauge(data.trustScore);
+      renderTrustHistory(data.trustHistory);
+      renderAlertFeed(data.alerts);
+      renderAnomalyChart(data.anomalies);
+      renderEvolutionTimeline(data.evolvedRules, data.generation);
+      renderPatternAnalysis(data);
+      renderShieldStatus(data);
+      renderPlatformMap(data.activePlatforms);
+
+      // Forensic log with search filter
+      forensicData = data.forensics;
+      var searchEl = document.getElementById('forensic-search');
+      var filter = searchEl ? searchEl.value.trim() : '';
+      renderForensicLog(forensicData, filter);
+    }).catch(function(e) {
+      console.warn('[Dashboard] Refresh error:', e);
+    });
+  }
+
+  // ============================================================
+  // Search filter for forensic log
+  // ============================================================
+  var searchInput = document.getElementById('forensic-search');
+  if (searchInput) {
+    var debounceTimer;
+    searchInput.addEventListener('input', function() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function() {
+        renderForensicLog(forensicData, searchInput.value.trim());
+      }, 250);
+    });
+  }
+
+  // ============================================================
+  // Initialize
+  // ============================================================
+  refresh();
+  setInterval(refresh, 5000);
+  setInterval(updateTimestamp, 1000);
+
+  console.log(
+    '%c[Agents Dashboard] Centro de Control activo — Refrescando cada 5s',
+    'color:#7c4dff;font-weight:bold;font-size:11px'
+  );
+
+})();
+</script>
+</body>
+</html>
