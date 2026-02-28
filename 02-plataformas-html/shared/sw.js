@@ -5,6 +5,7 @@
  * + Offline AI model caching (ONNX Runtime Web + WASM)
  * + Enhanced offline for 14 priority platforms (IndexedDB sync)
  * + Futurehead Design System (Orbitron/Exo 2 fonts, neon-green theme)
+ * + 7 AI Agents (Guardian, Pattern, Anomaly, Trust, Shield, Forensic, Evolution)
  */
 
 const CACHE_NAME = 'ierahkwa-v3.6.0';
@@ -23,6 +24,7 @@ const STATIC_ASSETS = [
   '/shared/ierahkwa-quantum.js',
   '/shared/ierahkwa-protocols.js',
   '/shared/ierahkwa-interconnect.js',
+  '/shared/ierahkwa-agents.js',
   '/shared/manifest.json',
   '/icons/icon-192.svg',
   '/icons/icon-512.svg'
