@@ -1,7 +1,7 @@
 /**
  * Ierahkwa Platform — Service Worker v3.5.0
  * Cache-first strategy con network fallback
- * Soporta offline para 200+ plataformas + 17 NEXUS portales
+ * Soporta offline para 400+ plataformas + 18 NEXUS portales
  * + Offline AI model caching (ONNX Runtime Web + WASM)
  * + Enhanced offline for 14 priority platforms (IndexedDB sync)
  * + Futurehead Design System (Orbitron/Exo 2 fonts, neon-green theme)
@@ -34,7 +34,7 @@ const NEXUS_ROUTES = [
   '/nexus-tierra/',  '/nexus-forja/',  '/nexus-urbe/',
   '/nexus-raices/',  '/nexus-salud/',  '/nexus-academia/',
   '/nexus-escolar/', '/nexus-entretenimiento/', '/nexus-amparo/',
-  '/nexus-escritorio/', '/nexus-comercio/'
+  '/nexus-escritorio/', '/nexus-comercio/', '/nexus-cosmos/'
 ];
 
 // 14 Priority Offline Platforms — Enhanced caching with IndexedDB sync
