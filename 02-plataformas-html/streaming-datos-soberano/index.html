@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
+<meta name="description" content="Plataforma de event streaming que reemplaza Apache Kafka, Storm y RabbitMQ. Message broker distribuido en Rust con throughput de 2M mensajes/segundo, exactly-on">
+<meta name="theme-color" content="#00e676">
+<link rel="canonical" href="https://ierahkwa.nation/streaming-datos-soberano/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="Streaming de Datos Soberano — Event Streaming y Message Broker Soberano">
+<meta property="og:description" content="Plataforma de event streaming que reemplaza Apache Kafka, Storm y RabbitMQ. Message broker distribuido en Rust con throughput de 2M mensajes/segundo, exactly-once delivery, particionamiento inteligent">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/streaming-datos-soberano/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Streaming de Datos Soberano — Event Streaming y Message Broker Soberano">
+<meta name="twitter:description" content="Plataforma de event streaming que reemplaza Apache Kafka, Storm y RabbitMQ. Message broker distribuido en Rust con throughput de 2M mensajes/segundo, exactly-once delivery, particionamiento inteligent">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
+<title>Streaming de Datos Soberano — Event Streaming y Message Broker Soberano</title>
+<style>:root{--accent:#00e676}</style>
+</head>
+<body role="document">
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+
+<header>
+<div class="logo">
+<div class="logo-icon" aria-hidden="true">⚡</div>
+<h1>Streaming de Datos Soberano</h1>
+</div>
+<nav aria-label="Navegacion principal">
+<a href="#dashboard" aria-current="page">Dashboard</a>
+<a href="#features">Modulos</a>
+<a href="#api">API</a>
+<a href="#pricing">Precios</a>
+</nav>
+<span class="encrypted-badge" title="Cifrado Post-Quantum Activo"><span aria-hidden="true">⚛️</span> Quantum-Safe</span>
+</header>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero" id="dashboard">
+<div class="badge"><span aria-hidden="true">⚡</span> Event Streaming y Message Broker Soberano</div>
+<h2><span>Streaming de Datos Soberano</span></h2>
+<p>Plataforma de event streaming que reemplaza Apache Kafka, Storm y RabbitMQ. Message broker distribuido en Rust con throughput de 2M mensajes/segundo, exactly-once delivery, particionamiento inteligente, consumer groups, dead letter queues, replay de eventos. Backbone del ecosistema Ierahkwa.</p>
+<div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
+<a href="#features" class="btn">Explorar Módulos</a>
+<a href="#api" class="btn" style="background:transparent;border:2px solid var(--accent);color:var(--accent)">API Docs</a>
+</div>
+</section>
+
+<!-- DASHBOARD METRICS -->
+<div class="stats" role="list" aria-label="Metricas del sistema">
+<div class="stat" role="listitem"><div class="val">2M</div><div class="lbl">Msg/s</div></div>
+<div class="stat" role="listitem"><div class="val">Exactly</div><div class="lbl">Once</div></div>
+<div class="stat" role="listitem"><div class="val">< 1ms</div><div class="lbl">Latencia</div></div>
+<div class="stat" role="listitem"><div class="val">847</div><div class="lbl">Brokers</div></div>
+<div class="stat" role="listitem"><div class="val">30d</div><div class="lbl">Retención</div></div>
+<div class="stat" role="listitem"><div class="val">0</div><div class="lbl">Pérdida</div></div>
+</div>
+
+<!-- ARCHITECTURE -->
+<div class="section" id="architecture">
+<h2><span aria-hidden="true">🏗️</span> Arquitectura del Sistema</h2>
+<div class="sub">Infraestructura soberana de Streaming de Datos Soberano</div>
+<div class="sec-panel" style="font-family:monospace;font-size:.72rem;line-height:1.8;overflow-x:auto">
+<span style="color:var(--accent)">┌─ PRODUCERS ──────────────────────────────────┐</span>
+│  Event Producers (200+ platforms)                │
+│  Publish · Batch · Compress · Route              │
+<span style="color:var(--accent)">└──────────────────┬──────────────────────────────┘</span>
+                   │ <span style="color:#ffd600">▼</span>
+<span style="color:#ffd600">┌─ BROKER CLUSTER ─────────────────────────────┐</span>
+│  Distributed Broker (Rust)                       │
+│  847 brokers · Raft consensus · io_uring         │
+<span style="color:#ffd600">└──────────────────┬──────────────────────────────┘</span>
+                   │ <span style="color:#ffd600">▼</span>
+<span style="color:#7c4dff">┌─ PARTITIONS ─────────────────────────────────┐</span>
+│  Partition + Replication Engine                  │
+│  Sharding · 3x replica · Compaction              │
+<span style="color:#7c4dff">└──────────────────┬──────────────────────────────┘</span>
+                   │ <span style="color:#ffd600">▼</span>
+<span style="color:var(--accent)">┌─ CONSUMERS ──────────────────────────────────┐</span>
+│  Consumer Groups + Stream Processing             │
+│  Exactly-once · Replay · Analytics               │
+<span style="color:var(--accent)">└─────────────────────────────────────────────────┘</span>
+</div>
+</div>
+
+<!-- FEATURE CARDS -->
+<div class="section-title" id="features">
+<h3>Módulos de la Plataforma</h3>
+<p>10 herramientas soberanas de grado empresarial</p>
+</div>
+<div class="grid">
+<article class="card"><div class="card-icon" aria-hidden="true">🔀</div><h4>Message Broker Distribuido Rust</h4><p>Broker de mensajes distribuido implementado en Rust puro. Zero-copy networking, io_uring para I/O asíncrono, 2M mensajes/segundo sostenido en hardware commodity.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">✅</div><h4>Exactly-Once Delivery</h4><p>Semántica exactly-once garantizada end-to-end. Idempotency keys, transacciones distribuidas, acknowledgement protocol con consensus Raft soberano.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📊</div><h4>Particionamiento Inteligente</h4><p>Distribución automática de carga entre particiones por key hashing, round-robin o custom. Rebalanceo transparente al agregar/quitar brokers sin pérdida de mensajes.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">👥</div><h4>Consumer Groups Soberanos</h4><p>Grupos de consumidores con asignación automática de particiones. Offset management, heartbeat monitoring, session timeout y rebalanceo cooperativo.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">💀</div><h4>Dead Letter Queue</h4><p>Cola de mensajes fallidos con retry automático configurable. Backoff exponencial, máximo de reintentos, alertas y dashboard de mensajes envenenados.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">⏪</div><h4>Event Replay Temporal</h4><p>Rebobinar y reproducir eventos desde cualquier punto en el tiempo. Retention de 30 días por defecto, compaction para topics de estado, time-travel queries.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📋</div><h4>Schema Registry Nativo</h4><p>Registro de schemas Avro, Protobuf y JSON Schema. Evolución compatible, validación automática, versionado semántico y generación de código cliente.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">⚡</div><h4>Stream Processing Engine</h4><p>Motor de procesamiento de streams integrado. Ventanas temporales, joins de streams, agregaciones, filtros, transformaciones y output a múltiples sinks.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📦</div><h4>Compresión LZ4/Zstd</h4><p>Compresión transparente de mensajes con LZ4 (baja latencia) o Zstd (alta compresión). Configuración por topic, batch compression y dictionary training.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📈</div><h4>Monitoring con Grafana Soberano</h4><p>Dashboards pre-configurados con métricas JMX: throughput, latencia p99, consumer lag, disk usage, replication factor y health de cada broker.</p></article>
+</div>
+
+<!-- API ENDPOINTS -->
+<div class="section" id="api">
+<h2><span aria-hidden="true">🔌</span> API Endpoints</h2>
+<div class="sub">REST + gRPC + WebSocket para integraciones</div>
+<div class="sec-panel">
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/streaming/publish</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Publicar evento. Params: topic, key, payload, headers, partition</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/streaming/subscribe</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Suscribir consumer group. Params: topics, group_id, offset_reset</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/streaming/topics</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Listar topics con particiones, replication factor y configuración.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/streaming/consumers</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Estado de consumer groups: lag, offsets, assigned partitions.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/streaming/replay</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Replay de eventos. Params: topic, from_timestamp, to_timestamp</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/streaming/health</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Health check de brokers: estado, disk, memoria, connections.</p>
+</div>
+</div>
+
+<!-- PRICING -->
+<div class="section-title" id="pricing">
+<h3>Planes Soberanos</h3>
+<p>Empieza gratis. Escala soberanamente.</p>
+</div>
+<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+<div class="card">
+<h4 style="color:var(--accent);font-size:.9rem">Guerrero</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 W/mes</div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Acceso básico</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ 1 proyecto</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API limitada</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Soporte comunidad</li>
+</ul>
+</div><div class="card" style="border-color:var(--accent);box-shadow:0 0 20px rgba(0,255,65,.15)">
+<h4 style="color:var(--accent);font-size:.9rem">Cacique</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">5 W/mes</div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Acceso completo</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ 10 proyectos</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API ilimitada</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Soporte prioritario</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Integraciones</li>
+</ul>
+</div><div class="card">
+<h4 style="color:var(--accent);font-size:.9rem">Nación</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">15 W/mes</div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Enterprise</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Proyectos ilimitados</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API dedicada</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ SLA 99.99%</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Soporte 24/7</li>
+</ul>
+</div>
+</div>
+
+</main>
+
+<footer>
+<p><span aria-hidden="true">⚡</span> <strong>Streaming de Datos Soberano</strong> &mdash; Ecosistema Digital <a href="../">Ierahkwa Ne Kanienke</a></p>
+<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">233+ plataformas soberanas &middot; 17 dominios NEXUS &middot; 72M personas &middot; 19 naciones</p>
+<div style="margin-top:.75rem">
+<span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span>
+</div>
+</footer>
+
+<script src="../shared/ierahkwa.js"></script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script src="../shared/ierahkwa-protocols.js"></script>
+<script>
+/* Offline Module — Streaming de Datos Soberano v1.0.0 */
+(function(){
+  var DB_NAME='ierahkwa-streaming-datos-soberano';var DB_VER=1;
+  var STORES=["streaming-config", "topic-metadata", "consumer-offsets"];
+  var db=null;
+  function openDB(){
+    return new Promise(function(resolve,reject){
+      var req=indexedDB.open(DB_NAME,DB_VER);
+      req.onupgradeneeded=function(){
+        var d=req.result;
+        STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});
+      };
+      req.onsuccess=function(){db=req.result;resolve(db)};
+      req.onerror=function(){reject(req.error)};
+    });
+  }
+  function showOfflineBanner(show){
+    var b=document.getElementById('offline-banner');
+    if(!b){
+      b=document.createElement('div');b.id='offline-banner';
+      b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--accent);color:#09090d;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';
+      b.textContent='Modo Offline — Datos de Streaming de Datos Soberano cacheados localmente para acceso sin conexión.';
+      document.body.appendChild(b);
+    }
+    b.style.transform=show?'translateY(0)':'translateY(100%)';
+  }
+  function init(){
+    openDB().then(function(){
+      window.addEventListener('online',function(){showOfflineBanner(false)});
+      window.addEventListener('offline',function(){showOfflineBanner(true)});
+      if(!navigator.onLine)showOfflineBanner(true);
+      console.log('[streaming-datos-soberano] Offline module initialized');
+    });
+  }
+  init();
+})();
+</script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
+</body>
+</html>
