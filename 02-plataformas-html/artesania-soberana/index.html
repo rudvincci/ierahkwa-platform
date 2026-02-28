@@ -1,92 +1,27 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Plataforma soberana de Artesania para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="theme-color" content="#00FF41">
+<link rel="canonical" href="https://ierahkwa.nation/artesania-soberana/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="ArtesaníaSoberana — Marketplace Artesanal | MameyNode">
+<meta property="og:description" content="Plataforma soberana de Artesania para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/artesania-soberana/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ArtesaníaSoberana — Marketplace Artesanal | MameyNode">
+<meta name="twitter:description" content="Plataforma soberana de Artesania para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
 <title>ArtesaníaSoberana — Marketplace Artesanal | MameyNode</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#0b0a0f;--bg2:#13121a;--bg3:#1b1a24;--bg4:#23222e;--gold:#d4a853;--gold-d:rgba(212,168,83,0.1);--tq:#2dd4a8;--wp:#9b6dff;--terra:#c17f59;--clay:#a0694f;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#2a2a36;--r:10px}
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
-
-.nav{position:sticky;top:0;z-index:100;background:rgba(11,10,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:10px 28px;display:flex;align-items:center;gap:16px}
-.nav-brand{display:flex;align-items:center;gap:8px;cursor:pointer}
-.nav-brand span{font-size:22px}
-.nav-brand h1{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--terra)}
-.nav-search{flex:1;max-width:480px;position:relative}
-.nav-search input{width:100%;padding:9px 16px 9px 36px;background:var(--bg2);border:1px solid var(--brd);border-radius:24px;color:var(--txt);font-size:13px;outline:none;font-family:'DM Sans',sans-serif}
-.nav-search input:focus{border-color:var(--terra)}
-.nav-search::before{content:'⌕';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--txt3);font-size:14px}
-.nav-r{margin-left:auto;display:flex;align-items:center;gap:8px}
-.nb{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.15s}
-.nb:hover{background:var(--bg3);color:var(--txt)}
-.nb.sell{border-color:var(--terra);color:var(--terra)}.nb.sell:hover{background:var(--terra);color:#0b0a0f}
-
-.cats{display:flex;gap:6px;padding:10px 28px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--brd)}
-.cats::-webkit-scrollbar{display:none}
-.cat{padding:6px 14px;border-radius:18px;font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;border:1px solid var(--brd);background:none;color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.15s}
-.cat:hover{background:var(--bg3);color:var(--txt)}.cat.a{background:var(--terra);color:#0b0a0f;border-color:var(--terra)}
-
-.content{padding:20px 28px;max-width:1400px;margin:0 auto}
-
-/* HERO */
-.hero{background:linear-gradient(135deg,rgba(193,127,89,0.08),rgba(160,105,79,0.04));border:1px solid rgba(193,127,89,0.15);border-radius:14px;padding:28px;margin-bottom:28px;display:flex;align-items:center;gap:24px}
-.hero-left{flex:1}
-.hero-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--tq);margin-bottom:6px}
-.hero h2{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--terra);margin-bottom:8px;line-height:1.2}
-.hero p{font-size:14px;color:var(--txt2);line-height:1.5;margin-bottom:14px}
-.hero-stats{display:flex;gap:20px}
-.hs{text-align:center}.hs .n{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)}.hs .l{font-size:10px;color:var(--txt3)}
-.hero-art{font-size:72px;display:flex;gap:8px}
-
-/* PRODUCT GRID */
-.sec-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.sec-h h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--terra)}
-.sec-h a{font-size:12px;color:var(--txt3);cursor:pointer}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:32px}
-.prod{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all 0.2s}
-.prod:hover{border-color:rgba(193,127,89,0.3);transform:translateY(-3px)}
-.prod-img{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative}
-.prod-img::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 70%,rgba(0,0,0,0.3))}
-.prod-fav{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.5);border:none;color:#fff;cursor:pointer;font-size:12px;z-index:2;display:flex;align-items:center;justify-content:center}
-.prod-badge{position:absolute;top:8px;left:8px;padding:3px 8px;border-radius:4px;font-size:9px;font-weight:700;z-index:2;text-transform:uppercase;letter-spacing:0.5px}
-.pb-best{background:var(--gold);color:#0b0a0f}
-.pb-new{background:var(--tq);color:#0b0a0f}
-.pb-hand{background:var(--terra);color:#fff}
-.prod-body{padding:12px}
-.prod-shop{font-size:10px;color:var(--txt3);margin-bottom:2px;display:flex;align-items:center;gap:4px}
-.prod-name{font-size:14px;font-weight:600;margin-bottom:4px;line-height:1.3}
-.prod-price{display:flex;align-items:baseline;gap:6px}
-.prod-price .w{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;color:var(--gold)}
-.prod-price .usd{font-size:11px;color:var(--txt3)}
-.prod-rating{font-size:11px;color:var(--txt2);margin-top:4px}
-.prod-tags{display:flex;gap:3px;margin-top:6px;flex-wrap:wrap}
-.pt{font-size:8px;padding:2px 5px;border-radius:3px;background:var(--bg3);color:var(--txt3);border:1px solid var(--brd)}
-
-/* ARTISAN SPOTLIGHT */
-.artisan-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:32px}
-.artisan{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;transition:all 0.2s}
-.artisan:hover{border-color:var(--terra);transform:translateY(-2px)}
-.artisan .av{width:64px;height:64px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700}
-.artisan .a-name{font-weight:700;font-size:14px;margin-bottom:2px}
-.artisan .a-loc{font-size:11px;color:var(--txt3);margin-bottom:4px}
-.artisan .a-craft{font-size:11px;color:var(--terra)}
-.artisan .a-earned{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--gold);margin-top:8px}
-
-/* TRUST BAR */
-.trust{display:flex;gap:16px;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:16px;margin-bottom:28px;justify-content:space-around;flex-wrap:wrap}
-.trust-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt2)}
-.trust-item span{font-size:18px}
-
-@media(max-width:768px){.grid{grid-template-columns:1fr 1fr}.hero{flex-direction:column}.hero-art{font-size:48px}}
-@media(max-width:480px){.grid{grid-template-columns:1fr}.artisan-row{grid-template-columns:1fr 1fr}}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
-.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
-</style>
+<style>:root{--accent:#00FF41}</style>
 </head>
-<body>
+<body role="document">
 <a href="#main" class="skip-nav">Skip to main content</a>
 
 <div class="nav">
@@ -118,7 +53,7 @@
   <button class="cat">🍫 Alimentos</button>
 </div>
 
-<main id="main" class="content">
+<main id="main" class="content" aria-label="Contenido principal">
 
   <div class="hero">
     <div class="hero-left">
@@ -290,5 +225,8 @@ if (!Ierahkwa.auth.isLoggedIn()) {
     console.log('[artesania-soberana] Not logged in — showing login modal');
 }
 </script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 </body>
 </html>

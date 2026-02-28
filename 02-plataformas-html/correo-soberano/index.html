@@ -1,1028 +1,36 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Plataforma soberana de Correo para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="theme-color" content="#00FF41">
+<link rel="canonical" href="https://ierahkwa.nation/correo-soberano/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="CorreoSoberano — Email Soberano | MameyNode">
+<meta property="og:description" content="Plataforma soberana de Correo para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/correo-soberano/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CorreoSoberano — Email Soberano | MameyNode">
+<meta name="twitter:description" content="Plataforma soberana de Correo para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
 <title>CorreoSoberano — Email Soberano | MameyNode</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg-deep: #0a0a0f;
-  --bg-panel: #111118;
-  --bg-card: #1a1a24;
-  --bg-hover: #222233;
-  --bg-active: #2a2a3d;
-  --gold: #d4a853;
-  --gold-dim: #b8923e;
-  --turquoise: #2dd4a8;
-  --turquoise-dim: rgba(45,212,168,0.15);
-  --wampum: #9b6dff;
-  --wampum-dim: rgba(155,109,255,0.15);
-  --red-alert: #ff4d6a;
-  --red-dim: rgba(255,77,106,0.12);
-  --text-primary: #e8e4df;
-  --text-secondary: #8a8694;
-  --text-muted: #5a5666;
-  --border: #2a2a36;
-  --border-light: #333344;
-  --sent-green: #34d399;
-  --draft-amber: #fbbf24;
-  --encrypted: #2dd4a8;
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
-  --radius: 8px;
-  --radius-lg: 12px;
-}
-
-* { margin:0; padding:0; box-sizing:border-box; }
-
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg-deep);
-  color: var(--text-primary);
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* ═══════════════════════════════════════════
-   LAYOUT: Sidebar | List | Reader
-   ═══════════════════════════════════════════ */
-.app {
-  display: grid;
-  grid-template-columns: 240px 360px 1fr;
-  grid-template-rows: 56px 1fr;
-  height: 100vh;
-}
-
-/* ═══════════════════════════════════════════
-   TOP BAR
-   ═══════════════════════════════════════════ */
-.topbar {
-  grid-column: 1 / -1;
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  gap: 16px;
-  z-index: 100;
-}
-
-.topbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 200px;
-}
-
-.topbar-brand .logo {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, var(--gold), var(--turquoise));
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-}
-
-.topbar-brand h1 {
-  font-family: 'DM Serif Display', serif;
-  font-size: 18px;
-  color: var(--gold);
-  letter-spacing: 0.5px;
-}
-
-.topbar-brand span {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.search-bar {
-  flex: 1;
-  max-width: 560px;
-  position: relative;
-}
-
-.search-bar input {
-  width: 100%;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 8px 16px 8px 40px;
-  color: var(--text-primary);
-  font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.search-bar input:focus {
-  border-color: var(--gold-dim);
-}
-
-.search-bar .search-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
-  font-size: 14px;
-}
-
-.topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-}
-
-.topbar-btn {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  transition: all 0.2s;
-}
-
-.topbar-btn:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-  border-color: var(--border-light);
-}
-
-.topbar-btn.encrypted {
-  color: var(--encrypted);
-  border-color: rgba(45,212,168,0.3);
-}
-
-.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--wampum), var(--gold));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-/* ═══════════════════════════════════════════
-   SIDEBAR
-   ═══════════════════════════════════════════ */
-.sidebar {
-  background: var(--bg-panel);
-  border-right: 1px solid var(--border);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  overflow-y: auto;
-}
-
-.compose-btn {
-  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-  border: none;
-  color: #0a0a0f;
-  font-weight: 700;
-  font-size: 13px;
-  padding: 12px 16px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  transition: all 0.2s;
-  font-family: 'DM Sans', sans-serif;
-}
-
-.compose-btn:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(212,168,83,0.3);
-}
-
-.sidebar-section {
-  margin-top: 12px;
-  margin-bottom: 4px;
-}
-
-.sidebar-section-title {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: var(--text-muted);
-  padding: 0 12px;
-  margin-bottom: 4px;
-}
-
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-size: 13px;
-  color: var(--text-secondary);
-  position: relative;
-}
-
-.sidebar-item:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-}
-
-.sidebar-item.active {
-  background: var(--bg-active);
-  color: var(--gold);
-}
-
-.sidebar-item .icon {
-  width: 18px;
-  text-align: center;
-  font-size: 14px;
-}
-
-.sidebar-item .badge {
-  margin-left: auto;
-  background: var(--gold);
-  color: #0a0a0f;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 10px;
-  min-width: 20px;
-  text-align: center;
-}
-
-.sidebar-item .badge.wampum {
-  background: var(--wampum);
-  color: #fff;
-}
-
-.sidebar-footer {
-  margin-top: auto;
-  padding: 12px;
-  border-top: 1px solid var(--border);
-}
-
-.storage-bar {
-  height: 4px;
-  background: var(--bg-card);
-  border-radius: 2px;
-  overflow: hidden;
-  margin-top: 8px;
-}
-
-.storage-bar .fill {
-  height: 100%;
-  width: 34%;
-  background: linear-gradient(90deg, var(--turquoise), var(--gold));
-  border-radius: 2px;
-}
-
-.storage-text {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
-
-/* ═══════════════════════════════════════════
-   EMAIL LIST
-   ═══════════════════════════════════════════ */
-.email-list {
-  background: var(--bg-deep);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.list-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg-panel);
-}
-
-.list-header h2 {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.list-header .count {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.list-filters {
-  display: flex;
-  gap: 4px;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-panel);
-}
-
-.filter-chip {
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  transition: all 0.15s;
-}
-
-.filter-chip:hover { background: var(--bg-hover); }
-.filter-chip.active {
-  background: var(--gold);
-  color: #0a0a0f;
-  border-color: var(--gold);
-  font-weight: 600;
-}
-
-.email-items {
-  flex: 1;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
-}
-
-.email-item {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  transition: all 0.15s;
-  position: relative;
-}
-
-.email-item:hover {
-  background: var(--bg-hover);
-}
-
-.email-item.active {
-  background: var(--bg-active);
-  border-left: 3px solid var(--gold);
-}
-
-.email-item.unread {
-  background: rgba(212,168,83,0.04);
-}
-
-.email-item.unread .email-sender {
-  color: var(--text-primary);
-  font-weight: 700;
-}
-
-.email-item.unread .email-subject {
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-.email-item .email-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.email-sender {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.email-time {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.email-subject {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.email-preview {
-  font-size: 12px;
-  color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.4;
-}
-
-.email-tags {
-  display: flex;
-  gap: 4px;
-  margin-top: 6px;
-}
-
-.email-tag {
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 2px 6px;
-  border-radius: 3px;
-}
-
-.tag-encrypted { background: var(--turquoise-dim); color: var(--turquoise); }
-.tag-bdet { background: var(--wampum-dim); color: var(--wampum); }
-.tag-priority { background: var(--red-dim); color: var(--red-alert); }
-.tag-soberano { background: rgba(212,168,83,0.12); color: var(--gold); }
-.tag-gov { background: rgba(52,211,153,0.12); color: var(--sent-green); }
-
-.unread-dot {
-  position: absolute;
-  left: 6px;
-  top: 20px;
-  width: 7px;
-  height: 7px;
-  background: var(--gold);
-  border-radius: 50%;
-}
-
-/* ═══════════════════════════════════════════
-   EMAIL READER
-   ═══════════════════════════════════════════ */
-.reader {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.reader-header {
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-panel);
-}
-
-.reader-actions {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-
-.reader-btn {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: 'DM Sans', sans-serif;
-  transition: all 0.15s;
-}
-
-.reader-btn:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-  border-color: var(--border-light);
-}
-
-.reader-btn.gold:hover { color: var(--gold); border-color: var(--gold-dim); }
-.reader-btn.danger:hover { color: var(--red-alert); border-color: var(--red-alert); }
-
-.reader-subject {
-  font-family: 'DM Serif Display', serif;
-  font-size: 22px;
-  color: var(--text-primary);
-  margin-bottom: 12px;
-  line-height: 1.3;
-}
-
-.reader-meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.reader-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--turquoise), var(--wampum));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 15px;
-  flex-shrink: 0;
-}
-
-.reader-from {
-  flex: 1;
-}
-
-.reader-from .name {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text-primary);
-}
-
-.reader-from .email-addr {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.reader-from .to-line {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-.reader-date {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-family: 'JetBrains Mono', monospace;
-  text-align: right;
-}
-
-.encryption-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  color: var(--turquoise);
-  background: var(--turquoise-dim);
-  padding: 3px 8px;
-  border-radius: 4px;
-  margin-top: 4px;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.reader-body {
-  flex: 1;
-  padding: 24px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
-  line-height: 1.7;
-  font-size: 14px;
-  color: var(--text-primary);
-}
-
-.reader-body p { margin-bottom: 14px; }
-.reader-body .signature {
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-  color: var(--text-muted);
-  font-size: 13px;
-}
-
-.reader-body .attachment-block {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 16px 0;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-.reader-body .attachment-block:hover {
-  border-color: var(--gold-dim);
-}
-
-.attachment-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--bg-hover);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
-.attachment-info .att-name {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.attachment-info .att-size {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.reader-reply {
-  padding: 16px 24px;
-  border-top: 1px solid var(--border);
-  background: var(--bg-panel);
-}
-
-.reply-input {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.reply-input textarea {
-  flex: 1;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 10px 14px;
-  color: var(--text-primary);
-  font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
-  resize: none;
-  height: 44px;
-  outline: none;
-  transition: all 0.2s;
-}
-
-.reply-input textarea:focus {
-  height: 88px;
-  border-color: var(--gold-dim);
-}
-
-.reply-send {
-  background: var(--gold);
-  border: none;
-  color: #0a0a0f;
-  font-weight: 700;
-  font-size: 13px;
-  padding: 10px 20px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.reply-send:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 2px 12px rgba(212,168,83,0.3);
-}
-
-/* ═══════════════════════════════════════════
-   COMPOSE MODAL
-   ═══════════════════════════════════════════ */
-.compose-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  z-index: 200;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-.compose-overlay.open { display: flex; }
-
-.compose-modal {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  width: 680px;
-  max-height: 80vh;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  animation: modalIn 0.25s ease;
-}
-
-@keyframes modalIn {
-  from { opacity: 0; transform: translateY(20px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.compose-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.compose-header h3 {
-  font-size: 15px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.compose-close {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 18px;
-  cursor: pointer;
-  padding: 4px;
-  transition: color 0.15s;
-}
-
-.compose-close:hover { color: var(--text-primary); }
-
-.compose-fields {
-  padding: 0 20px;
-}
-
-.compose-field {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--border);
-  padding: 8px 0;
-}
-
-.compose-field label {
-  font-size: 12px;
-  color: var(--text-muted);
-  width: 50px;
-  flex-shrink: 0;
-  font-weight: 600;
-}
-
-.compose-field input {
-  flex: 1;
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
-  outline: none;
-  padding: 4px 0;
-}
-
-.compose-body-area {
-  flex: 1;
-  padding: 16px 20px;
-  min-height: 240px;
-}
-
-.compose-body-area textarea {
-  width: 100%;
-  height: 100%;
-  min-height: 200px;
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
-  line-height: 1.6;
-  resize: none;
-  outline: none;
-}
-
-.compose-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
-  border-top: 1px solid var(--border);
-}
-
-.compose-footer-left {
-  display: flex;
-  gap: 4px;
-}
-
-.compose-tool {
-  background: none;
-  border: 1px solid transparent;
-  color: var(--text-muted);
-  width: 34px;
-  height: 34px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  transition: all 0.15s;
-}
-
-.compose-tool:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-  border-color: var(--border);
-}
-
-.compose-tool.active {
-  color: var(--turquoise);
-  background: var(--turquoise-dim);
-  border-color: rgba(45,212,168,0.3);
-}
-
-.send-btn {
-  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-  border: none;
-  color: #0a0a0f;
-  font-weight: 700;
-  font-size: 13px;
-  padding: 10px 24px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s;
-}
-
-.send-btn:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 2px 12px rgba(212,168,83,0.3);
-}
-
-/* ═══════════════════════════════════════════
-   BDET PAYMENT INLINE
-   ═══════════════════════════════════════════ */
-.bdet-payment-card {
-  background: linear-gradient(135deg, rgba(155,109,255,0.08), rgba(212,168,83,0.08));
-  border: 1px solid rgba(155,109,255,0.25);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin: 16px 0;
-}
-
-.bdet-payment-card .bdet-title {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--wampum);
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.bdet-payment-card .bdet-amount {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--gold);
-  margin-bottom: 4px;
-}
-
-.bdet-payment-card .bdet-desc {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-bottom: 12px;
-}
-
-.bdet-payment-card .bdet-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.bdet-btn {
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  transition: all 0.2s;
-  border: none;
-}
-
-.bdet-btn.approve {
-  background: var(--turquoise);
-  color: #0a0a0f;
-}
-
-.bdet-btn.decline {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-}
-
-.bdet-btn:hover { filter: brightness(1.15); }
-
-/* ═══════════════════════════════════════════
-   SCROLLBAR
-   ═══════════════════════════════════════════ */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
-
-/* ═══════════════════════════════════════════
-   ANIMATIONS
-   ═══════════════════════════════════════════ */
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-.email-item { animation: fadeIn 0.3s ease; }
-.email-item:nth-child(2) { animation-delay: 0.03s; }
-.email-item:nth-child(3) { animation-delay: 0.06s; }
-.email-item:nth-child(4) { animation-delay: 0.09s; }
-.email-item:nth-child(5) { animation-delay: 0.12s; }
-
-/* ═══════════════════════════════════════════
-   NOTIFICATION TOAST
-   ═══════════════════════════════════════════ */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--turquoise);
-  padding: 14px 20px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  z-index: 300;
-  display: none;
-  animation: slideUp 0.3s ease;
-  max-width: 340px;
-}
-
-.toast.show { display: block; }
-
-.toast .toast-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 2px;
-}
-
-.toast .toast-msg {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-/* ═══════════════════════════════════════════
-   RESPONSIVE
-   ═══════════════════════════════════════════ */
-@media (max-width: 1024px) {
-  .app {
-    grid-template-columns: 60px 300px 1fr;
-  }
-  .sidebar-item span,
-  .sidebar-section-title,
-  .sidebar-footer,
-  .compose-btn span,
-  .topbar-brand span { display: none; }
-  .compose-btn {
-    justify-content: center;
-    padding: 12px;
-  }
-}
-
-@media (max-width: 768px) {
-  .app {
-    grid-template-columns: 1fr;
-  }
-  .sidebar, .reader { display: none; }
-  .email-list { border-right: none; }
-}
-:focus-visible{outline:2px solid #d4a853;outline-offset:2px}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-</style>
+<style>:root{--accent:#00FF41}</style>
 </head>
-<body>
-<a href="#main" class="skip-nav" style="position:absolute;top:-40px;left:0;background:#d4a853;color:#09090d;padding:8px 16px;z-index:10000;font-weight:700;transition:top .2s" onfocus="this.style.top='0'" onblur="this.style.top='-40px'">Skip to main content</a>
+<body role="document">
+<a href="#main" class="skip-nav" style="position:absolute;top:-40px;left:0;background:#00FF41;color:#09090d;padding:8px 16px;z-index:10000;font-weight:700;transition:top .2s" onfocus="this.style.top='0'" onblur="this.style.top='-40px'">Skip to main content</a>
 
-<main id="main" class="app">
+<main id="main" class="app" aria-label="Contenido principal">
 
-  <!-- ═══ TOP BAR ═══ -->
+  <!-- TOP BAR -->
   <div class="topbar">
     <div class="topbar-brand">
       <div class="logo">✉</div>
-      <div>
-        <h1>CorreoSoberano</h1>
-        <span>MameyNode v1.0</span>
-      </div>
+      <div><h1>CorreoSoberano</h1><span>MameyNode v1.0</span></div>
     </div>
     <div class="search-bar">
       <span class="search-icon">⌕</span>
@@ -1036,132 +44,59 @@ body {
     </div>
   </div>
 
-  <!-- ═══ SIDEBAR ═══ -->
+  <!-- SIDEBAR -->
   <div class="sidebar">
-    <button class="compose-btn" onclick="openCompose()">
-      <span style="font-size:16px">✏</span>
-      <span>Nuevo Correo</span>
-    </button>
-
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">Correo</div>
-    </div>
-    <div class="sidebar-item active" onclick="setFolder(this,'Entrada')">
-      <span class="icon" aria-hidden="true">📥</span>
-      <span>Entrada</span>
-      <span class="badge">24</span>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'Destacados')">
-      <span class="icon" aria-hidden="true">⭐</span>
-      <span>Destacados</span>
-      <span class="badge" style="background:var(--draft-amber);color:#0a0a0f">3</span>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'Enviados')">
-      <span class="icon" aria-hidden="true">📤</span>
-      <span>Enviados</span>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'Borradores')">
-      <span class="icon" aria-hidden="true">📝</span>
-      <span>Borradores</span>
-      <span class="badge" style="background:var(--bg-hover);color:var(--text-secondary)">2</span>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'Archivo')">
-      <span class="icon" aria-hidden="true">📁</span>
-      <span>Archivo</span>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'Spam')">
-      <span class="icon" aria-hidden="true">🚫</span>
-      <span>Spam</span>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'Papelera')">
-      <span class="icon" aria-hidden="true">🗑</span>
-      <span>Papelera</span>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">Etiquetas</div>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'BDET Bank')">
-      <span class="icon" style="color:var(--wampum)">●</span>
-      <span>BDET Bank</span>
-      <span class="badge wampum">8</span>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'Gobierno')">
-      <span class="icon" style="color:var(--sent-green)">●</span>
-      <span>Gobierno</span>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'Soberano')">
-      <span class="icon" style="color:var(--gold)">●</span>
-      <span>Soberano</span>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'Cifrado')">
-      <span class="icon" style="color:var(--turquoise)">●</span>
-      <span>Cifrado</span>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'Personal')">
-      <span class="icon" style="color:var(--red-alert)">●</span>
-      <span>Personal</span>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">Plataformas</div>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'RentaSoberano')">
-      <span class="icon" aria-hidden="true">💼</span>
-      <span>RentaSoberano</span>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'SoberanoMarket')">
-      <span class="icon" aria-hidden="true">🛒</span>
-      <span>SoberanoMarket</span>
-    </div>
-    <div class="sidebar-item" onclick="setFolder(this,'SoberanoDoctor')">
-      <span class="icon" aria-hidden="true">🩺</span>
-      <span>SoberanoDoctor</span>
-    </div>
-
+    <button class="compose-btn" onclick="openCompose()"><span style="font-size:16px">✏</span><span>Nuevo Correo</span></button>
+    <div class="sidebar-section"><div class="sidebar-section-title">Correo</div></div>
+    <div class="sidebar-item active" onclick="setFolder(this,'Entrada')"><span class="icon" aria-hidden="true">📥</span><span>Entrada</span><span class="badge">24</span></div>
+    <div class="sidebar-item" onclick="setFolder(this,'Destacados')"><span class="icon" aria-hidden="true">⭐</span><span>Destacados</span><span class="badge" style="background:var(--draft-amber);color:#0a0a0f">3</span></div>
+    <div class="sidebar-item" onclick="setFolder(this,'Enviados')"><span class="icon" aria-hidden="true">📤</span><span>Enviados</span></div>
+    <div class="sidebar-item" onclick="setFolder(this,'Borradores')"><span class="icon" aria-hidden="true">📝</span><span>Borradores</span><span class="badge" style="background:var(--bg-hover);color:var(--text-secondary)">2</span></div>
+    <div class="sidebar-item" onclick="setFolder(this,'Archivo')"><span class="icon" aria-hidden="true">📁</span><span>Archivo</span></div>
+    <div class="sidebar-item" onclick="setFolder(this,'Spam')"><span class="icon" aria-hidden="true">🚫</span><span>Spam</span></div>
+    <div class="sidebar-item" onclick="setFolder(this,'Papelera')"><span class="icon" aria-hidden="true">🗑</span><span>Papelera</span></div>
+    <div class="sidebar-section"><div class="sidebar-section-title">Etiquetas</div></div>
+    <div class="sidebar-item" onclick="setFolder(this,'BDET Bank')"><span class="icon" style="color:var(--wampum)">●</span><span>BDET Bank</span><span class="badge wampum">8</span></div>
+    <div class="sidebar-item" onclick="setFolder(this,'Gobierno')"><span class="icon" style="color:var(--sent-green)">●</span><span>Gobierno</span></div>
+    <div class="sidebar-item" onclick="setFolder(this,'Soberano')"><span class="icon" style="color:var(--gold)">●</span><span>Soberano</span></div>
+    <div class="sidebar-item" onclick="setFolder(this,'Cifrado')"><span class="icon" style="color:var(--turquoise)">●</span><span>Cifrado</span></div>
+    <div class="sidebar-item" onclick="setFolder(this,'Personal')"><span class="icon" style="color:var(--red-alert)">●</span><span>Personal</span></div>
+    <div class="sidebar-section"><div class="sidebar-section-title">Plataformas</div></div>
+    <div class="sidebar-item" onclick="setFolder(this,'RentaSoberano')"><span class="icon" aria-hidden="true">💼</span><span>RentaSoberano</span></div>
+    <div class="sidebar-item" onclick="setFolder(this,'SoberanoMarket')"><span class="icon" aria-hidden="true">🛒</span><span>SoberanoMarket</span></div>
+    <div class="sidebar-item" onclick="setFolder(this,'SoberanoDoctor')"><span class="icon" aria-hidden="true">🩺</span><span>SoberanoDoctor</span></div>
     <div class="sidebar-footer">
-      <div style="font-size:12px;color:var(--text-secondary);font-weight:600"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a494b4943414f6a5945484f584b4445044845">[email&#160;protected]</a></div>
+      <div style="font-size:12px;color:var(--text-secondary);font-weight:600">cacike@soberano.bo</div>
       <div class="storage-bar"><div class="fill"></div></div>
       <div class="storage-text">3.4 GB de 10 GB — MameyNode</div>
     </div>
   </div>
 
-  <!-- ═══ EMAIL LIST ═══ -->
+  <!-- EMAIL LIST -->
   <div class="email-list">
-    <div class="list-header">
-      <h2>Entrada</h2>
-      <span class="count">24 correos</span>
-    </div>
+    <div class="list-header"><h2>Entrada</h2><span class="count">24 correos</span></div>
     <div class="list-filters">
-      <button class="filter-chip active">Todos</button>
-      <button class="filter-chip">No leídos</button>
-      <button class="filter-chip">Cifrados</button>
-      <button class="filter-chip">BDET</button>
-      <button class="filter-chip">Urgentes</button>
+      <button class="filter-chip active">Todos</button><button class="filter-chip">No leídos</button>
+      <button class="filter-chip">Cifrados</button><button class="filter-chip">BDET</button><button class="filter-chip">Urgentes</button>
     </div>
-    <div class="email-items" id="emailList">
-      <!-- Populated by JS -->
-    </div>
+    <div class="email-items" id="emailList"></div>
   </div>
 
-  <!-- ═══ EMAIL READER ═══ -->
+  <!-- EMAIL READER -->
   <div class="reader" id="reader">
     <div class="reader-header">
       <div class="reader-actions">
-        <button class="reader-btn gold">↩ Responder</button>
-        <button class="reader-btn">↪ Reenviar</button>
-        <button class="reader-btn">📁 Archivar</button>
-        <button class="reader-btn">🏷 Etiquetar</button>
-        <button class="reader-btn">⏰ Posponer</button>
-        <button class="reader-btn danger">🗑 Eliminar</button>
+        <button class="reader-btn gold">↩ Responder</button><button class="reader-btn">↪ Reenviar</button>
+        <button class="reader-btn">📁 Archivar</button><button class="reader-btn">🏷 Etiquetar</button>
+        <button class="reader-btn">⏰ Posponer</button><button class="reader-btn danger">🗑 Eliminar</button>
       </div>
       <div class="reader-subject" id="readerSubject">Propuesta: Integración SoberanoMarket con BDET Bank</div>
       <div class="reader-meta">
         <div class="reader-avatar" id="readerAvatar">MC</div>
         <div class="reader-from">
           <div class="name" id="readerName">María Canaima</div>
-          <div class="email-addr" id="readerEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ddb0f3bebcb3bcb4b0bc9daeb2bfb8afbcb3b2f3bfb2">[email&#160;protected]</a></div>
-          <div class="to-line">para: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e88b898b81838da89b878a8d9a898687c68a87">[email&#160;protected]</a></div>
+          <div class="email-addr" id="readerEmail">m.canaima@soberano.bo</div>
+          <div class="to-line">para: cacike@soberano.bo</div>
         </div>
         <div style="text-align:right">
           <div class="reader-date" id="readerDate">21 Feb 2026 · 14:32</div>
@@ -1172,314 +107,68 @@ body {
     <div class="reader-body" id="readerBody">
       <p>Cacike,</p>
       <p>Le escribo para presentar la propuesta de integración completa entre SoberanoMarket y el sistema de pagos BDET Bank. Hemos completado las pruebas del API de merchant y los resultados son prometedores.</p>
-      
       <div class="bdet-payment-card">
         <div class="bdet-title">💎 Solicitud de Pago BDET</div>
         <div class="bdet-amount">Ⓦ 2,500.00</div>
         <div class="bdet-desc">Desarrollo de integración SoberanoMarket → BDET Merchant API (fase 1)</div>
-        <div class="bdet-actions">
-          <button class="bdet-btn approve" onclick="approvePayment(this)">✓ Aprobar Pago</button>
-          <button class="bdet-btn decline">✗ Rechazar</button>
-        </div>
+        <div class="bdet-actions"><button class="bdet-btn approve" onclick="approvePayment(this)">✓ Aprobar Pago</button><button class="bdet-btn decline">✗ Rechazar</button></div>
       </div>
-
       <p>Los puntos clave de la propuesta incluyen:</p>
       <p>La integración permitirá que cada vendedor en SoberanoMarket reciba pagos directamente a su cuenta BDET, con liquidación instantánea a través de MameyNode. El smart contract de escrow protegerá ambas partes en cada transacción.</p>
       <p>Hemos implementado el split de comisiones: Vendedor 88%, Plataforma 4%, Impuesto Soberano 6%, Fondo Comunitario 2%. Todo automático, todo en blockchain.</p>
-
-      <div class="attachment-block">
-        <div class="attachment-icon">📄</div>
-        <div class="attachment-info">
-          <div class="att-name">Propuesta_SoberanoMarket_BDET_v2.pdf</div>
-          <div class="att-size">2.4 MB · Cifrado · MameyNode Hash: 0x7a3f...b2e1</div>
-        </div>
-      </div>
-
-      <div class="attachment-block">
-        <div class="attachment-icon">📊</div>
-        <div class="attachment-info">
-          <div class="att-name">Proyecciones_Revenue_Q1_2026.xlsx</div>
-          <div class="att-size">847 KB · Cifrado · MameyNode Hash: 0x9c2d...f4a8</div>
-        </div>
-      </div>
-
+      <div class="attachment-block"><div class="attachment-icon">📄</div><div class="attachment-info"><div class="att-name">Propuesta_SoberanoMarket_BDET_v2.pdf</div><div class="att-size">2.4 MB · Cifrado · MameyNode Hash: 0x7a3f...b2e1</div></div></div>
+      <div class="attachment-block"><div class="attachment-icon">📊</div><div class="attachment-info"><div class="att-name">Proyecciones_Revenue_Q1_2026.xlsx</div><div class="att-size">847 KB · Cifrado · MameyNode Hash: 0x9c2d...f4a8</div></div></div>
       <p>Quedo atenta a su revisión. Si aprueba el pago, comenzamos implementación esta semana.</p>
       <p>Soberanía siempre. 🌿</p>
-
-      <div class="signature">
-        <strong>María Canaima</strong><br>
-        Directora de Integración · SoberanoMarket<br>
-        <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81ecafe2e0efe0e8ece0c1f2eee3e4f3e0efeeafe3ee">[email&#160;protected]</a> · +591 7XX-XXXX<br>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--turquoise)">🔒 Verificado · ID Soberano: SOV-MC-7291</span>
-      </div>
+      <div class="signature"><strong>María Canaima</strong><br>Directora de Integración · SoberanoMarket<br>m.canaima@soberano.bo · +591 7XX-XXXX<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--turquoise)">🔒 Verificado · ID Soberano: SOV-MC-7291</span></div>
     </div>
-
-    <div class="reader-reply">
-      <div class="reply-input">
-        <textarea placeholder="Responder a María Canaima... (cifrado E2E activo)"></textarea>
-        <button class="reply-send">Enviar 🔒</button>
-      </div>
-    </div>
+    <div class="reader-reply"><div class="reply-input"><textarea placeholder="Responder a María Canaima... (cifrado E2E activo)"></textarea><button class="reply-send">Enviar 🔒</button></div></div>
   </div>
-
 </div>
 
-<!-- ═══ COMPOSE MODAL ═══ -->
+<!-- COMPOSE MODAL -->
 <div class="compose-overlay" id="composeOverlay">
   <div class="compose-modal">
-    <div class="compose-header">
-      <h3>✏ Nuevo Correo Soberano</h3>
-      <button class="compose-close" onclick="closeCompose()">✕</button>
-    </div>
+    <div class="compose-header"><h3>✏ Nuevo Correo Soberano</h3><button class="compose-close" onclick="closeCompose()">✕</button></div>
     <div class="compose-fields">
-      <div class="compose-field">
-        <label>Para:</label>
-        <input type="text" placeholder="nombre@soberano.bo" />
-      </div>
-      <div class="compose-field">
-        <label>CC:</label>
-        <input type="text" placeholder="Añadir destinatarios..." />
-      </div>
-      <div class="compose-field">
-        <label>Asunto:</label>
-        <input type="text" placeholder="Asunto del correo..." />
-      </div>
+      <div class="compose-field"><label>Para:</label><input type="text" placeholder="nombre@soberano.bo" /></div>
+      <div class="compose-field"><label>CC:</label><input type="text" placeholder="Añadir destinatarios..." /></div>
+      <div class="compose-field"><label>Asunto:</label><input type="text" placeholder="Asunto del correo..." /></div>
     </div>
-    <div class="compose-body-area">
-      <textarea placeholder="Escribe tu mensaje...&#10;&#10;Todo correo enviado desde CorreoSoberano está protegido con cifrado cuántico end-to-end a través de MameyNode."></textarea>
-    </div>
+    <div class="compose-body-area"><textarea placeholder="Escribe tu mensaje...&#10;&#10;Todo correo enviado desde CorreoSoberano está protegido con cifrado cuántico end-to-end a través de MameyNode."></textarea></div>
     <div class="compose-footer">
       <div class="compose-footer-left">
-        <button class="compose-tool" title="Adjuntar archivo">📎</button>
-        <button class="compose-tool" title="Insertar pago BDET">💎</button>
-        <button class="compose-tool active" title="Cifrado cuántico activo">🔒</button>
-        <button class="compose-tool" title="Firma digital">✍</button>
-        <button class="compose-tool" title="Programar envío">⏰</button>
-        <button class="compose-tool" title="Atabey — Traducir">🌐</button>
+        <button class="compose-tool" title="Adjuntar archivo">📎</button><button class="compose-tool" title="Insertar pago BDET">💎</button>
+        <button class="compose-tool active" title="Cifrado cuántico activo">🔒</button><button class="compose-tool" title="Firma digital">✍</button>
+        <button class="compose-tool" title="Programar envío">⏰</button><button class="compose-tool" title="Atabey — Traducir">🌐</button>
       </div>
-      <button class="send-btn" onclick="sendEmail()">
-        Enviar 🔒
-      </button>
+      <button class="send-btn" onclick="sendEmail()">Enviar 🔒</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ TOAST ═══ -->
+<!-- TOAST -->
 <div class="toast" id="toast">
   <div class="toast-title">Nuevo correo cifrado</div>
-  <div class="toast-msg">De: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d5a1b0a6baa7b0a7ba95b7b1b0a1fba6bab7b0a7b4bbbafbb7ba">[email&#160;protected]</a> — Liquidación mensual completada</div>
+  <div class="toast-msg">De: tesoreria@bdet.soberano.bo — Liquidación mensual completada</div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ═══════════════════════════════════════════
 // CORREOSOBERANO — EMAIL DATA
 // ═══════════════════════════════════════════
 
 const emails = [
-  {
-    id: 1,
-    sender: "María Canaima",
-    email: "m.canaima@soberano.bo",
-    initials: "MC",
-    subject: "Propuesta: Integración SoberanoMarket con BDET Bank",
-    preview: "Le escribo para presentar la propuesta de integración completa entre SoberanoMarket y el sistema de pagos BDET...",
-    time: "14:32",
-    date: "21 Feb 2026 · 14:32",
-    unread: true,
-    tags: ["encrypted", "bdet"],
-    color: "linear-gradient(135deg, var(--turquoise), var(--wampum))",
-    body: `<p>Cacike,</p>
-<p>Le escribo para presentar la propuesta de integración completa entre SoberanoMarket y el sistema de pagos BDET Bank. Hemos completado las pruebas del API de merchant y los resultados son prometedores.</p>
-<div class="bdet-payment-card">
-  <div class="bdet-title">💎 Solicitud de Pago BDET</div>
-  <div class="bdet-amount">Ⓦ 2,500.00</div>
-  <div class="bdet-desc">Desarrollo de integración SoberanoMarket → BDET Merchant API (fase 1)</div>
-  <div class="bdet-actions">
-    <button class="bdet-btn approve" onclick="approvePayment(this)">✓ Aprobar Pago</button>
-    <button class="bdet-btn decline">✗ Rechazar</button>
-  </div>
-</div>
-<p>La integración permitirá que cada vendedor en SoberanoMarket reciba pagos directamente a su cuenta BDET, con liquidación instantánea a través de MameyNode. El smart contract de escrow protegerá ambas partes en cada transacción.</p>
-<p>Hemos implementado el split de comisiones: Vendedor 88%, Plataforma 4%, Impuesto Soberano 6%, Fondo Comunitario 2%. Todo automático, todo en blockchain.</p>
-<div class="attachment-block"><div class="attachment-icon">📄</div><div class="attachment-info"><div class="att-name">Propuesta_SoberanoMarket_BDET_v2.pdf</div><div class="att-size">2.4 MB · Cifrado · MameyNode Hash: 0x7a3f...b2e1</div></div></div>
-<div class="attachment-block"><div class="attachment-icon">📊</div><div class="attachment-info"><div class="att-name">Proyecciones_Revenue_Q1_2026.xlsx</div><div class="att-size">847 KB · Cifrado · MameyNode Hash: 0x9c2d...f4a8</div></div></div>
-<p>Quedo atenta a su revisión. Si aprueba el pago, comenzamos implementación esta semana.</p>
-<p>Soberanía siempre. 🌿</p>
-<div class="signature"><strong>María Canaima</strong><br>Directora de Integración · SoberanoMarket<br>m.canaima@soberano.bo · +591 7XX-XXXX<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--turquoise)">🔒 Verificado · ID Soberano: SOV-MC-7291</span></div>`
-  },
-  {
-    id: 2,
-    sender: "BDET Bank — Tesorería",
-    email: "tesoreria@bdet.soberano.bo",
-    initials: "BD",
-    subject: "✅ Liquidación mensual completada — Enero 2026",
-    preview: "Se ha completado la liquidación del mes de enero. Total procesado: Ⓦ 1,247,832.50 a través de 24 plataformas...",
-    time: "12:18",
-    date: "21 Feb 2026 · 12:18",
-    unread: true,
-    tags: ["bdet", "priority"],
-    color: "linear-gradient(135deg, var(--wampum), var(--gold))",
-    body: `<p>Estimado Cacike,</p>
-<p>Le informamos que la liquidación mensual de enero 2026 ha sido completada exitosamente en MameyNode.</p>
-<div class="bdet-payment-card">
-  <div class="bdet-title">💎 Resumen de Liquidación — Enero 2026</div>
-  <div class="bdet-amount">Ⓦ 1,247,832.50</div>
-  <div class="bdet-desc">Total procesado a través de 24 plataformas Soberano · 89,412 transacciones</div>
-</div>
-<p><strong>Desglose por plataforma:</strong></p>
-<p>SoberanoMarket: Ⓦ 423,100 · RentaSoberano: Ⓦ 287,500 · SoberanoUber: Ⓦ 198,400 · SoberanoEats: Ⓦ 156,200 · SoberanoDoctor: Ⓦ 89,300 · Otras 19 plataformas: Ⓦ 93,332.50</p>
-<p>Todas las transacciones han sido verificadas en MameyNode blockchain. Los impuestos soberanos (8%) han sido depositados automáticamente en la cuenta del Tesoro Nacional.</p>
-<div class="attachment-block"><div class="attachment-icon">📊</div><div class="attachment-info"><div class="att-name">BDET_Liquidacion_Enero_2026.pdf</div><div class="att-size">5.1 MB · Cifrado · Hash: 0xb4c2...8f31</div></div></div>
-<div class="signature"><strong>Departamento de Tesorería</strong><br>BDET Bank — Banco Digital de Economía Taína<br>tesoreria@bdet.soberano.bo<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--wampum)">🏦 Verificado · Sistema Automatizado BDET v3.2</span></div>`
-  },
-  {
-    id: 3,
-    sender: "Consejo de Seguridad AI",
-    email: "aifortress@soberano.bo",
-    initials: "AI",
-    subject: "🛡 Reporte Semanal — AI Fortress · 0 brechas detectadas",
-    preview: "El sistema AI Fortress reporta cero brechas de seguridad en la última semana. 42 motores operando al 99.97%...",
-    time: "10:05",
-    date: "21 Feb 2026 · 10:05",
-    unread: true,
-    tags: ["encrypted", "soberano"],
-    color: "linear-gradient(135deg, var(--turquoise), var(--sent-green))",
-    body: `<p>Cacike,</p>
-<p>Reporte semanal de seguridad del sistema AI Fortress — Semana del 14-21 de Febrero 2026.</p>
-<p><strong>Estado General: ✅ OPERACIONAL</strong></p>
-<p>42 motores de IA operando al 99.97% de capacidad. Cero brechas de seguridad detectadas. 2,847 intentos de intrusión bloqueados automáticamente (94% desde IPs no-soberanas). Cifrado cuántico post-quantum funcionando en todos los nodos.</p>
-<p>Sistema de detección de anomalías identificó 3 patrones sospechosos en tráfico de SoberanoMarket — investigados y resueltos como falsos positivos (pico de ventas de artesanías durante festival regional).</p>
-<p>Recomendación: Actualizar certificados PKI Vault para nodos en región Caribe antes del 1 de marzo.</p>
-<div class="attachment-block"><div class="attachment-icon">🛡</div><div class="attachment-info"><div class="att-name">AIFortress_Weekly_W08_2026.pdf</div><div class="att-size">1.8 MB · Cifrado Cuántico · Hash: 0xe7f1...2a9c</div></div></div>
-<div class="signature"><strong>AI Fortress — Consejo de Seguridad</strong><br>aifortress@soberano.bo<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--turquoise)">🛡 Reporte automatizado · 42 motores activos</span></div>`
-  },
-  {
-    id: 4,
-    sender: "NCAI — Digital Sovereignty",
-    email: "digital@ncai.org",
-    initials: "NC",
-    subject: "RE: Invitación a la Red Soberana de las Américas",
-    preview: "Thank you for your compelling presentation of the Sovereign Digital Nation framework. The National Congress is very interested...",
-    time: "09:41",
-    date: "21 Feb 2026 · 09:41",
-    unread: true,
-    tags: ["priority", "soberano"],
-    color: "linear-gradient(135deg, var(--gold), var(--red-alert))",
-    body: `<p>Dear Cacike,</p>
-<p>Thank you for your compelling presentation of the Sovereign Digital Nation framework and the invitation to join the Sovereign Americas Network.</p>
-<p>The National Congress of American Indians has reviewed your proposal with great interest, particularly the alignment with our Center for Tribal Digital Sovereignty initiative. The concept of a fully sovereign digital infrastructure — from blockchain to satellite telecommunications — represents exactly the kind of self-determination our 574 member tribes have been advocating for.</p>
-<p>We would like to schedule a virtual meeting to discuss potential collaboration on the following areas:</p>
-<p>1. Pilot program for BDET Bank integration with 5 tribal nations<br>2. Atabey Translator — integration of Navajo, Cherokee, and Lakota languages<br>3. SoberanoDoctor telemedicine for reservation communities<br>4. RentaSoberano workforce marketplace for tribal members</p>
-<p>Could you propose dates for a call next week? We'll have representatives from our Digital Sovereignty Center and two tribal council chairs participating.</p>
-<p>In solidarity,</p>
-<div class="signature"><strong>Dr. Sarah Whitehawk</strong><br>Director, Center for Tribal Digital Sovereignty<br>National Congress of American Indians<br>digital@ncai.org · Washington, D.C.<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold)">🦅 Serving 574 Tribal Nations</span></div>`
-  },
-  {
-    id: 5,
-    sender: "Pupitre — Sistema Educativo",
-    email: "sistema@pupitre.soberano.bo",
-    initials: "PU",
-    subject: "📚 Estadísticas semanales: 12,847 estudiantes activos",
-    preview: "El sistema educativo Pupitre reporta un crecimiento del 23% en estudiantes activos. Nuevas lecciones en Quechua disponibles...",
-    time: "08:15",
-    date: "21 Feb 2026 · 08:15",
-    unread: false,
-    tags: ["soberano"],
-    color: "linear-gradient(135deg, var(--draft-amber), var(--gold))",
-    body: `<p>Cacike,</p>
-<p>Reporte semanal del Sistema Educativo Pupitre — Semana 08/2026.</p>
-<p><strong>Estudiantes activos:</strong> 12,847 (+23% vs semana anterior)<br><strong>Lecciones completadas:</strong> 47,291<br><strong>Idiomas activos:</strong> 14 (Quechua, Aymara, Guaraní, Taíno, Maya, Nahuatl, Mapudungun, Wayuu, Kuna, Miskitu, Garifuna, Bribri, Kalinago, Arawak)<br><strong>Certificados emitidos:</strong> 234 (blockchain MameyNode)</p>
-<p>Nuevas lecciones disponibles esta semana: Quechua intermedio (módulo 3), Maya básico (módulo 1), programación en Python para jóvenes indígenas.</p>
-<div class="signature"><strong>Sistema Pupitre</strong><br>Plataforma Educativa Soberana<br>sistema@pupitre.soberano.bo<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--draft-amber)">📚 Reporte automatizado · SoberanoTeach AI</span></div>`
-  },
-  {
-    id: 6,
-    sender: "FILAC — Fondo Indígena",
-    email: "secretaria@filac.org",
-    initials: "FI",
-    subject: "Interés en plataforma soberana — Reunión propuesta",
-    preview: "Hemos recibido con mucho interés su propuesta sobre la Red Soberana Digital. Representamos a 19 países y 58 millones...",
-    time: "Ayer",
-    date: "20 Feb 2026 · 17:45",
-    unread: false,
-    tags: ["priority"],
-    color: "linear-gradient(135deg, var(--sent-green), var(--turquoise))",
-    body: `<p>Estimado Cacike,</p>
-<p>Hemos recibido con mucho interés su propuesta sobre la Red Soberana Digital de las Américas. Como Fondo para el Desarrollo de los Pueblos Indígenas de América Latina y el Caribe, representamos a 19 países y más de 58 millones de personas indígenas.</p>
-<p>Su visión de una infraestructura digital completamente soberana — desde la blockchain hasta las telecomunicaciones satelitales — se alinea perfectamente con nuestros principios de desarrollo con identidad y Buen Vivir.</p>
-<p>Proponemos una reunión virtual para explorar cómo FILAC podría servir como puente para llevar la plataforma a nuestros países miembros. Tenemos particular interés en BDET Bank para inclusión financiera, Atabey para revitalización lingüística, y SoberanoDoctor para comunidades rurales.</p>
-<div class="signature"><strong>Secretaría Técnica</strong><br>FILAC — Fondo para el Desarrollo de los Pueblos Indígenas<br>secretaria@filac.org · La Paz, Bolivia<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sent-green)">🌍 19 países · 58 millones de personas</span></div>`
-  },
-  {
-    id: 7,
-    sender: "SoberanoUber — Dispatch AI",
-    email: "dispatch@soberanouber.soberano.bo",
-    initials: "SU",
-    subject: "Reporte: 3,291 viajes completados hoy — Revenue Ⓦ 14,832",
-    preview: "El sistema de transporte soberano reporta 3,291 viajes completados hoy con un revenue de Ⓦ 14,832. Tiempo promedio...",
-    time: "Ayer",
-    date: "20 Feb 2026 · 22:00",
-    unread: false,
-    tags: ["bdet"],
-    color: "linear-gradient(135deg, var(--wampum), var(--turquoise))",
-    body: `<p>Reporte diario SoberanoUber — 20 de Febrero 2026</p>
-<p><strong>Viajes completados:</strong> 3,291<br><strong>Revenue total:</strong> Ⓦ 14,832<br><strong>Conductores activos:</strong> 487<br><strong>Tiempo promedio de espera:</strong> 4.2 minutos<br><strong>Satisfacción pasajeros:</strong> 4.8/5.0</p>
-<p>Desglose: Conductor 85% (Ⓦ 12,607), Plataforma 2% (Ⓦ 297), Impuesto 8% (Ⓦ 1,187), Seguro 5% (Ⓦ 742). Todo liquidado automáticamente a BDET Bank.</p>
-<div class="signature"><strong>SoberanoUber AI Dispatch</strong><br>dispatch@soberanouber.soberano.bo<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--wampum)">🚗 Reporte automatizado · AI Dispatch v2.1</span></div>`
-  },
-  {
-    id: 8,
-    sender: "Roberto Taíno",
-    email: "r.taino@soberano.bo",
-    initials: "RT",
-    subject: "Actualización: MameyNode v4.2 — Nuevos smart contracts desplegados",
-    preview: "Hemos desplegado exitosamente MameyNode v4.2 con 12 nuevos smart contracts para las plataformas Soberano...",
-    time: "20 Feb",
-    date: "20 Feb 2026 · 15:30",
-    unread: false,
-    tags: ["encrypted", "soberano"],
-    color: "linear-gradient(135deg, var(--turquoise), var(--gold))",
-    body: `<p>Cacike,</p>
-<p>Hemos desplegado exitosamente MameyNode v4.2 esta tarde. Los cambios principales incluyen:</p>
-<p>12 nuevos smart contracts para plataformas Soberano (SoberanoMarket escrow, SoberanoFarm crop insurance, SoberanoDoctor payment gateway, etc.). Optimización de gas fees — reducción del 34%. Nuevo módulo de identidad soberana v2 con soporte biométrico. Integración del protocolo de comunicación inter-nodos mejorado.</p>
-<p>Todos los nodos han sido actualizados. Cero downtime. Blockchain integrity verificada.</p>
-<div class="signature"><strong>Roberto Taíno</strong><br>Lead Blockchain Engineer<br>r.taino@soberano.bo<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--turquoise)">⛓ MameyNode Core Team</span></div>`
-  },
-  {
-    id: 9,
-    sender: "COICA — Amazonía",
-    email: "coordinacion@coicamazonia.org",
-    initials: "CO",
-    subject: "Propuesta de colaboración — 3.5 millones de beneficiarios potenciales",
-    preview: "La Coordinadora de las Organizaciones Indígenas de la Cuenca Amazónica ha revisado su propuesta para la Red Soberana...",
-    time: "19 Feb",
-    date: "19 Feb 2026 · 11:20",
-    unread: false,
-    tags: ["priority", "gov"],
-    color: "linear-gradient(135deg, var(--sent-green), var(--gold))",
-    body: `<p>Estimado Cacike,</p>
-<p>La Coordinadora de las Organizaciones Indígenas de la Cuenca Amazónica (COICA), representando a 9 países amazónicos y más de 3.5 millones de personas indígenas, ha revisado con gran interés su propuesta.</p>
-<p>La conectividad satelital que ofrece su plataforma es particularmente relevante para nuestras comunidades en la Amazonía, donde la infraestructura terrestre es inexistente. SoberanoFarm para agricultura sostenible y SoberanoClean para monitoreo ambiental son exactamente lo que nuestros pueblos necesitan.</p>
-<p>Proponemos comenzar con un piloto en 5 comunidades de Ecuador, Perú y Brasil.</p>
-<div class="signature"><strong>Coordinación General</strong><br>COICA — 9 países amazónicos<br>coordinacion@coicamazonia.org<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sent-green)">🌳 Protegiendo la Amazonía · 3.5M personas</span></div>`
-  },
-  {
-    id: 10,
-    sender: "SoberanoDoctor — AI Triage",
-    email: "triage@soberanodoctor.soberano.bo",
-    initials: "SD",
-    subject: "Alerta: 847 consultas de telemedicina — Récord mensual",
-    preview: "El sistema de telemedicina soberana ha alcanzado un nuevo récord con 847 consultas en las últimas 24 horas...",
-    time: "19 Feb",
-    date: "19 Feb 2026 · 08:00",
-    unread: false,
-    tags: ["soberano"],
-    color: "linear-gradient(135deg, var(--red-alert), var(--wampum))",
-    body: `<p>Reporte de telemedicina — 19 de Febrero 2026</p>
-<p><strong>Consultas totales (24h):</strong> 847 (récord mensual)<br><strong>Consultas AI resueltas:</strong> 612 (72%)<br><strong>Derivadas a doctor:</strong> 235 (28%)<br><strong>Emergencias detectadas:</strong> 3 (activación SoberanoEmergency inmediata)<br><strong>Idiomas utilizados:</strong> 8 (Español, Quechua, Aymara, Guaraní, Maya, Nahuatl, Inglés, Portugués)</p>
-<p>Tiempo promedio de triage AI: 47 segundos. Satisfacción pacientes: 4.9/5.0. Cero errores de diagnóstico reportados.</p>
-<div class="signature"><strong>SoberanoDoctor AI Triage</strong><br>triage@soberanodoctor.soberano.bo<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red-alert)">🩺 Sistema automatizado · 42 motores AI</span></div>`
-  }
+  {id:1,sender:"María Canaima",email:"m.canaima@soberano.bo",initials:"MC",subject:"Propuesta: Integración SoberanoMarket con BDET Bank",preview:"Le escribo para presentar la propuesta de integración completa entre SoberanoMarket y el sistema de pagos BDET...",time:"14:32",date:"21 Feb 2026 · 14:32",unread:true,tags:["encrypted","bdet"],color:"linear-gradient(135deg, var(--turquoise), var(--wampum))",body:`<p>Cacike,</p><p>Le escribo para presentar la propuesta de integración completa entre SoberanoMarket y el sistema de pagos BDET Bank. Hemos completado las pruebas del API de merchant y los resultados son prometedores.</p><div class="bdet-payment-card"><div class="bdet-title">💎 Solicitud de Pago BDET</div><div class="bdet-amount">Ⓦ 2,500.00</div><div class="bdet-desc">Desarrollo de integración SoberanoMarket → BDET Merchant API (fase 1)</div><div class="bdet-actions"><button class="bdet-btn approve" onclick="approvePayment(this)">✓ Aprobar Pago</button><button class="bdet-btn decline">✗ Rechazar</button></div></div><p>La integración permitirá que cada vendedor en SoberanoMarket reciba pagos directamente a su cuenta BDET, con liquidación instantánea a través de MameyNode.</p><p>Split de comisiones: Vendedor 88%, Plataforma 4%, Impuesto Soberano 6%, Fondo Comunitario 2%.</p><div class="attachment-block"><div class="attachment-icon">📄</div><div class="attachment-info"><div class="att-name">Propuesta_SoberanoMarket_BDET_v2.pdf</div><div class="att-size">2.4 MB · Cifrado · Hash: 0x7a3f...b2e1</div></div></div><div class="attachment-block"><div class="attachment-icon">📊</div><div class="attachment-info"><div class="att-name">Proyecciones_Revenue_Q1_2026.xlsx</div><div class="att-size">847 KB · Cifrado · Hash: 0x9c2d...f4a8</div></div></div><p>Quedo atenta a su revisión.</p><p>Soberanía siempre. 🌿</p><div class="signature"><strong>María Canaima</strong><br>Directora de Integración · SoberanoMarket<br>m.canaima@soberano.bo<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--turquoise)">🔒 Verificado · ID Soberano: SOV-MC-7291</span></div>`},
+  {id:2,sender:"BDET Bank — Tesorería",email:"tesoreria@bdet.soberano.bo",initials:"BD",subject:"✅ Liquidación mensual completada — Enero 2026",preview:"Se ha completado la liquidación del mes de enero. Total procesado: Ⓦ 1,247,832.50 a través de 24 plataformas...",time:"12:18",date:"21 Feb 2026 · 12:18",unread:true,tags:["bdet","priority"],color:"linear-gradient(135deg, var(--wampum), var(--gold))",body:`<p>Estimado Cacike,</p><p>La liquidación mensual de enero 2026 ha sido completada exitosamente en MameyNode.</p><div class="bdet-payment-card"><div class="bdet-title">💎 Resumen de Liquidación — Enero 2026</div><div class="bdet-amount">Ⓦ 1,247,832.50</div><div class="bdet-desc">Total procesado a través de 24 plataformas Soberano · 89,412 transacciones</div></div><p><strong>Desglose:</strong> SoberanoMarket Ⓦ423,100 · RentaSoberano Ⓦ287,500 · SoberanoUber Ⓦ198,400 · SoberanoEats Ⓦ156,200 · SoberanoDoctor Ⓦ89,300 · Otras Ⓦ93,332.50</p><div class="attachment-block"><div class="attachment-icon">📊</div><div class="attachment-info"><div class="att-name">BDET_Liquidacion_Enero_2026.pdf</div><div class="att-size">5.1 MB · Cifrado · Hash: 0xb4c2...8f31</div></div></div><div class="signature"><strong>Departamento de Tesorería</strong><br>BDET Bank<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--wampum)">🏦 Verificado · BDET v3.2</span></div>`},
+  {id:3,sender:"Consejo de Seguridad AI",email:"aifortress@soberano.bo",initials:"AI",subject:"🛡 Reporte Semanal — AI Fortress · 0 brechas detectadas",preview:"El sistema AI Fortress reporta cero brechas de seguridad en la última semana. 42 motores operando al 99.97%...",time:"10:05",date:"21 Feb 2026 · 10:05",unread:true,tags:["encrypted","soberano"],color:"linear-gradient(135deg, var(--turquoise), var(--sent-green))",body:`<p>Cacike,</p><p>Reporte semanal AI Fortress — Semana 14-21 Feb 2026.</p><p><strong>Estado: ✅ OPERACIONAL</strong></p><p>42 motores AI al 99.97%. 0 brechas. 2,847 intentos bloqueados. Cifrado cuántico activo en todos los nodos.</p><div class="attachment-block"><div class="attachment-icon">🛡</div><div class="attachment-info"><div class="att-name">AIFortress_Weekly_W08_2026.pdf</div><div class="att-size">1.8 MB · Cifrado Cuántico · Hash: 0xe7f1...2a9c</div></div></div><div class="signature"><strong>AI Fortress — Consejo de Seguridad</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--turquoise)">🛡 42 motores activos</span></div>`},
+  {id:4,sender:"NCAI — Digital Sovereignty",email:"digital@ncai.org",initials:"NC",subject:"RE: Invitación a la Red Soberana de las Américas",preview:"Thank you for your compelling presentation of the Sovereign Digital Nation framework. The National Congress is very interested...",time:"09:41",date:"21 Feb 2026 · 09:41",unread:true,tags:["priority","soberano"],color:"linear-gradient(135deg, var(--gold), var(--red-alert))",body:`<p>Dear Cacike,</p><p>Thank you for your compelling presentation of the Sovereign Digital Nation framework.</p><p>The NCAI has reviewed your proposal with great interest, particularly our Center for Tribal Digital Sovereignty initiative. We would like to schedule a meeting to discuss collaboration on: 1) BDET Bank pilot with 5 tribal nations, 2) Atabey Translator for Navajo/Cherokee/Lakota, 3) SoberanoDoctor telemedicine, 4) RentaSoberano workforce marketplace.</p><p>In solidarity,</p><div class="signature"><strong>Dr. Sarah Whitehawk</strong><br>Director, Center for Tribal Digital Sovereignty<br>NCAI · Washington, D.C.<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold)">🦅 574 Tribal Nations</span></div>`},
+  {id:5,sender:"Pupitre — Sistema Educativo",email:"sistema@pupitre.soberano.bo",initials:"PU",subject:"📚 Estadísticas semanales: 12,847 estudiantes activos",preview:"El sistema educativo Pupitre reporta un crecimiento del 23% en estudiantes activos. Nuevas lecciones en Quechua disponibles...",time:"08:15",date:"21 Feb 2026 · 08:15",unread:false,tags:["soberano"],color:"linear-gradient(135deg, var(--draft-amber), var(--gold))",body:`<p>Cacike,</p><p>Reporte semanal Pupitre — Semana 08/2026.</p><p><strong>Estudiantes:</strong> 12,847 (+23%) · <strong>Lecciones:</strong> 47,291 · <strong>Idiomas:</strong> 14 · <strong>Certificados:</strong> 234</p><div class="signature"><strong>Sistema Pupitre</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--draft-amber)">📚 SoberanoTeach AI</span></div>`},
+  {id:6,sender:"FILAC — Fondo Indígena",email:"secretaria@filac.org",initials:"FI",subject:"Interés en plataforma soberana — Reunión propuesta",preview:"Hemos recibido con mucho interés su propuesta sobre la Red Soberana Digital. Representamos a 19 países y 58 millones...",time:"Ayer",date:"20 Feb 2026 · 17:45",unread:false,tags:["priority"],color:"linear-gradient(135deg, var(--sent-green), var(--turquoise))",body:`<p>Estimado Cacike,</p><p>Hemos recibido con mucho interés su propuesta. Representamos 19 países y 58 millones de personas indígenas. Proponemos reunión para explorar BDET Bank, Atabey y SoberanoDoctor.</p><div class="signature"><strong>Secretaría Técnica — FILAC</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sent-green)">🌍 19 países · 58M personas</span></div>`},
+  {id:7,sender:"SoberanoUber — Dispatch AI",email:"dispatch@soberanouber.soberano.bo",initials:"SU",subject:"Reporte: 3,291 viajes completados hoy — Revenue Ⓦ 14,832",preview:"El sistema de transporte soberano reporta 3,291 viajes completados hoy con un revenue de Ⓦ 14,832. Tiempo promedio...",time:"Ayer",date:"20 Feb 2026 · 22:00",unread:false,tags:["bdet"],color:"linear-gradient(135deg, var(--wampum), var(--turquoise))",body:`<p>Reporte diario SoberanoUber — 20 Feb 2026</p><p><strong>Viajes:</strong> 3,291 · <strong>Revenue:</strong> Ⓦ14,832 · <strong>Conductores:</strong> 487 · <strong>Espera:</strong> 4.2 min · <strong>Satisfacción:</strong> 4.8/5.0</p><div class="signature"><strong>SoberanoUber AI Dispatch</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--wampum)">🚗 AI Dispatch v2.1</span></div>`},
+  {id:8,sender:"Roberto Taíno",email:"r.taino@soberano.bo",initials:"RT",subject:"Actualización: MameyNode v4.2 — Nuevos smart contracts desplegados",preview:"Hemos desplegado exitosamente MameyNode v4.2 con 12 nuevos smart contracts para las plataformas Soberano...",time:"20 Feb",date:"20 Feb 2026 · 15:30",unread:false,tags:["encrypted","soberano"],color:"linear-gradient(135deg, var(--turquoise), var(--gold))",body:`<p>Cacike,</p><p>MameyNode v4.2 desplegado. 12 nuevos smart contracts. Gas fees reducidos 34%. Identidad soberana v2 con biométricos. Cero downtime.</p><div class="signature"><strong>Roberto Taíno</strong><br>Lead Blockchain Engineer<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--turquoise)">⛓ MameyNode Core Team</span></div>`},
+  {id:9,sender:"COICA — Amazonía",email:"coordinacion@coicamazonia.org",initials:"CO",subject:"Propuesta de colaboración — 3.5 millones de beneficiarios potenciales",preview:"La Coordinadora de las Organizaciones Indígenas de la Cuenca Amazónica ha revisado su propuesta para la Red Soberana...",time:"19 Feb",date:"19 Feb 2026 · 11:20",unread:false,tags:["priority","gov"],color:"linear-gradient(135deg, var(--sent-green), var(--gold))",body:`<p>Estimado Cacike,</p><p>COICA (9 países amazónicos, 3.5M personas) ha revisado su propuesta con gran interés. Proponemos piloto en 5 comunidades de Ecuador, Perú y Brasil.</p><div class="signature"><strong>Coordinación General — COICA</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sent-green)">🌳 3.5M personas</span></div>`},
+  {id:10,sender:"SoberanoDoctor — AI Triage",email:"triage@soberanodoctor.soberano.bo",initials:"SD",subject:"Alerta: 847 consultas de telemedicina — Récord mensual",preview:"El sistema de telemedicina soberana ha alcanzado un nuevo récord con 847 consultas en las últimas 24 horas...",time:"19 Feb",date:"19 Feb 2026 · 08:00",unread:false,tags:["soberano"],color:"linear-gradient(135deg, var(--red-alert), var(--wampum))",body:`<p>Reporte telemedicina — 19 Feb 2026</p><p><strong>Consultas (24h):</strong> 847 récord · <strong>AI resueltas:</strong> 612 (72%) · <strong>Derivadas:</strong> 235 · <strong>Emergencias:</strong> 3 · <strong>Idiomas:</strong> 8</p><div class="signature"><strong>SoberanoDoctor AI Triage</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red-alert)">🩺 42 motores AI</span></div>`}
 ];
 
 // ═══════════════════════════════════════════
@@ -1515,15 +204,11 @@ function renderEmailList() {
 function selectEmail(id, el) {
   const email = emails.find(e => e.id === id);
   if (!email) return;
-
-  // Update list selection
   document.querySelectorAll('.email-item').forEach(item => item.classList.remove('active'));
   el.classList.add('active');
   el.classList.remove('unread');
   const dot = el.querySelector('.unread-dot');
   if (dot) dot.remove();
-
-  // Update reader
   document.getElementById('readerSubject').textContent = email.subject;
   document.getElementById('readerAvatar').textContent = email.initials;
   document.getElementById('readerAvatar').style.background = email.color;
@@ -1537,13 +222,8 @@ function selectEmail(id, el) {
 // UI INTERACTIONS
 // ═══════════════════════════════════════════
 
-function openCompose() {
-  document.getElementById('composeOverlay').classList.add('open');
-}
-
-function closeCompose() {
-  document.getElementById('composeOverlay').classList.remove('open');
-}
+function openCompose() { document.getElementById('composeOverlay').classList.add('open'); }
+function closeCompose() { document.getElementById('composeOverlay').classList.remove('open'); }
 
 function setFolder(el, name) {
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
@@ -1560,7 +240,20 @@ function approvePayment(btn) {
 
 function sendEmail() {
   closeCompose();
-  showToast('Cor
+  showToast('Correo enviado', 'Tu correo ha sido enviado con cifrado cuántico E2E');
+}
+
+function showToast(title, msg) {
+  const toast = document.getElementById('toast');
+  if (title) toast.querySelector('.toast-title').textContent = title;
+  if (msg) toast.querySelector('.toast-msg').textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 4000);
+}
+
+// Init
+renderEmailList();
+</script>
 <script src="../shared/ierahkwa-api.js"></script>
 <script>
 // Auto-connect to /api/messaging
@@ -1569,3 +262,106 @@ if (!Ierahkwa.auth.isLoggedIn()) {
     console.log('[correo-soberano] Not logged in — showing login modal');
 }
 </script>
+<script>
+/* Offline Module — Correo Soberano v1.0.0 */
+(function(){
+  const DB_NAME='ierahkwa-correo-offline';const DB_VER=1;
+  const STORES=['bandeja-entrada','borradores','contactos-correo','enviados-pendientes'];
+  let db=null;
+
+  function openDB(){
+    return new Promise((resolve,reject)=>{
+      const req=indexedDB.open(DB_NAME,DB_VER);
+      req.onupgradeneeded=()=>{
+        const d=req.result;
+        STORES.forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});
+      };
+      req.onsuccess=()=>{db=req.result;resolve(db)};
+      req.onerror=()=>reject(req.error);
+    });
+  }
+
+  async function cacheInbox(){
+    if(!navigator.onLine)return;
+    try{
+      const res=await fetch('/api/culture/email/inbox?limit=100');
+      if(!res.ok)return;const data=await res.json();
+      const tx=db.transaction('bandeja-entrada','readwrite');
+      data.forEach(e=>tx.objectStore('bandeja-entrada').put({...e,id:e.emailId,cached:Date.now()}));
+      console.log(`[correo-offline] Cached ${data.length} emails`);
+    }catch(e){console.warn('[correo-offline] Inbox cache failed:',e)}
+  }
+
+  async function cacheEmailContacts(){
+    if(!navigator.onLine)return;
+    try{
+      const res=await fetch('/api/culture/email/contacts');
+      if(!res.ok)return;const data=await res.json();
+      const tx=db.transaction('contactos-correo','readwrite');
+      data.forEach(c=>tx.objectStore('contactos-correo').put({...c,id:c.email,cached:Date.now()}));
+    }catch(e){console.warn('[correo-offline] Contact cache failed:',e)}
+  }
+
+  async function saveDraft(draft){
+    const tx=db.transaction('borradores','readwrite');
+    tx.objectStore('borradores').put({id:draft.draftId||Date.now().toString(),...draft,modified:Date.now()});
+  }
+
+  async function queueEmail(emailData){
+    const tx=db.transaction('enviados-pendientes','readwrite');
+    tx.objectStore('enviados-pendientes').put({id:Date.now().toString(),...emailData,queued:Date.now(),synced:false});
+    console.log('[correo-offline] Email queued for sending');
+  }
+
+  async function getInbox(){
+    const tx=db.transaction('bandeja-entrada','readonly');
+    return new Promise(r=>{tx.objectStore('bandeja-entrada').getAll().onsuccess=e=>r(e.target.result)});
+  }
+
+  async function getDrafts(){
+    const tx=db.transaction('borradores','readonly');
+    return new Promise(r=>{tx.objectStore('borradores').getAll().onsuccess=e=>r(e.target.result)});
+  }
+
+  async function syncEmails(){
+    if(!navigator.onLine)return;
+    const tx=db.transaction('enviados-pendientes','readonly');
+    const all=await new Promise(r=>{tx.objectStore('enviados-pendientes').getAll().onsuccess=e=>r(e.target.result)});
+    for(const e of all.filter(x=>!x.synced)){
+      try{
+        await fetch('/api/culture/email/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(e)});
+        const tx2=db.transaction('enviados-pendientes','readwrite');
+        tx2.objectStore('enviados-pendientes').put({...e,synced:true});
+      }catch{break}
+    }
+  }
+
+  function showOfflineBanner(show){
+    let b=document.getElementById('offline-banner');
+    if(!b){
+      b=document.createElement('div');b.id='offline-banner';
+      b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#607d8b;color:#fff;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';
+      b.textContent='Modo Offline — Bandeja de entrada en cache. Correos nuevos se enviaran al reconectar.';
+      document.body.appendChild(b);
+    }
+    b.style.transform=show?'translateY(0)':'translateY(100%)';
+  }
+
+  async function init(){
+    await openDB();
+    if(navigator.onLine){await cacheInbox();await cacheEmailContacts()}
+    window.addEventListener('online',()=>{showOfflineBanner(false);syncEmails()});
+    window.addEventListener('offline',()=>showOfflineBanner(true));
+    if(!navigator.onLine)showOfflineBanner(true);
+    console.log('[correo-offline] Initialized — inbox, drafts, contacts, send queue');
+  }
+
+  window.IerahkwaCorreoOffline={getInbox,getDrafts,saveDraft,send:queueEmail,sync:syncEmails};
+  init();
+})();
+</script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
+</body>
+</html>

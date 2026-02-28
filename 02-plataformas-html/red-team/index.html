@@ -1,0 +1,164 @@
+<!DOCTYPE html><html lang="es" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
+<meta name="description" content="Plataforma soberana de Red Team para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="theme-color" content="#ff1744">
+<link rel="canonical" href="https://ierahkwa.nation/red-team/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="Red Team — Operaciones Ofensivas Soberanas">
+<meta property="og:description" content="Plataforma soberana de Red Team para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/red-team/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Red Team — Operaciones Ofensivas Soberanas">
+<meta name="twitter:description" content="Plataforma soberana de Red Team para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
+<title>Red Team — Operaciones Ofensivas Soberanas</title>
+<style>:root{--accent:#ff1744}
+.op-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;max-width:1200px;margin:0 auto 2rem;padding:0 2rem}
+.op-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.2rem;transition:all .3s;position:relative;overflow:hidden}
+.op-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 25px rgba(255,23,68,.1)}
+.op-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),transparent)}
+.op-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem}
+.op-name{font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:700}
+.op-status{padding:.2rem .6rem;border-radius:4px;font-size:.6rem;font-weight:700;text-transform:uppercase}
+.op-status.active{background:rgba(255,23,68,.2);color:#ff1744;animation:pulse 2s infinite}
+.op-status.complete{background:rgba(67,160,71,.15);color:#43a047}
+.op-status.planning{background:rgba(255,145,0,.15);color:#ff9100}
+.op-desc{font-size:.82rem;color:var(--txt2);margin-bottom:.8rem;line-height:1.5}
+.op-meta{display:flex;gap:1rem;font-size:.7rem;color:var(--txt2)}
+.op-meta span{display:flex;align-items:center;gap:.3rem}
+.vuln-list{max-width:1200px;margin:0 auto;padding:0 2rem 2rem}
+.vuln-item{display:flex;align-items:center;gap:.8rem;padding:.7rem 0;border-bottom:1px solid var(--brd);font-size:.82rem}
+.vuln-sev{padding:.15rem .5rem;border-radius:4px;font-size:.6rem;font-weight:700;text-transform:uppercase;min-width:60px;text-align:center}
+.vuln-sev.critical{background:rgba(255,23,68,.25);color:#ff1744}
+.vuln-sev.high{background:rgba(244,67,54,.2);color:#f44336}
+.vuln-sev.medium{background:rgba(255,145,0,.15);color:#ff9100}
+.vuln-sev.low{background:rgba(67,160,71,.15);color:#43a047}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+</style></head><body role="document">
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+<nav>
+<div class="brand"><span aria-hidden="true">🎯</span> Red Team</div>
+<div style="display:flex;gap:.6rem;align-items:center">
+<a href="../nexus-escudo/index.html" style="font-size:.82rem;color:var(--txt2)">Nexus Escudo</a>
+<a href="../index.html" style="font-size:.82rem;color:var(--txt2)">Portal Central</a>
+<button class="btn" onclick="Ierahkwa.auth.isLoggedIn()?location.reload():Ierahkwa.auth.showLogin()">Acceder</button>
+</div>
+</nav>
+
+<main id="main">
+<section class="hero" aria-label="Presentacion">
+<div class="badge">RED TEAM · Operaciones Ofensivas Soberanas</div>
+<h1><span>Red Team</span></h1>
+<p>Unidad de pentesting y simulacion de ataques. Evaluacion continua de la postura de seguridad soberana con TTPs MITRE ATT&CK.</p>
+<div class="counters">
+<div class="counter"><strong>47</strong><span>Campanas</span></div>
+<div class="counter"><strong>312</strong><span>Vulns Encontradas</span></div>
+<div class="counter"><strong>98%</strong><span>Remediadas</span></div>
+<div class="counter"><strong>MITRE</strong><span>Framework</span></div>
+<div class="counter"><strong>24/7</strong><span>Monitoreo</span></div>
+<div class="counter"><strong>0</strong><span>Criticas Abiertas</span></div>
+</div>
+</section>
+
+<div class="dash" aria-label="Dashboard Red Team">
+<div class="dash-card"><strong style="color:#ff1744">3</strong><span>Ops Activas</span></div>
+<div class="dash-card"><strong style="color:#43a047">44</strong><span>Completadas</span></div>
+<div class="dash-card"><strong style="color:#ff9100">12</strong><span>Vulns Pendientes</span></div>
+<div class="dash-card"><strong>312</strong><span>Total Hallazgos</span></div>
+<div class="dash-card"><strong>98%</strong><span>Tasa Remediacion</span></div>
+<div class="dash-card"><strong>4.2h</strong><span>MTTD Promedio</span></div>
+<div class="dash-card"><strong>14</strong><span>Operadores</span></div>
+<div class="dash-card"><strong>ATT&CK</strong><span>Framework</span></div>
+</div>
+
+<!-- Operaciones Activas -->
+<section class="section" aria-label="Operaciones">
+<h2>🎯 Operaciones de Red Team</h2>
+<p class="sub">Campanas activas de simulacion de ataques y pentesting</p>
+</section>
+<div class="op-grid">
+<div class="op-card">
+<div class="op-header"><span class="op-name">OP-TORMENTA</span><span class="op-status active">EN CURSO</span></div>
+<div class="op-desc">Simulacion de APT avanzado contra infraestructura SCADA de energia soberana. Evaluando resiliencia ante ataques de cadena de suministro.</div>
+<div class="op-meta"><span>📅 Inicio: 20 Feb 2026</span><span>🎯 Objetivo: Energia</span><span>👥 4 operadores</span></div>
+</div>
+<div class="op-card">
+<div class="op-header"><span class="op-name">OP-SOMBRA</span><span class="op-status active">EN CURSO</span></div>
+<div class="op-desc">Penetration testing de la red financiera BDET. Intentos de manipulacion de smart contracts y bypass de autenticacion cuantica.</div>
+<div class="op-meta"><span>📅 Inicio: 22 Feb 2026</span><span>🎯 Objetivo: BDET</span><span>👥 3 operadores</span></div>
+</div>
+<div class="op-card">
+<div class="op-header"><span class="op-name">OP-FANTASMA</span><span class="op-status active">EN CURSO</span></div>
+<div class="op-desc">Social engineering y phishing simulation contra 500 empleados gubernamentales. Evaluacion de awareness y respuesta.</div>
+<div class="op-meta"><span>📅 Inicio: 24 Feb 2026</span><span>🎯 Objetivo: Gobierno</span><span>👥 2 operadores</span></div>
+</div>
+<div class="op-card">
+<div class="op-header"><span class="op-name">OP-CRATER</span><span class="op-status complete">COMPLETADA</span></div>
+<div class="op-desc">Auditoria completa de seguridad de MameyNode blockchain. 0 vulnerabilidades criticas. 3 medias remediadas.</div>
+<div class="op-meta"><span>📅 18 Feb 2026</span><span>🎯 Blockchain</span><span>✅ 3/3 remediadas</span></div>
+</div>
+<div class="op-card">
+<div class="op-header"><span class="op-name">OP-AURORA</span><span class="op-status complete">COMPLETADA</span></div>
+<div class="op-desc">Red team exercise contra infraestructura satelital. Intento de interceptacion de comunicaciones PQC y spoofing GPS.</div>
+<div class="op-meta"><span>📅 15 Feb 2026</span><span>🎯 Orbital</span><span>✅ Defensas verificadas</span></div>
+</div>
+<div class="op-card">
+<div class="op-header"><span class="op-name">OP-NEXUS</span><span class="op-status planning">PLANIFICACION</span></div>
+<div class="op-desc">Full-scope adversary simulation contra los 10 dominios NEXUS simultaneamente. Prueba de respuesta coordinada de emergencia.</div>
+<div class="op-meta"><span>📅 Programada: Mar 2026</span><span>🎯 Todos NEXUS</span><span>👥 14 operadores</span></div>
+</div>
+</div>
+
+<!-- Herramientas -->
+<section class="section" aria-label="Arsenal">
+<h2>🛠️ Arsenal Red Team</h2>
+<p class="sub">Herramientas y tecnicas de evaluacion ofensiva</p>
+<div class="grid">
+<div class="card"><div class="card-icon" aria-hidden="true">🎯</div><h4>MITRE ATT&CK</h4><p>Framework completo de TTPs para simulacion de adversarios con 14 tacticas y 200+ tecnicas.</p><div class="tags"><span class="tag ai">AI</span></div></div>
+<div class="card"><div class="card-icon" aria-hidden="true">🕷️</div><h4>Pentest Toolkit</h4><p>Suite de herramientas: Nmap, Burp Suite, Metasploit, Cobalt Strike soberano.</p></div>
+<div class="card"><div class="card-icon" aria-hidden="true">🐛</div><h4>Bug Bounty</h4><p>Programa de recompensas por vulnerabilidades para investigadores externos autorizados.</p></div>
+<div class="card"><div class="card-icon" aria-hidden="true">🔍</div><h4>OSINT Recon</h4><p>Reconocimiento de inteligencia abierta: Shodan, Censys, theHarvester, Maltego.</p><div class="tags"><span class="tag ai">AI</span></div></div>
+<div class="card"><div class="card-icon" aria-hidden="true">📧</div><h4>Phishing Sim</h4><p>Plataforma de simulacion de phishing con templates, tracking y reportes de awareness.</p></div>
+<div class="card"><div class="card-icon" aria-hidden="true">🏴</div><h4>Purple Team</h4><p>Ejercicios colaborativos Red+Blue team con retroalimentacion en tiempo real y mejora continua.</p><div class="tags"><span class="tag sat">SAT</span></div></div>
+</div>
+</section>
+
+<!-- Vulnerabilidades Recientes -->
+<section class="vuln-list" aria-label="Hallazgos recientes">
+<h2 style="font-family:'Orbitron',sans-serif;font-size:1.3rem;margin-bottom:1rem;color:var(--accent)">📋 Hallazgos Recientes</h2>
+<div class="vuln-item"><span class="vuln-sev low">BAJO</span><span>CVE-2026-0042 — Header X-Frame-Options faltante en portal educativo</span><span style="margin-left:auto;color:#43a047;font-size:.75rem">✅ Remediado</span></div>
+<div class="vuln-item"><span class="vuln-sev medium">MEDIO</span><span>IRTH-247 — Rate limiting insuficiente en API de busqueda</span><span style="margin-left:auto;color:#43a047;font-size:.75rem">✅ Remediado</span></div>
+<div class="vuln-item"><span class="vuln-sev medium">MEDIO</span><span>IRTH-248 — Cookie SameSite no configurada en sesion de trading</span><span style="margin-left:auto;color:#ff9100;font-size:.75rem">⏳ En progreso</span></div>
+<div class="vuln-item"><span class="vuln-sev low">BAJO</span><span>IRTH-250 — Information disclosure en headers de respuesta HTTP</span><span style="margin-left:auto;color:#43a047;font-size:.75rem">✅ Remediado</span></div>
+<div class="vuln-item"><span class="vuln-sev high">ALTO</span><span>IRTH-251 — IDOR en endpoint de documentos compartidos</span><span style="margin-left:auto;color:#43a047;font-size:.75rem">✅ Remediado</span></div>
+<div class="vuln-item"><span class="vuln-sev low">BAJO</span><span>IRTH-253 — CSP demasiado permisiva en 3 plataformas</span><span style="margin-left:auto;color:#ff9100;font-size:.75rem">⏳ En progreso</span></div>
+</div>
+
+<!-- Interconexiones -->
+<section class="connections" aria-label="Interconexiones">
+<h2>Interconexiones NEXUS</h2>
+<div class="conn-grid">
+<a href="../nexus-escudo/index.html" class="conn" style="text-decoration:none;color:var(--txt)"><strong style="color:#f44336">🛡️ ESCUDO</strong> — Coordinacion con SOC y Blue Team</a>
+<a href="../firewall-cuantico/index.html" class="conn" style="text-decoration:none;color:var(--txt)"><strong style="color:#e84040">🔐 FIREWALL</strong> — Evaluacion de reglas WAF y bypass testing</a>
+<a href="../nexus-forja/index.html" class="conn" style="text-decoration:none;color:var(--txt)"><strong style="color:#00e676">🔧 FORJA</strong> — SAST/DAST en pipeline CI/CD</a>
+</div>
+</section>
+</main>
+
+<footer><span aria-hidden="true">🎯</span> Red Team · <span>Ierahkwa Ne Kanienke</span> · Operaciones Ofensivas Soberanas · v3.5.0<div style="margin-top:.75rem"><span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span></div></footer>
+
+<script src="../shared/ierahkwa-api.js"></script>
+<script>
+window.PLATFORM_API='/api/military';
+</script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
+</body></html>

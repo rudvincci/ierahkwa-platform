@@ -1,99 +1,31 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
+<meta name="description" content="Plataforma soberana de Biometrica para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="theme-color" content="#ea80fc">
+<link rel="canonical" href="https://ierahkwa.nation/biometrica-soberana/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="Biométrica Soberana — Ierahkwa">
+<meta property="og:description" content="Plataforma soberana de Biometrica para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/biometrica-soberana/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Biométrica Soberana — Ierahkwa">
+<meta name="twitter:description" content="Plataforma soberana de Biometrica para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
 <title>Biométrica Soberana — Ierahkwa</title>
-<style>
-:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--accent:#ea80fc;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s;text-decoration:none}
-.skip-nav:focus{top:1rem}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
-a{color:var(--accent);text-decoration:none}
-
-/* Hero */
-.hero{position:relative;min-height:92vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 45% at 50% 40%,rgba(234,128,252,.1),transparent 70%)}
-.scan-lines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(234,128,252,.015) 2px,rgba(234,128,252,.015) 4px);pointer-events:none}
-.hero-orb{position:absolute;width:300px;height:300px;border-radius:50%;border:1px solid rgba(234,128,252,.08);top:50%;left:50%;transform:translate(-50%,-50%);animation:orb-pulse 4s ease-in-out infinite}
-.hero-orb:nth-child(2){width:400px;height:400px;animation-delay:1s}
-.hero-orb:nth-child(3){width:500px;height:500px;animation-delay:2s}
-@keyframes orb-pulse{0%,100%{opacity:.3;transform:translate(-50%,-50%) scale(1)}50%{opacity:.6;transform:translate(-50%,-50%) scale(1.03)}}
-.hero-content{position:relative;max-width:820px;z-index:2}
-.badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--bg3);border:1px solid var(--accent);border-radius:99px;padding:.4rem 1.2rem;font-size:.8rem;color:var(--accent);margin-bottom:1.5rem;letter-spacing:.5px;text-transform:uppercase}
-.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-h1{font-size:clamp(2rem,5.5vw,3.8rem);font-weight:800;letter-spacing:-.02em;line-height:1.1;margin-bottom:1rem}
-h1 .accent{background:linear-gradient(135deg,var(--accent),#ce93d8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.tagline{font-size:clamp(1rem,2.5vw,1.3rem);color:var(--txt2);max-width:600px;margin:0 auto 2.5rem}
-.hero-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--accent);color:#09090d;font-weight:700;padding:.9rem 2.2rem;border-radius:var(--r);font-size:1rem;transition:transform .2s,box-shadow .2s;border:none;cursor:pointer}
-.hero-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(234,128,252,.3)}
-
-/* Stats */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--brd);border:1px solid var(--brd);border-radius:var(--r);max-width:860px;margin:-3rem auto 0;position:relative;z-index:2}
-.stat{background:var(--bg2);padding:1.5rem 1rem;text-align:center}
-.stat:first-child{border-radius:var(--r) 0 0 var(--r)}
-.stat:last-child{border-radius:0 var(--r) var(--r) 0}
-.stat-val{font-size:1.35rem;font-weight:800;color:var(--accent)}
-.stat-lbl{font-size:.78rem;color:var(--txt2);margin-top:.2rem}
-
-/* Sections */
-section{padding:5rem 1.5rem}
-.section-header{text-align:center;max-width:680px;margin:0 auto 3.5rem}
-.section-header h2{font-size:clamp(1.5rem,3.5vw,2.4rem);font-weight:800;margin-bottom:.75rem}
-.section-header p{color:var(--txt2);font-size:1.05rem}
-.accent-text{color:var(--accent)}
-
-/* Features */
-.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;max-width:1100px;margin:0 auto}
-.feature-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.8rem;transition:border-color .25s,transform .25s;position:relative}
-.feature-card:hover{border-color:var(--accent);transform:translateY(-3px)}
-.feature-icon{width:44px;height:44px;border-radius:50%;background:rgba(234,128,252,.08);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;border:1px solid rgba(234,128,252,.18)}
-.feature-card h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem}
-.feature-card p{font-size:.88rem;color:var(--txt2);line-height:1.55}
-.feature-card .privacy-badge{display:inline-block;background:rgba(234,128,252,.1);color:var(--accent);font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:99px;margin-top:.6rem;letter-spacing:.3px;text-transform:uppercase}
-
-/* Biometric Comparison */
-.comparison{max-width:900px;margin:0 auto}
-.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
-.compare-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:2rem}
-.compare-card.them{border-color:rgba(244,67,54,.3)}
-.compare-card.us{border-color:rgba(234,128,252,.3)}
-.compare-card h3{font-size:1.1rem;font-weight:700;margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
-.compare-card.them h3{color:#ef5350}
-.compare-card.us h3{color:var(--accent)}
-.compare-list{list-style:none;display:flex;flex-direction:column;gap:.6rem}
-.compare-list li{font-size:.88rem;color:var(--txt2);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
-.compare-list .icon{flex-shrink:0;margin-top:2px}
-
-/* Modality Rings */
-.modalities{max-width:800px;margin:4rem auto 0;text-align:center}
-.modality-ring{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:.75rem;padding:2rem}
-.modality-chip{background:var(--bg3);border:1px solid var(--brd);border-radius:99px;padding:.6rem 1.4rem;font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:.4rem;transition:border-color .25s,background .25s}
-.modality-chip:hover{border-color:var(--accent);background:rgba(234,128,252,.05)}
-
-/* CTA */
-.cta{text-align:center;padding:5rem 1.5rem}
-.cta h2{font-size:clamp(1.4rem,3vw,2.2rem);font-weight:800;margin-bottom:1rem}
-.cta p{color:var(--txt2);max-width:520px;margin:0 auto 2rem}
-
-footer{text-align:center;padding:2.5rem 1.5rem;border-top:1px solid var(--brd);color:var(--txt2);font-size:.82rem}
-
-@media(max-width:700px){
-  .compare-grid{grid-template-columns:1fr}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .stat:first-child{border-radius:var(--r) 0 0 0}
-  .stat:nth-child(2){border-radius:0 var(--r) 0 0}
-  .stat:nth-child(3){border-radius:0 0 0 var(--r)}
-  .stat:last-child{border-radius:0 0 var(--r) 0}
-  .hero{min-height:80vh}
-}
-</style>
+<style>:root{--accent:#ea80fc}</style>
 </head>
-<body>
+<body role="document">
 <a href="#main" class="skip-nav">Skip to main content</a>
 
 <header class="hero">
@@ -243,7 +175,7 @@ footer{text-align:center;padding:2.5rem 1.5rem;border-top:1px solid var(--brd);c
 
 <footer>
   <p>Biométrica Soberana — Ecosistema Digital Ierahkwa &copy; 2026. Privacidad biométrica para 72M de ciudadanos indígenas.</p>
-</footer>
+<div style="margin-top:.75rem"><span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span></div></footer>
 
 <script src="../shared/ierahkwa-api.js"></script>
 <script>
@@ -253,5 +185,8 @@ if (!Ierahkwa.auth.isLoggedIn()) {
     console.log('[biometrica-soberana] Not logged in — showing login modal');
 }
 </script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 </body>
 </html>

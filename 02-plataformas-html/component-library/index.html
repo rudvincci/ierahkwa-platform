@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#00FF41">
+<link rel="canonical" href="https://ierahkwa.nation/component-library/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="Component Library | Ierahkwa Futurehead">
+<meta property="og:description" content="Plataforma soberana de Component Library para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/component-library/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Component Library | Ierahkwa Futurehead">
+<meta name="twitter:description" content="Plataforma soberana de Component Library para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+  <meta name="description" content="Ierahkwa Futurehead Design System — Component Library v3.6.0. Paleta, tipografía, componentes, animaciones y patrones accesibles.">
+  <title>Component Library — Ierahkwa Futurehead Design System</title>
+  <link rel="stylesheet" href="../shared/ierahkwa.css">
+  <style>
+    :root { --accent: #00FF41; }
+
+    /* Library-specific layout */
+    .lib-body { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 260px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      background: var(--bg2);
+      border-right: 2px solid var(--accent);
+      padding: 1.5rem 1rem;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .sidebar h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .9rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      letter-spacing: .05em;
+    }
+    .sidebar a {
+      display: block;
+      color: var(--txt2);
+      padding: .4rem .8rem;
+      border-radius: 8px;
+      font-size: .82rem;
+      transition: all .2s;
+      margin-bottom: .15rem;
+    }
+    .sidebar a:hover, .sidebar a.active {
+      color: var(--accent);
+      background: rgba(0,255,65,.08);
+    }
+    .sidebar .sep {
+      border-top: 1px solid var(--brd);
+      margin: .75rem 0;
+    }
+    .main {
+      margin-left: 260px;
+      flex: 1;
+      max-width: 1000px;
+      padding: 2rem 3rem 4rem;
+    }
+
+    /* Component preview box */
+    .preview {
+      background: var(--bg);
+      border: 1px solid var(--brd);
+      border-radius: var(--r);
+      padding: 2rem;
+      margin-bottom: 1rem;
+    }
+    .preview-dark {
+      background: linear-gradient(135deg, #0a0e17, #0d1a2d);
+    }
+
+    /* Code block */
+    .code {
+      background: #080c14;
+      border: 1px solid var(--brd);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: .78rem;
+      color: #a8c8a8;
+      overflow-x: auto;
+      margin-bottom: 2rem;
+      white-space: pre;
+      line-height: 1.6;
+    }
+    .code .tag { color: #ff7b72; }
+    .code .attr { color: #79c0ff; }
+    .code .val { color: #a5d6ff; }
+    .code .cls { color: #ffa657; }
+
+    /* Color swatches */
+    .swatches {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .swatch {
+      border-radius: var(--r);
+      overflow: hidden;
+      border: 1px solid var(--brd);
+    }
+    .swatch-color {
+      height: 70px;
+      display: grid;
+      place-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      font-weight: 700;
+    }
+    .swatch-info {
+      background: var(--bg2);
+      padding: .6rem .8rem;
+      font-size: .72rem;
+    }
+    .swatch-info strong {
+      display: block;
+      color: var(--txt);
+      margin-bottom: .15rem;
+      font-size: .78rem;
+    }
+    .swatch-info span { color: var(--txt2); }
+
+    /* Contrast badge */
+    .contrast {
+      display: inline-block;
+      padding: .1rem .35rem;
+      border-radius: 4px;
+      font-size: .6rem;
+      font-weight: 700;
+      margin-left: .3rem;
+    }
+    .contrast.aaa { background: #43a047; color: #fff; }
+    .contrast.aa  { background: #ffa000; color: #000; }
+
+    /* Typography scale */
+    .type-scale {
+      margin-bottom: 2rem;
+    }
+    .type-row {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      padding: .75rem 0;
+      border-bottom: 1px solid rgba(30,58,95,.5);
+    }
+    .type-label {
+      width: 120px;
+      font-size: .7rem;
+      color: var(--txt2);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      flex-shrink: 0;
+    }
+
+    /* Section headings in library */
+    .lib-section {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--brd);
+    }
+    .lib-section:first-of-type { margin-top: 0; border-top: none; }
+    .lib-section > h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      color: var(--accent);
+      margin-bottom: .3rem;
+    }
+    .lib-section > p {
+      color: var(--txt2);
+      font-size: .85rem;
+      margin-bottom: 1.5rem;
+    }
+    .lib-section h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      color: var(--txt);
+      margin: 1.5rem 0 .75rem;
+    }
+
+    /* Inline demo helper */
+    .inline-flex { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+    .inline-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+
+    /* Variable table */
+    .var-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+      margin-bottom: 2rem;
+    }
+    .var-table th {
+      text-align: left;
+      padding: .6rem .8rem;
+      background: var(--bg3);
+      color: var(--accent);
+      font-family: 'Orbitron', sans-serif;
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      border-bottom: 1px solid var(--brd);
+    }
+    .var-table td {
+      padding: .5rem .8rem;
+      border-bottom: 1px solid rgba(30,58,95,.3);
+      color: var(--txt2);
+    }
+    .var-table td:first-child {
+      font-family: 'JetBrains Mono', monospace;
+      color: #79c0ff;
+      font-size: .78rem;
+    }
+
+    /* Responsive sidebar */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 1.5rem 1rem 3rem; }
+    }
+  </style>
+</head>
+<body role="document">
+<a href="#main" class="skip-nav">Saltar al contenido</a>
+
+<div class="lib-body">
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" role="navigation" aria-label="Component navigation">
+    <h2>Futurehead DS</h2>
+    <span style="font-size:.65rem;color:var(--txt2);display:block;margin-bottom:1rem;">v3.6.0 &middot; ierahkwa.css</span>
+
+    <a href="#colors">Colores</a>
+    <a href="#typography">Tipografia</a>
+    <a href="#variables">Variables CSS</a>
+    <div class="sep"></div>
+    <a href="#nav-header">Navegacion</a>
+    <a href="#hero-section">Hero</a>
+    <a href="#buttons">Botones</a>
+    <a href="#badges">Badges</a>
+    <a href="#cards">Cards</a>
+    <a href="#stats">Stats &amp; Counters</a>
+    <a href="#dash-cards">Dash Cards</a>
+    <a href="#tags">Tags</a>
+    <a href="#grid">Grid</a>
+    <a href="#connections">Connections</a>
+    <a href="#status-dot">Status Dot</a>
+    <a href="#footer-section">Footer</a>
+    <div class="sep"></div>
+    <a href="#animations">Animaciones</a>
+    <a href="#nexus-colors">Colores NEXUS</a>
+    <a href="#accessibility">Accesibilidad</a>
+    <a href="#responsive">Responsive</a>
+    <a href="#light-theme">Tema Claro</a>
+  </aside>
+
+  <!-- ── Main Content ── -->
+  <main class="main" id="main">
+
+    <!-- INTRO -->
+    <div style="margin-bottom:2rem;">
+      <h1 style="font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--accent);margin-bottom:.5rem;">Futurehead Design System</h1>
+      <p style="color:var(--txt2);font-size:1rem;max-width:600px;">
+        Sistema visual unificado para las 194 plataformas soberanas de Ierahkwa.
+        Orbitron + Exo 2, neon green accent, dark-first, accesible WCAG 2.1 AA.
+      </p>
+      <div class="inline-flex" style="margin-top:1rem;">
+        <span class="badge">v3.6.0</span>
+        <span class="badge">194 Plataformas</span>
+        <span class="badge">10 NEXUS</span>
+        <span class="badge">WCAG 2.1 AA</span>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 1. COLORS -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="colors">
+      <h2>Paleta de Colores</h2>
+      <p>Backgrounds oscuros con acento neon green. Cada plataforma puede sobrescribir <code>--accent</code>.</p>
+
+      <h3>Backgrounds</h3>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#0a0e17;color:#fff;">#0a0e17</div>
+          <div class="swatch-info"><strong>--bg</strong><span>Base background</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#0d1a2d;color:#fff;">#0d1a2d</div>
+          <div class="swatch-info"><strong>--bg2</strong><span>Cards, footer</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#142238;color:#fff;">#142238</div>
+          <div class="swatch-info"><strong>--bg3</strong><span>Table headers</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#1e3a5f;color:#fff;">#1e3a5f</div>
+          <div class="swatch-info"><strong>--bg4 / --brd</strong><span>Borders</span></div>
+        </div>
+      </div>
+
+      <h3>Brand &amp; Accent</h3>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#00FF41;color:#000;">#00FF41</div>
+          <div class="swatch-info"><strong>--accent</strong><span>Neon green (primary)</span> <span class="contrast aaa">AAA</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#FFD700;color:#000;">#FFD700</div>
+          <div class="swatch-info"><strong>--gold</strong><span>WAMPUM gold</span> <span class="contrast aaa">AAA</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#00FFFF;color:#000;">#00FFFF</div>
+          <div class="swatch-info"><strong>--neon-cyan</strong><span>Secondary neon</span> <span class="contrast aaa">AAA</span></div>
+        </div>
+      </div>
+
+      <h3>Text</h3>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#0a0e17;color:#ffffff;">#ffffff</div>
+          <div class="swatch-info"><strong>--txt</strong><span>Primary text</span> <span class="contrast aaa">AAA</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#0a0e17;color:#888888;">#888888</div>
+          <div class="swatch-info"><strong>--txt2</strong><span>Secondary text</span> <span class="contrast aa">AA</span></div>
+        </div>
+      </div>
+
+      <h3>Tag Colors</h3>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#7c4dff;color:#fff;">#7c4dff</div>
+          <div class="swatch-info"><strong>--ai</strong><span>AI / Machine Learning</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#FFD700;color:#000;">#FFD700</div>
+          <div class="swatch-info"><strong>--wam</strong><span>WAMPUM / Blockchain</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#00bcd4;color:#000;">#00bcd4</div>
+          <div class="swatch-info"><strong>--sat</strong><span>Satellite / IoT</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#4a9eff;color:#000;">#4a9eff</div>
+          <div class="swatch-info"><strong>--bc</strong><span>Blockchain Core</span></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#e84040;color:#fff;">#e84040</div>
+          <div class="swatch-info"><strong>--qt</strong><span>Quantum / Critical</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. TYPOGRAPHY -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="typography">
+      <h2>Tipografia</h2>
+      <p>Orbitron para headings y datos numéricos. Exo 2 para body text. Ambas de Google Fonts.</p>
+
+      <div class="type-scale">
+        <div class="type-row">
+          <span class="type-label">Hero H1</span>
+          <span style="font-family:'Orbitron',sans-serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:800;letter-spacing:-.03em;">Soberania Digital</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Section H2</span>
+          <span style="font-family:'Orbitron',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent);">Titulo de Seccion</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Section H3</span>
+          <span style="font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;">Subtitulo de Seccion</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Card H3/H4</span>
+          <span style="font-family:'Orbitron',sans-serif;font-size:.95rem;font-weight:700;">Nombre de Plataforma</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Body</span>
+          <span style="font-family:'Exo 2',sans-serif;font-size:1rem;">Texto de cuerpo en Exo 2 — legible, moderno, soberano.</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Card P</span>
+          <span style="font-family:'Exo 2',sans-serif;font-size:.82rem;color:var(--txt2);">Descripcion de card con Exo 2 a .82rem y color --txt2.</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Stat Value</span>
+          <span style="font-family:'Orbitron',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent);">194</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Counter</span>
+          <span style="font-family:'Orbitron',sans-serif;font-size:1.8rem;color:var(--accent);">72M</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Tag</span>
+          <span style="font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ai);">AI &middot; WAMPUM &middot; QUANTUM</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Badge</span>
+          <span class="badge" style="margin:0;">v3.6.0</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 3. CSS VARIABLES -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="variables">
+      <h2>Variables CSS</h2>
+      <p>Todas las variables definidas en <code>:root</code>. Cada plataforma sobrescribe <code>--accent</code>.</p>
+
+      <table class="var-table">
+        <thead>
+          <tr><th>Variable</th><th>Valor</th><th>Uso</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>--bg</td><td>#0a0e17</td><td>Background principal</td></tr>
+          <tr><td>--bg2</td><td>#0d1a2d</td><td>Cards, footer, sidebars</td></tr>
+          <tr><td>--bg3</td><td>#142238</td><td>Table headers, hover states</td></tr>
+          <tr><td>--bg4</td><td>#1e3a5f</td><td>Highlighted areas</td></tr>
+          <tr><td>--accent</td><td>#00FF41</td><td>Color primario (overrideable)</td></tr>
+          <tr><td>--gold</td><td>#FFD700</td><td>WAMPUM currency</td></tr>
+          <tr><td>--neon-green</td><td>#00FF41</td><td>Fixed green (no override)</td></tr>
+          <tr><td>--neon-cyan</td><td>#00FFFF</td><td>Secondary neon</td></tr>
+          <tr><td>--txt</td><td>#ffffff</td><td>Primary text</td></tr>
+          <tr><td>--txt2</td><td>#888888</td><td>Secondary text, labels</td></tr>
+          <tr><td>--brd</td><td>#1e3a5f</td><td>Borders</td></tr>
+          <tr><td>--r</td><td>16px</td><td>Border radius</td></tr>
+        </tbody>
+      </table>
+
+      <div class="code">/* Per-platform accent override */
+:root { --accent: #FF6B35; }  /* e.g., nexus-voces */</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 4. NAVIGATION -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="nav-header">
+      <h2>Navegacion</h2>
+      <p>Dos patrones: <code>&lt;nav&gt;</code> para NEXUS portals, <code>&lt;header&gt;</code> para plataformas individuales.</p>
+
+      <h3>NEXUS Nav</h3>
+      <div class="preview preview-dark">
+        <nav style="position:relative;top:auto;margin:-2rem;margin-bottom:0;">
+          <span class="brand">NEXUS &middot; Orbital</span>
+          <div style="display:flex;gap:.25rem;">
+            <a href="#" style="color:var(--accent);background:rgba(0,255,65,.08);padding:.5rem .85rem;border-radius:var(--r);font-size:.85rem;">Dashboard</a>
+            <a href="#" style="color:var(--txt2);padding:.5rem .85rem;border-radius:var(--r);font-size:.85rem;">Plataformas</a>
+            <a href="#" style="color:var(--txt2);padding:.5rem .85rem;border-radius:var(--r);font-size:.85rem;">API</a>
+          </div>
+        </nav>
+      </div>
+      <div class="code">&lt;nav&gt;
+  &lt;span class="brand"&gt;NEXUS &middot; Orbital&lt;/span&gt;
+  &lt;div&gt;
+    &lt;a href="#" aria-current="page"&gt;Dashboard&lt;/a&gt;
+    &lt;a href="#"&gt;Plataformas&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;</div>
+
+      <h3>Platform Header (con logo)</h3>
+      <div class="preview preview-dark">
+        <header style="position:relative;top:auto;margin:-2rem;margin-bottom:0;">
+          <div class="logo">
+            <div class="logo-icon">&#x270B;</div>
+            <h1 style="font-family:'Orbitron',sans-serif;font-size:1.25rem;color:var(--accent);letter-spacing:-.02em;">Plataforma <span>Soberana</span></h1>
+          </div>
+          <nav style="position:relative;top:auto;border:none;padding:0;background:none;backdrop-filter:none;">
+            <a href="#" style="color:var(--accent);background:rgba(0,255,65,.08);padding:.5rem .85rem;border-radius:var(--r);font-size:.85rem;">Inicio</a>
+            <a href="#" style="color:var(--txt2);padding:.5rem .85rem;border-radius:var(--r);font-size:.85rem;">Servicios</a>
+          </nav>
+        </header>
+      </div>
+      <div class="code">&lt;header&gt;
+  &lt;div class="logo"&gt;
+    &lt;div class="logo-icon"&gt;&#x270B;&lt;/div&gt;
+    &lt;h1&gt;Plataforma &lt;span&gt;Soberana&lt;/span&gt;&lt;/h1&gt;
+  &lt;/div&gt;
+  &lt;nav aria-label="Main"&gt;
+    &lt;a href="#" aria-current="page"&gt;Inicio&lt;/a&gt;
+    &lt;a href="#"&gt;Servicios&lt;/a&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 5. HERO -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="hero-section">
+      <h2>Hero Section</h2>
+      <p>Seccion principal con radial gradient, badge, titulo con gradient text, y descripcion.</p>
+
+      <div class="preview preview-dark">
+        <div class="hero" style="padding:3rem 2rem 2rem;">
+          <div class="badge">Plataforma Soberana v3.6.0</div>
+          <h1 style="font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:800;">
+            <span style="background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Soberania Digital</span>
+          </h1>
+          <p style="color:var(--txt2);max-width:500px;margin:0 auto 1rem;font-size:.95rem;">
+            Infraestructura digital para 72M de personas indigenas.
+          </p>
+          <div class="counters">
+            <div class="counter"><strong>194</strong><span>Plataformas</span></div>
+            <div class="counter"><strong>84</strong><span>Microservicios</span></div>
+            <div class="counter"><strong>10</strong><span>NEXUS</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="code">&lt;section class="hero"&gt;
+  &lt;div class="badge"&gt;Plataforma Soberana&lt;/div&gt;
+  &lt;h1&gt;&lt;span&gt;Soberania Digital&lt;/span&gt;&lt;/h1&gt;
+  &lt;p&gt;Descripcion breve...&lt;/p&gt;
+  &lt;div class="counters"&gt;
+    &lt;div class="counter"&gt;&lt;strong&gt;194&lt;/strong&gt;&lt;span&gt;Plataformas&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 6. BUTTONS -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="buttons">
+      <h2>Botones</h2>
+      <p>Boton primario con gradiente verde, hover lift + glow shadow.</p>
+
+      <div class="preview">
+        <div class="inline-flex">
+          <button class="btn">Acceder</button>
+          <button class="btn" style="font-size:.75rem;padding:.4rem 1rem;">Pequeno</button>
+          <button class="btn" style="background:linear-gradient(135deg,var(--gold),#cc9900);padding:.6rem 1.5rem;">WAMPUM</button>
+          <button class="btn" style="background:transparent;border:1px solid var(--accent);color:var(--accent);">Outline</button>
+        </div>
+      </div>
+      <div class="code">&lt;button class="btn"&gt;Acceder&lt;/button&gt;
+
+/* Variant: outline */
+&lt;button class="btn" style="background:transparent;border:1px solid var(--accent);color:var(--accent);"&gt;Outline&lt;/button&gt;</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 7. BADGES -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="badges">
+      <h2>Badges</h2>
+      <p>Pill-shaped status indicators con borde verde y fondo semi-transparente.</p>
+
+      <div class="preview">
+        <div class="inline-flex">
+          <span class="badge">v3.6.0</span>
+          <span class="badge">194 Plataformas</span>
+          <span class="badge" style="border-color:rgba(255,215,0,.25);color:#FFD700;background:rgba(255,215,0,.08);">WAMPUM</span>
+          <span class="badge" style="border-color:rgba(124,77,255,.25);color:#7c4dff;background:rgba(124,77,255,.08);">AI-Powered</span>
+        </div>
+      </div>
+      <div class="code">&lt;span class="badge"&gt;v3.6.0&lt;/span&gt;</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 8. CARDS -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="cards">
+      <h2>Cards</h2>
+      <p>Card con hover lift (-5px), green glow shadow, y shine sweep animation.</p>
+
+      <div class="preview preview-dark">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;">
+          <div class="card">
+            <div class="card-icon">&#x1F6E1;</div>
+            <h4>Firewall Cuantico</h4>
+            <p>WAF post-cuantico con 8 modulos de defensa y criptografia ML-KEM-1024.</p>
+            <div class="tags">
+              <span class="tag qt">Quantum</span>
+              <span class="tag ai">AI</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">&#x1F4B0;</div>
+            <h4>BDET Bank</h4>
+            <p>Banco digital soberano con transferencias WAMPUM, staking y escrow.</p>
+            <div class="tags">
+              <span class="tag wam">WAMPUM</span>
+              <span class="tag bc">Blockchain</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">&#x1F310;</div>
+            <h4>Mapa Soberano</h4>
+            <p>GIS territorial con capas GeoJSON, seguimiento satelital y datos ambientales.</p>
+            <div class="tags">
+              <span class="tag sat">Satellite</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="code">&lt;div class="card"&gt;
+  &lt;div class="card-icon"&gt;&#x1F6E1;&lt;/div&gt;
+  &lt;h4&gt;Nombre de Plataforma&lt;/h4&gt;
+  &lt;p&gt;Descripcion de la plataforma...&lt;/p&gt;
+  &lt;div class="tags"&gt;
+    &lt;span class="tag qt"&gt;Quantum&lt;/span&gt;
+    &lt;span class="tag ai"&gt;AI&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 9. STATS & COUNTERS -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="stats">
+      <h2>Stats &amp; Counters</h2>
+      <p>Dos patrones: <code>.counters</code> (inline, hero) y <code>.stats</code> (grid, plataformas).</p>
+
+      <h3>Counter (Hero)</h3>
+      <div class="preview preview-dark">
+        <div class="counters">
+          <div class="counter"><strong>194</strong><span>Plataformas</span></div>
+          <div class="counter"><strong>84</strong><span>Microservicios</span></div>
+          <div class="counter"><strong>10</strong><span>NEXUS</span></div>
+          <div class="counter"><strong>72M</strong><span>Personas</span></div>
+        </div>
+      </div>
+
+      <h3>Stat Grid (Platform)</h3>
+      <div class="preview preview-dark">
+        <div class="stats" style="padding:0;max-width:none;">
+          <div class="stat"><div class="val">42</div><div class="lbl">AI Engines</div></div>
+          <div class="stat"><div class="val">99.97%</div><div class="lbl">Uptime SLA</div></div>
+          <div class="stat"><div class="val">720M</div><div class="lbl">Max Supply WMP</div></div>
+          <div class="stat"><div class="val">256</div><div class="lbl">Bit Encryption</div></div>
+        </div>
+      </div>
+      <div class="code">&lt;div class="stats"&gt;
+  &lt;div class="stat"&gt;
+    &lt;div class="val"&gt;42&lt;/div&gt;
+    &lt;div class="lbl"&gt;AI Engines&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 10. DASH CARDS -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="dash-cards">
+      <h2>Dashboard Cards</h2>
+      <p>Grid compacto para metricas de dashboard. Similar a stat pero en grid mas denso.</p>
+
+      <div class="preview preview-dark">
+        <div class="dash" style="max-width:none;margin:0;padding:0;">
+          <div class="dash-card"><strong>$2.4M</strong><span>MRR</span></div>
+          <div class="dash-card"><strong>1,247</strong><span>API Clients</span></div>
+          <div class="dash-card"><strong>8.5%</strong><span>APY Staking</span></div>
+          <div class="dash-card"><strong>15ms</strong><span>Latency P95</span></div>
+          <div class="dash-card"><strong>42</strong><span>Active Engines</span></div>
+        </div>
+      </div>
+      <div class="code">&lt;div class="dash"&gt;
+  &lt;div class="dash-card"&gt;&lt;strong&gt;$2.4M&lt;/strong&gt;&lt;span&gt;MRR&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="dash-card"&gt;&lt;strong&gt;1,247&lt;/strong&gt;&lt;span&gt;API Clients&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 11. TAGS -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="tags">
+      <h2>Tags</h2>
+      <p>Etiquetas de categoria para cards. 5 variantes de color por defecto.</p>
+
+      <div class="preview">
+        <div class="inline-flex">
+          <div class="tags">
+            <span class="tag ai">AI</span>
+            <span class="tag wam">WAMPUM</span>
+            <span class="tag sat">Satellite</span>
+            <span class="tag bc">Blockchain</span>
+            <span class="tag qt">Quantum</span>
+          </div>
+        </div>
+      </div>
+      <div class="code">&lt;div class="tags"&gt;
+  &lt;span class="tag ai"&gt;AI&lt;/span&gt;
+  &lt;span class="tag wam"&gt;WAMPUM&lt;/span&gt;
+  &lt;span class="tag sat"&gt;Satellite&lt;/span&gt;
+  &lt;span class="tag bc"&gt;Blockchain&lt;/span&gt;
+  &lt;span class="tag qt"&gt;Quantum&lt;/span&gt;
+&lt;/div&gt;</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 12. GRID -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="grid">
+      <h2>Grid System</h2>
+      <p>Auto-fill responsive grid con <code>minmax(280px, 1fr)</code>. Se adapta automaticamente.</p>
+
+      <div class="preview preview-dark">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
+          <div class="card" style="margin:0;"><h4>Card 1</h4><p>Auto-fill grid demo</p></div>
+          <div class="card" style="margin:0;"><h4>Card 2</h4><p>Responsive por defecto</p></div>
+          <div class="card" style="margin:0;"><h4>Card 3</h4><p>minmax(280px, 1fr)</p></div>
+        </div>
+      </div>
+      <div class="code">&lt;div class="grid"&gt;
+  &lt;div class="card"&gt;...&lt;/div&gt;
+  &lt;div class="card"&gt;...&lt;/div&gt;
+  &lt;div class="card"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+
+/* Breakpoints:
+   900px: minmax(240px, 1fr)
+   600px: 1fr (single column) */</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 13. CONNECTIONS -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="connections">
+      <h2>Connections</h2>
+      <p>Grid de conexiones inter-plataforma. Muestra relaciones entre servicios.</p>
+
+      <div class="preview preview-dark">
+        <div class="conn-grid" style="max-width:none;">
+          <div class="conn"><strong>BDET Bank</strong> &rarr; WAMPUM Blockchain &middot; Escrow Engine &middot; Staking Pool</div>
+          <div class="conn"><strong>AI Fortress</strong> &rarr; 42 AI Engines &middot; ONNX Runtime &middot; Threat Detection</div>
+          <div class="conn"><strong>Mapa Soberano</strong> &rarr; GeoJSON Layers &middot; Satellite Feed &middot; Climate Data</div>
+        </div>
+      </div>
+      <div class="code">&lt;div class="connections"&gt;
+  &lt;h2&gt;Conexiones&lt;/h2&gt;
+  &lt;div class="conn-grid"&gt;
+    &lt;div class="conn"&gt;&lt;strong&gt;Service&lt;/strong&gt; &amp;rarr; Dependencies&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 14. STATUS DOT -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="status-dot">
+      <h2>Status Dot</h2>
+      <p>Indicador animado de estado con pulse y glow. Verde = online.</p>
+
+      <div class="preview">
+        <div class="inline-flex">
+          <span><span class="status-dot"></span> Online</span>
+          <span><span class="status-dot" style="background:#f44336;box-shadow:0 0 8px rgba(244,67,54,.4);"></span> Offline</span>
+          <span><span class="status-dot" style="background:#ffa000;box-shadow:0 0 8px rgba(255,160,0,.4);"></span> Degraded</span>
+        </div>
+      </div>
+      <div class="code">&lt;span class="status-dot"&gt;&lt;/span&gt; Online</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 15. FOOTER -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="footer-section">
+      <h2>Footer</h2>
+      <p>Footer con borde accent, fondo bg2, texto centrado.</p>
+
+      <div class="preview preview-dark">
+        <footer style="margin:-2rem;margin-top:0;">
+          <span>Ierahkwa</span> v3.6.0 &middot; 194 Plataformas &middot; 10 NEXUS
+          <br>Soberania digital para 574 naciones tribales
+        <div style="margin-top:.75rem"><span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span></div></footer>
+      </div>
+      <div class="code">&lt;footer&gt;
+  &lt;span&gt;Ierahkwa&lt;/span&gt; v3.6.0 &amp;middot; 194 Plataformas
+&lt;/footer&gt;</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 16. ANIMATIONS -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="animations">
+      <h2>Animaciones</h2>
+      <p>Tres keyframes disponibles: shine, pulse, y glow. Todas respetan <code>prefers-reduced-motion</code>.</p>
+
+      <h3>Shine Sweep (Cards)</h3>
+      <div class="preview preview-dark">
+        <div class="card" style="max-width:300px;cursor:pointer;">
+          <h4>Hover me</h4>
+          <p>La card tiene un shine sweep en hover via ::before pseudo-element.</p>
+        </div>
+      </div>
+
+      <h3>Pulse (Status Dot)</h3>
+      <div class="preview">
+        <div class="inline-flex">
+          <span class="status-dot"></span>
+          <span style="font-size:.8rem;color:var(--txt2);">animation: pulse 2s infinite</span>
+        </div>
+      </div>
+
+      <h3>Glow (Accent elements)</h3>
+      <div class="preview">
+        <div style="width:60px;height:60px;border-radius:var(--r);background:var(--accent);animation:glow 2s infinite;display:grid;place-items:center;color:#000;font-weight:900;font-family:'Orbitron',sans-serif;">I</div>
+      </div>
+
+      <div class="code">@keyframes shine {
+  0%   { left: -100%; }
+  100% { left: 100%; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: .4; }
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(0,255,65,.3); }
+  50%      { box-shadow: 0 0 20px rgba(0,255,65,.6); }
+}
+
+/* Respects reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 17. NEXUS COLORS -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="nexus-colors">
+      <h2>Colores NEXUS</h2>
+      <p>Cada NEXUS mega-portal tiene su color accent unico.</p>
+
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-color" style="background:#00bcd4;color:#000;">#00bcd4</div><div class="swatch-info"><strong>Orbital</strong><span>Infraestructura</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#f44336;color:#fff;">#f44336</div><div class="swatch-info"><strong>Escudo</strong><span>Ciberseguridad</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#7c4dff;color:#fff;">#7c4dff</div><div class="swatch-info"><strong>Cerebro</strong><span>AI + Datos</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#ffd600;color:#000;">#ffd600</div><div class="swatch-info"><strong>Tesoro</strong><span>Finanzas</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#e040fb;color:#fff;">#e040fb</div><div class="swatch-info"><strong>Voces</strong><span>Comunicacion</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#1565c0;color:#fff;">#1565c0</div><div class="swatch-info"><strong>Consejo</strong><span>Gobernanza</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#43a047;color:#fff;">#43a047</div><div class="swatch-info"><strong>Tierra</strong><span>Territorio</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#00e676;color:#000;">#00e676</div><div class="swatch-info"><strong>Forja</strong><span>Industria</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#ff9100;color:#000;">#ff9100</div><div class="swatch-info"><strong>Urbe</strong><span>Smart City</span></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#00FF41;color:#000;">#00FF41</div><div class="swatch-info"><strong>Raices</strong><span>Cultura</span></div></div>
+      </div>
+
+      <div class="code">/* NEXUS CSS Variables */
+--nx-orbital:  #00bcd4;
+--nx-escudo:   #f44336;
+--nx-cerebro:  #7c4dff;
+--nx-tesoro:   #ffd600;
+--nx-voces:    #e040fb;
+--nx-consejo:  #1565c0;
+--nx-tierra:   #43a047;
+--nx-forja:    #00e676;
+--nx-urbe:     #ff9100;
+--nx-raices:   #00FF41;</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 18. ACCESSIBILITY -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="accessibility">
+      <h2>Accesibilidad</h2>
+      <p>WCAG 2.1 AA compliant. 194/194 plataformas con aria-label.</p>
+
+      <h3>Skip Navigation</h3>
+      <div class="preview">
+        <div style="position:relative;height:50px;">
+          <a href="#main" class="skip-nav" style="position:relative;top:auto;left:auto;transform:none;">Saltar al contenido</a>
+        </div>
+      </div>
+      <div class="code">&lt;a href="#main" class="skip-nav"&gt;Saltar al contenido&lt;/a&gt;</div>
+
+      <h3>Focus Visible</h3>
+      <div class="preview">
+        <p style="font-size:.85rem;color:var(--txt2);">
+          Todos los elementos interactivos usan <code>:focus-visible</code> con outline verde de 2px.
+          Tab para navegar, Enter para activar.
+        </p>
+        <div class="inline-flex" style="margin-top:1rem;">
+          <button class="btn" tabindex="0">Focus me (Tab)</button>
+          <a href="#" style="padding:.5rem 1rem;border-radius:8px;color:var(--accent);">Link focusable</a>
+        </div>
+      </div>
+      <div class="code">:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}</div>
+
+      <h3>Checklist</h3>
+      <div class="preview">
+        <ul style="list-style:none;font-size:.85rem;">
+          <li style="padding:.3rem 0;">&#x2705; 194/194 plataformas con <code>aria-label</code> en main</li>
+          <li style="padding:.3rem 0;">&#x2705; Skip navigation en todas las paginas</li>
+          <li style="padding:.3rem 0;">&#x2705; <code>:focus-visible</code> con outline accent</li>
+          <li style="padding:.3rem 0;">&#x2705; <code>prefers-reduced-motion</code> respetado</li>
+          <li style="padding:.3rem 0;">&#x2705; Color contrast AAA en texto primario</li>
+          <li style="padding:.3rem 0;">&#x2705; Semantic HTML (<code>main</code>, <code>nav</code>, <code>footer</code>, <code>section</code>)</li>
+          <li style="padding:.3rem 0;">&#x2705; Language attribute <code>lang="es"</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 19. RESPONSIVE -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="responsive">
+      <h2>Responsive Breakpoints</h2>
+      <p>Dos breakpoints principales: 900px (tablet) y 600px (mobile).</p>
+
+      <table class="var-table">
+        <thead>
+          <tr><th>Breakpoint</th><th>Grid</th><th>Layout</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>> 900px</td><td>minmax(280px, 1fr)</td><td>Full desktop layout</td></tr>
+          <tr><td>&le; 900px</td><td>minmax(240px, 1fr)</td><td>Tablet — narrower cards</td></tr>
+          <tr><td>&le; 600px</td><td>1fr (single column)</td><td>Mobile — stacked layout</td></tr>
+        </tbody>
+      </table>
+
+      <div class="code">/* Tablet */
+@media (max-width: 900px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .counters { gap: 1rem; }
+  .hero { padding: 3rem 1rem 2rem; }
+  .dash { grid-template-columns: repeat(3, 1fr); }
+  .grid { grid-template-columns: 1fr; padding: 1rem; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  nav, header { padding: .8rem 1rem; }
+}</div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 20. LIGHT THEME -->
+    <!-- ========================================== -->
+    <div class="lib-section" id="light-theme">
+      <h2>Tema Claro</h2>
+      <p>Opt-in via clase <code>.light-theme</code> en body. Invierte backgrounds y texto.</p>
+
+      <div class="preview" style="background:#f0f4f8;border-color:#c8ccd0;">
+        <div style="padding:1rem;">
+          <h3 style="font-family:'Orbitron',sans-serif;font-size:1rem;color:#0a0e17;">Light Theme Preview</h3>
+          <p style="color:#555e6b;font-size:.85rem;margin:.5rem 0;">Texto secundario en tema claro con --txt2: #555e6b</p>
+          <div style="background:#ffffff;border:1px solid #c8ccd0;border-radius:16px;padding:1rem;margin-top:.5rem;">
+            <strong style="color:var(--accent);font-family:'Orbitron',sans-serif;">Card en Light Theme</strong>
+            <p style="color:#555e6b;font-size:.8rem;margin-top:.3rem;">Background: #ffffff, border: #c8ccd0</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="code">&lt;body class="light-theme"&gt;
+
+/* Light theme overrides */
+.light-theme {
+  --bg:  #f0f4f8;
+  --bg2: #ffffff;
+  --bg3: #e8ecf0;
+  --bg4: #d0d4d8;
+  --txt: #0a0e17;
+  --txt2: #555e6b;
+  --brd: #c8ccd0;
+}</div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <span>Ierahkwa</span> Futurehead Design System v3.6.0 &middot; Component Library
+  <br>194 Plataformas &middot; 10 NEXUS &middot; 84 Microservicios &middot; Soberania Digital
+</footer>
+
+<script>
+// Sidebar active state tracking
+document.addEventListener('DOMContentLoaded', () => {
+  const links = document.querySelectorAll('.sidebar a[href^="#"]');
+  const sections = [];
+
+  links.forEach(link => {
+    const id = link.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) sections.push({ link, el });
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const match = sections.find(s => s.el === entry.target);
+        if (match) match.link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s.el));
+});
+</script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
+</body>
+</html>

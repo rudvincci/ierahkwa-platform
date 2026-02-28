@@ -1,72 +1,31 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
+<meta name="description" content="Plataforma soberana de Inteligencia para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="theme-color" content="#651fff">
+<link rel="canonical" href="https://ierahkwa.nation/inteligencia-soberana/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="Inteligencia Soberana — OSINT &amp; An&aacute;lisis Pan-Americano">
+<meta property="og:description" content="Plataforma soberana de Inteligencia para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/inteligencia-soberana/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Inteligencia Soberana — OSINT &amp; An&aacute;lisis Pan-Americano">
+<meta name="twitter:description" content="Plataforma soberana de Inteligencia para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
 <title>Inteligencia Soberana — OSINT &amp; An&aacute;lisis Pan-Americano</title>
-<style>
-:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--accent:#651fff}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
-a{color:var(--accent);text-decoration:none}
-.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s}
-.skip-nav:focus{top:1rem}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:99}
-nav .logo{font-weight:700;font-size:1.2rem;color:var(--gold)}
-nav ul{display:flex;list-style:none;gap:1.5rem}
-nav ul a{color:var(--txt2);font-size:.9rem;transition:color .2s}
-nav ul a:hover,nav ul a:focus{color:var(--accent)}
-.hero{text-align:center;padding:4rem 2rem;position:relative;background:radial-gradient(ellipse at center,rgba(101,31,255,.07) 0%,transparent 70%)}
-.hero h1{font-size:clamp(1.8rem,4vw,3rem);margin-bottom:.5rem}
-.hero h1 em{color:var(--accent);font-style:normal}
-.hero p{color:var(--txt2);max-width:650px;margin:1rem auto}
-.network-viz{width:220px;height:220px;margin:2rem auto;position:relative}
-.node{position:absolute;width:14px;height:14px;background:var(--accent);border-radius:50%;animation:node-glow 3s ease-in-out infinite}
-.node:nth-child(1){top:10px;left:100px;animation-delay:0s}
-.node:nth-child(2){top:50px;left:30px;animation-delay:.4s}
-.node:nth-child(3){top:50px;left:170px;animation-delay:.8s}
-.node:nth-child(4){top:110px;left:10px;animation-delay:1.2s}
-.node:nth-child(5){top:110px;left:190px;animation-delay:1.6s}
-.node:nth-child(6){top:170px;left:60px;animation-delay:2s}
-.node:nth-child(7){top:170px;left:140px;animation-delay:2.4s}
-.node:nth-child(8){top:100px;left:100px;width:22px;height:22px;background:var(--gold);animation-delay:0s}
-.edge{position:absolute;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.3;animation:edge-flow 4s linear infinite}
-.edge:nth-child(9){top:105px;left:25px;width:170px;transform:rotate(-5deg)}
-.edge:nth-child(10){top:60px;left:40px;width:160px;transform:rotate(30deg);animation-delay:1s}
-.edge:nth-child(11){top:140px;left:30px;width:160px;transform:rotate(-20deg);animation-delay:2s}
-@keyframes node-glow{0%,100%{box-shadow:0 0 4px var(--accent)}50%{box-shadow:0 0 14px var(--accent)}}
-@keyframes edge-flow{0%{opacity:.1}50%{opacity:.5}100%{opacity:.1}}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
-.stat{text-align:center;padding:1rem}
-.stat .val{font-size:1.5rem;font-weight:700;color:var(--accent)}
-.stat .lbl{font-size:.8rem;color:var(--txt2);margin-top:.25rem}
-section.features{padding:3rem 2rem}
-section.features h2{text-align:center;font-size:1.6rem;margin-bottom:2rem;color:var(--gold)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;max-width:1200px;margin:0 auto}
-.card{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:border-color .2s,transform .2s}
-.card:hover{border-color:var(--accent);transform:translateY(-3px)}
-.card h3{font-size:1rem;margin-bottom:.5rem}
-.card h3 .ico{margin-right:.4rem}
-.card p{font-size:.85rem;color:var(--txt2)}
-.intel-feed{padding:3rem 2rem;max-width:800px;margin:0 auto}
-.intel-feed h2{text-align:center;font-size:1.6rem;margin-bottom:2rem;color:var(--gold)}
-.feed-item{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:1.2rem;margin-bottom:.8rem;display:flex;align-items:flex-start;gap:1rem;transition:border-color .2s}
-.feed-item:hover{border-color:var(--accent)}
-.feed-item .severity{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:.4rem}
-.feed-item .severity.high{background:#f44336}
-.feed-item .severity.med{background:#ff9100}
-.feed-item .severity.low{background:#4caf50}
-.feed-item .content .title{font-size:.9rem;font-weight:600}
-.feed-item .content .meta{font-size:.75rem;color:var(--txt2);margin-top:.2rem}
-.feed-item .content .source{font-size:.7rem;color:var(--accent);margin-top:.3rem;text-transform:uppercase;letter-spacing:.05em}
-.feed-item .time{font-size:.7rem;color:var(--txt2);white-space:nowrap;margin-left:auto}
-footer{text-align:center;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);color:var(--txt2);font-size:.8rem}
-footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5rem}
-</style>
+<style>:root{--accent:#651fff}</style>
 </head>
-<body>
+<body role="document">
 <a href="#main" class="skip-nav">Saltar al contenido principal</a>
 <nav aria-label="Navegaci&oacute;n principal">
   <div class="logo"><span aria-hidden="true">&#x1F441;</span> Inteligencia Soberana</div>
@@ -78,6 +37,7 @@ footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5r
 </nav>
 <main id="main">
   <section class="hero">
+<div style="text-align:center;margin-top:1rem"><span class="encrypted-badge" title="Cifrado Post-Quantum Activo"><span aria-hidden="true">⚛️</span> Quantum-Safe</span></div>
     <div class="network-viz" aria-hidden="true">
       <div class="node"></div><div class="node"></div><div class="node"></div>
       <div class="node"></div><div class="node"></div><div class="node"></div>
@@ -133,5 +93,8 @@ if (!Ierahkwa.auth.isLoggedIn()) {
     console.log('[inteligencia-soberana] Not logged in — showing login modal');
 }
 </script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 </body>
 </html>

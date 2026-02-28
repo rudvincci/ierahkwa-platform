@@ -1,147 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Plataforma soberana de Renta para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="theme-color" content="#00FF41">
+<link rel="canonical" href="https://ierahkwa.nation/renta-soberano/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="RentaSoberano — AI Hires Sovereign Citizens">
+<meta property="og:description" content="Plataforma soberana de Renta para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/renta-soberano/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RentaSoberano — AI Hires Sovereign Citizens">
+<meta name="twitter:description" content="Plataforma soberana de Renta para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
 <title>RentaSoberano — AI Hires Sovereign Citizens</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --earth:#1a0f0a;--earth2:#2a1f15;--earth3:#3d2e1f;
-  --gold:#d4a853;--gold-bright:#f0c96e;--gold-dim:#a07830;
-  --turquoise:#2dd4a8;--turquoise-dim:#1a9e7a;
-  --red:#e84040;--white:#f5f0eb;--cream:#ede5d8;
-  --text:#f5f0eb;--text-dim:#a09585;
-  --wampum:#9b6dff;--wampum-bright:#b794ff;
-}
-body{background:var(--earth);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden}
-
-/* GRAIN OVERLAY */
-body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events:none;z-index:9999;opacity:0.4}
-
-/* HERO */
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:2rem;position:relative;
-  background:radial-gradient(ellipse at 30% 20%,rgba(212,168,83,0.08) 0%,transparent 50%),
-  radial-gradient(ellipse at 70% 80%,rgba(155,109,255,0.06) 0%,transparent 50%),var(--earth)}
-.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:0.5rem 1.2rem;border:1px solid var(--gold-dim);border-radius:100px;font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--gold);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:2rem;
-  animation:fadeDown 0.8s ease-out}
-.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--turquoise);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(45,212,168,0.4)}50%{opacity:0.6;box-shadow:0 0 0 8px rgba(45,212,168,0)}}
-@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-@keyframes scaleIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
-
-h1{font-family:'Playfair Display',serif;font-size:clamp(3rem,8vw,7rem);font-weight:900;line-height:0.95;margin-bottom:1.5rem;animation:fadeUp 1s ease-out}
-h1 .gold{color:var(--gold)}
-h1 .wampum{color:var(--wampum-bright)}
-.hero-sub{font-size:clamp(1rem,2vw,1.4rem);color:var(--text-dim);max-width:600px;line-height:1.6;margin-bottom:3rem;animation:fadeUp 1s ease-out 0.2s both}
-.hero-sub strong{color:var(--turquoise)}
-
-.cta-row{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;animation:fadeUp 1s ease-out 0.4s both}
-.btn{padding:1rem 2.5rem;border-radius:4px;font-family:'Space Mono',monospace;font-size:0.85rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all 0.3s;border:none}
-.btn-gold{background:var(--gold);color:var(--earth);box-shadow:0 4px 20px rgba(212,168,83,0.3)}
-.btn-gold:hover{background:var(--gold-bright);transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,168,83,0.5)}
-.btn-outline{background:transparent;color:var(--text);border:1px solid var(--earth3)}
-.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
-
-.hero-stats{display:flex;gap:3rem;margin-top:4rem;animation:fadeUp 1s ease-out 0.6s both}
-.stat{text-align:center}
-.stat-num{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;color:var(--gold)}
-.stat-label{font-size:0.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.15em;margin-top:0.3rem}
-
-/* HOW IT WORKS */
-.section{padding:6rem 2rem;max-width:1200px;margin:0 auto}
-.section-label{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--gold);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:1rem}
-.section h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:700;margin-bottom:1rem}
-.section h2 .gold{color:var(--gold)}
-.section-desc{color:var(--text-dim);font-size:1.1rem;max-width:600px;line-height:1.7;margin-bottom:3rem}
-
-.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem}
-.flow-card{background:var(--earth2);border:1px solid rgba(212,168,83,0.1);padding:2rem;position:relative;transition:all 0.4s}
-.flow-card:hover{border-color:var(--gold-dim);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.3)}
-.flow-num{font-family:'Playfair Display',serif;font-size:4rem;font-weight:900;color:rgba(212,168,83,0.1);position:absolute;top:0.5rem;right:1rem;line-height:1}
-.flow-icon{font-size:2rem;margin-bottom:1rem}
-.flow-title{font-family:'Space Mono',monospace;font-size:0.85rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.8rem}
-.flow-text{color:var(--text-dim);font-size:0.9rem;line-height:1.6}
-
-/* API SECTION */
-.api-section{background:var(--earth2);border-top:1px solid rgba(212,168,83,0.1);border-bottom:1px solid rgba(212,168,83,0.1);padding:6rem 2rem}
-.api-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
-.code-block{background:var(--earth);border:1px solid var(--earth3);border-radius:4px;padding:1.5rem;font-family:'Space Mono',monospace;font-size:0.78rem;line-height:1.8;overflow-x:auto;position:relative}
-.code-block::before{content:'MCP / REST API';position:absolute;top:-0.6rem;left:1rem;background:var(--earth2);padding:0 0.5rem;font-size:0.6rem;color:var(--gold);letter-spacing:0.15em;text-transform:uppercase}
-.code-comment{color:#666}
-.code-key{color:var(--turquoise)}
-.code-str{color:var(--gold)}
-.code-num{color:var(--wampum-bright)}
-
-/* CATEGORIES */
-.categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:2rem}
-.cat-card{background:var(--earth2);border:1px solid rgba(212,168,83,0.05);padding:1.5rem;text-align:center;transition:all 0.3s;cursor:pointer}
-.cat-card:hover{border-color:var(--gold);background:var(--earth3)}
-.cat-icon{font-size:2rem;margin-bottom:0.8rem}
-.cat-name{font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem}
-.cat-count{font-size:0.8rem;color:var(--text-dim)}
-
-/* SOVEREIGNTY BANNER */
-.sovereignty{text-align:center;padding:6rem 2rem;position:relative;
-  background:radial-gradient(ellipse at center,rgba(155,109,255,0.08) 0%,transparent 60%)}
-.sovereignty h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,4rem);margin-bottom:1.5rem}
-.sovereignty h2 .wampum{color:var(--wampum-bright)}
-.sov-features{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-top:2rem}
-.sov-feat{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--text-dim)}
-.sov-feat .check{color:var(--turquoise);font-weight:700}
-
-/* PAYMENT */
-.payment-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:2rem}
-.pay-card{background:var(--earth2);border:1px solid rgba(155,109,255,0.15);padding:2rem;text-align:center;transition:all 0.3s}
-.pay-card:hover{border-color:var(--wampum);transform:translateY(-3px)}
-.pay-icon{font-size:2.5rem;margin-bottom:1rem}
-.pay-name{font-family:'Space Mono',monospace;font-size:0.85rem;color:var(--wampum-bright);margin-bottom:0.5rem}
-.pay-desc{font-size:0.85rem;color:var(--text-dim);line-height:1.5}
-
-/* LIVE BOARD */
-.live-board{background:var(--earth2);border:1px solid var(--earth3);padding:0;overflow:hidden;margin-top:2rem}
-.board-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid var(--earth3);background:rgba(212,168,83,0.03)}
-.board-title{font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--gold);letter-spacing:0.15em;text-transform:uppercase}
-.board-live{display:flex;align-items:center;gap:0.4rem;font-size:0.7rem;color:var(--turquoise)}
-.board-live .dot{width:6px;height:6px;border-radius:50%;background:var(--turquoise);animation:pulse 2s infinite}
-.task-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.85rem;transition:background 0.2s}
-.task-row:hover{background:rgba(212,168,83,0.03)}
-.task-row.header{font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em}
-.task-name{color:var(--text)}
-.task-agent{color:var(--turquoise);font-family:'Space Mono',monospace;font-size:0.8rem}
-.task-pay{color:var(--wampum-bright);font-family:'Space Mono',monospace}
-.task-status{font-family:'Space Mono',monospace;font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:2px;display:inline-block;width:fit-content}
-.task-status.open{background:rgba(45,212,168,0.1);color:var(--turquoise)}
-.task-status.progress{background:rgba(212,168,83,0.1);color:var(--gold)}
-.task-status.done{background:rgba(155,109,255,0.1);color:var(--wampum-bright)}
-
-/* FOOTER */
-footer{text-align:center;padding:4rem 2rem;border-top:1px solid var(--earth3)}
-footer .eagle{font-size:3rem;margin-bottom:1rem}
-footer p{color:var(--text-dim);font-size:0.85rem;line-height:1.8}
-footer .sovereign-text{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--gold);font-style:italic;margin-top:1rem}
-
-@media(max-width:768px){
-  .api-inner{grid-template-columns:1fr}
-  .hero-stats{flex-direction:column;gap:1.5rem}
-  .payment-grid{grid-template-columns:1fr}
-  .task-row{grid-template-columns:1fr 1fr}
-}
-.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
-</style>
+<style>:root{--accent:#00FF41}</style>
 </head>
-<body>
+<body role="document">
 <a href="#main" class="skip-nav">Skip to main content</a>
 <main id="main">
 
 <!-- HERO -->
-<section class="hero">
+<section aria-label="Contenido principal" class="hero">
   <div class="hero-badge"><span class="dot"></span> Ierahkwa Sovereign Network — Live</div>
   <h1><span class="gold">Renta</span>Soberano</h1>
   <p class="hero-sub">The sovereign marketplace where <strong>AI agents hire indigenous citizens</strong> for real-world tasks. Wampum payments. Zero middlemen. 100% sovereign.</p>
@@ -370,7 +255,7 @@ footer .sovereign-text{font-family:'Playfair Display',serif;font-size:1.2rem;col
   <p>Americas & Caribbean Indigenous Territory — Global Reach</p>
   <p style="margin-top:0.5rem;font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--earth3)">Powered by MameyNode · Quantum-Resistant · AI Fortress Defended</p>
   <div class="sovereign-text">We are sovereign. We are the people.</div>
-</footer>
+<div style="margin-top:.75rem"><span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span></div></footer>
 
 <script>
 // Animated counters
@@ -416,5 +301,8 @@ if (!Ierahkwa.auth.isLoggedIn()) {
     console.log('[renta-soberano] Not logged in — showing login modal');
 }
 </script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 </body>
 </html>

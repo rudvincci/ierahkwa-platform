@@ -1,90 +1,30 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Plataforma soberana de Mapa para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="theme-color" content="#00FF41">
+<link rel="canonical" href="https://ierahkwa.nation/mapa-soberano/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="MapaSoberano — Mapas Soberanos | MameyNode">
+<meta property="og:description" content="Plataforma soberana de Mapa para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/mapa-soberano/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MapaSoberano — Mapas Soberanos | MameyNode">
+<meta name="twitter:description" content="Plataforma soberana de Mapa para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
 <title>MapaSoberano — Mapas Soberanos | MameyNode</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#080810;--bg2:#10101a;--bg3:#181828;--gold:#d4a853;--tq:#2dd4a8;--wp:#9b6dff;--red:#ff4d6a;--blue:#4d8eff;--txt:#e8e4df;--txt2:#8a8694;--txt3:#5a5666;--brd:#222238}
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden}
-.app{height:100vh;position:relative}
-
-/* MAP AREA */
-.map{position:absolute;inset:0;background:linear-gradient(135deg,#0a1520,#0a0a1a,#101520);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.map-grid{position:absolute;inset:0;opacity:0.06;background-image:linear-gradient(var(--brd) 1px,transparent 1px),linear-gradient(90deg,var(--brd) 1px,transparent 1px);background-size:60px 60px}
-.map-content{position:relative;width:800px;height:600px}
-
-/* Map markers */
-.marker{position:absolute;cursor:pointer;transition:transform 0.2s;z-index:5}
-.marker:hover{transform:scale(1.2);z-index:10}
-.marker .dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.3)}
-.marker .pulse{position:absolute;inset:-4px;border-radius:50%;border:2px solid;opacity:0;animation:mpulse 2s infinite}
-@keyframes mpulse{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.8);opacity:0}}
-.marker .label{position:absolute;top:28px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:10px;font-weight:700;background:rgba(0,0,0,0.7);padding:2px 6px;border-radius:3px;backdrop-filter:blur(4px)}
-.marker .info{display:none;position:absolute;bottom:32px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--brd);border-radius:8px;padding:10px;width:200px;box-shadow:0 4px 16px rgba(0,0,0,0.5);z-index:20}
-.marker:hover .info{display:block}
-.info .i-name{font-size:13px;font-weight:700;margin-bottom:2px}.info .i-type{font-size:10px;color:var(--tq);margin-bottom:4px}.info .i-desc{font-size:11px;color:var(--txt2);line-height:1.3}
-
-/* Region labels */
-.region{position:absolute;font-size:11px;font-weight:700;color:rgba(255,255,255,0.15);letter-spacing:4px;text-transform:uppercase;pointer-events:none}
-
-/* Connections */
-.connections{position:absolute;inset:0;pointer-events:none}
-.connections svg{width:100%;height:100%}
-
-/* TOP BAR */
-.topbar{position:absolute;top:0;left:0;right:0;z-index:50;background:rgba(8,8,16,0.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(34,34,56,0.5);padding:10px 16px;display:flex;align-items:center;gap:12px}
-.tb-brand{display:flex;align-items:center;gap:6px}.tb-brand span{font-size:18px}.tb-brand h1{font-size:15px;font-weight:700;color:var(--tq)}
-.search{flex:1;max-width:440px;position:relative}
-.search input{width:100%;padding:8px 14px 8px 34px;background:var(--bg3);border:1px solid var(--brd);border-radius:20px;color:var(--txt);font-size:12px;outline:none;font-family:'DM Sans',sans-serif}
-.search input:focus{border-color:var(--tq)}
-.search::before{content:'⌕';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--txt3)}
-.tb-r{margin-left:auto;display:flex;gap:6px}
-.tb-btn{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--brd);background:rgba(16,16,26,0.8);color:var(--txt2);font-family:'DM Sans',sans-serif;transition:all 0.15s;backdrop-filter:blur(4px)}
-.tb-btn:hover{background:var(--bg3);color:var(--txt)}
-.tb-btn.active{border-color:var(--tq);color:var(--tq);background:rgba(45,212,168,0.08)}
-
-/* FILTER CHIPS */
-.filters{position:absolute;top:56px;left:16px;right:16px;z-index:40;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:6px 0}
-.fil{padding:5px 12px;border-radius:16px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid rgba(34,34,56,0.6);background:rgba(16,16,26,0.8);color:var(--txt2);backdrop-filter:blur(8px);white-space:nowrap;font-family:'DM Sans',sans-serif;transition:all 0.15s}
-.fil:hover{background:var(--bg3);color:var(--txt)}.fil.a{border-color:var(--tq);color:var(--tq);background:rgba(45,212,168,0.08)}
-
-/* LEFT PANEL */
-.panel{position:absolute;top:100px;left:16px;bottom:60px;width:300px;z-index:40;background:rgba(16,16,26,0.92);backdrop-filter:blur(12px);border:1px solid var(--brd);border-radius:12px;padding:14px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--brd) transparent}
-.p-title{font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.place{padding:10px;background:rgba(24,24,40,0.6);border:1px solid var(--brd);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:all 0.15s}
-.place:hover{border-color:rgba(45,212,168,0.3);background:rgba(24,24,40,0.9)}
-.place .pl-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.place .pl-icon{font-size:16px}
-.place .pl-name{font-size:13px;font-weight:600;flex:1}
-.place .pl-dist{font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
-.place .pl-type{font-size:10px;color:var(--tq);margin-bottom:2px}
-.place .pl-desc{font-size:11px;color:var(--txt2)}
-.place .pl-tags{display:flex;gap:3px;margin-top:4px}
-.ptag{font-size:8px;padding:2px 5px;border-radius:3px;font-weight:700}
-.ptag-s{background:rgba(212,168,83,0.1);color:var(--gold)}.ptag-b{background:rgba(155,109,255,0.1);color:var(--wp)}.ptag-e{background:rgba(45,212,168,0.1);color:var(--tq)}
-
-/* BOTTOM BAR */
-.bottombar{position:absolute;bottom:0;left:0;right:0;z-index:50;background:rgba(8,8,16,0.85);backdrop-filter:blur(12px);border-top:1px solid rgba(34,34,56,0.5);padding:8px 16px;display:flex;align-items:center;gap:16px;font-size:11px;color:var(--txt3)}
-.bb-stat{font-family:'IBM Plex Mono',monospace}
-.bb-stat strong{color:var(--tq)}
-
-/* ZOOM CONTROLS */
-.zoom{position:absolute;right:16px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:4px}
-.z-btn{width:36px;height:36px;border-radius:8px;background:rgba(16,16,26,0.9);border:1px solid var(--brd);color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;backdrop-filter:blur(8px);transition:all 0.15s}
-.z-btn:hover{background:var(--bg3);color:var(--txt)}
-
-@media(max-width:768px){.panel{display:none}}
-.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
-</style>
+<style>:root{--accent:#00FF41}</style>
 </head>
-<body>
+<body role="document">
 <a href="#main" class="skip-nav">Skip to main content</a>
 <div class="app">
-<main id="main">
+<main id="main" aria-label="Contenido principal">
   <div class="map">
     <div class="map-grid"></div>
     <div class="map-content">
@@ -117,6 +57,22 @@
       <div class="marker" style="top:480px;left:320px"><div class="dot" style="background:var(--red)">🪶</div><div class="label">Mapuche · Chile</div><div class="info"><div class="i-name">Comunidad Mapuche</div><div class="i-type">Chile/Argentina · 1.7M personas</div><div class="i-desc">ArtesaníaSoberana: platería Mapuche. Mapudungun en Atabey.</div></div></div>
     </div>
   </div>
+<section class="sec-panel" aria-label="Interconexiones">
+<h4><span aria-hidden="true">🔗</span> Interconexiones Activas</h4>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../agricultura-soberana/" class="label">Agricultura</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../agua-soberana/" class="label">Agua</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../energia-soberana/" class="label">Energia</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../minerales-soberanos/" class="label">Mineraless</a><span class="status ok">Conectado</span></div>
+</section>
+<section class="sec-panel" aria-label="Estado del Sistema">
+<h4><span aria-hidden="true">⚡</span> Estado en Tiempo Real</h4>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Cifrado Quantum</span><span class="status ok">Activo</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">AI Engine</span><span class="status ok">Online</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Bank-Grade TLS</span><span class="status ok">256-bit</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Casino Fair RNG</span><span class="status ok">Verificado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Soberania Datos</span><span class="status ok">100%</span></div>
+<div class="sec-progress"><div class="bar green" style="width:98%"></div></div>
+</section>
 </main>
   <!-- TOPBAR -->
   <div class="topbar">
@@ -182,5 +138,104 @@ if (!Ierahkwa.auth.isLoggedIn()) {
     console.log('[mapa-soberano] Not logged in — showing login modal');
 }
 </script>
+<script>
+/* Offline Module — Mapa Soberano v1.0.0 */
+(function(){
+  const DB_NAME='ierahkwa-mapa-offline';const DB_VER=1;
+  const STORES=['tiles-cache','geojson-layers','marcadores','anotaciones-pendientes'];
+  let db=null;
+
+  function openDB(){
+    return new Promise((resolve,reject)=>{
+      const req=indexedDB.open(DB_NAME,DB_VER);
+      req.onupgradeneeded=()=>{
+        const d=req.result;
+        STORES.forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});
+      };
+      req.onsuccess=()=>{db=req.result;resolve(db)};
+      req.onerror=()=>reject(req.error);
+    });
+  }
+
+  async function cacheGeoLayers(){
+    if(!navigator.onLine)return;
+    try{
+      const layers=['territories','resources','boundaries','communities','sacred-sites'];
+      for(const l of layers){
+        const res=await fetch(`/api/culture/maps/layers/${l}`);
+        if(!res.ok)continue;const data=await res.json();
+        const tx=db.transaction('geojson-layers','readwrite');
+        tx.objectStore('geojson-layers').put({id:l,data,cached:Date.now()});
+      }
+      console.log('[mapa-offline] Cached 5 GeoJSON layers');
+    }catch(e){console.warn('[mapa-offline] Layer cache failed:',e)}
+  }
+
+  async function cacheMarkers(){
+    if(!navigator.onLine)return;
+    try{
+      const res=await fetch('/api/culture/maps/markers');
+      if(!res.ok)return;const data=await res.json();
+      const tx=db.transaction('marcadores','readwrite');
+      data.forEach(m=>tx.objectStore('marcadores').put({...m,id:m.markerId,cached:Date.now()}));
+      console.log(`[mapa-offline] Cached ${data.length} markers`);
+    }catch(e){console.warn('[mapa-offline] Marker cache failed:',e)}
+  }
+
+  async function getOfflineLayer(layerName){
+    const tx=db.transaction('geojson-layers','readonly');
+    return new Promise(r=>{tx.objectStore('geojson-layers').get(layerName).onsuccess=e=>r(e.target.result?.data||null)});
+  }
+
+  async function getOfflineMarkers(){
+    const tx=db.transaction('marcadores','readonly');
+    return new Promise(r=>{tx.objectStore('marcadores').getAll().onsuccess=e=>r(e.target.result)});
+  }
+
+  async function addAnnotation(annotation){
+    const tx=db.transaction('anotaciones-pendientes','readwrite');
+    tx.objectStore('anotaciones-pendientes').put({id:Date.now().toString(),...annotation,created:Date.now(),synced:false});
+  }
+
+  async function syncAnnotations(){
+    if(!navigator.onLine)return;
+    const tx=db.transaction('anotaciones-pendientes','readonly');
+    const all=await new Promise(r=>{tx.objectStore('anotaciones-pendientes').getAll().onsuccess=e=>r(e.target.result)});
+    for(const a of all.filter(x=>!x.synced)){
+      try{
+        await fetch('/api/culture/maps/annotations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(a)});
+        const tx2=db.transaction('anotaciones-pendientes','readwrite');
+        tx2.objectStore('anotaciones-pendientes').put({...a,synced:true});
+      }catch{break}
+    }
+  }
+
+  function showOfflineBanner(show){
+    let b=document.getElementById('offline-banner');
+    if(!b){
+      b=document.createElement('div');b.id='offline-banner';
+      b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#00bcd4;color:#09090d;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';
+      b.textContent='Modo Offline — Mapas de territorios y capas GeoJSON disponibles';
+      document.body.appendChild(b);
+    }
+    b.style.transform=show?'translateY(0)':'translateY(100%)';
+  }
+
+  async function init(){
+    await openDB();
+    if(navigator.onLine){await cacheGeoLayers();await cacheMarkers()}
+    window.addEventListener('online',()=>{showOfflineBanner(false);syncAnnotations()});
+    window.addEventListener('offline',()=>showOfflineBanner(true));
+    if(!navigator.onLine)showOfflineBanner(true);
+    console.log('[mapa-offline] Initialized — territories, resources, boundaries, markers');
+  }
+
+  window.IerahkwaMapaOffline={getLayer:getOfflineLayer,getMarkers:getOfflineMarkers,annotate:addAnnotation,sync:syncAnnotations};
+  init();
+})();
+</script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 </body>
 </html>

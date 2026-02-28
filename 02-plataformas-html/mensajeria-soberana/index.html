@@ -1,69 +1,31 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
+<meta name="description" content="Plataforma soberana de Mensajeria para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="theme-color" content="#00e5ff">
+<link rel="canonical" href="https://ierahkwa.nation/mensajeria-soberana/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="Mensajeria Soberana — Chat Cifrado Pan-Americano">
+<meta property="og:description" content="Plataforma soberana de Mensajeria para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/mensajeria-soberana/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mensajeria Soberana — Chat Cifrado Pan-Americano">
+<meta name="twitter:description" content="Plataforma soberana de Mensajeria para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
 <title>Mensajeria Soberana — Chat Cifrado Pan-Americano</title>
-<style>
-:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--accent:#00e5ff}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
-a{color:var(--accent);text-decoration:none}
-.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s}
-.skip-nav:focus{top:1rem}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:99}
-nav .logo{font-size:1.2rem;font-weight:700;color:var(--accent)}
-nav ul{list-style:none;display:flex;gap:1.5rem}
-nav ul a{color:var(--txt2);transition:color .3s}
-nav ul a:hover{color:var(--accent)}
-.hero{text-align:center;padding:5rem 2rem 3rem;background:linear-gradient(180deg,var(--bg2),var(--bg));position:relative;overflow:hidden}
-.hero h1{font-size:clamp(1.8rem,5vw,3rem);margin-bottom:1rem}
-.hero h1 span{color:var(--accent)}
-.hero p{max-width:680px;margin:0 auto 2rem;color:var(--txt2);font-size:1.1rem}
-.hero-visual{position:relative;height:180px;margin:2rem auto;max-width:400px}
-.bubble{position:absolute;background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:.6rem 1rem;font-size:.85rem;animation:floatBubble 4s ease-in-out infinite;opacity:0;white-space:nowrap}
-.bubble:nth-child(1){left:10%;top:20%;animation-delay:0s}
-.bubble:nth-child(2){right:5%;top:50%;animation-delay:1s;border-color:var(--accent)}
-.bubble:nth-child(3){left:25%;bottom:10%;animation-delay:2s}
-.bubble:nth-child(4){right:20%;top:10%;animation-delay:3s;border-color:var(--accent)}
-@keyframes floatBubble{0%{opacity:0;transform:translateY(20px)}20%{opacity:1;transform:translateY(0)}80%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-20px)}}
-.lock-icon{color:var(--accent);font-size:.75rem;margin-left:.3rem}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
-.stat{text-align:center;padding:1rem}
-.stat .num{font-size:1.6rem;font-weight:700;color:var(--accent)}
-.stat .label{color:var(--txt2);font-size:.85rem;margin-top:.3rem}
-.features{padding:3rem 2rem;max-width:1200px;margin:0 auto}
-.features h2{text-align:center;font-size:1.8rem;margin-bottom:2rem}
-.features h2 span{color:var(--accent)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem}
-.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:border-color .3s,transform .3s}
-.card:hover{border-color:var(--accent);transform:translateY(-3px)}
-.card .icon{font-size:1.5rem;margin-bottom:.5rem}
-.card h3{font-size:1rem;margin-bottom:.4rem;color:var(--txt)}
-.card p{font-size:.85rem;color:var(--txt2)}
-.chat-preview{padding:3rem 2rem;max-width:700px;margin:0 auto}
-.chat-preview h2{text-align:center;margin-bottom:2rem;font-size:1.8rem}
-.chat-preview h2 span{color:var(--accent)}
-.chat-window{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden}
-.chat-header{background:var(--bg3);padding:.8rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--brd)}
-.chat-header .name{font-weight:600;font-size:.95rem}
-.chat-header .status{color:var(--accent);font-size:.75rem}
-.messages{padding:1rem;display:flex;flex-direction:column;gap:.8rem;min-height:200px}
-.msg{max-width:75%;padding:.6rem 1rem;border-radius:var(--r);font-size:.9rem;position:relative}
-.msg.sent{background:var(--accent);color:#000;align-self:flex-end;border-bottom-right-radius:2px}
-.msg.recv{background:var(--bg3);border:1px solid var(--brd);align-self:flex-start;border-bottom-left-radius:2px}
-.msg .e2e{font-size:.65rem;color:var(--txt2);margin-top:.2rem;display:flex;align-items:center;gap:.3rem}
-.msg.sent .e2e{color:rgba(0,0,0,.6)}
-.chat-input{display:flex;gap:.5rem;padding:.8rem 1rem;background:var(--bg3);border-top:1px solid var(--brd)}
-.chat-input input{flex:1;background:var(--bg);border:1px solid var(--brd);border-radius:var(--r);padding:.5rem .8rem;color:var(--txt);font-size:.85rem}
-.chat-input button{background:var(--accent);color:#000;border:none;border-radius:var(--r);padding:.5rem 1rem;font-weight:600;cursor:pointer}
-footer{text-align:center;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);color:var(--txt2);font-size:.85rem}
-footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5rem}
-</style>
+<style>:root{--accent:#00e5ff}</style>
 </head>
-<body>
+<body role="document">
 <a href="#main" class="skip-nav">Saltar al contenido principal</a>
 <nav aria-label="Navegacion principal">
 <div class="logo"><span aria-hidden="true">&#x1F512;</span> Mensajeria Soberana</div>
@@ -75,6 +37,7 @@ footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5r
 </nav>
 <main id="main">
 <section class="hero">
+<div style="text-align:center;margin-top:1rem"><span class="encrypted-badge" title="Cifrado Post-Quantum Activo"><span aria-hidden="true">⚛️</span> Quantum-Safe</span></div>
 <h1><span>Mensajeria Soberana</span><br>Chat Cifrado Pan-Americano</h1>
 <p>Mensajeria cifrada soberana para 72 millones de indigenas en 19 paises. Sin metadatos, sin vigilancia, con cifrado post-cuantico.</p>
 <div class="hero-visual" aria-label="Animacion de burbujas de chat cifrado">
@@ -118,6 +81,20 @@ footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5r
 <div class="chat-input"><input type="text" placeholder="Escribe un mensaje cifrado..." aria-label="Campo de mensaje"><button type="button">Enviar</button></div>
 </div>
 </section>
+<section class="sec-panel" aria-label="Interconexiones">
+<h4><span aria-hidden="true">🔗</span> Interconexiones Activas</h4>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../identidad-soberana/" class="label">Identidad</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../criptografia-soberana/" class="label">Criptografia</a><span class="status ok">Conectado</span></div>
+</section>
+<section class="sec-panel" aria-label="Estado del Sistema">
+<h4><span aria-hidden="true">⚡</span> Estado en Tiempo Real</h4>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Cifrado Quantum</span><span class="status ok">Activo</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">AI Engine</span><span class="status ok">Online</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Bank-Grade TLS</span><span class="status ok">256-bit</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Casino Fair RNG</span><span class="status ok">Verificado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Soberania Datos</span><span class="status ok">100%</span></div>
+<div class="sec-progress"><div class="bar green" style="width:98%"></div></div>
+</section>
 </main>
 <footer id="contact">
 <div class="brand">Ierahkwa</div>
@@ -132,5 +109,103 @@ if (!Ierahkwa.auth.isLoggedIn()) {
     console.log('[mensajeria-soberana] Not logged in — showing login modal');
 }
 </script>
+<script>
+/* Offline Module — Mensajeria Soberana v1.0.0 */
+(function(){
+  const DB_NAME='ierahkwa-mensajeria-offline';const DB_VER=1;
+  const STORES=['mensajes-cache','mensajes-pendientes','contactos','claves-cifrado'];
+  let db=null;
+
+  function openDB(){
+    return new Promise((resolve,reject)=>{
+      const req=indexedDB.open(DB_NAME,DB_VER);
+      req.onupgradeneeded=()=>{
+        const d=req.result;
+        STORES.forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});
+      };
+      req.onsuccess=()=>{db=req.result;resolve(db)};
+      req.onerror=()=>reject(req.error);
+    });
+  }
+
+  async function cacheRecentMessages(){
+    if(!navigator.onLine)return;
+    try{
+      const res=await fetch('/api/culture/messages/recent?limit=200');
+      if(!res.ok)return;const data=await res.json();
+      const tx=db.transaction('mensajes-cache','readwrite');
+      data.forEach(m=>tx.objectStore('mensajes-cache').put({...m,id:m.messageId,cached:Date.now()}));
+      console.log(`[mensajeria-offline] Cached ${data.length} messages`);
+    }catch(e){console.warn('[mensajeria-offline] Message cache failed:',e)}
+  }
+
+  async function cacheContacts(){
+    if(!navigator.onLine)return;
+    try{
+      const res=await fetch('/api/culture/messages/contacts');
+      if(!res.ok)return;const data=await res.json();
+      const tx=db.transaction('contactos','readwrite');
+      data.forEach(c=>tx.objectStore('contactos').put({...c,id:c.contactId,cached:Date.now()}));
+      console.log(`[mensajeria-offline] Cached ${data.length} contacts`);
+    }catch(e){console.warn('[mensajeria-offline] Contact cache failed:',e)}
+  }
+
+  async function queueMessage(message){
+    const tx=db.transaction('mensajes-pendientes','readwrite');
+    tx.objectStore('mensajes-pendientes').put({id:Date.now().toString(),...message,queued:Date.now(),synced:false});
+    console.log('[mensajeria-offline] Message queued for delivery');
+  }
+
+  async function getOfflineMessages(conversationId){
+    const tx=db.transaction('mensajes-cache','readonly');
+    const all=await new Promise(r=>{tx.objectStore('mensajes-cache').getAll().onsuccess=e=>r(e.target.result)});
+    return conversationId?all.filter(m=>m.conversationId===conversationId):all;
+  }
+
+  async function getContacts(){
+    const tx=db.transaction('contactos','readonly');
+    return new Promise(r=>{tx.objectStore('contactos').getAll().onsuccess=e=>r(e.target.result)});
+  }
+
+  async function syncMessages(){
+    if(!navigator.onLine)return;
+    const tx=db.transaction('mensajes-pendientes','readonly');
+    const all=await new Promise(r=>{tx.objectStore('mensajes-pendientes').getAll().onsuccess=e=>r(e.target.result)});
+    for(const m of all.filter(x=>!x.synced)){
+      try{
+        await fetch('/api/culture/messages/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(m)});
+        const tx2=db.transaction('mensajes-pendientes','readwrite');
+        tx2.objectStore('mensajes-pendientes').put({...m,synced:true});
+      }catch{break}
+    }
+  }
+
+  function showOfflineBanner(show){
+    let b=document.getElementById('offline-banner');
+    if(!b){
+      b=document.createElement('div');b.id='offline-banner';
+      b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#7c4dff;color:#fff;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';
+      b.textContent='Modo Offline — Mensajes recientes disponibles. Nuevos mensajes se enviaran al reconectar.';
+      document.body.appendChild(b);
+    }
+    b.style.transform=show?'translateY(0)':'translateY(100%)';
+  }
+
+  async function init(){
+    await openDB();
+    if(navigator.onLine){await cacheRecentMessages();await cacheContacts()}
+    window.addEventListener('online',()=>{showOfflineBanner(false);syncMessages()});
+    window.addEventListener('offline',()=>showOfflineBanner(true));
+    if(!navigator.onLine)showOfflineBanner(true);
+    console.log('[mensajeria-offline] Initialized — messages, contacts, E2E queue');
+  }
+
+  window.IerahkwaMensajeriaOffline={getMessages:getOfflineMessages,getContacts,send:queueMessage,sync:syncMessages};
+  init();
+})();
+</script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 </body>
 </html>

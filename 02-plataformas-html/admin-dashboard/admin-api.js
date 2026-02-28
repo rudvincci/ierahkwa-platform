@@ -61,6 +61,24 @@ const API = {
     // NEXUS Aggregation
     async dashboards() { return this.get('/api/nexus/dashboards'); },
     async metrics() { return this.get('/api/nexus/metrics'); },
+
+    // NEXUS Escolar
+    async escuelas() { return this.get('/api/escolar/escuelas'); },
+    async escolarStats() { return this.get('/api/escolar/stats'); },
+
+    // NEXUS Entretenimiento
+    async entretenimiento() { return this.get('/api/entretenimiento/platforms'); },
+    async entertainmentStats() { return this.get('/api/entretenimiento/stats'); },
+
+    // Gaming & Entertainment
+    async casinoStats() { return this.get('/api/gaming/casino/stats'); },
+    async casinoGames() { return this.get('/api/gaming/casino/games'); },
+    async bettingEvents() { return this.get('/api/gaming/betting/events'); },
+    async bettingLive() { return this.get('/api/gaming/betting/live'); },
+    async lotteryDraws() { return this.get('/api/gaming/lottery/draws'); },
+    async lotteryResults() { return this.get('/api/gaming/lottery/results'); },
+    async raffleEvents() { return this.get('/api/gaming/raffle/events'); },
+    async raffleResults() { return this.get('/api/gaming/raffle/results'); },
 };
 
 // Admin Panel State
@@ -68,19 +86,33 @@ const AdminState = {
     currentPage: 'dashboard',
     tenant: localStorage.getItem('ierahkwa_tenant') || 'ierahkwa-global',
     user: null,
-    platforms: 190,
-    microservices: 83,
+    platforms: 220,
+    microservices: 87,
     nexusDomains: [
-        { name: 'Orbital', color: '#00bcd4', icon: '🛰', services: 8 },
-        { name: 'Escudo', color: '#f44336', icon: '🛡', services: 5 },
-        { name: 'Cerebro', color: '#7c4dff', icon: '🧠', services: 4 },
-        { name: 'Tesoro', color: '#ffd600', icon: '💰', services: 8 },
-        { name: 'Voces', color: '#e040fb', icon: '📡', services: 5 },
-        { name: 'Consejo', color: '#1565c0', icon: '⚖', services: 5 },
-        { name: 'Tierra', color: '#43a047', icon: '🌿', services: 5 },
-        { name: 'Forja', color: '#00e676', icon: '🔧', services: 5 },
-        { name: 'Urbe', color: '#ff9100', icon: '🏙', services: 4 },
-        { name: 'Raíces', color: '#d4a853', icon: '🏺', services: 4 },
+        { name: 'Orbital',  color: '#00bcd4', icon: '🛰', services: 8,  platforms: 29 },
+        { name: 'Escudo',   color: '#f44336', icon: '🛡', services: 5,  platforms: 16 },
+        { name: 'Cerebro',  color: '#7c4dff', icon: '🧠', services: 4,  platforms: 8  },
+        { name: 'Tesoro',   color: '#ffd600', icon: '💰', services: 11, platforms: 25 },
+        { name: 'Voces',    color: '#e040fb', icon: '📡', services: 5,  platforms: 15 },
+        { name: 'Consejo',  color: '#1565c0', icon: '⚖', services: 5,  platforms: 14 },
+        { name: 'Tierra',   color: '#43a047', icon: '🌿', services: 5,  platforms: 17 },
+        { name: 'Forja',    color: '#00e676', icon: '🔧', services: 5,  platforms: 7  },
+        { name: 'Urbe',     color: '#ff9100', icon: '🏙', services: 4,  platforms: 11 },
+        { name: 'Raíces',   color: '#00FF41', icon: '🏺', services: 4,  platforms: 8  },
+        { name: 'Salud',    color: '#FF5722', icon: '🏥', services: 4,  platforms: 7  },
+        { name: 'Academia', color: '#9C27B0', icon: '🎓', services: 3,  platforms: 5  },
+        { name: 'Amparo',   color: '#607D8B', icon: '🤝', services: 3,  platforms: 10 },
+        { name: 'Entretenimiento', color: '#E91E63', icon: '🎰', services: 8, platforms: 8 },
+    ],
+    gamingPlatforms: [
+        { name: 'Casino Soberano',   type: 'casino',  games: 6,   status: 'active' },
+        { name: 'Apuestas Soberano', type: 'betting', sports: 6,  status: 'active' },
+        { name: 'Loto Soberano',     type: 'lottery', drawTypes: 3, status: 'active' },
+        { name: 'Rifa Soberana',     type: 'raffle',  raffleTypes: 5, status: 'active' },
+    ],
+    nexusPlatforms: [
+        { name: 'NEXUS Escolar', type: 'education-k12', services: 8, status: 'active' },
+        { name: 'NEXUS Entretenimiento', type: 'entertainment-gaming', services: 8, status: 'active' },
     ],
 };
 
@@ -89,8 +121,8 @@ const WhiteLabelConfig = {
     tiers: [
         { id: 'wl-starter', name: 'Starter', price: '$25K/yr', platforms: 10, features: ['Basic customization', 'Email support', 'Standard SLA'] },
         { id: 'wl-professional', name: 'Professional', price: '$100K/yr', platforms: 50, features: ['Full customization', 'Priority support', 'Custom domain', '99.9% SLA'] },
-        { id: 'wl-sovereign', name: 'Sovereign', price: '$500K/yr', platforms: 190, features: ['Sovereign branding', 'Dedicated success manager', 'Custom integrations', '99.99% SLA'] },
-        { id: 'wl-enterprise', name: 'Enterprise', price: '$1M+/yr', platforms: 190, features: ['Dedicated infrastructure', 'Custom development', 'On-premise option', 'Unlimited SLA'] },
+        { id: 'wl-sovereign', name: 'Sovereign', price: '$500K/yr', platforms: 196, features: ['Sovereign branding', 'Dedicated success manager', 'Custom integrations', '99.99% SLA'] },
+        { id: 'wl-enterprise', name: 'Enterprise', price: '$1M+/yr', platforms: 196, features: ['Dedicated infrastructure', 'Custom development', 'On-premise option', 'Unlimited SLA'] },
     ],
     userTiers: [
         { id: 'member', name: 'Member', price: 'Free', access: 'Basic' },
@@ -117,4 +149,4 @@ function renderNexusGrid() {
     `).join('');
 }
 
-console.log('[Ierahkwa Admin] v3.0.0 loaded — 83 microservices, 190 platforms');
+console.log('[Ierahkwa Admin] v3.9.0 loaded — 87 microservices, 220 platforms, 14 NEXUS');

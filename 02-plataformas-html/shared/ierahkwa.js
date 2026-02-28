@@ -1,7 +1,7 @@
 'use strict';
 /**
  * Ierahkwa Platform — Shared Interactivity
- * v2.8.0 — Vanilla JS, zero dependencies
+ * v3.5.0 — Vanilla JS, zero dependencies
  * Progressive enhancement: each init checks for required DOM elements
  */
 

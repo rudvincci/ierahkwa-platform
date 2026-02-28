@@ -1,32 +1,27 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BDET Trading</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:monospace;background:#060609;color:#e8e4df;font-size:11px}
-.top{display:flex;align-items:center;padding:8px 12px;background:#0a0a10;border-bottom:1px solid #1a1a24;gap:12px;flex-wrap:wrap}
-.pair{font-size:16px;font-weight:800;color:#d4a853}.price{font-size:20px;font-weight:900;color:#2dd4a8}.chg{color:#2dd4a8;font-size:12px}.stats span{color:#8a8694;margin-right:12px}
-.main{display:grid;grid-template-columns:1fr 240px 240px;height:calc(100vh - 45px)}
-.chart{background:#0a0a10;border-right:1px solid #1a1a24;padding:8px;display:flex;flex-direction:column}
-.candles{flex:1;display:flex;align-items:flex-end;gap:1px;padding:8px 0}
-.candle{display:flex;flex-direction:column;align-items:center;flex:1}
-.wick{width:1px;background:#555}.body{width:6px;border-radius:1px;min-height:2px}
-.green .body{background:#2dd4a8}.red .body{background:#ff4d6a}.green .wick{background:#2dd4a8}.red .wick{background:#ff4d6a}
-.book{border-right:1px solid #1a1a24;overflow-y:auto}.book h3{padding:6px 8px;color:#8a8694;border-bottom:1px solid #1a1a24;font-size:10px;position:sticky;top:0;background:#060609}
-.row{display:flex;justify-content:space-between;padding:1px 8px;font-size:10px}.row:hover{background:#111}
-.ask{color:#ff4d6a}.bid{color:#2dd4a8}
-.form{padding:10px;overflow-y:auto}.form h3{color:#d4a853;margin-bottom:6px;font-size:12px}
-.tabs{display:flex;gap:4px;margin-bottom:6px}.tab{padding:3px 8px;border-radius:3px;background:#111;color:#8a8694;cursor:pointer;border:none;font-size:10px;font-family:monospace}.tab.on{background:#d4a853;color:#060609}
-.inp{width:100%;background:#111;border:1px solid #222;color:#e8e4df;padding:5px 6px;border-radius:3px;margin-bottom:4px;font-size:11px;font-family:monospace}
-.lbl{color:#8a8694;font-size:9px;margin-bottom:1px}
-.bbuy{width:100%;padding:7px;background:#2dd4a8;color:#060609;border:none;border-radius:3px;font-weight:700;cursor:pointer;margin-bottom:3px;font-family:monospace}
-.bsell{width:100%;padding:7px;background:#ff4d6a;color:#fff;border:none;border-radius:3px;font-weight:700;cursor:pointer;font-family:monospace}
-.trades{padding:8px;border-top:1px solid #1a1a24}
-.trades h4{color:#8a8694;font-size:9px;margin-bottom:4px}
-.ft{text-align:center;padding:4px;color:#5a5666;font-size:8px;border-top:1px solid #1a1a24}
-@media(max-width:800px){.main{grid-template-columns:1fr}}
-.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}</style></head><body>
+<!DOCTYPE html><html lang="es" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
+<meta name="description" content="Plataforma soberana de Trading Dashboard para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="theme-color" content="#00FF41">
+<link rel="canonical" href="https://ierahkwa.nation/trading-dashboard/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="BDET Trading">
+<meta property="og:description" content="Plataforma soberana de Trading Dashboard para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/trading-dashboard/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BDET Trading">
+<meta name="twitter:description" content="Plataforma soberana de Trading Dashboard para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<link rel="stylesheet" href="../shared/ierahkwa.css"><title>BDET Trading</title>
+<style>:root{--accent:#00FF41}</style></head><body role="document">
 <a href="#main" class="skip-nav">Skip to main content</a>
 <div class="top"><span class="pair">WMP/USD</span><span class="price" id="px">0.1203</span><span class="chg">+2.34%</span><div class="stats"><span>Vol: <b>1,247,832</b></span><span>H: <b>0.1225</b></span><span>L: <b>0.1175</b></span><span>Fee: <b>0.1%</b></span><span>Tax: <b style="color:#2dd4a8">0%</b></span></div></div>
-<main id="main">
+<main id="main" aria-label="Contenido principal">
 <div class="main">
 <div class="chart"><div class="candles" id="candles"></div>
 <div class="trades"><h4>Recent Trades</h4><div id="trades"></div></div></div>
@@ -67,4 +62,7 @@ if (!Ierahkwa.auth.isLoggedIn()) {
     console.log('[trading-dashboard] Not logged in — showing login modal');
 }
 </script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 </body></html>

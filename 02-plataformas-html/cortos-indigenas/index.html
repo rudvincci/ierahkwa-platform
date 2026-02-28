@@ -1,102 +1,29 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Plataforma soberana de Cortos Indigenas para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="theme-color" content="#00FF41">
+<link rel="canonical" href="https://ierahkwa.nation/cortos-indigenas/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="CortosIndígenas — Videos Cortos Soberanos | MameyNode">
+<meta property="og:description" content="Plataforma soberana de Cortos Indigenas para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/cortos-indigenas/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CortosIndígenas — Videos Cortos Soberanos | MameyNode">
+<meta name="twitter:description" content="Plataforma soberana de Cortos Indigenas para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
 <title>CortosIndígenas — Videos Cortos Soberanos | MameyNode</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800;900&family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#000;--bg2:#0a0a0f;--bg3:#141420;--gold:#d4a853;--tq:#2dd4a8;--wp:#9b6dff;--red:#ff4d6a;--pink:#ff6bb5;--txt:#fff;--txt2:#aaa;--txt3:#666;--brd:#222}
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden}
-
-.app{display:flex;height:100vh}
-
-/* LEFT NAV */
-.lnav{width:72px;background:var(--bg2);border-right:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;flex-shrink:0}
-.lnav-brand{font-size:24px;margin-bottom:16px;cursor:pointer}
-.ln{width:48px;height:48px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:all 0.15s;font-size:18px;color:var(--txt2);position:relative}
-.ln span{font-size:9px}
-.ln:hover{background:var(--bg3);color:var(--txt)}
-.ln.a{color:var(--red)}
-.ln .dot{position:absolute;top:6px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--red)}
-.ln-bottom{margin-top:auto;display:flex;flex-direction:column;gap:4px;align-items:center}
-.ln-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--tq));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer}
-
-/* VIDEO FEED (CENTER) */
-.feed{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-.video-container{width:400px;height:100%;max-height:100vh;position:relative}
-.video-card{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;border-radius:0}
-.vc-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:120px}
-.vc-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(0,0,0,0.7))}
-
-/* Video Overlay Info */
-.vc-info{position:absolute;bottom:80px;left:16px;right:70px;z-index:5}
-.vc-author{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.vc-author .av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid #fff}
-.vc-author .name{font-weight:700;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,0.5)}
-.vc-author .follow{padding:3px 10px;border-radius:4px;background:var(--red);border:none;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
-.vc-desc{font-size:13px;line-height:1.4;text-shadow:0 1px 4px rgba(0,0,0,0.5);margin-bottom:8px}
-.vc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
-.vc-tag{font-size:11px;color:var(--tq);font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.5)}
-.vc-music{font-size:11px;color:var(--txt2);display:flex;align-items:center;gap:6px}
-.vc-music .disc{display:inline-block;animation:spin 3s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* Side Actions */
-.vc-actions{position:absolute;right:12px;bottom:100px;display:flex;flex-direction:column;gap:16px;z-index:5}
-.vc-act{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
-.vc-act .icon{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:20px;transition:all 0.2s}
-.vc-act .icon:hover{background:rgba(255,255,255,0.2);transform:scale(1.1)}
-.vc-act .cnt{font-size:11px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.5)}
-.vc-act.liked .icon{background:rgba(255,77,106,0.3);color:var(--red)}
-
-/* Progress Bar */
-.progress{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.2);z-index:10}
-.progress .bar{height:100%;background:var(--gold);width:45%;transition:width 0.3s}
-
-/* Nav Arrows */
-.nav-arrow{position:absolute;right:420px;z-index:10;width:40px;height:40px;border-radius:50%;background:var(--bg3);border:1px solid var(--brd);color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.15s}
-.nav-arrow:hover{background:var(--bg);color:var(--txt)}
-.nav-up{top:40%}.nav-down{bottom:40%}
-
-/* RIGHT SIDEBAR */
-.rsb{width:340px;background:var(--bg2);border-left:1px solid var(--brd);padding:16px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--brd) transparent;flex-shrink:0}
-.rsb-title{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.suggested{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-.sug{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;transition:background 0.15s}
-.sug:hover{background:var(--bg3)}
-.sug .av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
-.sug .s-info{flex:1}
-.sug .s-name{font-size:13px;font-weight:600}
-.sug .s-handle{font-size:11px;color:var(--txt3)}
-.sug .s-views{font-size:10px;color:var(--txt3)}
-.s-follow{padding:5px 14px;border-radius:4px;background:var(--red);border:none;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
-.s-follow:hover{filter:brightness(1.2)}
-
-.trending{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
-.trend{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;transition:background 0.15s}
-.trend:hover{background:var(--bg3)}
-.trend .t-thumb{width:56px;height:72px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.trend .t-info .t-title{font-size:12px;font-weight:600;margin-bottom:2px}
-.trend .t-info .t-stats{font-size:10px;color:var(--txt3)}
-
-.rsb-widget{background:var(--bg3);border:1px solid var(--brd);border-radius:10px;padding:14px;margin-bottom:14px}
-.rsb-widget .w-title{font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:4px}
-.bdet-earn{display:flex;align-items:center;gap:10px}
-.bdet-earn .earn-amt{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)}
-.bdet-earn .earn-label{font-size:10px;color:var(--txt3)}
-
-@media(max-width:900px){.rsb{display:none}}
-@media(max-width:600px){.lnav{width:56px}.video-container{width:100%}}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:2px}
-.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent,var(--gold,#d4a853));color:#09090d;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;z-index:10000;transition:top .2s}.skip-nav:focus{top:1rem}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-:focus-visible{outline:2px solid var(--accent,var(--gold,#d4a853));outline-offset:2px}
-</style>
+<style>:root{--accent:#00FF41}</style>
 </head>
-<body>
+<body role="document">
 <a href="#main" class="skip-nav">Skip to main content</a>
-<main id="main" class="app">
+<main id="main" class="app" aria-label="Contenido principal">
 
 <!-- LEFT NAV -->
 <div class="lnav">
@@ -251,5 +178,8 @@ if (!Ierahkwa.auth.isLoggedIn()) {
     console.log('[cortos-indigenas] Not logged in — showing login modal');
 }
 </script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 /**
- * IERAHKWA SOVEREIGN PLATFORM — Shared API Client v3.0.0
+ * IERAHKWA SOVEREIGN PLATFORM — Shared API Client v3.5.0
  * Include this in every HTML platform to connect to the backend.
  *
  * Usage:
@@ -108,7 +108,7 @@ window.Ierahkwa = (function() {
         modal.innerHTML = `
         <div style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99999;display:flex;align-items:center;justify-content:center">
             <div style="background:#111116;border:1px solid #2a2a36;border-radius:16px;padding:40px;width:360px;max-width:90vw">
-                <h2 style="color:#d4a853;font-size:20px;margin-bottom:4px;text-align:center">IERAHKWA</h2>
+                <h2 style="color:#00FF41;font-size:20px;margin-bottom:4px;text-align:center">IERAHKWA</h2>
                 <p style="color:#8a8694;font-size:12px;text-align:center;margin-bottom:24px">Sign in with your FWID</p>
                 <label style="color:#8a8694;font-size:10px;text-transform:uppercase;letter-spacing:1px">FWID</label>
                 <input id="ierahkwa-login-uid" style="width:100%;background:#1a1a20;border:1px solid #2a2a36;border-radius:8px;padding:10px;color:#e8e4df;margin:6px 0 12px;font-size:14px" placeholder="Your FWID">
@@ -119,7 +119,7 @@ window.Ierahkwa = (function() {
                     <option value="resident">Resident ($2.99/mo)</option>
                     <option value="citizen">Citizen ($9.99/mo)</option>
                 </select>
-                <button id="ierahkwa-login-btn" style="width:100%;background:#d4a853;color:#09090d;border:none;border-radius:8px;padding:12px;font-weight:700;cursor:pointer;font-size:14px">Sign In</button>
+                <button id="ierahkwa-login-btn" style="width:100%;background:#00FF41;color:#09090d;border:none;border-radius:8px;padding:12px;font-weight:700;cursor:pointer;font-size:14px">Sign In</button>
                 <p id="ierahkwa-login-err" style="color:#ff4d6a;font-size:11px;text-align:center;margin-top:8px;display:none"></p>
             </div>
         </div>`;

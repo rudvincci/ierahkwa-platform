@@ -1,73 +1,58 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Ierahkwa — Portal Central de Plataformas Soberanas</title>
+<!DOCTYPE html><html lang="es" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Portal Central de Ierahkwa Ne Kanienke - 233 plataformas soberanas, 17 dominios NEXUS, infraestructura digital para 574 naciones tribales">
+<meta name="theme-color" content="#00FF41">
+<link rel="canonical" href="https://ierahkwa.nation/">
+<link rel="manifest" href="shared/manifest.json">
+<link rel="icon" href="icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.svg">
+<meta property="og:title" content="Ierahkwa Ne Kanienke - Portal Central">
+<meta property="og:description" content="Portal Central de Ierahkwa Ne Kanienke - 233 plataformas soberanas, 17 dominios NEXUS, infraestructura digital para 574 naciones tribales">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ierahkwa Ne Kanienke">
+<meta name="twitter:description" content="Portal Central de Ierahkwa Ne Kanienke - 233 plataformas soberanas, 17 dominios NEXUS, infraestructura digital para 574 naciones tribales"><title>Ierahkwa — Portal Central de Plataformas Soberanas</title>
+<link rel="stylesheet" href="shared/ierahkwa.css">
 <style>
-:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--accent:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--ai:#7c4dff;--wam:#d4a853;--sat:#00bcd4;--bc:#4a9eff;--qt:#e84040}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,sans-serif;line-height:1.6}
-a{color:var(--gold);text-decoration:none}
-.skip{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s}.skip:focus{top:1rem}
-:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-
-/* Nav */
-.topnav{position:sticky;top:0;background:rgba(9,9,13,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--brd);padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between;z-index:99;gap:1rem;flex-wrap:wrap}
-.brand{font-weight:800;font-size:1.2rem;display:flex;align-items:center;gap:.5rem;color:var(--gold)}
-.search-box{flex:1;max-width:400px;position:relative}
-.search-box input{width:100%;padding:.6rem 1rem .6rem 2.5rem;background:var(--bg3);border:1px solid var(--brd);border-radius:2rem;color:var(--txt);font-size:.85rem;outline:none}
-.search-box input:focus{border-color:var(--gold)}
-.search-box::before{content:'🔍';position:absolute;left:.8rem;top:50%;transform:translateY(-50%);font-size:.8rem}
-.btn-gold{background:var(--gold);color:#000;padding:.5rem 1.2rem;border-radius:var(--r);font-weight:700;font-size:.85rem;border:none;cursor:pointer}
-
-/* Hero */
-.hero{text-align:center;padding:5rem 2rem 3rem;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:30%;left:50%;width:700px;height:700px;background:radial-gradient(circle,rgba(212,168,83,.1),transparent 65%);transform:translate(-50%,-50%);pointer-events:none}
-.badge{display:inline-block;background:var(--bg3);border:1px solid var(--brd);padding:.3rem .8rem;border-radius:2rem;font-size:.75rem;color:var(--gold);margin-bottom:1rem}
-.hero h1{font-size:clamp(2.2rem,6vw,3.5rem);margin-bottom:.5rem;font-weight:900}
-.hero h1 span{background:linear-gradient(135deg,var(--gold),#e8c170);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero p{color:var(--txt2);max-width:700px;margin:0 auto 2rem;font-size:1.05rem}
-
-/* Counters */
-.counters{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;padding:0 2rem 3rem}
-.counter strong{color:var(--gold);font-size:2rem;display:block}
-.counter span{font-size:.7rem;color:var(--txt2);text-transform:uppercase;letter-spacing:1px}
-
-/* NEXUS Map */
-.nexus-map{text-align:center;padding:2rem;max-width:600px;margin:0 auto}
-.nexus-map h2{font-size:1.4rem;margin-bottom:1.5rem;color:var(--gold)}
-.nexus-map svg{width:100%;max-width:500px;height:auto}
-
-/* NEXUS Grid */
-.nexus-section{max-width:1200px;margin:0 auto;padding:2rem}
-.nexus-section h2{text-align:center;font-size:1.5rem;margin-bottom:.5rem;color:var(--gold)}
-.nexus-section .sub{text-align:center;color:var(--txt2);font-size:.85rem;margin-bottom:1.5rem}
-.nexus-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:3rem}
-.nx-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.3rem;transition:all .3s;display:block;border-left:4px solid var(--brd)}
-.nx-card:hover{transform:translateY(-2px);border-color:var(--brd)}
-.nx-card h3{font-size:1rem;margin-bottom:.2rem}
+:root{--accent:#00FF41}
+.nx-card{background:var(--bg2);border:1px solid var(--brd);border-radius:16px;padding:1.3rem;transition:all .3s;display:block;border-left:4px solid var(--brd)}
+.nx-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,255,65,.12)}
+.nx-card h3{font-family:'Orbitron',sans-serif;font-size:1rem;margin-bottom:.2rem}
 .nx-card p{color:var(--txt2);font-size:.8rem;margin-bottom:.3rem}
 .nx-card .nx-count{font-size:.7rem;color:var(--txt2)}
-
-/* Filter Bar */
+.nexus-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:3rem}
+.nexus-section{max-width:1200px;margin:0 auto;padding:2rem}
+.nexus-section h2{text-align:center;font-family:'Orbitron',sans-serif;font-size:1.5rem;margin-bottom:.5rem;color:var(--accent)}
+.nexus-section .sub{text-align:center;color:var(--txt2);font-size:.85rem;margin-bottom:1.5rem}
+.nexus-map{text-align:center;padding:2rem;max-width:600px;margin:0 auto}
+.nexus-map h2{font-family:'Orbitron',sans-serif;font-size:1.4rem;margin-bottom:1.5rem;color:var(--accent)}
+.nexus-map svg{width:100%;max-width:500px;height:auto}
 .filter-section{max-width:1200px;margin:0 auto;padding:2rem}
-.filter-section h2{text-align:center;font-size:1.4rem;margin-bottom:1rem;color:var(--gold)}
+.filter-section h2{text-align:center;font-family:'Orbitron',sans-serif;font-size:1.4rem;margin-bottom:1rem;color:var(--accent)}
 .filters{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem}
-.fbtn{padding:.4rem .8rem;border-radius:2rem;font-size:.7rem;font-weight:600;border:1px solid var(--brd);background:var(--bg3);color:var(--txt2);cursor:pointer;transition:all .2s}
+.fbtn{padding:.4rem .8rem;border-radius:2rem;font-size:.7rem;font-weight:600;border:1px solid var(--brd);background:var(--bg3);color:var(--txt2);cursor:pointer;transition:all .2s;font-family:'Exo 2',sans-serif}
 .fbtn:hover,.fbtn.active{color:#000;border-color:transparent}
 .results-count{text-align:center;font-size:.8rem;color:var(--txt2);margin-bottom:1rem}
-
-/* Platform Grid */
 .platforms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.8rem;max-width:1200px;margin:0 auto;padding:0 2rem 3rem}
-.p-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1rem;transition:all .2s;display:block}
-.p-card:hover{border-color:var(--gold);transform:translateY(-1px)}
-.p-card h4{font-size:.82rem;margin-bottom:.2rem;color:var(--txt)}
-.p-card .p-nx{font-size:.6rem;padding:.1rem .3rem;border-radius:2px;font-weight:600;display:inline-block}
-
-/* Footer */
-footer{text-align:center;padding:2.5rem 2rem;border-top:1px solid var(--brd);color:var(--txt2);font-size:.8rem}
-footer span{color:var(--gold)}
-
+.p-card{background:var(--bg2);border:1px solid var(--brd);border-radius:16px;padding:1rem;transition:all .3s;display:block;position:relative;overflow:hidden}
+.p-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,255,65,.04),transparent);transition:left .6s}
+.p-card:hover::before{left:100%}
+.p-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,255,65,.08)}
+.p-card h4{font-family:'Exo 2',sans-serif;font-size:.82rem;margin-bottom:.2rem;color:var(--txt)}
+.p-card .p-nx{font-size:.6rem;padding:.1rem .3rem;border-radius:4px;font-weight:600;display:inline-block}
+.topnav{position:sticky;top:0;background:rgba(10,14,23,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--brd);padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between;z-index:99;gap:1rem;flex-wrap:wrap}
+.brand{font-family:'Orbitron',sans-serif;font-weight:800;font-size:1.2rem;display:flex;align-items:center;gap:.5rem;color:var(--accent)}
+.search-box{flex:1;max-width:400px;position:relative}
+.search-box input{width:100%;padding:.6rem 1rem .6rem 2.5rem;background:var(--bg2);border:1px solid var(--brd);border-radius:2rem;color:var(--txt);font-size:.85rem;font-family:'Exo 2',sans-serif;outline:none}
+.search-box input:focus{border-color:var(--accent)}
+.search-box::before{content:'🔍';position:absolute;left:.8rem;top:50%;transform:translateY(-50%);font-size:.8rem}
+.btn-gold{background:var(--accent);color:#0a0e17;padding:.5rem 1.2rem;border-radius:16px;font-weight:700;font-size:.85rem;border:none;cursor:pointer;font-family:'Orbitron',sans-serif}
+.skip{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#0a0e17;padding:.7rem 1.5rem;border-radius:16px;font-weight:700;z-index:1000;transition:top .2s}
+.skip:focus{top:1rem}
 @media(max-width:600px){.counters{gap:1rem}.hero{padding:3rem 1rem 2rem}.nexus-grid{grid-template-columns:1fr}.platforms-grid{grid-template-columns:1fr}.topnav{padding:.8rem 1rem}.search-box{max-width:100%;order:3;flex-basis:100%}.filters{gap:.3rem}}
 </style>
-</head><body>
+</head><body role="document">
 <a href="#main" class="skip">Saltar al contenido principal</a>
 <nav class="topnav">
 <div class="brand"><span aria-hidden="true">🔱</span> Ierahkwa</div>
@@ -79,12 +64,12 @@ footer span{color:var(--gold)}
 <section class="hero" aria-label="Presentacion">
 <div class="badge">Ecosistema Digital Soberano</div>
 <h1><span>Ierahkwa</span> Ne Kanienke</h1>
-<p>Soberania digital para 72 millones de personas indigenas en 19 naciones y 574 naciones tribales. 189 plataformas organizadas en 10 mega-portales NEXUS.</p>
+<p>Soberania digital para 72 millones de personas indigenas en 19 naciones y 574 naciones tribales. 233 plataformas organizadas en 17 mega-portales NEXUS. v3.9.0 &mdash; 87 microservicios, Offline AI, 100% accesible, audit grade A+ (100/100).</p>
 </section>
 
 <div class="counters" aria-label="Estadisticas globales">
-<div class="counter"><strong data-count="189">189</strong><span>Plataformas</span></div>
-<div class="counter"><strong data-count="10">10</strong><span>NEXUS</span></div>
+<div class="counter"><strong data-count="233">233</strong><span>Plataformas</span></div>
+<div class="counter"><strong data-count="17">17</strong><span>NEXUS</span></div>
 <div class="counter"><strong>72M</strong><span>Ciudadanos</span></div>
 <div class="counter"><strong data-count="19">19</strong><span>Naciones</span></div>
 <div class="counter"><strong data-count="574">574</strong><span>Tribus</span></div>
@@ -92,7 +77,7 @@ footer span{color:var(--gold)}
 
 <section class="nexus-map" aria-label="Mapa de interconexiones NEXUS">
 <h2>Red NEXUS Interconectada</h2>
-<svg viewBox="0 0 500 500" role="img" aria-label="Diagrama de 10 NEXUS mega-portales interconectados">
+<svg viewBox="0 0 500 500" role="img" aria-label="Diagrama de 17 NEXUS mega-portales interconectados">
 <!-- Connection lines -->
 <g stroke-width="1" opacity=".3">
 <line x1="250" y1="50" x2="390" y2="108" stroke="#00bcd4"/>
@@ -108,9 +93,36 @@ footer span{color:var(--gold)}
 <line x1="73" y1="250" x2="110" y2="108" stroke="#43a047"/>
 <line x1="110" y1="108" x2="250" y2="50" stroke="#00e676"/>
 <line x1="73" y1="250" x2="250" y2="450" stroke="#ff9100"/>
-<line x1="110" y1="108" x2="250" y2="450" stroke="#d4a853"/>
+<line x1="110" y1="108" x2="250" y2="450" stroke="#00FF41"/>
+<!-- New NEXUS connections -->
+<line x1="178" y1="170" x2="250" y2="50" stroke="#FF5722"/>
+<line x1="178" y1="170" x2="73" y2="250" stroke="#FF5722"/>
+<line x1="178" y1="170" x2="250" y2="250" stroke="#FF5722"/>
+<line x1="322" y1="170" x2="250" y2="50" stroke="#9C27B0"/>
+<line x1="322" y1="170" x2="427" y2="250" stroke="#9C27B0"/>
+<line x1="322" y1="170" x2="250" y2="250" stroke="#9C27B0"/>
+<line x1="250" y1="250" x2="250" y2="450" stroke="#607D8B"/>
+<line x1="250" y1="250" x2="110" y2="392" stroke="#607D8B"/>
+<line x1="250" y1="250" x2="390" y2="392" stroke="#607D8B"/>
+<!-- Escolar connections -->
+<line x1="322" y1="330" x2="322" y2="170" stroke="#1E88E5"/>
+<line x1="322" y1="330" x2="250" y2="250" stroke="#1E88E5"/>
+<line x1="322" y1="330" x2="390" y2="392" stroke="#1E88E5"/>
+<!-- Entretenimiento connections -->
+<line x1="178" y1="330" x2="178" y2="170" stroke="#E91E63"/>
+<line x1="178" y1="330" x2="250" y2="250" stroke="#E91E63"/>
+<line x1="178" y1="330" x2="110" y2="392" stroke="#E91E63"/>
+<line x1="178" y1="330" x2="322" y2="448" stroke="#E91E63"/>
+<!-- Escritorio connections -->
+<line x1="430" y1="170" x2="390" y2="108" stroke="#26C6DA"/>
+<line x1="430" y1="170" x2="427" y2="250" stroke="#26C6DA"/>
+<line x1="430" y1="170" x2="250" y2="250" stroke="#26C6DA"/>
+<!-- Comercio connections -->
+<line x1="70" y1="170" x2="110" y2="108" stroke="#FF6D00"/>
+<line x1="70" y1="170" x2="73" y2="250" stroke="#FF6D00"/>
+<line x1="70" y1="170" x2="250" y2="250" stroke="#FF6D00"/>
 </g>
-<!-- Nodes -->
+<!-- Original Nodes -->
 <a href="nexus-orbital/"><circle cx="250" cy="50" r="28" fill="#09090d" stroke="#00bcd4" stroke-width="2.5"/><text x="250" y="45" text-anchor="middle" fill="#00bcd4" font-size="16" aria-hidden="true">🛰️</text><text x="250" y="60" text-anchor="middle" fill="#00bcd4" font-size="7" font-weight="700">ORBITAL</text></a>
 <a href="nexus-escudo/"><circle cx="390" cy="108" r="28" fill="#09090d" stroke="#f44336" stroke-width="2.5"/><text x="390" y="103" text-anchor="middle" fill="#f44336" font-size="16" aria-hidden="true">🔒</text><text x="390" y="118" text-anchor="middle" fill="#f44336" font-size="7" font-weight="700">ESCUDO</text></a>
 <a href="nexus-cerebro/"><circle cx="427" cy="250" r="28" fill="#09090d" stroke="#7c4dff" stroke-width="2.5"/><text x="427" y="245" text-anchor="middle" fill="#7c4dff" font-size="16" aria-hidden="true">⚛️</text><text x="427" y="260" text-anchor="middle" fill="#7c4dff" font-size="7" font-weight="700">CEREBRO</text></a>
@@ -120,24 +132,39 @@ footer span{color:var(--gold)}
 <a href="nexus-tierra/"><circle cx="73" cy="250" r="28" fill="#09090d" stroke="#43a047" stroke-width="2.5"/><text x="73" y="245" text-anchor="middle" fill="#43a047" font-size="16" aria-hidden="true">🌍</text><text x="73" y="260" text-anchor="middle" fill="#43a047" font-size="7" font-weight="700">TIERRA</text></a>
 <a href="nexus-forja/"><circle cx="110" cy="108" r="28" fill="#09090d" stroke="#00e676" stroke-width="2.5"/><text x="110" y="103" text-anchor="middle" fill="#00e676" font-size="16" aria-hidden="true">💻</text><text x="110" y="118" text-anchor="middle" fill="#00e676" font-size="7" font-weight="700">FORJA</text></a>
 <a href="nexus-urbe/"><circle cx="178" cy="448" r="28" fill="#09090d" stroke="#ff9100" stroke-width="2.5"/><text x="178" y="443" text-anchor="middle" fill="#ff9100" font-size="16" aria-hidden="true">🏙️</text><text x="178" y="458" text-anchor="middle" fill="#ff9100" font-size="7" font-weight="700">URBE</text></a>
-<a href="nexus-raices/"><circle cx="322" cy="448" r="28" fill="#09090d" stroke="#d4a853" stroke-width="2.5"/><text x="322" y="443" text-anchor="middle" fill="#d4a853" font-size="16" aria-hidden="true">🎭</text><text x="322" y="458" text-anchor="middle" fill="#d4a853" font-size="7" font-weight="700">RAICES</text></a>
+<a href="nexus-raices/"><circle cx="322" cy="448" r="28" fill="#09090d" stroke="#00FF41" stroke-width="2.5"/><text x="322" y="443" text-anchor="middle" fill="#00FF41" font-size="16" aria-hidden="true">🎭</text><text x="322" y="458" text-anchor="middle" fill="#00FF41" font-size="7" font-weight="700">RAICES</text></a>
+<!-- New NEXUS Nodes -->
+<a href="nexus-salud/"><circle cx="178" cy="170" r="28" fill="#09090d" stroke="#FF5722" stroke-width="2.5"/><text x="178" y="165" text-anchor="middle" fill="#FF5722" font-size="16" aria-hidden="true">🏥</text><text x="178" y="180" text-anchor="middle" fill="#FF5722" font-size="7" font-weight="700">SALUD</text></a>
+<a href="nexus-academia/"><circle cx="322" cy="170" r="28" fill="#09090d" stroke="#9C27B0" stroke-width="2.5"/><text x="322" y="165" text-anchor="middle" fill="#9C27B0" font-size="16" aria-hidden="true">🎓</text><text x="322" y="180" text-anchor="middle" fill="#9C27B0" font-size="7" font-weight="700">ACADEMIA</text></a>
+<a href="nexus-amparo/"><circle cx="250" cy="250" r="28" fill="#09090d" stroke="#607D8B" stroke-width="2.5"/><text x="250" y="245" text-anchor="middle" fill="#607D8B" font-size="16" aria-hidden="true">🤝</text><text x="250" y="260" text-anchor="middle" fill="#607D8B" font-size="7" font-weight="700">AMPARO</text></a>
+<a href="nexus-escolar/"><circle cx="322" cy="330" r="28" fill="#09090d" stroke="#1E88E5" stroke-width="2.5"/><text x="322" y="325" text-anchor="middle" fill="#1E88E5" font-size="16" aria-hidden="true">🎒</text><text x="322" y="340" text-anchor="middle" fill="#1E88E5" font-size="7" font-weight="700">ESCOLAR</text></a>
+<a href="nexus-entretenimiento/"><circle cx="178" cy="330" r="28" fill="#09090d" stroke="#E91E63" stroke-width="2.5"/><text x="178" y="325" text-anchor="middle" fill="#E91E63" font-size="16" aria-hidden="true">🎰</text><text x="178" y="340" text-anchor="middle" fill="#E91E63" font-size="7" font-weight="700">ENTRETE.</text></a>
+<a href="nexus-escritorio/"><circle cx="430" cy="170" r="28" fill="#09090d" stroke="#26C6DA" stroke-width="2.5"/><text x="430" y="165" text-anchor="middle" fill="#26C6DA" font-size="16" aria-hidden="true">🖥️</text><text x="430" y="180" text-anchor="middle" fill="#26C6DA" font-size="7" font-weight="700">ESCRITORIO</text></a>
+<a href="nexus-comercio/"><circle cx="70" cy="170" r="28" fill="#09090d" stroke="#FF6D00" stroke-width="2.5"/><text x="70" y="165" text-anchor="middle" fill="#FF6D00" font-size="16" aria-hidden="true">🏪</text><text x="70" y="180" text-anchor="middle" fill="#FF6D00" font-size="7" font-weight="700">COMERCIO</text></a>
 </svg>
 </section>
 
 <section class="nexus-section" aria-label="Mega-Portales NEXUS">
-<h2>10 Mega-Portales NEXUS</h2>
+<h2>17 Mega-Portales NEXUS</h2>
 <p class="sub">Cada NEXUS consolida decenas de plataformas en un dominio</p>
 <div class="nexus-grid">
-<a href="nexus-orbital/" class="nx-card" style="border-left-color:#00bcd4"><h3 style="color:#00bcd4"><span aria-hidden="true">🛰️</span> Nexus Orbital</h3><p>Telecomunicaciones, satelites, GPS y redes soberanas</p><span class="nx-count">16+ plataformas</span></a>
-<a href="nexus-escudo/" class="nx-card" style="border-left-color:#f44336"><h3 style="color:#f44336"><span aria-hidden="true">🔒</span> Nexus Escudo</h3><p>Ciberdefensa, seguridad militar e inteligencia soberana</p><span class="nx-count">13+ plataformas</span></a>
-<a href="nexus-cerebro/" class="nx-card" style="border-left-color:#7c4dff"><h3 style="color:#7c4dff"><span aria-hidden="true">⚛️</span> Nexus Cerebro</h3><p>AI, quantum computing, IoT, robotica y cloud soberana</p><span class="nx-count">14+ plataformas</span></a>
-<a href="nexus-tesoro/" class="nx-card" style="border-left-color:#ffd600"><h3 style="color:#ffd600"><span aria-hidden="true">🏦</span> Nexus Tesoro</h3><p>BDET Bank, WAMPUM CBDC, trading y finanzas soberanas</p><span class="nx-count">16+ plataformas</span></a>
-<a href="nexus-voces/" class="nx-card" style="border-left-color:#e040fb"><h3 style="color:#e040fb"><span aria-hidden="true">📱</span> Nexus Voces</h3><p>Red social, streaming, noticias y traduccion en 200+ lenguas</p><span class="nx-count">10+ plataformas</span></a>
-<a href="nexus-consejo/" class="nx-card" style="border-left-color:#1565c0"><h3 style="color:#1565c0"><span aria-hidden="true">🏛️</span> Nexus Consejo</h3><p>Gobierno digital, justicia, democracia y servicios publicos</p><span class="nx-count">18+ plataformas</span></a>
-<a href="nexus-tierra/" class="nx-card" style="border-left-color:#43a047"><h3 style="color:#43a047"><span aria-hidden="true">🌍</span> Nexus Tierra</h3><p>Agricultura, agua, energia, ambiente y biodiversidad</p><span class="nx-count">12+ plataformas</span></a>
-<a href="nexus-forja/" class="nx-card" style="border-left-color:#00e676"><h3 style="color:#00e676"><span aria-hidden="true">💻</span> Nexus Forja</h3><p>IDE, DevOps, low-code, AI agents y desarrollo tech</p><span class="nx-count">14+ plataformas</span></a>
-<a href="nexus-urbe/" class="nx-card" style="border-left-color:#ff9100"><h3 style="color:#ff9100"><span aria-hidden="true">🏙️</span> Nexus Urbe</h3><p>Smart city, transporte, salud, educacion y vivienda</p><span class="nx-count">14+ plataformas</span></a>
-<a href="nexus-raices/" class="nx-card" style="border-left-color:#d4a853"><h3 style="color:#d4a853"><span aria-hidden="true">🎭</span> Nexus Raices</h3><p>Cultura, patrimonio, artesania, empresa y economia</p><span class="nx-count">12+ plataformas</span></a>
+<a href="nexus-orbital/" class="nx-card" style="border-left-color:#00bcd4"><h3 style="color:#00bcd4"><span aria-hidden="true">🛰️</span> Nexus Orbital</h3><p>Telecomunicaciones, satelites, GPS y redes soberanas</p><span class="nx-count">20 plataformas</span></a>
+<a href="nexus-escudo/" class="nx-card" style="border-left-color:#f44336"><h3 style="color:#f44336"><span aria-hidden="true">🔒</span> Nexus Escudo</h3><p>Ciberdefensa, seguridad militar e inteligencia soberana</p><span class="nx-count">20 plataformas</span></a>
+<a href="nexus-cerebro/" class="nx-card" style="border-left-color:#7c4dff"><h3 style="color:#7c4dff"><span aria-hidden="true">⚛️</span> Nexus Cerebro</h3><p>AI, quantum computing, IoT, robotica y cloud soberana</p><span class="nx-count">16 plataformas</span></a>
+<a href="nexus-tesoro/" class="nx-card" style="border-left-color:#ffd600"><h3 style="color:#ffd600"><span aria-hidden="true">🏦</span> Nexus Tesoro</h3><p>BDET Bank, WAMPUM CBDC, trading, blockchain y finanzas soberanas</p><span class="nx-count">20 plataformas</span></a>
+<a href="nexus-voces/" class="nx-card" style="border-left-color:#e040fb"><h3 style="color:#e040fb"><span aria-hidden="true">📱</span> Nexus Voces</h3><p>Red social, streaming, noticias y traduccion en 200+ lenguas</p><span class="nx-count">12 plataformas</span></a>
+<a href="nexus-consejo/" class="nx-card" style="border-left-color:#1565c0"><h3 style="color:#1565c0"><span aria-hidden="true">🏛️</span> Nexus Consejo</h3><p>Gobierno digital, justicia, democracia y servicios publicos</p><span class="nx-count">20 plataformas</span></a>
+<a href="nexus-tierra/" class="nx-card" style="border-left-color:#43a047"><h3 style="color:#43a047"><span aria-hidden="true">🌍</span> Nexus Tierra</h3><p>Agricultura, agua, energia, ambiente y biodiversidad</p><span class="nx-count">19 plataformas</span></a>
+<a href="nexus-forja/" class="nx-card" style="border-left-color:#00e676"><h3 style="color:#00e676"><span aria-hidden="true">💻</span> Nexus Forja</h3><p>IDE, DevOps, low-code, AI agents y desarrollo tech</p><span class="nx-count">18 plataformas</span></a>
+<a href="nexus-urbe/" class="nx-card" style="border-left-color:#ff9100"><h3 style="color:#ff9100"><span aria-hidden="true">🏙️</span> Nexus Urbe</h3><p>Smart city, transporte, vivienda e infraestructura urbana</p><span class="nx-count">8 plataformas</span></a>
+<a href="nexus-raices/" class="nx-card" style="border-left-color:#00FF41"><h3 style="color:#00FF41"><span aria-hidden="true">🎭</span> Nexus Raices</h3><p>Cultura, patrimonio, artesania y archivo</p><span class="nx-count">7 plataformas</span></a>
+<a href="nexus-salud/" class="nx-card" style="border-left-color:#FF5722"><h3 style="color:#FF5722"><span aria-hidden="true">🏥</span> Nexus Salud</h3><p>Hospitales, telemedicina, farmacia, salud mental y genomica</p><span class="nx-count">8 plataformas</span></a>
+<a href="nexus-academia/" class="nx-card" style="border-left-color:#9C27B0"><h3 style="color:#9C27B0"><span aria-hidden="true">🎓</span> Nexus Academia</h3><p>Universidad, biblioteca, sabiduria ancestral y laboratorios</p><span class="nx-count">7 plataformas</span></a>
+<a href="nexus-escolar/" class="nx-card" style="border-left-color:#1E88E5"><h3 style="color:#1E88E5"><span aria-hidden="true">🎒</span> Nexus Escolar</h3><p>Primaria, secundaria, preescolar, curriculum y gestion escolar K-12</p><span class="nx-count">8 plataformas</span></a>
+<a href="nexus-entretenimiento/" class="nx-card" style="border-left-color:#E91E63"><h3 style="color:#E91E63"><span aria-hidden="true">🎰</span> Nexus Entretenimiento</h3><p>Casino, apuestas deportivas, loteria, rifas, esports y gaming soberano</p><span class="nx-count">8 plataformas</span></a>
+<a href="nexus-escritorio/" class="nx-card" style="border-left-color:#26C6DA"><h3 style="color:#26C6DA"><span aria-hidden="true">🖥️</span> Nexus Escritorio</h3><p>Docs, ofimatica, hojas de calculo, calendario, notas y colaboracion</p><span class="nx-count">20 plataformas</span></a>
+<a href="nexus-comercio/" class="nx-card" style="border-left-color:#FF6D00"><h3 style="color:#FF6D00"><span aria-hidden="true">🏪</span> Nexus Comercio</h3><p>Comercio, marketing, empresa, hospedaje y turismo soberano</p><span class="nx-count">11 plataformas</span></a>
+<a href="nexus-amparo/" class="nx-card" style="border-left-color:#607D8B"><h3 style="color:#607D8B"><span aria-hidden="true">🤝</span> Nexus Amparo</h3><p>Familia, discapacidad, veteranos, emergencias y empleo</p><span class="nx-count">11 plataformas</span></a>
 </div>
 </section>
 
@@ -154,13 +181,20 @@ footer span{color:var(--gold)}
 <button class="fbtn" data-filter="tierra" style="--c:#43a047">Tierra</button>
 <button class="fbtn" data-filter="forja" style="--c:#00e676">Forja</button>
 <button class="fbtn" data-filter="urbe" style="--c:#ff9100">Urbe</button>
-<button class="fbtn" data-filter="raices" style="--c:#d4a853">Raices</button>
+<button class="fbtn" data-filter="raices" style="--c:#00FF41">Raices</button>
+<button class="fbtn" data-filter="salud" style="--c:#FF5722">Salud</button>
+<button class="fbtn" data-filter="academia" style="--c:#9C27B0">Academia</button>
+<button class="fbtn" data-filter="escolar" style="--c:#1E88E5">Escolar</button>
+<button class="fbtn" data-filter="entretenimiento" style="--c:#E91E63">Entretenimiento</button>
+<button class="fbtn" data-filter="escritorio" style="--c:#26C6DA">Escritorio</button>
+<button class="fbtn" data-filter="comercio" style="--c:#FF6D00">Comercio</button>
+<button class="fbtn" data-filter="amparo" style="--c:#607D8B">Amparo</button>
 </div>
-<div class="results-count" aria-live="polite" data-results-count>189 plataformas</div>
+<div class="results-count" aria-live="polite" data-results-count>233 plataformas</div>
 </section>
 
 <div class="platforms-grid" aria-label="Grid de plataformas">
-<!-- ORBITAL -->
+<!-- ORBITAL (20) -->
 <a href="satelite-soberano/" class="p-card" data-name="satelite soberano" data-nexus="orbital"><h4><span aria-hidden="true">🛰️</span> Satelite Soberano</h4><span class="p-nx" style="background:rgba(0,188,212,.12);color:#00bcd4">ORBITAL</span></a>
 <a href="starlink-soberano/" class="p-card" data-name="starlink soberano" data-nexus="orbital"><h4><span aria-hidden="true">🛰️</span> Starlink Soberano</h4><span class="p-nx" style="background:rgba(0,188,212,.12);color:#00bcd4">ORBITAL</span></a>
 <a href="estacion-terrena-soberana/" class="p-card" data-name="estacion terrena" data-nexus="orbital"><h4><span aria-hidden="true">📡</span> Estacion Terrena</h4><span class="p-nx" style="background:rgba(0,188,212,.12);color:#00bcd4">ORBITAL</span></a>
@@ -178,7 +212,10 @@ footer span{color:var(--gold)}
 <a href="lanzamiento-soberano/" class="p-card" data-name="lanzamiento soberano" data-nexus="orbital"><h4><span aria-hidden="true">🚀</span> Lanzamiento</h4><span class="p-nx" style="background:rgba(0,188,212,.12);color:#00bcd4">ORBITAL</span></a>
 <a href="programa-espacial-soberano/" class="p-card" data-name="programa espacial" data-nexus="orbital"><h4><span aria-hidden="true">🚀</span> Programa Espacial</h4><span class="p-nx" style="background:rgba(0,188,212,.12);color:#00bcd4">ORBITAL</span></a>
 <a href="observacion-terrestre-soberana/" class="p-card" data-name="observacion terrestre" data-nexus="orbital"><h4><span aria-hidden="true">🌍</span> Observacion Terrestre</h4><span class="p-nx" style="background:rgba(0,188,212,.12);color:#00bcd4">ORBITAL</span></a>
-<!-- ESCUDO -->
+<a href="conferencia-soberana/" class="p-card" data-name="conferencia videoconferencia" data-nexus="orbital"><h4><span aria-hidden="true">📹</span> Conferencia</h4><span class="p-nx" style="background:rgba(0,188,212,.12);color:#00bcd4">ORBITAL</span></a>
+<a href="navegador-soberano/" class="p-card" data-name="navegador browser" data-nexus="orbital"><h4><span aria-hidden="true">🌐</span> Navegador</h4><span class="p-nx" style="background:rgba(0,188,212,.12);color:#00bcd4">ORBITAL</span></a>
+<a href="transferencia-soberana/" class="p-card" data-name="transferencia archivos ftp" data-nexus="orbital"><h4><span aria-hidden="true">📤</span> Transferencia</h4><span class="p-nx" style="background:rgba(0,188,212,.12);color:#00bcd4">ORBITAL</span></a>
+<!-- ESCUDO (20) -->
 <a href="ciberdefensa-soberana/" class="p-card" data-name="ciberdefensa" data-nexus="escudo"><h4><span aria-hidden="true">🛡️</span> Ciberdefensa</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
 <a href="ejercito-soberano/" class="p-card" data-name="ejercito soberano" data-nexus="escudo"><h4><span aria-hidden="true">⚔️</span> Ejercito Soberano</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
 <a href="vigilancia-soberana/" class="p-card" data-name="vigilancia" data-nexus="escudo"><h4><span aria-hidden="true">👁️</span> Vigilancia</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
@@ -188,15 +225,22 @@ footer span{color:var(--gold)}
 <a href="logistica-militar-soberana/" class="p-card" data-name="logistica militar" data-nexus="escudo"><h4><span aria-hidden="true">📦</span> Logistica Militar</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
 <a href="drones-soberanos/" class="p-card" data-name="drones" data-nexus="escudo"><h4><span aria-hidden="true">🛸</span> Drones</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
 <a href="flota-drones-soberana/" class="p-card" data-name="flota drones" data-nexus="escudo"><h4><span aria-hidden="true">🛸</span> Flota de Drones</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
-<a href="bomberos-soberano/" class="p-card" data-name="bomberos" data-nexus="escudo"><h4><span aria-hidden="true">🚒</span> Bomberos</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
 <a href="identidad-digital-soberana/" class="p-card" data-name="identidad digital" data-nexus="escudo"><h4><span aria-hidden="true">🪪</span> Identidad Digital</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
 <a href="proteccion-datos-soberana/" class="p-card" data-name="proteccion datos" data-nexus="escudo"><h4><span aria-hidden="true">🔐</span> Proteccion de Datos</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
-<!-- CEREBRO -->
+<a href="biometrica-soberana/" class="p-card" data-name="biometrica biometria" data-nexus="escudo"><h4><span aria-hidden="true">🔐</span> Biometrica</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
+<a href="centro-operaciones-soberano/" class="p-card" data-name="centro operaciones comando" data-nexus="escudo"><h4><span aria-hidden="true">🏛️</span> Centro Operaciones</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
+<a href="firewall-cuantico/" class="p-card" data-name="firewall cuantico quantum" data-nexus="escudo"><h4><span aria-hidden="true">🔐</span> Firewall Cuantico</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
+<a href="homomorfica-soberana/" class="p-card" data-name="homomorfica cifrado encriptacion" data-nexus="escudo"><h4><span aria-hidden="true">🔒</span> Homomorfica</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
+<a href="llave-soberana/" class="p-card" data-name="llave password contrasena" data-nexus="escudo"><h4><span aria-hidden="true">🔑</span> Llave Soberana</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
+<a href="red-team/" class="p-card" data-name="red team pentesting" data-nexus="escudo"><h4><span aria-hidden="true">🎯</span> Red Team</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
+<a href="zk-identidad-soberana/" class="p-card" data-name="zk identidad zero knowledge" data-nexus="escudo"><h4><span aria-hidden="true">🔏</span> ZK-Identidad</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
+<a href="vpn-soberana/" class="p-card" data-name="vpn privacidad red privada" data-nexus="escudo"><h4><span aria-hidden="true">🛡️</span> VPN Soberana</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
+<a href="contrasenas-soberana/" class="p-card" data-name="contrasenas password bitwarden gestor" data-nexus="escudo"><h4><span aria-hidden="true">🔑</span> Contrasenas</h4><span class="p-nx" style="background:rgba(244,67,54,.12);color:#f44336">ESCUDO</span></a>
+<!-- CEREBRO (16) -->
 <a href="edge-ai-soberano/" class="p-card" data-name="edge ai" data-nexus="cerebro"><h4><span aria-hidden="true">🤖</span> Edge AI</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
 <a href="ml-soberano/" class="p-card" data-name="machine learning" data-nexus="cerebro"><h4><span aria-hidden="true">🧠</span> Machine Learning</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
 <a href="quantum-cloud-soberana/" class="p-card" data-name="quantum cloud" data-nexus="cerebro"><h4><span aria-hidden="true">⚛️</span> Quantum Cloud</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
 <a href="gemelo-digital-soberano/" class="p-card" data-name="gemelo digital" data-nexus="cerebro"><h4><span aria-hidden="true">🪞</span> Gemelo Digital</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
-<a href="genomica-soberana/" class="p-card" data-name="genomica" data-nexus="cerebro"><h4><span aria-hidden="true">🧬</span> Genomica</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
 <a href="iot-soberano/" class="p-card" data-name="iot" data-nexus="cerebro"><h4><span aria-hidden="true">📡</span> IoT Soberano</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
 <a href="robotica-soberana/" class="p-card" data-name="robotica" data-nexus="cerebro"><h4><span aria-hidden="true">🤖</span> Robotica</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
 <a href="cloud-soberana/" class="p-card" data-name="cloud" data-nexus="cerebro"><h4><span aria-hidden="true">☁️</span> Cloud Soberana</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
@@ -204,10 +248,12 @@ footer span{color:var(--gold)}
 <a href="analitica-soberana/" class="p-card" data-name="analitica" data-nexus="cerebro"><h4><span aria-hidden="true">📈</span> Analitica</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
 <a href="busqueda-soberana/" class="p-card" data-name="busqueda" data-nexus="cerebro"><h4><span aria-hidden="true">🔍</span> Busqueda</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
 <a href="inteligencia-soberana/" class="p-card" data-name="inteligencia" data-nexus="cerebro"><h4><span aria-hidden="true">🧠</span> Inteligencia</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
-<a href="laboratorio-soberano/" class="p-card" data-name="laboratorio" data-nexus="cerebro"><h4><span aria-hidden="true">🔬</span> Laboratorio</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
 <a href="internet-cuantico-soberano/" class="p-card" data-name="internet cuantico" data-nexus="cerebro"><h4><span aria-hidden="true">🔮</span> Internet Cuantico</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
 <a href="bci-soberano/" class="p-card" data-name="bci brain computer" data-nexus="cerebro"><h4><span aria-hidden="true">🧠</span> BCI Soberano</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
-<!-- TESORO -->
+<a href="ia-soberana/" class="p-card" data-name="ia inteligencia artificial offline" data-nexus="cerebro"><h4><span aria-hidden="true">🧠</span> IA Soberana</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
+<a href="nube-soberana/" class="p-card" data-name="nube cloud nextcloud" data-nexus="cerebro"><h4><span aria-hidden="true">☁️</span> Nube Soberana</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
+<a href="observabilidad-soberana/" class="p-card" data-name="observabilidad logs trazas elk datadog" data-nexus="cerebro"><h4><span aria-hidden="true">🔭</span> Observabilidad</h4><span class="p-nx" style="background:rgba(124,77,255,.12);color:#7c4dff">CEREBRO</span></a>
+<!-- TESORO (20) -->
 <a href="bdet-bank/" class="p-card" data-name="bdet bank" data-nexus="tesoro"><h4><span aria-hidden="true">🏦</span> BDET Bank</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
 <a href="bdet-wallet/" class="p-card" data-name="bdet wallet" data-nexus="tesoro"><h4><span aria-hidden="true">💰</span> BDET Wallet</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
 <a href="moneda-soberana-cbdc/" class="p-card" data-name="wampum cbdc" data-nexus="tesoro"><h4><span aria-hidden="true">🪙</span> WAMPUM CBDC</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
@@ -218,11 +264,17 @@ footer span{color:var(--gold)}
 <a href="seguros-soberano/" class="p-card" data-name="seguros" data-nexus="tesoro"><h4><span aria-hidden="true">🛡️</span> Seguros</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
 <a href="pension-soberana/" class="p-card" data-name="pension" data-nexus="tesoro"><h4><span aria-hidden="true">👴</span> Pensiones</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
 <a href="renta-soberano/" class="p-card" data-name="renta" data-nexus="tesoro"><h4><span aria-hidden="true">💵</span> Renta</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
-<a href="comercio-soberano/" class="p-card" data-name="comercio" data-nexus="tesoro"><h4><span aria-hidden="true">🛒</span> Comercio</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
 <a href="blockchain-soberana/" class="p-card" data-name="blockchain mameynode" data-nexus="tesoro"><h4><span aria-hidden="true">⛓️</span> Blockchain</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
 <a href="contratos-inteligentes-soberano/" class="p-card" data-name="contratos inteligentes smart" data-nexus="tesoro"><h4><span aria-hidden="true">📜</span> Smart Contracts</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
 <a href="credito-soberano/" class="p-card" data-name="credito" data-nexus="tesoro"><h4><span aria-hidden="true">💰</span> Credito</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
-<!-- VOCES -->
+<a href="bdet-bank-payment-system/" class="p-card" data-name="bdet payment system pagos" data-nexus="tesoro"><h4><span aria-hidden="true">🏦</span> BDET Payment System</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
+<a href="blockchain-explorer/" class="p-card" data-name="blockchain explorer mameynode" data-nexus="tesoro"><h4><span aria-hidden="true">⛓️</span> MameyNode Explorer</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
+<a href="recibir-cryptohost-convertir-usdt/" class="p-card" data-name="cryptohost usdt converter" data-nexus="tesoro"><h4><span aria-hidden="true">💱</span> CryptoHost USDT</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
+<a href="trading-dashboard/" class="p-card" data-name="trading wmp usd" data-nexus="tesoro"><h4><span aria-hidden="true">📈</span> BDET Trading</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
+<a href="contabilidad-soberana/" class="p-card" data-name="contabilidad quickbooks finanzas" data-nexus="tesoro"><h4><span aria-hidden="true">📒</span> Contabilidad</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
+<a href="nomina-soberana/" class="p-card" data-name="nomina payroll salarios" data-nexus="tesoro"><h4><span aria-hidden="true">💵</span> Nomina</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
+<a href="impuestos-soberano/" class="p-card" data-name="impuestos fiscal tributos tax" data-nexus="tesoro"><h4><span aria-hidden="true">🏛️</span> Impuestos</h4><span class="p-nx" style="background:rgba(255,214,0,.12);color:#ffd600">TESORO</span></a>
+<!-- VOCES (12) -->
 <a href="canal-soberano/" class="p-card" data-name="canal social" data-nexus="voces"><h4><span aria-hidden="true">💬</span> Canal Soberano</h4><span class="p-nx" style="background:rgba(224,64,251,.12);color:#e040fb">VOCES</span></a>
 <a href="media-soberana/" class="p-card" data-name="media streaming" data-nexus="voces"><h4><span aria-hidden="true">📺</span> Media Soberana</h4><span class="p-nx" style="background:rgba(224,64,251,.12);color:#e040fb">VOCES</span></a>
 <a href="musica-soberana/" class="p-card" data-name="musica" data-nexus="voces"><h4><span aria-hidden="true">🎵</span> Musica</h4><span class="p-nx" style="background:rgba(224,64,251,.12);color:#e040fb">VOCES</span></a>
@@ -233,7 +285,9 @@ footer span{color:var(--gold)}
 <a href="traduccion-soberana/" class="p-card" data-name="traduccion" data-nexus="voces"><h4><span aria-hidden="true">🌐</span> Traduccion</h4><span class="p-nx" style="background:rgba(224,64,251,.12);color:#e040fb">VOCES</span></a>
 <a href="cine-soberano/" class="p-card" data-name="cine peliculas" data-nexus="voces"><h4><span aria-hidden="true">🎬</span> Cine Soberano</h4><span class="p-nx" style="background:rgba(224,64,251,.12);color:#e040fb">VOCES</span></a>
 <a href="archivo-linguistico-soberano/" class="p-card" data-name="archivo linguistico lenguas" data-nexus="voces"><h4><span aria-hidden="true">📖</span> Archivo Linguistico</h4><span class="p-nx" style="background:rgba(224,64,251,.12);color:#e040fb">VOCES</span></a>
-<!-- CONSEJO -->
+<a href="streaming-estudio-soberano/" class="p-card" data-name="streaming obs estudio grabacion" data-nexus="voces"><h4><span aria-hidden="true">📹</span> Streaming Estudio</h4><span class="p-nx" style="background:rgba(224,64,251,.12);color:#e040fb">VOCES</span></a>
+<a href="galeria-soberana/" class="p-card" data-name="galeria fotos arte google photos" data-nexus="voces"><h4><span aria-hidden="true">📸</span> Galeria</h4><span class="p-nx" style="background:rgba(224,64,251,.12);color:#e040fb">VOCES</span></a>
+<!-- CONSEJO (20) -->
 <a href="gobierno-soberano/" class="p-card" data-name="gobierno" data-nexus="consejo"><h4><span aria-hidden="true">🏛️</span> Gobierno Digital</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
 <a href="parlamento-soberano/" class="p-card" data-name="parlamento" data-nexus="consejo"><h4><span aria-hidden="true">🏛️</span> Parlamento</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
 <a href="democracia-liquida-soberana/" class="p-card" data-name="democracia liquida" data-nexus="consejo"><h4><span aria-hidden="true">🗳️</span> Democracia Liquida</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
@@ -248,9 +302,13 @@ footer span{color:var(--gold)}
 <a href="auditoria-soberana/" class="p-card" data-name="auditoria" data-nexus="consejo"><h4><span aria-hidden="true">🔍</span> Auditoria</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
 <a href="aduana-soberana/" class="p-card" data-name="aduana" data-nexus="consejo"><h4><span aria-hidden="true">🌐</span> Aduana</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
 <a href="propiedad-intelectual-soberana/" class="p-card" data-name="propiedad intelectual" data-nexus="consejo"><h4><span aria-hidden="true">🏷️</span> Propiedad Intelectual</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
-<a href="emergencias-soberano/" class="p-card" data-name="emergencias 911" data-nexus="consejo"><h4><span aria-hidden="true">🚨</span> Emergencias</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
 <a href="correccional-soberano/" class="p-card" data-name="correccional" data-nexus="consejo"><h4><span aria-hidden="true">🏢</span> Correccional</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
-<!-- TIERRA -->
+<a href="fiscal-dashboard/" class="p-card" data-name="fiscal presupuesto budget" data-nexus="consejo"><h4><span aria-hidden="true">📊</span> Presupuesto</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
+<a href="fiscal-transparency/" class="p-card" data-name="transparencia fiscal" data-nexus="consejo"><h4><span aria-hidden="true">📊</span> Transparencia Fiscal</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
+<a href="notificaciones-gobierno/" class="p-card" data-name="notificaciones gobierno alertas" data-nexus="consejo"><h4><span aria-hidden="true">🔔</span> Notificaciones</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
+<a href="licencias-permisos-soberano/" class="p-card" data-name="licencias permisos tramites" data-nexus="consejo"><h4><span aria-hidden="true">📜</span> Licencias</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
+<a href="justicia-restaurativa-soberana/" class="p-card" data-name="justicia restaurativa mediacion indigena" data-nexus="consejo"><h4><span aria-hidden="true">⚖️</span> Justicia Restaurativa</h4><span class="p-nx" style="background:rgba(21,101,192,.12);color:#1565c0">CONSEJO</span></a>
+<!-- TIERRA (19) -->
 <a href="agricultura-soberana/" class="p-card" data-name="agricultura" data-nexus="tierra"><h4><span aria-hidden="true">🌾</span> Agricultura</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
 <a href="pesca-soberana/" class="p-card" data-name="pesca" data-nexus="tierra"><h4><span aria-hidden="true">🐟</span> Pesca</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
 <a href="ganaderia-soberana/" class="p-card" data-name="ganaderia" data-nexus="tierra"><h4><span aria-hidden="true">🐄</span> Ganaderia</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
@@ -262,15 +320,15 @@ footer span{color:var(--gold)}
 <a href="meteorologia-soberana/" class="p-card" data-name="meteorologia clima" data-nexus="tierra"><h4><span aria-hidden="true">🌤️</span> Meteorologia</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
 <a href="parques-soberano/" class="p-card" data-name="parques" data-nexus="tierra"><h4><span aria-hidden="true">🏞️</span> Parques</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
 <a href="residuos-soberano/" class="p-card" data-name="residuos" data-nexus="tierra"><h4><span aria-hidden="true">♻️</span> Residuos</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
-<a href="turismo-soberano/" class="p-card" data-name="turismo" data-nexus="tierra"><h4><span aria-hidden="true">🗺️</span> Turismo</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
 <a href="nuclear-soberano/" class="p-card" data-name="nuclear energia atomica" data-nexus="tierra"><h4><span aria-hidden="true">⚛️</span> Nuclear</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
-<a href="alimentacion-soberana/" class="p-card" data-name="alimentacion" data-nexus="tierra"><h4><span aria-hidden="true">🌾</span> Alimentacion</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
 <a href="reciclaje-soberano/" class="p-card" data-name="reciclaje" data-nexus="tierra"><h4><span aria-hidden="true">♻️</span> Reciclaje</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
 <a href="fertirrigacion-soberana/" class="p-card" data-name="fertirrigacion riego" data-nexus="tierra"><h4><span aria-hidden="true">💧</span> Fertirrigacion</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
 <a href="mineria-soberana/" class="p-card" data-name="mineria" data-nexus="tierra"><h4><span aria-hidden="true">⛏️</span> Mineria</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
 <a href="acuicultura-soberana/" class="p-card" data-name="acuicultura" data-nexus="tierra"><h4><span aria-hidden="true">🐟</span> Acuicultura</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
 <a href="reforestacion-soberana/" class="p-card" data-name="reforestacion" data-nexus="tierra"><h4><span aria-hidden="true">🌳</span> Reforestacion</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
-<!-- FORJA -->
+<a href="oraculo-climatico-soberano/" class="p-card" data-name="oraculo climatico prediccion ancestral" data-nexus="tierra"><h4><span aria-hidden="true">🌦️</span> Oraculo Climatico</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
+<a href="territorio-vigilante-soberano/" class="p-card" data-name="territorio vigilancia satelite proteccion" data-nexus="tierra"><h4><span aria-hidden="true">🛰️</span> Territorio Vigilante</h4><span class="p-nx" style="background:rgba(67,160,71,.12);color:#43a047">TIERRA</span></a>
+<!-- FORJA (18) -->
 <a href="dev-soberano/" class="p-card" data-name="desarrollo dev" data-nexus="forja"><h4><span aria-hidden="true">⌨️</span> Dev Soberano</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
 <a href="devops-soberano/" class="p-card" data-name="devops cicd" data-nexus="forja"><h4><span aria-hidden="true">🔄</span> DevOps</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
 <a href="code-generator/" class="p-card" data-name="code generator" data-nexus="forja"><h4><span aria-hidden="true">⚡</span> Code Generator</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
@@ -281,7 +339,15 @@ footer span{color:var(--gold)}
 <a href="backend-soberano/" class="p-card" data-name="backend api" data-nexus="forja"><h4><span aria-hidden="true">🖥️</span> Backend</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
 <a href="orquestador-soberano/" class="p-card" data-name="orquestador kubernetes" data-nexus="forja"><h4><span aria-hidden="true">🎛️</span> Orquestador</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
 <a href="fabrica-soberana/" class="p-card" data-name="fabrica manufactura" data-nexus="forja"><h4><span aria-hidden="true">🏭</span> Fabrica</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
-<!-- URBE -->
+<a href="code-soberano/" class="p-card" data-name="code git repositorio" data-nexus="forja"><h4><span aria-hidden="true">💻</span> CodeSoberano</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
+<a href="ecosistema-abierto/" class="p-card" data-name="ecosistema abierto opensource" data-nexus="forja"><h4><span aria-hidden="true">🌐</span> Ecosistema Abierto</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
+<a href="flujos-soberano/" class="p-card" data-name="flujos nodered workflow" data-nexus="forja"><h4><span aria-hidden="true">🔀</span> Flujos</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
+<a href="ide-soberano/" class="p-card" data-name="ide vscode editor" data-nexus="forja"><h4><span aria-hidden="true">💻</span> IDE Soberano</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
+<a href="virtualizacion-soberana/" class="p-card" data-name="virtualizacion vm docker contenedor" data-nexus="forja"><h4><span aria-hidden="true">🖥️</span> Virtualizacion</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
+<a href="monitoreo-soberano/" class="p-card" data-name="monitoreo nagios zabbix prometheus grafana" data-nexus="forja"><h4><span aria-hidden="true">📡</span> Monitoreo</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
+<a href="testing-soberano/" class="p-card" data-name="testing qa selenium cypress jest" data-nexus="forja"><h4><span aria-hidden="true">🧪</span> Testing QA</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
+<a href="base-datos-soberana/" class="p-card" data-name="base datos database sql nosql" data-nexus="forja"><h4><span aria-hidden="true">🗄️</span> Base de Datos</h4><span class="p-nx" style="background:rgba(0,230,118,.12);color:#00e676">FORJA</span></a>
+<!-- URBE (8) -->
 <a href="catastro-soberano/" class="p-card" data-name="catastro" data-nexus="urbe"><h4><span aria-hidden="true">🗺️</span> Catastro</h4><span class="p-nx" style="background:rgba(255,145,0,.12);color:#ff9100">URBE</span></a>
 <a href="urbanismo-soberano/" class="p-card" data-name="urbanismo" data-nexus="urbe"><h4><span aria-hidden="true">🏗️</span> Urbanismo</h4><span class="p-nx" style="background:rgba(255,145,0,.12);color:#ff9100">URBE</span></a>
 <a href="vivienda-soberana/" class="p-card" data-name="vivienda" data-nexus="urbe"><h4><span aria-hidden="true">🏠</span> Vivienda</h4><span class="p-nx" style="background:rgba(255,145,0,.12);color:#ff9100">URBE</span></a>
@@ -289,29 +355,101 @@ footer span{color:var(--gold)}
 <a href="aviacion-soberana/" class="p-card" data-name="aviacion" data-nexus="urbe"><h4><span aria-hidden="true">✈️</span> Aviacion</h4><span class="p-nx" style="background:rgba(255,145,0,.12);color:#ff9100">URBE</span></a>
 <a href="maritimo-soberano/" class="p-card" data-name="maritimo" data-nexus="urbe"><h4><span aria-hidden="true">🚢</span> Maritimo</h4><span class="p-nx" style="background:rgba(255,145,0,.12);color:#ff9100">URBE</span></a>
 <a href="vehiculos-soberano/" class="p-card" data-name="vehiculos" data-nexus="urbe"><h4><span aria-hidden="true">🚗</span> Vehiculos</h4><span class="p-nx" style="background:rgba(255,145,0,.12);color:#ff9100">URBE</span></a>
-<a href="censo-soberano/" class="p-card" data-name="censo" data-nexus="urbe"><h4><span aria-hidden="true">📊</span> Censo</h4><span class="p-nx" style="background:rgba(255,145,0,.12);color:#ff9100">URBE</span></a>
-<a href="telemedicina-soberana/" class="p-card" data-name="telemedicina" data-nexus="urbe"><h4><span aria-hidden="true">🏥</span> Telemedicina</h4><span class="p-nx" style="background:rgba(255,145,0,.12);color:#ff9100">URBE</span></a>
-<a href="farmacia-soberana/" class="p-card" data-name="farmacia" data-nexus="urbe"><h4><span aria-hidden="true">💊</span> Farmacia</h4><span class="p-nx" style="background:rgba(255,145,0,.12);color:#ff9100">URBE</span></a>
 <a href="transporte-publico-soberano/" class="p-card" data-name="transporte publico" data-nexus="urbe"><h4><span aria-hidden="true">🚇</span> Transporte Publico</h4><span class="p-nx" style="background:rgba(255,145,0,.12);color:#ff9100">URBE</span></a>
-<a href="universidad-soberana/" class="p-card" data-name="universidad" data-nexus="urbe"><h4><span aria-hidden="true">🎓</span> Universidad</h4><span class="p-nx" style="background:rgba(255,145,0,.12);color:#ff9100">URBE</span></a>
-<a href="discapacidad-soberana/" class="p-card" data-name="discapacidad" data-nexus="urbe"><h4><span aria-hidden="true">♿</span> Discapacidad</h4><span class="p-nx" style="background:rgba(255,145,0,.12);color:#ff9100">URBE</span></a>
-<!-- RAICES -->
-<a href="museo-soberano/" class="p-card" data-name="museo" data-nexus="raices"><h4><span aria-hidden="true">🏛️</span> Museo</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
-<a href="biblioteca-soberana/" class="p-card" data-name="biblioteca" data-nexus="raices"><h4><span aria-hidden="true">📚</span> Biblioteca</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
-<a href="patrimonio-cultural-soberano/" class="p-card" data-name="patrimonio cultural" data-nexus="raices"><h4><span aria-hidden="true">🏺</span> Patrimonio Cultural</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
-<a href="deporte-soberano/" class="p-card" data-name="deporte" data-nexus="raices"><h4><span aria-hidden="true">⚽</span> Deporte</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
-<a href="sabiduria-soberana/" class="p-card" data-name="sabiduria ancestral" data-nexus="raices"><h4><span aria-hidden="true">🌿</span> Sabiduria Ancestral</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
-<a href="artesania-soberana/" class="p-card" data-name="artesania" data-nexus="raices"><h4><span aria-hidden="true">🎨</span> Artesania</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
-<a href="empresa-soberana/" class="p-card" data-name="empresa" data-nexus="raices"><h4><span aria-hidden="true">💼</span> Empresa</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
-<a href="trabajo-soberano/" class="p-card" data-name="trabajo empleo" data-nexus="raices"><h4><span aria-hidden="true">👷</span> Trabajo</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
-<a href="desempleo-soberano/" class="p-card" data-name="desempleo" data-nexus="raices"><h4><span aria-hidden="true">💼</span> Desempleo</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
-<a href="familia-soberana/" class="p-card" data-name="familia" data-nexus="raices"><h4><span aria-hidden="true">👨‍👩‍👧</span> Familia</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
-<a href="veteranos-soberano/" class="p-card" data-name="veteranos" data-nexus="raices"><h4><span aria-hidden="true">🎖️</span> Veteranos</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
-<a href="salud-mental-soberana/" class="p-card" data-name="salud mental" data-nexus="raices"><h4><span aria-hidden="true">🧠</span> Salud Mental</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
-<a href="archivo-eterno-soberano/" class="p-card" data-name="archivo eterno" data-nexus="raices"><h4><span aria-hidden="true">📜</span> Archivo Eterno</h4><span class="p-nx" style="background:rgba(212,168,83,.12);color:#d4a853">RAICES</span></a>
+<!-- RAICES (7) -->
+<a href="museo-soberano/" class="p-card" data-name="museo" data-nexus="raices"><h4><span aria-hidden="true">🏛️</span> Museo</h4><span class="p-nx" style="background:rgba(0,255,65,.12);color:#00FF41">RAICES</span></a>
+<a href="patrimonio-cultural-soberano/" class="p-card" data-name="patrimonio cultural" data-nexus="raices"><h4><span aria-hidden="true">🏺</span> Patrimonio Cultural</h4><span class="p-nx" style="background:rgba(0,255,65,.12);color:#00FF41">RAICES</span></a>
+<a href="artesania-soberana/" class="p-card" data-name="artesania" data-nexus="raices"><h4><span aria-hidden="true">🎨</span> Artesania</h4><span class="p-nx" style="background:rgba(0,255,65,.12);color:#00FF41">RAICES</span></a>
+<a href="archivo-eterno-soberano/" class="p-card" data-name="archivo eterno" data-nexus="raices"><h4><span aria-hidden="true">📜</span> Archivo Eterno</h4><span class="p-nx" style="background:rgba(0,255,65,.12);color:#00FF41">RAICES</span></a>
+<a href="ceremonia-virtual-soberana/" class="p-card" data-name="ceremonia virtual ritual sagrado" data-nexus="raices"><h4><span aria-hidden="true">🪶</span> Ceremonia Virtual</h4><span class="p-nx" style="background:rgba(0,255,65,.12);color:#00FF41">RAICES</span></a>
+<a href="adn-ancestral-soberano/" class="p-card" data-name="adn ancestral genomica ancestria" data-nexus="raices"><h4><span aria-hidden="true">🧬</span> ADN Ancestral</h4><span class="p-nx" style="background:rgba(0,255,65,.12);color:#00FF41">RAICES</span></a>
+<a href="semilla-soberana/" class="p-card" data-name="semilla banco biodiversidad cultivo" data-nexus="raices"><h4><span aria-hidden="true">🌱</span> Semilla Soberana</h4><span class="p-nx" style="background:rgba(0,255,65,.12);color:#00FF41">RAICES</span></a>
+<!-- ESCRITORIO (20) -->
+<a href="docs-soberanos/" class="p-card" data-name="docs documentos google docs" data-nexus="escritorio"><h4><span aria-hidden="true">📄</span> DocsSoberanos</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="ofimatica-soberana/" class="p-card" data-name="ofimatica office suite" data-nexus="escritorio"><h4><span aria-hidden="true">📝</span> Ofimatica</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="hojas-calculo-soberana/" class="p-card" data-name="hojas calculo sheets excel colaborativo" data-nexus="escritorio"><h4><span aria-hidden="true">📊</span> Hojas de Calculo</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="calendario-soberano/" class="p-card" data-name="calendario agenda google calendar" data-nexus="escritorio"><h4><span aria-hidden="true">📅</span> Calendario</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="notas-soberana/" class="p-card" data-name="notas notes onenote evernote" data-nexus="escritorio"><h4><span aria-hidden="true">📝</span> Notas</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="formularios-soberano/" class="p-card" data-name="formularios forms encuestas" data-nexus="escritorio"><h4><span aria-hidden="true">📋</span> Formularios</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="colaboracion-soberana/" class="p-card" data-name="colaboracion workspace notion" data-nexus="escritorio"><h4><span aria-hidden="true">📋</span> Colaboracion</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="diseno-soberano/" class="p-card" data-name="diseno design figma" data-nexus="escritorio"><h4><span aria-hidden="true">🎨</span> Diseno</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="plantillas-soberana/" class="p-card" data-name="plantillas templates builder" data-nexus="escritorio"><h4><span aria-hidden="true">🎨</span> Plantillas</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="proyecto-soberano/" class="p-card" data-name="proyecto jira kanban" data-nexus="escritorio"><h4><span aria-hidden="true">📋</span> Proyecto</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="video-editor-soberano/" class="p-card" data-name="video editor premiere davinci" data-nexus="escritorio"><h4><span aria-hidden="true">🎬</span> Video Editor</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="crm-soberano/" class="p-card" data-name="crm clientes salesforce hubspot" data-nexus="escritorio"><h4><span aria-hidden="true">🤝</span> CRM Soberano</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="audio-editor-soberano/" class="p-card" data-name="audio editor audacity podcast" data-nexus="escritorio"><h4><span aria-hidden="true">🎵</span> Audio Editor</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="mapas-mentales-soberano/" class="p-card" data-name="mapas mentales mind map diagrama" data-nexus="escritorio"><h4><span aria-hidden="true">🧠</span> Mapas Mentales</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="wiki-soberana/" class="p-card" data-name="wiki knowledge base conocimiento" data-nexus="escritorio"><h4><span aria-hidden="true">📚</span> Wiki</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="firma-digital-soberana/" class="p-card" data-name="firma digital docusign contratos" data-nexus="escritorio"><h4><span aria-hidden="true">✍️</span> Firma Digital</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="gestion-tiempo-soberano/" class="p-card" data-name="tiempo tracking clockify horas" data-nexus="escritorio"><h4><span aria-hidden="true">⏱️</span> Gestion Tiempo</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="pizarra-soberana/" class="p-card" data-name="pizarra whiteboard miro excalidraw" data-nexus="escritorio"><h4><span aria-hidden="true">🖊️</span> Pizarra</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="modelado-3d-soberano/" class="p-card" data-name="3d cad blender modelado animacion" data-nexus="escritorio"><h4><span aria-hidden="true">🎲</span> Modelado 3D</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<a href="publicacion-soberana/" class="p-card" data-name="publicacion editorial scribus indesign" data-nexus="escritorio"><h4><span aria-hidden="true">📰</span> Publicacion</h4><span class="p-nx" style="background:rgba(38,198,218,.12);color:#26C6DA">ESCRITORIO</span></a>
+<!-- COMERCIO (11) -->
+<a href="comercio-soberano/" class="p-card" data-name="comercio ecommerce tienda" data-nexus="comercio"><h4><span aria-hidden="true">🛒</span> Comercio</h4><span class="p-nx" style="background:rgba(255,109,0,.12);color:#FF6D00">COMERCIO</span></a>
+<a href="commerce-business-dashboard/" class="p-card" data-name="commerce business ecommerce dashboard" data-nexus="comercio"><h4><span aria-hidden="true">🛒</span> Commerce Dashboard</h4><span class="p-nx" style="background:rgba(255,109,0,.12);color:#FF6D00">COMERCIO</span></a>
+<a href="marketing-soberano/" class="p-card" data-name="marketing campanas" data-nexus="comercio"><h4><span aria-hidden="true">📣</span> Marketing</h4><span class="p-nx" style="background:rgba(255,109,0,.12);color:#FF6D00">COMERCIO</span></a>
+<a href="empresa-soberana/" class="p-card" data-name="empresa negocio" data-nexus="comercio"><h4><span aria-hidden="true">💼</span> Empresa</h4><span class="p-nx" style="background:rgba(255,109,0,.12);color:#FF6D00">COMERCIO</span></a>
+<a href="hospedaje-soberano/" class="p-card" data-name="hospedaje turismo alojamiento" data-nexus="comercio"><h4><span aria-hidden="true">🏠</span> Hospedaje</h4><span class="p-nx" style="background:rgba(255,109,0,.12);color:#FF6D00">COMERCIO</span></a>
+<a href="turismo-soberano/" class="p-card" data-name="turismo viajes" data-nexus="comercio"><h4><span aria-hidden="true">🗺️</span> Turismo</h4><span class="p-nx" style="background:rgba(255,109,0,.12);color:#FF6D00">COMERCIO</span></a>
+<a href="rrhh-soberano/" class="p-card" data-name="rrhh recursos humanos hr talento" data-nexus="comercio"><h4><span aria-hidden="true">👔</span> RRHH</h4><span class="p-nx" style="background:rgba(255,109,0,.12);color:#FF6D00">COMERCIO</span></a>
+<a href="soporte-soberano/" class="p-card" data-name="soporte helpdesk zendesk tickets" data-nexus="comercio"><h4><span aria-hidden="true">🎧</span> Soporte</h4><span class="p-nx" style="background:rgba(255,109,0,.12);color:#FF6D00">COMERCIO</span></a>
+<a href="inventario-soberano/" class="p-card" data-name="inventario warehouse almacen stock" data-nexus="comercio"><h4><span aria-hidden="true">📦</span> Inventario</h4><span class="p-nx" style="background:rgba(255,109,0,.12);color:#FF6D00">COMERCIO</span></a>
+<a href="pos-soberano/" class="p-card" data-name="pos punto venta terminal square" data-nexus="comercio"><h4><span aria-hidden="true">🏪</span> POS</h4><span class="p-nx" style="background:rgba(255,109,0,.12);color:#FF6D00">COMERCIO</span></a>
+<a href="erp-soberano/" class="p-card" data-name="erp sap enterprise planning" data-nexus="comercio"><h4><span aria-hidden="true">🏢</span> ERP</h4><span class="p-nx" style="background:rgba(255,109,0,.12);color:#FF6D00">COMERCIO</span></a>
+<!-- SALUD (8) -->
+<a href="healthcare-dashboard/" class="p-card" data-name="healthcare dashboard salud" data-nexus="salud"><h4><span aria-hidden="true">🏥</span> Dashboard Salud</h4><span class="p-nx" style="background:rgba(255,87,34,.12);color:#FF5722">SALUD</span></a>
+<a href="hospital-campana-soberano/" class="p-card" data-name="hospital campana" data-nexus="salud"><h4><span aria-hidden="true">🏥</span> Hospital de Campana</h4><span class="p-nx" style="background:rgba(255,87,34,.12);color:#FF5722">SALUD</span></a>
+<a href="telemedicina-soberana/" class="p-card" data-name="telemedicina" data-nexus="salud"><h4><span aria-hidden="true">🏥</span> Telemedicina</h4><span class="p-nx" style="background:rgba(255,87,34,.12);color:#FF5722">SALUD</span></a>
+<a href="farmacia-soberana/" class="p-card" data-name="farmacia" data-nexus="salud"><h4><span aria-hidden="true">💊</span> Farmacia</h4><span class="p-nx" style="background:rgba(255,87,34,.12);color:#FF5722">SALUD</span></a>
+<a href="salud-mental-soberana/" class="p-card" data-name="salud mental" data-nexus="salud"><h4><span aria-hidden="true">🧠</span> Salud Mental</h4><span class="p-nx" style="background:rgba(255,87,34,.12);color:#FF5722">SALUD</span></a>
+<a href="genomica-soberana/" class="p-card" data-name="genomica" data-nexus="salud"><h4><span aria-hidden="true">🧬</span> Genomica</h4><span class="p-nx" style="background:rgba(255,87,34,.12);color:#FF5722">SALUD</span></a>
+<a href="alimentacion-soberana/" class="p-card" data-name="alimentacion nutricion" data-nexus="salud"><h4><span aria-hidden="true">🌾</span> Alimentacion</h4><span class="p-nx" style="background:rgba(255,87,34,.12);color:#FF5722">SALUD</span></a>
+<a href="fitness-soberano/" class="p-card" data-name="fitness ejercicio bienestar meditacion" data-nexus="salud"><h4><span aria-hidden="true">💪</span> Fitness</h4><span class="p-nx" style="background:rgba(255,87,34,.12);color:#FF5722">SALUD</span></a>
+<!-- ACADEMIA (7) — NEW NEXUS -->
+<a href="education-dashboard/" class="p-card" data-name="education dashboard educacion" data-nexus="academia"><h4><span aria-hidden="true">🎓</span> Dashboard Educacion</h4><span class="p-nx" style="background:rgba(156,39,176,.12);color:#9C27B0">ACADEMIA</span></a>
+<a href="universidad-soberana/" class="p-card" data-name="universidad" data-nexus="academia"><h4><span aria-hidden="true">🎓</span> Universidad</h4><span class="p-nx" style="background:rgba(156,39,176,.12);color:#9C27B0">ACADEMIA</span></a>
+<a href="biblioteca-soberana/" class="p-card" data-name="biblioteca" data-nexus="academia"><h4><span aria-hidden="true">📚</span> Biblioteca</h4><span class="p-nx" style="background:rgba(156,39,176,.12);color:#9C27B0">ACADEMIA</span></a>
+<a href="sabiduria-soberana/" class="p-card" data-name="sabiduria ancestral" data-nexus="academia"><h4><span aria-hidden="true">🌿</span> Sabiduria Ancestral</h4><span class="p-nx" style="background:rgba(156,39,176,.12);color:#9C27B0">ACADEMIA</span></a>
+<a href="laboratorio-soberano/" class="p-card" data-name="laboratorio" data-nexus="academia"><h4><span aria-hidden="true">🔬</span> Laboratorio</h4><span class="p-nx" style="background:rgba(156,39,176,.12);color:#9C27B0">ACADEMIA</span></a>
+<a href="idiomas-soberano/" class="p-card" data-name="idiomas lenguas duolingo aprendizaje" data-nexus="academia"><h4><span aria-hidden="true">🗣️</span> Idiomas</h4><span class="p-nx" style="background:rgba(156,39,176,.12);color:#9C27B0">ACADEMIA</span></a>
+<a href="lector-soberano/" class="p-card" data-name="lector ebook epub kindle" data-nexus="academia"><h4><span aria-hidden="true">📖</span> Lector</h4><span class="p-nx" style="background:rgba(156,39,176,.12);color:#9C27B0">ACADEMIA</span></a>
+<!-- ESCOLAR (8) — NEW NEXUS -->
+<a href="escuela-primaria-soberana/" class="p-card" data-name="escuela primaria" data-nexus="escolar"><h4><span aria-hidden="true">📚</span> Escuela Primaria</h4><span class="p-nx" style="background:rgba(30,136,229,.12);color:#1E88E5">ESCOLAR</span></a>
+<a href="escuela-secundaria-soberana/" class="p-card" data-name="escuela secundaria preparatoria" data-nexus="escolar"><h4><span aria-hidden="true">📖</span> Escuela Secundaria</h4><span class="p-nx" style="background:rgba(30,136,229,.12);color:#1E88E5">ESCOLAR</span></a>
+<a href="preescolar-soberano/" class="p-card" data-name="preescolar kinder" data-nexus="escolar"><h4><span aria-hidden="true">🧒</span> Preescolar</h4><span class="p-nx" style="background:rgba(30,136,229,.12);color:#1E88E5">ESCOLAR</span></a>
+<a href="curriculum-digital-soberano/" class="p-card" data-name="curriculum digital plan estudios" data-nexus="escolar"><h4><span aria-hidden="true">📋</span> Curriculum Digital</h4><span class="p-nx" style="background:rgba(30,136,229,.12);color:#1E88E5">ESCOLAR</span></a>
+<a href="portal-padres-soberano/" class="p-card" data-name="portal padres familia" data-nexus="escolar"><h4><span aria-hidden="true">👨‍👩‍👧</span> Portal de Padres</h4><span class="p-nx" style="background:rgba(30,136,229,.12);color:#1E88E5">ESCOLAR</span></a>
+<a href="calificaciones-soberana/" class="p-card" data-name="calificaciones notas evaluacion" data-nexus="escolar"><h4><span aria-hidden="true">📊</span> Calificaciones</h4><span class="p-nx" style="background:rgba(30,136,229,.12);color:#1E88E5">ESCOLAR</span></a>
+<a href="becas-escolares-soberana/" class="p-card" data-name="becas escolares apoyo" data-nexus="escolar"><h4><span aria-hidden="true">🎓</span> Becas Escolares</h4><span class="p-nx" style="background:rgba(30,136,229,.12);color:#1E88E5">ESCOLAR</span></a>
+<a href="educacion-especial-soberana/" class="p-card" data-name="educacion especial inclusion" data-nexus="escolar"><h4><span aria-hidden="true">♿</span> Educacion Especial</h4><span class="p-nx" style="background:rgba(30,136,229,.12);color:#1E88E5">ESCOLAR</span></a>
+<!-- ENTRETENIMIENTO (8) — NEW NEXUS -->
+<a href="casino-soberano/" class="p-card" data-name="casino soberano" data-nexus="entretenimiento"><h4><span aria-hidden="true">🎰</span> Casino Soberano</h4><span class="p-nx" style="background:rgba(233,30,99,.12);color:#E91E63">ENTRETENIMIENTO</span></a>
+<a href="apuestas-soberano/" class="p-card" data-name="apuestas deportivas" data-nexus="entretenimiento"><h4><span aria-hidden="true">🏆</span> Apuestas Soberano</h4><span class="p-nx" style="background:rgba(233,30,99,.12);color:#E91E63">ENTRETENIMIENTO</span></a>
+<a href="loto-soberano/" class="p-card" data-name="loto loteria" data-nexus="entretenimiento"><h4><span aria-hidden="true">🎫</span> Loto Soberano</h4><span class="p-nx" style="background:rgba(233,30,99,.12);color:#E91E63">ENTRETENIMIENTO</span></a>
+<a href="rifa-soberana/" class="p-card" data-name="rifa sorteos" data-nexus="entretenimiento"><h4><span aria-hidden="true">🎟️</span> Rifa Soberana</h4><span class="p-nx" style="background:rgba(233,30,99,.12);color:#E91E63">ENTRETENIMIENTO</span></a>
+<a href="deporte-soberano/" class="p-card" data-name="deporte sport" data-nexus="entretenimiento"><h4><span aria-hidden="true">⚽</span> Deporte Soberano</h4><span class="p-nx" style="background:rgba(233,30,99,.12);color:#E91E63">ENTRETENIMIENTO</span></a>
+<a href="esports-soberano/" class="p-card" data-name="esports gaming competitivo" data-nexus="entretenimiento"><h4><span aria-hidden="true">🎮</span> Esports Soberano</h4><span class="p-nx" style="background:rgba(233,30,99,.12);color:#E91E63">ENTRETENIMIENTO</span></a>
+<a href="estadio-soberano/" class="p-card" data-name="estadio arena centro deportivo" data-nexus="entretenimiento"><h4><span aria-hidden="true">🏟️</span> Estadio Soberano</h4><span class="p-nx" style="background:rgba(233,30,99,.12);color:#E91E63">ENTRETENIMIENTO</span></a>
+<a href="juegos-soberano/" class="p-card" data-name="juegos games entretenimiento digital" data-nexus="entretenimiento"><h4><span aria-hidden="true">🕹️</span> Juegos Soberano</h4><span class="p-nx" style="background:rgba(233,30,99,.12);color:#E91E63">ENTRETENIMIENTO</span></a>
+<!-- AMPARO (11) -->
+<a href="familia-soberana/" class="p-card" data-name="familia" data-nexus="amparo"><h4><span aria-hidden="true">👨‍👩‍👧</span> Familia</h4><span class="p-nx" style="background:rgba(96,125,139,.12);color:#607D8B">AMPARO</span></a>
+<a href="discapacidad-soberana/" class="p-card" data-name="discapacidad" data-nexus="amparo"><h4><span aria-hidden="true">♿</span> Discapacidad</h4><span class="p-nx" style="background:rgba(96,125,139,.12);color:#607D8B">AMPARO</span></a>
+<a href="humanitario-soberano/" class="p-card" data-name="humanitario ayuda" data-nexus="amparo"><h4><span aria-hidden="true">🌍</span> Humanitario</h4><span class="p-nx" style="background:rgba(96,125,139,.12);color:#607D8B">AMPARO</span></a>
+<a href="veteranos-soberano/" class="p-card" data-name="veteranos" data-nexus="amparo"><h4><span aria-hidden="true">🎖️</span> Veteranos</h4><span class="p-nx" style="background:rgba(96,125,139,.12);color:#607D8B">AMPARO</span></a>
+<a href="emergencias-soberanas/" class="p-card" data-name="emergencias soberanas" data-nexus="amparo"><h4><span aria-hidden="true">🚨</span> Emergencias Soberanas</h4><span class="p-nx" style="background:rgba(96,125,139,.12);color:#607D8B">AMPARO</span></a>
+<a href="emergencias-soberano/" class="p-card" data-name="emergencias 911" data-nexus="amparo"><h4><span aria-hidden="true">🚨</span> Emergencias</h4><span class="p-nx" style="background:rgba(96,125,139,.12);color:#607D8B">AMPARO</span></a>
+<a href="bomberos-soberano/" class="p-card" data-name="bomberos" data-nexus="amparo"><h4><span aria-hidden="true">🚒</span> Bomberos</h4><span class="p-nx" style="background:rgba(96,125,139,.12);color:#607D8B">AMPARO</span></a>
+<a href="trabajo-soberano/" class="p-card" data-name="trabajo empleo" data-nexus="amparo"><h4><span aria-hidden="true">👷</span> Trabajo</h4><span class="p-nx" style="background:rgba(96,125,139,.12);color:#607D8B">AMPARO</span></a>
+<a href="desempleo-soberano/" class="p-card" data-name="desempleo" data-nexus="amparo"><h4><span aria-hidden="true">💼</span> Desempleo</h4><span class="p-nx" style="background:rgba(96,125,139,.12);color:#607D8B">AMPARO</span></a>
+<a href="censo-soberano/" class="p-card" data-name="censo" data-nexus="amparo"><h4><span aria-hidden="true">📊</span> Censo</h4><span class="p-nx" style="background:rgba(96,125,139,.12);color:#607D8B">AMPARO</span></a>
+<a href="intercambio-comunitario-soberano/" class="p-card" data-name="intercambio trueque banco tiempo solidario" data-nexus="amparo"><h4><span aria-hidden="true">🤝</span> Intercambio Comunitario</h4><span class="p-nx" style="background:rgba(96,125,139,.12);color:#607D8B">AMPARO</span></a>
 </div>
 
 </main>
-<footer><span aria-hidden="true">🔱</span> <span>Ierahkwa Ne Kanienke</span> &mdash; Soberania Digital para 72M Personas Indigenas &mdash; Powered by MameyNode &amp; WAMPUM</footer>
+<footer><span aria-hidden="true">🔱</span> <span>Ierahkwa Ne Kanienke</span> &mdash; Soberania Digital para 72M Personas Indigenas &mdash; Powered by MameyNode &amp; WAMPUM &mdash; v3.9.0</footer>
 <script src="shared/ierahkwa.js" defer></script>
+<script src="shared/ierahkwa-security.js"></script>
+<script src="shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("shared/sw.js").catch(function(){})}</script>
 </body></html>

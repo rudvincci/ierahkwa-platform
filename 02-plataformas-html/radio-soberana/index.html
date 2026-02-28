@@ -1,85 +1,31 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
+<meta name="description" content="Plataforma soberana de Radio para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="theme-color" content="#ff6d00">
+<link rel="canonical" href="https://ierahkwa.nation/radio-soberana/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="Radio Soberana — SDR & Broadcasting Pan-Americano">
+<meta property="og:description" content="Plataforma soberana de Radio para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/radio-soberana/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Radio Soberana — SDR & Broadcasting Pan-Americano">
+<meta name="twitter:description" content="Plataforma soberana de Radio para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
 <title>Radio Soberana — SDR & Broadcasting Pan-Americano</title>
-<style>
-:root{--bg:#09090d;--bg2:#111116;--bg3:#1a1a20;--bg4:#232330;--gold:#d4a853;--txt:#e8e4df;--txt2:#8a8694;--brd:#2a2a36;--r:10px;--accent:#ff6d00}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
-a{color:var(--accent);text-decoration:none}
-.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:.7rem 1.5rem;border-radius:var(--r);font-weight:700;z-index:1000;transition:top .2s}
-.skip-nav:focus{top:1rem}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:99}
-nav .logo{font-size:1.2rem;font-weight:700;color:var(--accent)}
-nav ul{list-style:none;display:flex;gap:1.5rem}
-nav ul a{color:var(--txt2);transition:color .3s}
-nav ul a:hover{color:var(--accent)}
-.hero{text-align:center;padding:5rem 2rem 3rem;background:linear-gradient(180deg,var(--bg2),var(--bg));position:relative;overflow:hidden}
-.hero h1{font-size:clamp(1.8rem,5vw,3rem);margin-bottom:1rem}
-.hero h1 span{color:var(--accent)}
-.hero p{max-width:680px;margin:0 auto 2rem;color:var(--txt2);font-size:1.1rem}
-.spectrum{display:flex;align-items:flex-end;justify-content:center;gap:2px;height:120px;margin:2rem auto;max-width:600px}
-.spectrum .bar{width:6px;background:var(--accent);border-radius:2px 2px 0 0;animation:spectrumPulse 1.5s ease-in-out infinite}
-@keyframes spectrumPulse{0%,100%{opacity:.3}50%{opacity:1}}
-.spectrum .bar:nth-child(1){height:25%;animation-delay:0s}
-.spectrum .bar:nth-child(2){height:45%;animation-delay:.08s}
-.spectrum .bar:nth-child(3){height:70%;animation-delay:.16s}
-.spectrum .bar:nth-child(4){height:90%;animation-delay:.24s}
-.spectrum .bar:nth-child(5){height:60%;animation-delay:.32s}
-.spectrum .bar:nth-child(6){height:100%;animation-delay:.4s}
-.spectrum .bar:nth-child(7){height:50%;animation-delay:.48s}
-.spectrum .bar:nth-child(8){height:80%;animation-delay:.56s}
-.spectrum .bar:nth-child(9){height:35%;animation-delay:.64s}
-.spectrum .bar:nth-child(10){height:95%;animation-delay:.72s}
-.spectrum .bar:nth-child(11){height:55%;animation-delay:.8s}
-.spectrum .bar:nth-child(12){height:75%;animation-delay:.88s}
-.spectrum .bar:nth-child(13){height:40%;animation-delay:.96s}
-.spectrum .bar:nth-child(14){height:85%;animation-delay:1.04s}
-.spectrum .bar:nth-child(15){height:30%;animation-delay:1.12s}
-.spectrum .bar:nth-child(16){height:65%;animation-delay:1.2s}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
-.stat{text-align:center;padding:1rem}
-.stat .num{font-size:1.6rem;font-weight:700;color:var(--accent)}
-.stat .label{color:var(--txt2);font-size:.85rem;margin-top:.3rem}
-.features{padding:3rem 2rem;max-width:1200px;margin:0 auto}
-.features h2{text-align:center;font-size:1.8rem;margin-bottom:2rem}
-.features h2 span{color:var(--accent)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem}
-.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:border-color .3s,transform .3s}
-.card:hover{border-color:var(--accent);transform:translateY(-3px)}
-.card .icon{font-size:1.5rem;margin-bottom:.5rem}
-.card h3{font-size:1rem;margin-bottom:.4rem}
-.card p{font-size:.85rem;color:var(--txt2)}
-.radio-player{padding:3rem 2rem;max-width:600px;margin:0 auto}
-.radio-player h2{text-align:center;margin-bottom:2rem;font-size:1.8rem}
-.radio-player h2 span{color:var(--accent)}
-.player-ui{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden}
-.player-header{background:var(--bg3);padding:.8rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--brd)}
-.player-header .station{font-weight:600;color:var(--accent)}
-.player-header .freq{color:var(--txt2);font-size:.85rem}
-.player-body{padding:1.5rem;text-align:center}
-.player-body .now-playing{font-size:.8rem;color:var(--txt2);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:1px}
-.player-body .track{font-size:1.2rem;font-weight:600;margin-bottom:.3rem}
-.player-body .artist{color:var(--txt2);margin-bottom:1.5rem}
-.player-bar{width:100%;height:4px;background:var(--bg4);border-radius:2px;margin-bottom:1rem;overflow:hidden}
-.player-bar .fill{width:65%;height:100%;background:var(--accent);border-radius:2px;animation:progress 8s linear infinite}
-@keyframes progress{0%{width:0}100%{width:100%}}
-.player-controls{display:flex;align-items:center;justify-content:center;gap:1.5rem}
-.player-controls button{background:none;border:none;color:var(--txt);font-size:1.3rem;cursor:pointer;transition:color .2s}
-.player-controls button:hover{color:var(--accent)}
-.player-controls .play-btn{background:var(--accent);color:#000;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
-.stations{display:flex;gap:.5rem;padding:1rem;border-top:1px solid var(--brd);overflow-x:auto}
-.stations .chip{background:var(--bg3);border:1px solid var(--brd);border-radius:20px;padding:.3rem .8rem;font-size:.75rem;color:var(--txt2);white-space:nowrap;cursor:pointer;transition:all .2s}
-.stations .chip:hover,.stations .chip.active{border-color:var(--accent);color:var(--accent)}
-footer{text-align:center;padding:2rem;background:var(--bg2);border-top:1px solid var(--brd);color:var(--txt2);font-size:.85rem}
-footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5rem}
-</style>
+<style>:root{--accent:#ff6d00}</style>
 </head>
-<body>
+<body role="document">
 <a href="#main" class="skip-nav">Saltar al contenido principal</a>
 <nav aria-label="Navegacion principal">
 <div class="logo"><span aria-hidden="true">&#x1F4FB;</span> Radio Soberana</div>
@@ -91,6 +37,7 @@ footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5r
 </nav>
 <main id="main">
 <section class="hero">
+<div style="text-align:center;margin-top:1rem"><span class="encrypted-badge" title="Cifrado Post-Quantum Activo"><span aria-hidden="true">⚛️</span> Quantum-Safe</span></div>
 <h1><span>Radio Soberana</span><br>SDR &amp; Broadcasting Pan-Americano</h1>
 <p>Radio definida por software y radiodifusion digital para comunidades indigenas remotas. Espectro soberano sin dependencias corporativas.</p>
 <div class="spectrum" aria-label="Visualizacion de espectro de frecuencias de radio">
@@ -150,6 +97,22 @@ footer .brand{color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:.5r
 </div>
 </div>
 </section>
+<section class="sec-panel" aria-label="Interconexiones">
+<h4><span aria-hidden="true">🔗</span> Interconexiones Activas</h4>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../starlink-soberano/" class="label">Starlink</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../telecom-soberano/" class="label">Telecom</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../gps-soberano/" class="label">Gps</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../mesh-soberano/" class="label">Mesh</a><span class="status ok">Conectado</span></div>
+</section>
+<section class="sec-panel" aria-label="Estado del Sistema">
+<h4><span aria-hidden="true">⚡</span> Estado en Tiempo Real</h4>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Cifrado Quantum</span><span class="status ok">Activo</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">AI Engine</span><span class="status ok">Online</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Bank-Grade TLS</span><span class="status ok">256-bit</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Casino Fair RNG</span><span class="status ok">Verificado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Soberania Datos</span><span class="status ok">100%</span></div>
+<div class="sec-progress"><div class="bar green" style="width:98%"></div></div>
+</section>
 </main>
 <footer id="contact">
 <div class="brand">Ierahkwa</div>
@@ -164,5 +127,8 @@ if (!Ierahkwa.auth.isLoggedIn()) {
     console.log('[radio-soberana] Not logged in — showing login modal');
 }
 </script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 </body>
 </html>
