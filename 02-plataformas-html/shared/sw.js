@@ -7,9 +7,9 @@
  * + Futurehead Design System (Orbitron/Exo 2 fonts, neon-green theme)
  */
 
-const CACHE_NAME = 'ierahkwa-v3.5.0';
-const STATIC_CACHE = 'ierahkwa-static-v3.5.0';
-const API_CACHE = 'ierahkwa-api-v3.5.0';
+const CACHE_NAME = 'ierahkwa-v3.6.0';
+const STATIC_CACHE = 'ierahkwa-static-v3.6.0';
+const API_CACHE = 'ierahkwa-api-v3.6.0';
 const AI_CACHE = 'ierahkwa-ai-v1.0.0';
 const OFFLINE_DATA_CACHE = 'ierahkwa-offline-data-v1.0.0';
 
@@ -21,6 +21,7 @@ const STATIC_ASSETS = [
   '/shared/ierahkwa-ai.js',
   '/shared/ierahkwa-security.js',
   '/shared/ierahkwa-quantum.js',
+  '/shared/ierahkwa-protocols.js',
   '/shared/manifest.json',
   '/icons/icon-192.svg',
   '/icons/icon-512.svg'
