@@ -22,6 +22,7 @@ const STATIC_ASSETS = [
   '/shared/ierahkwa-security.js',
   '/shared/ierahkwa-quantum.js',
   '/shared/ierahkwa-protocols.js',
+  '/shared/ierahkwa-interconnect.js',
   '/shared/manifest.json',
   '/icons/icon-192.svg',
   '/icons/icon-512.svg'
