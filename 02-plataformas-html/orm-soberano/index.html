@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
+<meta name="description" content="ORM y sistema de migraciones que reemplaza Entity Framework y EF Migrations de .NET. Query builder type-safe, migraciones versionadas con rollback automático, soporte multi-databas">
+<meta name="theme-color" content="#00e676">
+<link rel="canonical" href="https://ierahkwa.nation/orm-soberano/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="ORM Soberano — Object-Relational Mapper y Migraciones Soberanas">
+<meta property="og:description" content="ORM y sistema de migraciones que reemplaza Entity Framework y EF Migrations de .NET. Query builder type-safe, migraciones versionadas con rollback automático, soporte multi-databas">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/orm-soberano/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ORM Soberano — Object-Relational Mapper y Migraciones Soberanas">
+<meta name="twitter:description" content="ORM y sistema de migraciones que reemplaza Entity Framework y EF Migrations de .NET. Query builder type-safe, migraciones versionadas con rollback automático, soporte multi-databas">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
+<title>ORM Soberano — Object-Relational Mapper y Migraciones Soberanas</title>
+<style>:root{--accent:#00e676}</style>
+</head>
+<body role="document">
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+
+<header>
+<div class="logo">
+<div class="logo-icon" aria-hidden="true">🗄️</div>
+<h1>ORM Soberano</h1>
+</div>
+<nav aria-label="Navegacion principal">
+<a href="#dashboard" aria-current="page">Dashboard</a>
+<a href="#features">Modulos</a>
+<a href="#api">API</a>
+<a href="#pricing">Precios</a>
+</nav>
+<span class="encrypted-badge" title="Cifrado Post-Quantum Activo"><span aria-hidden="true">⚛️</span> Quantum-Safe</span>
+</header>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero" id="dashboard">
+<div class="badge"><span aria-hidden="true">🗄️</span> Object-Relational Mapper y Migraciones Soberanas</div>
+<h2><span>ORM Soberano</span></h2>
+<p>ORM y sistema de migraciones que reemplaza Entity Framework y EF Migrations de .NET. Query builder type-safe, migraciones versionadas con rollback automático, soporte multi-database (PostgreSQL, TimescaleDB, CockroachDB), cache inteligente de queries, connection pooling optimizado.</p>
+<div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
+<a href="#features" class="btn">Explorar Módulos</a>
+<a href="#api" class="btn" style="background:transparent;border:2px solid var(--accent);color:var(--accent)">API Docs</a>
+</div>
+</section>
+
+<!-- DASHBOARD METRICS -->
+<div class="stats" role="list" aria-label="Metricas del sistema">
+<div class="stat" role="listitem"><div class="val">50K</div><div class="lbl">Queries/s</div></div>
+<div class="stat" role="listitem"><div class="val"><2ms</div><div class="lbl">Avg Latencia</div></div>
+<div class="stat" role="listitem"><div class="val">0</div><div class="lbl">N+1 Queries</div></div>
+<div class="stat" role="listitem"><div class="val">Auto</div><div class="lbl">Migrate</div></div>
+<div class="stat" role="listitem"><div class="val">5</div><div class="lbl">Databases</div></div>
+<div class="stat" role="listitem"><div class="val">100%</div><div class="lbl">Type-Safe</div></div>
+</div>
+
+<!-- ARCHITECTURE -->
+<div class="section" id="architecture">
+<h2><span aria-hidden="true">🏗️</span> Arquitectura del Sistema</h2>
+<div class="sub">Infraestructura soberana de ORM Soberano</div>
+<div class="sec-panel" style="font-family:monospace;font-size:.72rem;line-height:1.8;overflow-x:auto">
+<span style="color:#00e676">┌─ APP ────────────────────────────────────────┐</span>
+│  Models · Repositories · Services                    │
+│  Type-Safe Queries · Validation · Relations          │
+<span style="color:#00e676">└──────────────────┬────────────────────────────────────┘</span>
+                   │ <span style="color:#ffd600">REST + gRPC + WebSocket</span>
+<span style="color:#ffd600">┌─ QUERY BUILDER ──────────────────────────────┐</span>
+│  Fluent API · Composable · SQL Prevention            │
+│  Joins · Subqueries · Aggregations · CTE             │
+<span style="color:#ffd600">└──────────────────┬────────────────────────────────────┘</span>
+                   │ <span style="color:#ffd600">REST + gRPC + WebSocket</span>
+<span style="color:#7c4dff">┌─ CONNECTION POOL ────────────────────────────┐</span>
+│  Auto-Sizing · Health Check · Recycling              │
+│  Prepared Statements · Transaction Mgmt              │
+<span style="color:#7c4dff">└──────────────────┬────────────────────────────────────┘</span>
+                   │ <span style="color:#ffd600">REST + gRPC + WebSocket</span>
+<span style="color:#00e676">┌─ DATABASE ───────────────────────────────────┐</span>
+│  PostgreSQL · TimescaleDB · CockroachDB              │
+│  Migrations · Seeds · Schema Diff · Backup           │
+<span style="color:#00e676"><span style="color:#00e676">└───────────────────────────────────────────────────────┘</span>
+</div>
+</div>
+
+<!-- FEATURE CARDS -->
+<div class="section-title" id="features">
+<h3>Módulos de la Plataforma</h3>
+<p>10 herramientas soberanas de grado empresarial</p>
+</div>
+<div class="grid">
+<article class="card"><div class="card-icon" aria-hidden="true">🔍</div><h4>Query Builder Type-Safe</h4><p>Constructor de queries con tipado completo en tiempo de compilación. Prevención de SQL injection por diseño, composición de queries y subqueries con API fluida.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📋</div><h4>Migraciones Versionadas con Rollback</h4><p>Sistema de migraciones con versionado semántico. Diff automático de schemas, rollback seguro, migraciones idempotentes y preview de cambios antes de aplicar.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🗃️</div><h4>Multi-Database Nativo</h4><p>Soporte nativo para PostgreSQL, TimescaleDB, CockroachDB, SQLite y MameyDB. Abstracción uniforme, dialect-specific optimizations y cross-database queries.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">💾</div><h4>Cache Inteligente de Queries</h4><p>Cache automático de queries con invalidación basada en tablas modificadas. Cache warming predictivo, hit rate monitoring y eviction policies configurables.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🔗</div><h4>Connection Pooling Optimizado</h4><p>Pool de conexiones con sizing automático basado en carga. Health checking, connection recycling, statement caching y prepared statement pooling.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📥</div><h4>Lazy/Eager Loading Automático</h4><p>Detección automática del patrón de loading óptimo. Prevención de N+1 con batch loading, explicit loading API y data loader pattern integrado.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🔄</div><h4>Transacciones Distribuidas</h4><p>Soporte para transacciones que abarcan múltiples databases. Two-phase commit, saga pattern para eventual consistency y compensating transactions.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📊</div><h4>Schema Diffing Visual</h4><p>Comparación visual de schemas entre ambientes. Generación automática de migration scripts, conflict detection y merge de cambios concurrentes.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🌱</div><h4>Seed Data Management</h4><p>Gestión de datos iniciales y de prueba. Factories, fixtures, conditional seeding por ambiente y data anonymization para ambientes de desarrollo.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📈</div><h4>Performance Profiler de Queries</h4><p>Profiling de queries con explain plans visuales. Detección de slow queries, index suggestions, query optimization hints y N+1 detection en desarrollo.</p></article>
+</div>
+
+<!-- API ENDPOINTS -->
+<div class="section" id="api">
+<h2><span aria-hidden="true">🔌</span> API Endpoints</h2>
+<div class="sub">REST + gRPC + WebSocket para integraciones</div>
+<div class="sec-panel">
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/orm/query</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Ejecutar query. Params: model, filters, includes, order, limit</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/orm/migrate</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Ejecutar migraciones. Params: direction, target_version, dry_run</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/orm/schema</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Schema actual de todas las tablas con relaciones y tipos.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/orm/connections</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Estado del connection pool: activas, idle, waiting, stats.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/orm/cache</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Gestionar cache de queries. Params: action, table, ttl</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/orm/seed</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Ejecutar seed data. Params: environment, tables, truncate</p>
+</div>
+</div>
+
+<!-- PRICING -->
+<div class="section-title" id="pricing">
+<h3>Planes Soberanos</h3>
+<p>Empieza gratis. Escala soberanamente.</p>
+</div>
+<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+<div class="card">
+<h4 style="color:var(--accent);font-size:.9rem">Guerrero</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 W/mes</div>
+<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ 1 proyecto</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Comunidad</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Docs básica</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ CLI básico</li></ul>
+</div><div class="card" style="border-color:var(--accent);box-shadow:0 0 20px rgba(0,255,65,.15)">
+<h4 style="color:var(--accent);font-size:.9rem">Cacique</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">5 W/mes</div>
+<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ 10 proyectos</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Soporte prioritario</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API completa</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Integraciones</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Analytics</li></ul>
+</div><div class="card">
+<h4 style="color:var(--accent);font-size:.9rem">Nación</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">15 W/mes</div>
+<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Ilimitado</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ SLA 99.99%</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Dedicado</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ On-premise</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ White-label</li></ul>
+</div>
+</div>
+
+</main>
+
+<footer>
+<p><span aria-hidden="true">🗄️</span> <strong>ORM Soberano</strong> &mdash; Ecosistema Digital <a href="../">Ierahkwa Ne Kanienke</a></p>
+<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">233+ plataformas soberanas &middot; 17 dominios NEXUS &middot; 72M personas &middot; 19 naciones</p>
+<div style="margin-top:.75rem">
+<span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span>
+</div>
+</footer>
+
+<script src="../shared/ierahkwa.js"></script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script src="../shared/ierahkwa-protocols.js"></script>
+<script>
+/* Offline Module — ORM Soberano v1.0.0 */
+(function(){
+  var DB_NAME='ierahkwa-orm-soberano';var DB_VER=1;
+  var STORES=["orm-schemas", "migration-history", "query-cache"];
+  var db=null;
+  function openDB(){
+    return new Promise(function(resolve,reject){
+      var req=indexedDB.open(DB_NAME,DB_VER);
+      req.onupgradeneeded=function(){
+        var d=req.result;
+        STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});
+      };
+      req.onsuccess=function(){db=req.result;resolve(db)};
+      req.onerror=function(){reject(req.error)};
+    });
+  }
+  function showOfflineBanner(show){
+    var b=document.getElementById('offline-banner');
+    if(!b){
+      b=document.createElement('div');b.id='offline-banner';
+      b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--accent);color:#09090d;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';
+      b.textContent='Modo Offline — Datos de ORM Soberano cacheados localmente para acceso sin conexión.';
+      document.body.appendChild(b);
+    }
+    b.style.transform=show?'translateY(0)':'translateY(100%)';
+  }
+  function init(){
+    openDB().then(function(){
+      window.addEventListener('online',function(){showOfflineBanner(false)});
+      window.addEventListener('offline',function(){showOfflineBanner(true)});
+      if(!navigator.onLine)showOfflineBanner(true);
+      console.log('[orm-soberano] Offline module initialized');
+    });
+  }
+  init();
+})();
+</script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
+</body>
+</html>
