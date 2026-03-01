@@ -1,10 +1,10 @@
 # Rifa Soberana — Sistema de Rifas y Sorteos
 
-> Rifa Soberana — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Sistema de Rifas y Sorteos con cifrado post-c
+> Rifa Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sistema de Rifas y Sorteos con cifrado post-c
 
 ## Resumen
 
-**Rifa Soberana** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Rifa Soberana** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

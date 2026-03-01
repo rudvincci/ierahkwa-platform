@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Streaming de Datos Soberano — Event Streaming y Message Broker Soberano** es una plataforma soberana diseñada para proveer Plataforma de event streaming que reemplaza Apache Kafka, Storm y RabbitMQ. Message broker distribuido en Rust con throughput de 2M mensajes/segundo, exactly-on a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Streaming de Datos Soberano — Event Streaming y Message Broker Soberano** es una plataforma soberana diseñada para proveer Plataforma de event streaming que reemplaza Apache Kafka, Storm y RabbitMQ. Message broker distribuido en Rust con throughput de 2M mensajes/segundo, exactly-on a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

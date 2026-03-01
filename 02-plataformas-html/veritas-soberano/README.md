@@ -9,7 +9,7 @@ Gobierno Soberano de Ierahkwa Ne Kanienke
 
 Veritas Protocol es la plataforma soberana anti-desinformacion del ecosistema Ierahkwa Ne Kanienke. Combate la desinformacion a escala continental mediante cadena de custodia inmutable para noticias, ZK-Proofs para proteger informantes anonimos, fact-check comunitario con recompensas $MATTR y deteccion de deepfakes por inteligencia artificial.
 
-Diseñado para servir a 72 millones de personas en 19 naciones y 574 naciones tribales.
+Diseñado para servir a más de mil millones de personas en 35+ países y 574 naciones tribales.
 
 ## Caracteristicas Principales
 
@@ -95,4 +95,4 @@ Todos los derechos reservados.
 
 ---
 
-*Gobierno Soberano de Ierahkwa Ne Kanienke — Soberania Digital para 72M de Personas*
+*Gobierno Soberano de Ierahkwa Ne Kanienke — Soberania Digital para 1B+ de Personas*

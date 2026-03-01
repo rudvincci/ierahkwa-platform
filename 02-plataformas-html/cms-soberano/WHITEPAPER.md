@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**CMS Soberano — Sistema de Gestión de Contenidos Headless Soberano** es una plataforma soberana diseñada para proveer CMS headless que reemplaza WordPress, Drupal y Strapi. Editor visual WYSIWYG, API-first con GraphQL y REST, contenido multilingüe para 14 idiomas indígenas, med a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**CMS Soberano — Sistema de Gestión de Contenidos Headless Soberano** es una plataforma soberana diseñada para proveer CMS headless que reemplaza WordPress, Drupal y Strapi. Editor visual WYSIWYG, API-first con GraphQL y REST, contenido multilingüe para 14 idiomas indígenas, med a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

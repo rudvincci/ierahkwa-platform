@@ -6,7 +6,7 @@
 Hospedaje en comunidades indígenas. Eco-lodges amazónicos, cabañas Aymara en Titicaca, hogans Navajo, casas Kalinago en Dominica, islas Kuna en Panamá. 90% del pago al anfitrión (Airbnb cobra hasta 20%).
 
 ### Features
-- 🏡 2,847 hospedajes en 19 países
+- 🏡 2,847 hospedajes en 35+ países
 - 🌟 Experiencias soberanas (artesanía, ceremonias, gastronomía)
 - 💎 90% al anfitrión via BDET Bank
 - ⭐ Reviews verificados en blockchain

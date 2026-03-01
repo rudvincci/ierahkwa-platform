@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Diplomacia Soberana — Relaciones Internacionales Pan-Americanas** es una plataforma soberana diseñada para proveer Plataforma diplomática para gestionar relaciones internacionales entre naciones indígenas soberanas y el mundo. a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Diplomacia Soberana — Relaciones Internacionales Pan-Americanas** es una plataforma soberana diseñada para proveer Plataforma diplomática para gestionar relaciones internacionales entre naciones indígenas soberanas y el mundo. a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

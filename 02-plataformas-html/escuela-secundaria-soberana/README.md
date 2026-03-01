@@ -1,10 +1,10 @@
 # Escuela Secundaria — Sistema de Educación Secundaria
 
-> Escuela Secundaria — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Sistema de Educación Secundaria con cifr
+> Escuela Secundaria — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sistema de Educación Secundaria con cifr
 
 ## Resumen
 
-**Escuela Secundaria** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Escolar (Educación K-12)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Escuela Secundaria** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Escolar (Educación K-12)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

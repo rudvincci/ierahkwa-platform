@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Ceremonia Virtual Soberana — Espacio Ceremonial Digital Sagrado** es una plataforma soberana diseñada para proveer PRIMERA plataforma del mundo para ceremonias indígenas virtuales. Espacios sagrados inmersivos con realidad aumentada, audio 3D, calendario lunar, protocolos cu a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Ceremonia Virtual Soberana — Espacio Ceremonial Digital Sagrado** es una plataforma soberana diseñada para proveer PRIMERA plataforma del mundo para ceremonias indígenas virtuales. Espacios sagrados inmersivos con realidad aumentada, audio 3D, calendario lunar, protocolos cu a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

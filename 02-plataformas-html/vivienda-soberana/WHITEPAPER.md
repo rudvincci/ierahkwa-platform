@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Vivienda Soberana — Programa Nacional de Vivienda** es una plataforma soberana diseñada para proveer Vivienda Soberana — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Programa Nacional de Vivienda con cifrado a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Vivienda Soberana — Programa Nacional de Vivienda** es una plataforma soberana diseñada para proveer Vivienda Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Programa Nacional de Vivienda con cifrado a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

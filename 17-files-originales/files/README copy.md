@@ -52,7 +52,7 @@ plataformas/
 │
 documentacion/
 ├── outreach/
-│   └── INDIGENOUS-OUTREACH-DATABASE.md    (72M+ contactos)
+│   └── INDIGENOUS-OUTREACH-DATABASE.md    (1B+ contactos)
 ├── mapas/
 │   ├── MAMEY-SOVEREIGN-INTERNET-MAP.md    (98 servicios mapeados)
 │   └── MAPA-COMPLETO-PLATAFORMA-SOBERANA.md
@@ -153,7 +153,7 @@ Todas las plataformas comparten:
 
 ## 🌎 ALCANCE
 
-- **72M+** personas indígenas en las Américas
+- **1B+** personas indígenas en las Américas
 - **19** países
 - **574** naciones tribales (NCAI)
 - **68** idiomas (México)

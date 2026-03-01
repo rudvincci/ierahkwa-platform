@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**FinTech Soberano — Infraestructura Financiera Digital para Naciones Soberanas** es una plataforma soberana diseñada para proveer Stack financiero completo que reemplaza la infraestructura bancaria .NET. Motor de transacciones ACID con 50,000 TPS, sistema de pagos WAMPUM, procesador de tarjetas soberano, moto a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**FinTech Soberano — Infraestructura Financiera Digital para Naciones Soberanas** es una plataforma soberana diseñada para proveer Stack financiero completo que reemplaza la infraestructura bancaria .NET. Motor de transacciones ACID con 50,000 TPS, sistema de pagos WAMPUM, procesador de tarjetas soberano, moto a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

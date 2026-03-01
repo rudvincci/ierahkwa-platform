@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Buscador Soberano — Motor de Búsqueda Full-Text para el Ecosistema Ierahkwa** es una plataforma soberana diseñada para proveer Motor de búsqueda full-text que reemplaza Elasticsearch, Algolia y Solr. Indexación de 370+ plataformas soberanas, búsqueda en 14 idiomas indígenas con stemming a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Buscador Soberano — Motor de Búsqueda Full-Text para el Ecosistema Ierahkwa** es una plataforma soberana diseñada para proveer Motor de búsqueda full-text que reemplaza Elasticsearch, Algolia y Solr. Indexación de 370+ plataformas soberanas, búsqueda en 14 idiomas indígenas con stemming a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

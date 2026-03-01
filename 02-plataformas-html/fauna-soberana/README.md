@@ -1,10 +1,10 @@
 # Fauna Soberana — Registro de Fauna Nacional
 
-> Fauna Soberana — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Registro de Fauna Nacional con cifrado post-
+> Fauna Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Registro de Fauna Nacional con cifrado post-
 
 ## Resumen
 
-**Fauna Soberana** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Tierra (Naturaleza & Ambiente)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Fauna Soberana** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Tierra (Naturaleza & Ambiente)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

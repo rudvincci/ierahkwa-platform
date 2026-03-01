@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Low-Code Platform — Plataforma Low-Code** es una plataforma soberana diseñada para proveer Low-Code Platform — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Plataforma Low-Code con cifrado post-cuán a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Low-Code Platform — Plataforma Low-Code** es una plataforma soberana diseñada para proveer Low-Code Platform — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Plataforma Low-Code con cifrado post-cuán a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

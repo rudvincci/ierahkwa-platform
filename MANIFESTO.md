@@ -97,9 +97,9 @@ If an algorithm makes decisions about a community, the community must be able to
 
 ## VI. Sin Fronteras / No Borders
 
-Esta plataforma es para **TODAS** las Americas — Norte, Sur, Centro, Caribe. 670+ millones de personas, todos con herencia indigena que corre por sus venas, reconocida o no.
+Esta plataforma es para **TODAS** las Americas — Norte, Sur, Centro, Caribe. **Mas de mil millones de personas** (1,047,334,000+), todos nacidos en esta tierra, todos con raices en este continente — mestizo, criollo, nativo, afrodescendiente, todos.
 
-This platform is for **ALL** of the Americas — North, South, Central, Caribbean. 670+ million people, all with indigenous heritage running through their veins, acknowledged or not.
+This platform is for **ALL** of the Americas — North, South, Central, Caribbean. **Over one billion people** (1,047,334,000+), all born on this land, all with roots in this continent — mestizo, criollo, native, afrodescendant, all.
 
 **Un pueblo. Una moneda. Una plataforma. Sin fronteras.**
 **One people. One currency. One platform. No borders.**
@@ -170,9 +170,9 @@ Este no es un whitepaper. No es un pitch deck. No es un documento de inversion. 
 
 This is not a whitepaper. Not a pitch deck. Not an investment document. It is a **declaration of principles** engraved in an immutable block.
 
-Ierahkwa no pide permiso para existir. Ierahkwa existe porque 72 millones de personas indigenas y 670 millones de americanos merecen una infraestructura digital que les pertenezca.
+Ierahkwa no pide permiso para existir. Ierahkwa existe porque **mas de mil millones de personas** en las Americas merecen una infraestructura digital que les pertenezca — desde Alaska hasta la Patagonia, desde Montreal hasta Montevideo, desde La Habana hasta Sao Paulo.
 
-Ierahkwa does not ask permission to exist. Ierahkwa exists because 72 million indigenous people and 670 million Americans deserve a digital infrastructure that belongs to them.
+Ierahkwa does not ask permission to exist. Ierahkwa exists because **over one billion people** in the Americas deserve a digital infrastructure that belongs to them — from Alaska to Patagonia, from Montreal to Montevideo, from Havana to Sao Paulo.
 
 > *El codigo es la intencion; la conciencia es el resultado.*
 > *Code is the intention; conscience is the result.*

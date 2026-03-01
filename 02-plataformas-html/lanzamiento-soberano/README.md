@@ -1,10 +1,10 @@
 # Lanzamiento Soberano — Centro de Lanzamiento Espacial
 
-> Lanzamiento Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Centro de Lanzamiento Espacial con cif
+> Lanzamiento Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Centro de Lanzamiento Espacial con cif
 
 ## Resumen
 
-**Lanzamiento Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Lanzamiento Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

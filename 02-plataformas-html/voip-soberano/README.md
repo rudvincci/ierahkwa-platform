@@ -1,10 +1,10 @@
-# VoIP Soberano — Telefonía IP Soberana para 72 Millones de Personas
+# VoIP Soberano — Telefonía IP Soberana para Más de Mil Millones de Personas
 
 > Sistema de telefonía IP soberano que reemplaza Twilio, Vonage y RingCentral. Protocolo SIP sobre WireGuard, códec Opus soberano, videollamadas 4K P2P, buzón de 
 
 ## Resumen
 
-**VoIP Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**VoIP Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

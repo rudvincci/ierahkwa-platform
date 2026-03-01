@@ -1,10 +1,10 @@
 # Radio Platform — Sovereign Digital Radio
 
-> Radio Platform — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Sovereign Digital Radio con cifrado post-cuá
+> Radio Platform — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sovereign Digital Radio con cifrado post-cuá
 
 ## Resumen
 
-**Radio Platform** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Orbital (Telecomunicaciones)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Radio Platform** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Orbital (Telecomunicaciones)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

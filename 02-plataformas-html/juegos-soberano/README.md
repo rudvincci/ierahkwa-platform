@@ -1,10 +1,10 @@
 # Juegos Soberano — Plataforma de Juegos
 
-> Juegos Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Plataforma de Juegos con cifrado post-cuánt
+> Juegos Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Plataforma de Juegos con cifrado post-cuánt
 
 ## Resumen
 
-**Juegos Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Entretenimiento (Juegos & Deportes)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Juegos Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Entretenimiento (Juegos & Deportes)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

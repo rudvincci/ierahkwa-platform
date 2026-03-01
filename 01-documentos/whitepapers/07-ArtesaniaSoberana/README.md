@@ -6,7 +6,7 @@
 Marketplace de artesanías indígenas auténticas. Cerámica Lenca, huipiles Maya, platería Mapuche, kené Shipibo, máscaras Boruca, molas Kuna, alebrijes Zapotec, atrapasueños Ojibwe. Cada producto con certificado de autenticidad en blockchain.
 
 ### Features
-- 🏺 23,847 productos de 4,291 artesanos en 19 países
+- 🏺 23,847 productos de 4,291 artesanos en 35+ países
 - 💎 88% al artesano via BDET Bank
 - ⛓ Certificado de autenticidad en MameyNode blockchain
 - 📦 Envío con SoberanoFreight

@@ -1,10 +1,10 @@
 # Eco Tourism — Sovereign Eco-Tourism Portal
 
-> Eco Tourism — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Sovereign Eco-Tourism Portal con cifrado post-c
+> Eco Tourism — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sovereign Eco-Tourism Portal con cifrado post-c
 
 ## Resumen
 
-**Eco Tourism** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Eco Tourism** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

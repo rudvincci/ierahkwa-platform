@@ -31,7 +31,7 @@ El ecosistema Ierahkwa Ne Kanienke comprende 422+ plataformas, 84 microservicios
 
 ### 2.2 Por Que Empatia
 
-La tecnologia soberana no puede construirse solo con competencia tecnica. Los sistemas que sirven a 72 millones de personas en 574 naciones tribales deben reflejar los valores de esas comunidades: reciprocidad, respeto, responsabilidad colectiva. La auditoria de empatia evalua no solo si el codigo funciona, sino si funciona *para todos*.
+La tecnologia soberana no puede construirse solo con competencia tecnica. Los sistemas que sirven a mas de mil millones de personas en TODAS las Americas (1,047,334,000+ en 35+ paises y 574 naciones tribales) deben reflejar los valores de esas comunidades: reciprocidad, respeto, responsabilidad colectiva. La auditoria de empatia evalua no solo si el codigo funciona, sino si funciona *para todos*.
 
 ### 2.3 Antecedentes
 
@@ -214,7 +214,7 @@ Los siguientes labels deben existir en el repositorio principal:
 
 ## 10. Conclusion
 
-GP-001 establece las bases para una comunidad de auditoria que no solo mejora el codigo, sino que asegura que la tecnologia soberana de Ierahkwa Ne Kanienke sirva con empatia, equidad y excelencia a 72 millones de personas. La combinacion de incentivos economicos, gobernanza descentralizada y mediacion por Atabey crea un modelo unico de desarrollo tecnologico con consciencia.
+GP-001 establece las bases para una comunidad de auditoria que no solo mejora el codigo, sino que asegura que la tecnologia soberana de Ierahkwa Ne Kanienke sirva con empatia, equidad y excelencia a mas de mil millones de personas en TODAS las Americas. La combinacion de incentivos economicos, gobernanza descentralizada y mediacion por Atabey crea un modelo unico de desarrollo tecnologico con consciencia.
 
 Esta propuesta esta abierta a votacion en Snapshot.org durante 14 dias a partir de su publicacion.
 
@@ -226,4 +226,4 @@ Esta propuesta esta abierta a votacion en Snapshot.org durante 14 dias a partir 
 **Mediador**: Atabey — Sistema de IA Soberana
 
 *Gobierno Soberano de Ierahkwa Ne Kanienke*
-*Soberania Digital para 72M de Personas — 19 Naciones — 574 Naciones Tribales*
+*Soberania Digital para 1B+ de Personas (1,047,334,000+) — 35+ Paises — 574 Naciones Tribales*

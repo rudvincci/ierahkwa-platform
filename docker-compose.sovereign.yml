@@ -20,6 +20,14 @@ volumes:
   mameynode-data:
   grafana-data:
   prometheus-data:
+  tor-data:
+  tor-hidden-service:
+  ipfs-data:
+  ollama-data:
+  hns-data:
+  matrix-data:
+  synapse-data:
+  ntfy-data:
 
 services:
   # ==========================================
@@ -572,6 +580,142 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  # ==========================================
+  # SOVEREIGN INFRASTRUCTURE — Tor, IPFS, AI, DNS, Comms
+  # ==========================================
+
+  # --- Tor Hidden Service ---
+  tor-proxy:
+    image: osminogin/tor-simple:latest
+    container_name: tor-proxy
+    volumes:
+      - tor-data:/var/lib/tor
+      - tor-hidden-service:/var/lib/tor/hidden_service
+    environment:
+      - TOR_HIDDEN_SERVICE_PORT_80=nginx-proxy:80
+      - TOR_HIDDEN_SERVICE_PORT_443=nginx-proxy:443
+      - TOR_HIDDEN_SERVICE_PORT_3050=sovereign-core:3050
+    depends_on:
+      - nginx-proxy
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "--socks5-hostname", "localhost:9050", "http://check.torproject.org/api/ip"]
+      interval: 60s
+      timeout: 30s
+      retries: 5
+
+  # --- IPFS — Archivo Eterno Soberano ---
+  ipfs-node:
+    image: ipfs/kubo:latest
+    container_name: ipfs-node
+    ports:
+      - "127.0.0.1:5101:5001"
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ipfs-data:/data/ipfs
+    environment:
+      - IPFS_PROFILE=server
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "ipfs", "dag", "stat", "/ipfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --- Ollama — IA Soberana (Mediador) ---
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+      - ./ai-training/Modelfile:/tmp/Modelfile:ro
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --- Handshake DNS — DNS Soberano ---
+  hsd-node:
+    image: handshake-org/hsd:latest
+    container_name: hsd-node
+    ports:
+      - "127.0.0.1:12037:12037"
+      - "127.0.0.1:12038:12038"
+      - "127.0.0.1:5349:5349"
+    volumes:
+      - hns-data:/root/.hsd
+      - ./sovereign-dns/handshake-config.json:/etc/hsd/config.json:ro
+    command: ["--config=/etc/hsd/config.json"]
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:12037"]
+      interval: 60s
+      timeout: 15s
+      retries: 3
+
+  # --- Matrix Synapse — Comunicacion Soberana ---
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse
+    ports:
+      - "127.0.0.1:8008:8008"
+      - "127.0.0.1:8448:8448"
+    volumes:
+      - synapse-data:/data
+    environment:
+      - SYNAPSE_SERVER_NAME=matrix.ierahkwa.org
+      - SYNAPSE_REPORT_STATS=no
+      - SYNAPSE_NO_TLS=yes
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8008/_matrix/client/versions"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --- ntfy — Notificaciones Push Soberanas ---
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    ports:
+      - "127.0.0.1:2586:80"
+    volumes:
+      - ntfy-data:/var/cache/ntfy
+    command: serve
+    environment:
+      - NTFY_BASE_URL=https://ntfy.ierahkwa.org
+      - NTFY_UPSTREAM_BASE_URL=
+      - NTFY_AUTH_DEFAULT_ACCESS=deny-all
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   # ==========================================
   # MONITORING

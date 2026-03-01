@@ -1,10 +1,10 @@
 # Deporte Soberano — Federación Deportiva Nacional
 
-> Deporte Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Federación Deportiva Nacional con cifrado 
+> Deporte Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Federación Deportiva Nacional con cifrado 
 
 ## Resumen
 
-**Deporte Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Entretenimiento (Juegos & Deportes)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Deporte Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Entretenimiento (Juegos & Deportes)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

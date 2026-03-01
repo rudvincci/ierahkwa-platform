@@ -1,10 +1,10 @@
 # Antivirus Soberano — Ierahkwa Ne Kanienke
 
-> Antivirus Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Protección Anti-Malware Post-Cuántica con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
+> Antivirus Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Protección Anti-Malware Post-Cuántica con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
 
 ## Resumen
 
-**Antivirus Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Escudo (Defensa & Ciberseguridad)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Antivirus Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Escudo (Defensa & Ciberseguridad)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

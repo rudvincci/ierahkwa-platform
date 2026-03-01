@@ -1,10 +1,10 @@
 # BDET Wallet — Billetera Digital WAMPUM
 
-> BDET Wallet — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Billetera Digital WAMPUM con cifrado post-cuánt
+> BDET Wallet — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Billetera Digital WAMPUM con cifrado post-cuánt
 
 ## Resumen
 
-**BDET Wallet** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Tesoro (Finanzas & Economía)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**BDET Wallet** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Tesoro (Finanzas & Economía)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

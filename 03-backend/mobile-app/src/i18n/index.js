@@ -197,7 +197,7 @@ const resources = {
       market_trending: 'Trending',
       market_sold: 'sold',
       market_start_selling: 'Start Selling',
-      market_sell_desc: 'Open your sovereign store and reach 72M citizens',
+      market_sell_desc: 'Open your sovereign store and reach 1B+ citizens across ALL the Americas',
       market_open_store: 'Open Store',
 
       // Communication
@@ -397,7 +397,7 @@ const resources = {
       market_trending: 'Tendencias',
       market_sold: 'vendidos',
       market_start_selling: 'Comienza a Vender',
-      market_sell_desc: 'Abre tu tienda soberana y alcanza 72M ciudadanos',
+      market_sell_desc: 'Abre tu tienda soberana y alcanza 1B+ ciudadanos en TODAS las Americas',
       market_open_store: 'Abrir Tienda',
 
       // Communication

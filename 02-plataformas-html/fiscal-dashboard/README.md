@@ -1,10 +1,10 @@
 # Fiscal Dashboard — Dashboard Fiscal Nacional
 
-> Fiscal Dashboard — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Dashboard Fiscal Nacional con cifrado post
+> Fiscal Dashboard — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Dashboard Fiscal Nacional con cifrado post
 
 ## Resumen
 
-**Fiscal Dashboard** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Tesoro (Finanzas & Economía)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Fiscal Dashboard** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Tesoro (Finanzas & Economía)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

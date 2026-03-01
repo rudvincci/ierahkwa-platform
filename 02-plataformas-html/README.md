@@ -1,7 +1,7 @@
 # Plataformas HTML — Ierahkwa Ne Kanienke
 
 > 190 sovereign platform UIs + Portal Central, organized into 15 NEXUS mega-portals.
-> Digital sovereignty for 72M indigenous people across 19 nations and 574 tribal nations.
+> Digital sovereignty for 1B+ people across the Americas across 35+ countries and 574 tribal nations.
 > v3.9.0 — 26 Feb 2026
 
 ## Architecture

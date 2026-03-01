@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Telecom Soberano — Telecomunicaciones Unificadas Pan-Americanas** es una plataforma soberana diseñada para proveer La columna vertebral soberana de telecomunicaciones que unifica TODA la infraestructura de comunicaciones para 72M de personas indígenas en 19 países. Una red, cero dependencia de AT&T, Verizon, Telefónica o cualquier corporación. a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Telecom Soberano — Telecomunicaciones Unificadas Pan-Americanas** es una plataforma soberana diseñada para proveer La columna vertebral soberana de telecomunicaciones que unifica TODA la infraestructura de comunicaciones para 1B+ de personas indígenas en 35+ países. Una red, cero dependencia de AT&T, Verizon, Telefónica o cualquier corporación. a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

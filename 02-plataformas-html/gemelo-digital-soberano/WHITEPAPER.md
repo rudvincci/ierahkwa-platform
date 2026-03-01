@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Gemelo Digital Soberano — National Digital Twin Simulator | Ierahkwa** es una plataforma soberana diseñada para proveer Plataforma soberana de Gemelo Digital para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Gemelo Digital Soberano — National Digital Twin Simulator | Ierahkwa** es una plataforma soberana diseñada para proveer Plataforma soberana de Gemelo Digital para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 
@@ -131,7 +131,7 @@ Módulo integrado que proporciona funcionalidad soberana sin dependencias extern
 Implementado con arquitectura offline-first y protección post-quantum.
 Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
 
-### 8. Simuladores Soberanos Diez motores de simulación que replican cada dimensión de las 19 naciones indígenas soberanas.
+### 8. Simuladores Soberanos Diez motores de simulación que replican cada dimensión de las 35+ países indígenas soberanas.
 
 Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
 Implementado con arquitectura offline-first y protección post-quantum.

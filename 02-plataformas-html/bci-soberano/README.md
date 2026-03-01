@@ -1,10 +1,10 @@
 # BCI Soberano — Interfaz Cerebro-Computadora
 
-> BCI Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Interfaz Cerebro-Computadora con cifrado post-
+> BCI Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Interfaz Cerebro-Computadora con cifrado post-
 
 ## Resumen
 
-**BCI Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Cerebro (AI & Quantum Computing)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**BCI Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Cerebro (AI & Quantum Computing)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

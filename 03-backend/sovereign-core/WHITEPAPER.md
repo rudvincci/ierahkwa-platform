@@ -7,7 +7,7 @@
 
 ## 1. Problema
 
-El ecosistema Ierahkwa Ne Kanienke comprende 441+ plataformas HTML distribuidas en 18 NEXUS mega-portales que sirven a 72 millones de personas indigenas en 19 naciones y 574 naciones tribales. Cada plataforma necesita funcionalidad de backend: autenticacion, almacenamiento de contenido, transacciones financieras, mensajeria, votaciones y analiticas.
+El ecosistema Ierahkwa Ne Kanienke comprende 441+ plataformas HTML distribuidas en 18 NEXUS mega-portales que sirven a mas de 1 billion de personas en 35+ paises y 574 naciones tribales. Cada plataforma necesita funcionalidad de backend: autenticacion, almacenamiento de contenido, transacciones financieras, mensajeria, votaciones y analiticas.
 
 Crear 441 servicios backend independientes presenta problemas insuperables:
 
@@ -173,7 +173,7 @@ Sovereign Core esta disenado para escalar horizontalmente:
 
 ### 6.2 PostgreSQL como Cuello de Botella
 
-Para el volumen actual (441 plataformas, ~72M usuarios potenciales):
+Para el volumen actual (441 plataformas, ~1B+ usuarios potenciales):
 
 - **Read replicas**: Las consultas de lectura (analytics, content listing, public profiles) pueden dirigirse a replicas.
 - **Particionamiento**: La tabla `content` puede particionarse por `platform` si el volumen lo requiere.

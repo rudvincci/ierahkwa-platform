@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Big Data Soberano — Procesamiento Masivo de Datos para Soberanía Digital** es una plataforma soberana diseñada para proveer Framework de procesamiento masivo que reemplaza Apache Hadoop, Spark y Flink. Motor MapReduce soberano en Rust, procesamiento en memoria distribuido, pipeline E a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Big Data Soberano — Procesamiento Masivo de Datos para Soberanía Digital** es una plataforma soberana diseñada para proveer Framework de procesamiento masivo que reemplaza Apache Hadoop, Spark y Flink. Motor MapReduce soberano en Rust, procesamiento en memoria distribuido, pipeline E a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

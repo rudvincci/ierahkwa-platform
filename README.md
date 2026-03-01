@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">Sovereign Government of Ierahkwa Ne Kanienke</h1>
-<h3 align="center">Digital Sovereignty for 72 Million Indigenous People</h3>
+<h3 align="center">Digital Sovereignty for 1 Billion+ People Across All the Americas</h3>
 
 <p align="center">
   <a href="https://github.com/rudvincci/ierahkwa-platform/actions"><img src="https://github.com/rudvincci/ierahkwa-platform/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
@@ -22,12 +22,12 @@
 </p>
 
 <p align="center">
-  <strong>422+ sovereign platforms replacing Big Tech for indigenous communities across 19 countries.</strong><br>
+  <strong>422+ sovereign platforms replacing Big Tech for ALL communities across 35+ countries in the Americas.</strong><br>
   <strong>Zero taxes. Free schools. Free hospitals. Post-quantum encryption.</strong>
 </p>
 
 <p align="center">
-  <em>422+ plataformas soberanas reemplazando Big Tech para comunidades indigenas en 19 paises.</em><br>
+  <em>422+ plataformas soberanas reemplazando Big Tech para TODAS las comunidades en 35+ paises de las Americas.</em><br>
   <em>Cero impuestos. Escuelas gratis. Hospitales gratis. Encriptacion post-cuantica.</em>
 </p>
 
@@ -56,7 +56,7 @@
 
 ## Overview
 
-The **Ierahkwa Ne Kanienke Digital Platform** is a complete sovereign technology ecosystem serving **72 million indigenous people** across **19 countries** in the Americas. It replaces Big Tech dependency with self-governed alternatives — from social media and email to banking, voting, and education.
+The **Ierahkwa Ne Kanienke Digital Platform** is a complete sovereign technology ecosystem serving **over 1 billion people** across **35+ countries** in ALL the Americas — North, South, Central, and the Caribbean. It replaces Big Tech dependency with self-governed alternatives — from social media and email to banking, voting, and education. No borders, one platform, one people.
 
 All services run on **MameyNode**, a post-quantum blockchain with **12,847 TPS** and **Proof-of-Sovereignty** consensus. Citizens pay **zero taxes**; platform transaction fees (5-12%) automatically fund free schools, hospitals, and infrastructure.
 
@@ -64,8 +64,8 @@ All services run on **MameyNode**, a post-quantum blockchain with **12,847 TPS**
 
 | Metric | Value |
 |--------|-------|
-| Indigenous people served | **72M+** across the Americas |
-| Countries | **19** |
+| People served | **1,047,334,000+** (1B+) across ALL the Americas |
+| Countries | **35+** (North, South, Central America + Caribbean) |
 | Tribal nations | **574** (NCAI recognized) |
 | Platforms | **422+** across **18 NEXUS** portals |
 | IGT Sovereign Tokens | **103** |
@@ -399,7 +399,7 @@ ierahkwa-platform/
 | Layer | Technology | Details |
 |-------|-----------|---------|
 | **Blockchain** | MameyNode v4.2 | 12,847 TPS, Proof-of-Sovereignty, Chain ID 777777 |
-| **Token** | Wampum (WMP) | 10T max supply, 0.1% burn, governance + gas — serving 670M+ people across all Americas |
+| **Token** | Wampum (WMP) | 10T max supply, 0.1% burn, governance + gas — serving 1B+ people across ALL the Americas |
 | **Stablecoin** | SICBDC | Central bank digital currency |
 | **Backend** | .NET 9 | 139 framework projects + 76 microservices (+ 8 en desarrollo) |
 | **Backend** | Node.js 22 | 20 sovereign services |
@@ -553,8 +553,8 @@ Free for all indigenous communities and sovereign nations. Commercial use by non
 ---
 
 <p align="center">
-  <strong>Built for sovereignty. Built for 72 million indigenous people across the Americas.</strong><br>
-  <em>Construido para la soberania. Construido para 72 millones de personas indigenas en las Americas.</em><br><br>
+  <strong>Built for sovereignty. Built for over 1 billion people across ALL the Americas.</strong><br>
+  <em>Construido para la soberania. Construido para mas de mil millones de personas en TODAS las Americas.</em><br><br>
   <em>Skennen'kowa — The Great Peace</em><br>
   <em>Niawenhko:wa — We are grateful</em>
 </p>

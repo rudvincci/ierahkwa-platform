@@ -1,10 +1,10 @@
 # VPN Soberana — Red Privada Virtual Soberana
 
-> Red privada virtual con 847 servidores en 19 naciones soberanas. Cifrado post-cuántico Kyber-768, protocolo WireGuard modificado, zero-knowledge logs y kill swi
+> Red privada virtual con 847 servidores en 35+ países soberanas. Cifrado post-cuántico Kyber-768, protocolo WireGuard modificado, zero-knowledge logs y kill swi
 
 ## Resumen
 
-**VPN Soberana** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Orbital (Telecomunicaciones)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**VPN Soberana** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Orbital (Telecomunicaciones)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

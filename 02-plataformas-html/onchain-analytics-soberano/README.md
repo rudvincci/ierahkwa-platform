@@ -1,10 +1,10 @@
 # On-Chain Analytics Soberano — Ierahkwa Ne Kanienke
 
-> On-Chain Analytics Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Análisis Profundo de Blockchain en Tiempo Real con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
+> On-Chain Analytics Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Análisis Profundo de Blockchain en Tiempo Real con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
 
 ## Resumen
 
-**On-Chain Analytics Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Cerebro (AI & Quantum Computing)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**On-Chain Analytics Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Cerebro (AI & Quantum Computing)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

@@ -96,7 +96,7 @@
 |---|---|---|
 | **COICA** — Coordinadora de Organizaciones Indígenas de la Cuenca Amazónica | 9 Amazonian countries | coicamazonia.org |
 | **CAOI** — Coordinadora Andina de Organizaciones Indígenas | Andean countries | — |
-| **FILAC** — Fondo para el Desarrollo de los Pueblos Indígenas | 19 countries + observers | filac.org |
+| **FILAC** — Fondo para el Desarrollo de los Pueblos Indígenas | 35+ countries + observers | filac.org |
 
 ### National Organizations (Key)
 | Organization | Country | Contact |
@@ -148,7 +148,7 @@
 
 ### Wave 1 — Immediate (This Week)
 1. **NCAI** (USA) — ncai.org/contact — They have Center for Tribal Digital Sovereignty
-2. **FILAC** (International) — filac.org — 19 countries, UN observer
+2. **FILAC** (International) — filac.org — 35+ countries, UN observer
 3. **COICA** (Amazon) — coicamazonia.org — 9 countries
 4. **AFN** (Canada) — afn.ca — 634 First Nations
 5. **BDPI Peru** — bdpi@cultura.gob.pe — Direct government database

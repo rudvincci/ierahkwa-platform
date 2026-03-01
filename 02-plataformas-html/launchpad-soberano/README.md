@@ -1,10 +1,10 @@
 # Launchpad Soberano — Ierahkwa Ne Kanienke
 
-> Launchpad Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Plataforma de Lanzamiento de Tokens y Proyectos con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
+> Launchpad Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Plataforma de Lanzamiento de Tokens y Proyectos con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
 
 ## Resumen
 
-**Launchpad Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Launchpad Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

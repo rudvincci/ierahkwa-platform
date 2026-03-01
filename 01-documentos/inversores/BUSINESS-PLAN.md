@@ -1,7 +1,7 @@
 # Ierahkwa / Red Soberana — Business Plan 2026-2031
 
 ## Executive Summary
-Red Soberana is the first complete sovereign digital infrastructure for indigenous peoples. 296 platforms, proprietary blockchain, central bank, 42 AI engines, satellite telecom — all built, all sovereign. Market: 72M indigenous people in the Americas, 476M globally.
+Red Soberana is the first complete sovereign digital infrastructure for indigenous peoples. 296 platforms, proprietary blockchain, central bank, 42 AI engines, satellite telecom — all built, all sovereign. Market: 1B+ people across ALL the Americas, 476M globally.
 
 ## Problem
 - Big Tech extracts $4.7B/year from indigenous communities (data, fees, dependency)
@@ -16,7 +16,7 @@ Complete digital nation infrastructure: email, social, commerce, banking, health
 ## Market Size
 | Segment | Population | ARPU Est. | TAM |
 |---------|-----------|-----------|-----|
-| Americas Indigenous | 72M | $120/yr | $8.6B |
+| All Americas (1,047,334,000+) | 1B+ | $120/yr | $125B+ |
 | Global Indigenous | 476M | $80/yr | $38B |
 | Adjacent (rural, underserved) | 1.2B | $40/yr | $48B |
 
@@ -40,7 +40,7 @@ Complete digital nation infrastructure: email, social, commerce, banking, health
 
 ## Go-to-Market
 - Phase 1 (Q1-Q2 2026): Pilot with NCAI (5 tribal nations), FILAC (3 countries)
-- Phase 2 (Q3-Q4 2026): Expand to 19 countries via FILAC/COICA/CICA
+- Phase 2 (Q3-Q4 2026): Expand to 35+ countries via FILAC/COICA/CICA
 - Phase 3 (2027): 1M users, 78 new platforms, satellite telecom launch
 - Phase 4 (2028-2031): 10M+ users, global indigenous network, full 296 platforms
 

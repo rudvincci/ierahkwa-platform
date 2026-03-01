@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Voto Soberano** es la plataforma de votacion digital en blockchain del ecosistema Ierahkwa Ne Kanienke. Proporciona elecciones justas, transparentes y verificables para 72 millones de ciudadanos indigenas en 19 naciones y 574 tribus. Opera con encriptacion post-quantum CRYSTALS-Kyber-768, balotaje anonimo mediante protocolos de mezcla criptografica, y registro inmutable de cada voto en MameyChain.
+**Voto Soberano** es la plataforma de votacion digital en blockchain del ecosistema Ierahkwa Ne Kanienke. Proporciona elecciones justas, transparentes y verificables para más de mil millones de ciudadanos indigenas en 35+ países y 574 tribus. Opera con encriptacion post-quantum CRYSTALS-Kyber-768, balotaje anonimo mediante protocolos de mezcla criptografica, y registro inmutable de cada voto en MameyChain.
 
 ## 1. Problema
 
@@ -227,7 +227,7 @@ Los agentes protegen la integridad electoral 24/7. Datos de aprendizaje almacena
 | Parametro | Valor |
 |-----------|-------|
 | Tipo | Proof-of-Authority + BFT |
-| Nodos validadores | 256 (distribuidos en 19 naciones) |
+| Nodos validadores | 256 (distribuidos en 35+ países) |
 | Tiempo de bloque | ~2 segundos |
 | Throughput | 10,000 TPS |
 | Token nativo | IGT (Indigenous Governance Token) |
@@ -296,7 +296,7 @@ Produccion:
 ├── WAF: Bot challenge activo
 ├── Cache: Static 7d, HTML 1h
 ├── Rate Limit: 100 req/min API
-├── MameyChain: 256 nodos en 19 naciones
+├── MameyChain: 256 nodos en 35+ países
 └── Mixnet: 3 capas de mezcla independientes
 ```
 
@@ -316,7 +316,7 @@ Produccion:
 
 ## 13. Conclusion
 
-**Voto Soberano** representa el pilar democratico de la infraestructura digital soberana de Ierahkwa Ne Kanienke. Construida sin dependencias externas, con encriptacion post-quantum, balotaje anonimo y registro inmutable en MameyChain, esta plataforma demuestra que la democracia digital soberana es alcanzable para los 72 millones de ciudadanos indigenas del mundo.
+**Voto Soberano** representa el pilar democratico de la infraestructura digital soberana de Ierahkwa Ne Kanienke. Construida sin dependencias externas, con encriptacion post-quantum, balotaje anonimo y registro inmutable en MameyChain, esta plataforma demuestra que la democracia digital soberana es alcanzable para los más de mil millones de ciudadanos indigenas del mundo.
 
 La combinacion de blockchain inmutable, criptografia post-quantum, inteligencia artificial protectora y diseno accesible crea un sistema electoral que no puede ser manipulado, censurado o controlado por entidades externas.
 

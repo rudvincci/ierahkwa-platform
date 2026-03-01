@@ -36,12 +36,26 @@ cd "$SCRIPT_DIR"
 # Banner
 # -----------------------------------------------------------
 echo -e "${PURPLE}${BOLD}"
-echo "  =============================================="
-echo "   IERAHKWA NE KANIENKE — Despliegue Soberano  "
-echo "   Gobierno Soberano — Nacion Digital           "
-echo "   19 Naciones | 72M Personas | 574 Tribus     "
-echo "  =============================================="
+cat << 'GENESIS'
+
+    ██╗███████╗██████╗  █████╗ ██╗  ██╗██╗  ██╗██╗    ██╗ █████╗
+    ██║██╔════╝██╔══██╗██╔══██╗██║  ██║██║ ██╔╝██║    ██║██╔══██╗
+    ██║█████╗  ██████╔╝███████║███████║█████╔╝ ██║ █╗ ██║███████║
+    ██║██╔══╝  ██╔══██╗██╔══██║██╔══██║██╔═██╗ ██║███╗██║██╔══██║
+    ██║███████╗██║  ██║██║  ██║██║  ██║██║  ██╗╚███╔███╔╝██║  ██║
+    ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═══╝╚═╝ ╚═╝  ╚═╝
+
+    N E   K A N I E N K E  —  G E N E S I S   B O O T
+    ═══════════════════════════════════════════════════
+    Gobierno Soberano — Nacion Digital
+    35+ Naciones | 1B+ Personas | 574 Tribus
+    Soberania Tecnologica para TODAS las Americas
+    ═══════════════════════════════════════════════════
+
+GENESIS
 echo -e "${NC}"
+echo -e "${CYAN}  Iniciando secuencia Genesis...${NC}"
+sleep 1
 
 # -----------------------------------------------------------
 # 1. Verificar prerequisitos
@@ -81,6 +95,61 @@ if ! docker info &>/dev/null 2>&1; then
     exit 1
 fi
 log_ok "Docker daemon activo"
+
+# -----------------------------------------------------------
+# 1b. Verificar servicios soberanos opcionales
+# -----------------------------------------------------------
+log_step "1b/6 — Verificando servicios soberanos"
+
+# Tor
+if command -v tor &>/dev/null; then
+    log_ok "Tor encontrado: $(tor --version | head -1)"
+    TOR_AVAILABLE=true
+else
+    log_warn "Tor no instalado — Hidden services desactivados"
+    log_info "  Instala Tor: sudo apt install tor"
+    TOR_AVAILABLE=false
+fi
+
+# IPFS
+if command -v ipfs &>/dev/null; then
+    log_ok "IPFS encontrado: $(ipfs version 2>/dev/null | head -1)"
+    IPFS_AVAILABLE=true
+else
+    log_warn "IPFS no instalado — Archivo eterno desactivado"
+    log_info "  Instala IPFS: https://docs.ipfs.tech/install/"
+    IPFS_AVAILABLE=false
+fi
+
+# Ollama (AI Soberano)
+if command -v ollama &>/dev/null; then
+    log_ok "Ollama encontrado: $(ollama --version 2>/dev/null | head -1)"
+    OLLAMA_AVAILABLE=true
+else
+    log_warn "Ollama no instalado — IA Soberana desactivada"
+    log_info "  Instala Ollama: https://ollama.ai/download"
+    OLLAMA_AVAILABLE=false
+fi
+
+# Handshake DNS
+if command -v hsd &>/dev/null; then
+    log_ok "Handshake DNS encontrado"
+    HNS_AVAILABLE=true
+else
+    log_warn "Handshake DNS no instalado — DNS soberano desactivado"
+    log_info "  Instala HSD: npm i -g hsd"
+    HNS_AVAILABLE=false
+fi
+
+# Meshtastic
+if command -v meshtastic &>/dev/null || python3 -c "import meshtastic" 2>/dev/null; then
+    log_ok "Meshtastic encontrado — LoRa mesh activo"
+    MESH_AVAILABLE=true
+else
+    log_warn "Meshtastic no instalado — Mesh offline desactivado"
+    log_info "  Instala: pip install meshtastic"
+    MESH_AVAILABLE=false
+fi
 
 # -----------------------------------------------------------
 # 2. Configurar variables de entorno
@@ -280,6 +349,34 @@ echo -e "  ───────────────────────
 echo -e "  Prometheus            ${CYAN}http://localhost:9090${NC}"
 echo -e "  Grafana               ${CYAN}http://localhost:3000${NC}"
 echo ""
+echo -e "  ${BOLD}SERVICIOS SOBERANOS${NC}"
+echo -e "  ───────────────────────────────────────────────"
+if [ "$TOR_AVAILABLE" = true ]; then
+    echo -e "  Tor Hidden Service   ${GREEN}ACTIVO${NC}  .onion"
+else
+    echo -e "  Tor Hidden Service   ${YELLOW}DESACTIVADO${NC}"
+fi
+if [ "$IPFS_AVAILABLE" = true ]; then
+    echo -e "  IPFS Node            ${GREEN}ACTIVO${NC}  Archivo Eterno"
+else
+    echo -e "  IPFS Node            ${YELLOW}DESACTIVADO${NC}"
+fi
+if [ "$OLLAMA_AVAILABLE" = true ]; then
+    echo -e "  Ollama AI            ${GREEN}ACTIVO${NC}  Mediador Soberano"
+else
+    echo -e "  Ollama AI            ${YELLOW}DESACTIVADO${NC}"
+fi
+if [ "$HNS_AVAILABLE" = true ]; then
+    echo -e "  Handshake DNS        ${GREEN}ACTIVO${NC}  .ierahkwa TLD"
+else
+    echo -e "  Handshake DNS        ${YELLOW}DESACTIVADO${NC}"
+fi
+if [ "$MESH_AVAILABLE" = true ]; then
+    echo -e "  LoRa Mesh            ${GREEN}ACTIVO${NC}  Comunicacion Offline"
+else
+    echo -e "  LoRa Mesh            ${YELLOW}DESACTIVADO${NC}"
+fi
+echo ""
 echo -e "  ${BOLD}PLATAFORMAS HTML${NC}"
 echo -e "  ───────────────────────────────────────────────"
 echo -e "  Portal Principal      ${CYAN}http://localhost/index.html${NC}"
@@ -298,5 +395,17 @@ echo -e "  Estado:       $COMPOSE_CMD -f $COMPOSE_FILE ps"
 echo -e "  Detener:      $COMPOSE_CMD -f $COMPOSE_FILE down"
 echo -e "  Reiniciar:    $COMPOSE_CMD -f $COMPOSE_FILE restart <servicio>"
 echo ""
-echo -e "${GREEN}${BOLD}  Soberania Digital Desplegada.${NC}"
+echo -e "${GREEN}${BOLD}"
+echo "  ╔══════════════════════════════════════════════╗"
+echo "  ║                                              ║"
+echo "  ║   G E N E S I S   B O O T   C O M P L E T E ║"
+echo "  ║                                              ║"
+echo "  ║   Soberania Digital Desplegada.              ║"
+echo "  ║   La red no puede ser apagada.               ║"
+echo "  ║   Los datos pertenecen al pueblo.            ║"
+echo "  ║                                              ║"
+echo "  ║   Ierahkwa Ne Kanienke — Siempre Soberana    ║"
+echo "  ║                                              ║"
+echo "  ╚══════════════════════════════════════════════╝"
+echo -e "${NC}"
 echo ""

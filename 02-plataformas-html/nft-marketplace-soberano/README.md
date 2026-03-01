@@ -1,10 +1,10 @@
 # NFT Marketplace Soberano — Ierahkwa Ne Kanienke
 
-> NFT Marketplace Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Mercado de Arte Digital y Coleccionables Indígenas con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
+> NFT Marketplace Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Mercado de Arte Digital y Coleccionables Indígenas con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
 
 ## Resumen
 
-**NFT Marketplace Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Comercio (Comercio & Logística)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**NFT Marketplace Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Comercio (Comercio & Logística)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

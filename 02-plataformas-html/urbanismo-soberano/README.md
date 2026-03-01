@@ -1,10 +1,10 @@
 # Urbanismo Soberano — Desarrollo Urbano Nacional
 
-> Urbanismo Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Desarrollo Urbano Nacional con cifrado p
+> Urbanismo Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Desarrollo Urbano Nacional con cifrado p
 
 ## Resumen
 
-**Urbanismo Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Urbe (Ciudad Inteligente)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Urbanismo Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Urbe (Ciudad Inteligente)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

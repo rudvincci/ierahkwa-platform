@@ -1,10 +1,10 @@
 # Runtime Soberano — Motor de Ejecución Nativo Post-Cuántico
 
-> Runtime nativo basado en Rust y WebAssembly que reemplaza Microsoft .NET CLR. Compilación AOT, JIT soberano con optimización para 19 naciones, garbage collector de baja latencia (<
+> Runtime nativo basado en Rust y WebAssembly que reemplaza Microsoft .NET CLR. Compilación AOT, JIT soberano con optimización para 35+ países, garbage collector de baja latencia (<
 
 ## Resumen
 
-**Runtime Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Runtime Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

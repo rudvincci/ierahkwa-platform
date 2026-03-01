@@ -1,10 +1,10 @@
 # Telecom Soberano — Telecomunicaciones Unificadas Pan-Americanas
 
-> La columna vertebral soberana de telecomunicaciones que unifica TODA la infraestructura de comunicaciones para 72M de personas indígenas en 19 países. Una red, cero dependencia de AT&T, Verizon, Telefónica o cualquier corporación.
+> La columna vertebral soberana de telecomunicaciones que unifica TODA la infraestructura de comunicaciones para 1B+ de personas indígenas en 35+ países. Una red, cero dependencia de AT&T, Verizon, Telefónica o cualquier corporación.
 
 ## Resumen
 
-**TelecomSoberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Orbital (Telecomunicaciones)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**TelecomSoberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Orbital (Telecomunicaciones)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

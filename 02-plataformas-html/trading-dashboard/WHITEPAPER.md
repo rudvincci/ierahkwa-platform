@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Trading Dashboard — Dashboard de Trading Soberano** es una plataforma soberana diseñada para proveer Trading Dashboard — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Dashboard de Trading Soberano con cifrado a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Trading Dashboard — Dashboard de Trading Soberano** es una plataforma soberana diseñada para proveer Trading Dashboard — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Dashboard de Trading Soberano con cifrado a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

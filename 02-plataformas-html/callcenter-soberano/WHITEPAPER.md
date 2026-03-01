@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Call Center Soberano — Centro de Contacto Omnicanal para Naciones Soberanas** es una plataforma soberana diseñada para proveer Centro de contacto omnicanal que reemplaza Asterisk, FreePBX y VICIdial. PBX soberano con VoIP SIP/WebRTC, IVR inteligente con IA en 14 idiomas indígenas, graba a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Call Center Soberano — Centro de Contacto Omnicanal para Naciones Soberanas** es una plataforma soberana diseñada para proveer Centro de contacto omnicanal que reemplaza Asterisk, FreePBX y VICIdial. PBX soberano con VoIP SIP/WebRTC, IVR inteligente con IA en 14 idiomas indígenas, graba a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

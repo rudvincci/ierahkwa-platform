@@ -1,10 +1,10 @@
 # Streaming Estudio — Estudio de Streaming
 
-> Streaming Estudio — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Estudio de Streaming con cifrado post-cuá
+> Streaming Estudio — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Estudio de Streaming con cifrado post-cuá
 
 ## Resumen
 
-**Streaming Estudio** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Voces (Comunicación & Media)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Streaming Estudio** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Voces (Comunicación & Media)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

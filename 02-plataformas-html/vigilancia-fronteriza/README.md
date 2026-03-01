@@ -4,7 +4,7 @@
 
 ## Resumen
 
-**Redireccionando...** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Escudo (Defensa & Ciberseguridad)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Redireccionando...** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Escudo (Defensa & Ciberseguridad)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

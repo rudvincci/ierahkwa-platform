@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Becas Escolares — Sistema de Becas Educativas** es una plataforma soberana diseñada para proveer Becas Escolares — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Sistema de Becas Educativas con cifrado pos a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Becas Escolares — Sistema de Becas Educativas** es una plataforma soberana diseñada para proveer Becas Escolares — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sistema de Becas Educativas con cifrado pos a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

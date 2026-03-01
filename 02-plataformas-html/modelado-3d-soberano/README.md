@@ -1,10 +1,10 @@
 # Modelado 3D — Modelado 3D Soberano
 
-> Modelado 3D — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Modelado 3D Soberano con cifrado post-cuántico 
+> Modelado 3D — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Modelado 3D Soberano con cifrado post-cuántico 
 
 ## Resumen
 
-**Modelado 3D** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Modelado 3D** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

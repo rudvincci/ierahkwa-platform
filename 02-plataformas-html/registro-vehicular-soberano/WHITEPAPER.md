@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Registro Vehicular Soberano — Vehículos, Licencias y Tránsito** es una plataforma soberana diseñada para proveer Registro Vehicular Soberano — plataforma soberana para registro de vehículos, licencias de conducir e infracciones de tránsito con blockchain MameyNode y cifrado post-cuántico. a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Registro Vehicular Soberano — Vehículos, Licencias y Tránsito** es una plataforma soberana diseñada para proveer Registro Vehicular Soberano — plataforma soberana para registro de vehículos, licencias de conducir e infracciones de tránsito con blockchain MameyNode y cifrado post-cuántico. a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

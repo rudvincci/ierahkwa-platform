@@ -1,10 +1,10 @@
 # DApps Soberano — Ierahkwa Ne Kanienke
 
-> DApps Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Framework para Aplicaciones Descentralizadas Soberanas con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
+> DApps Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Framework para Aplicaciones Descentralizadas Soberanas con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
 
 ## Resumen
 
-**DApps Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**DApps Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

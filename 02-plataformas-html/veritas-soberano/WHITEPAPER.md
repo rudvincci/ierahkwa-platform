@@ -8,7 +8,7 @@ Gobierno Soberano de Ierahkwa Ne Kanienke
 
 ## 1. Resumen Ejecutivo
 
-Veritas Protocol es un protocolo descentralizado de verificacion de informacion construido sobre la blockchain MameyNode. Su objetivo es eliminar la desinformacion en los territorios de las 19 naciones soberanas mediante una combinacion de pruebas de conocimiento cero (ZK-Proofs), verificacion comunitaria incentivada, deteccion automatizada de deepfakes y cadena de custodia inmutable para contenido informativo.
+Veritas Protocol es un protocolo descentralizado de verificacion de informacion construido sobre la blockchain MameyNode. Su objetivo es eliminar la desinformacion en los territorios de las 35+ países soberanas mediante una combinacion de pruebas de conocimiento cero (ZK-Proofs), verificacion comunitaria incentivada, deteccion automatizada de deepfakes y cadena de custodia inmutable para contenido informativo.
 
 Este documento describe la motivacion, arquitectura tecnica, protocolos criptograficos, modelo de amenazas y economia de tokens que sustentan Veritas Protocol.
 
@@ -99,7 +99,7 @@ Los informantes necesitan probar la legitimidad de su informacion sin revelar su
 
 Veritas Protocol utiliza ZK-SNARKs con el esquema Groth16:
 
-1. **Setup**: Generacion de parametros de confianza mediante ceremonia multi-partido (MPC) con participantes de las 19 naciones
+1. **Setup**: Generacion de parametros de confianza mediante ceremonia multi-partido (MPC) con participantes de las 35+ países
 2. **Circuito**: El informante genera una prueba de que:
    - Posee credenciales validas (sin revelar cuales)
    - La informacion proviene de una fuente con acceso verificado
@@ -201,7 +201,7 @@ Cada modificacion, republication o cita genera un nuevo registro enlazado al ant
 
 ### 7.2 Entrenamiento Soberano
 
-Los modelos se entrenan exclusivamente con datos consentidos de las 19 naciones. No se utilizan datasets externos que puedan contener sesgos coloniales. Reentrenamiento trimestral con nuevas tecnicas de manipulacion detectadas.
+Los modelos se entrenan exclusivamente con datos consentidos de las 35+ países. No se utilizan datasets externos que puedan contener sesgos coloniales. Reentrenamiento trimestral con nuevas tecnicas de manipulacion detectadas.
 
 ## 8. Modelo de Amenazas
 
@@ -213,7 +213,7 @@ Los modelos se entrenan exclusivamente con datos consentidos de las 19 naciones.
 | Manipulacion de consenso | Seleccion aleatoria + multi-nivel + DAO dispute |
 | Compromiso de ZK-Proof | Ceremonia MPC multi-nacion + actualizacion de parametros |
 | Deepfake adversarial | Modelos ensemble + reentrenamiento continuo |
-| Censura por nodo mayoritario | Distribucion en 19 naciones independientes |
+| Censura por nodo mayoritario | Distribucion en 35+ países independientes |
 | Exfiltracion de identidad de informante | Enrutamiento onion + ZK-Proofs + timing jitter |
 
 ### 8.2 Analisis de Seguridad
@@ -239,7 +239,7 @@ Los modelos se entrenan exclusivamente con datos consentidos de las 19 naciones.
 | Beta | Q2 2026 | ZK-Whistleblower + Anti-Deepfake v1 |
 | v1.0 | Q3 2026 | Fact-check comunitario + $MATTR rewards |
 | v2.0 | Q4 2026 | Alertas ciudadanas + Educacion mediatica |
-| v3.0 | Q1 2027 | Interoperabilidad con 19 naciones completa |
+| v3.0 | Q1 2027 | Interoperabilidad con 35+ países completa |
 
 ## 11. Conclusion
 
@@ -248,4 +248,4 @@ Veritas Protocol transforma la verificacion de informacion de un servicio corpor
 ---
 
 *Gobierno Soberano de Ierahkwa Ne Kanienke*
-*Soberania Digital para 72M de Personas*
+*Soberania Digital para 1B+ de Personas*

@@ -25,7 +25,7 @@ el proceso de deliberacion colectiva, y el mecanismo de ultima instancia: la eje
 `IerahkwaDestruct.sol`.
 
 El Protocolo del Vacio existe porque Ierahkwa fue construido sobre un principio
-irrenunciable: **la soberania digital de 72 millones de personas indigenas jamas sera
+irrenunciable: **la soberania digital de mas de 1 billion de personas jamas sera
 comprometida por negligencia, coercion o corrupcion interna**. Si el sistema no puede
 proteger a su pueblo, el sistema debe autodestruirse antes de convertirse en arma.
 

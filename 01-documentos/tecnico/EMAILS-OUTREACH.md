@@ -50,7 +50,7 @@ Estimada Dirección del FILAC,
 La Red Soberana Digital de las Américas ha construido la primera infraestructura tecnológica completa diseñada exclusivamente para pueblos indígenas. 296 plataformas. 42 motores de inteligencia artificial soberanos. Blockchain propia. Banco digital con moneda Wampum. Todo listo. Todo funcionando.
 
 **Alcance potencial a través del FILAC:**
-- 19 países de América Latina y el Caribe
+- 35+ países de las Americas
 - 58 millones de personas indígenas
 - 800+ pueblos originarios
 - 14 idiomas indígenas ya soportados en nuestra plataforma Atabey Translator
@@ -59,7 +59,7 @@ La Red Soberana Digital de las Américas ha construido la primera infraestructur
 1. Demo en vivo de las 20 plataformas principales del ecosistema
 2. Piloto en 3-5 comunidades seleccionadas por FILAC
 3. Co-gobernanza: representación del FILAC en el Consejo Digital Soberano
-4. Distribución via redes del FILAC a 19 países
+4. Distribución via redes del FILAC a 35+ países
 
 **Modelo económico transparente:**
 Los artesanos, creadores y trabajadores reciben 88-95% de cada transacción. Sin publicidad. Sin venta de datos. Sin comisiones ocultas. El modelo se sustenta en micro-comisiones de 2-4%.

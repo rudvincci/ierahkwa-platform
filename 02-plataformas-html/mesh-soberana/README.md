@@ -1,10 +1,10 @@
 # Mesh Soberana — Red Mesh Soberana
 
-> Mesh Soberana — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Red Mesh Soberana con cifrado post-cuántico K
+> Mesh Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Red Mesh Soberana con cifrado post-cuántico K
 
 ## Resumen
 
-**Mesh Soberana** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Orbital (Telecomunicaciones)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Mesh Soberana** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Orbital (Telecomunicaciones)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

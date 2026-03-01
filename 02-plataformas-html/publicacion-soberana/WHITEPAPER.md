@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Publicación Soberana — Plataforma de Publicación** es una plataforma soberana diseñada para proveer Publicación Soberana — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Plataforma de Publicación con cifrado  a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Publicación Soberana — Plataforma de Publicación** es una plataforma soberana diseñada para proveer Publicación Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Plataforma de Publicación con cifrado  a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**ADN Ancestral Soberano — Genómica de Soberanía Digital** es una plataforma soberana diseñada para proveer PRIMERA plataforma de genómica indígena donde los pueblos originarios son DUEÑOS de sus datos genéticos. Análisis de ancestría, haplogrupos, migraciones ancestr a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**ADN Ancestral Soberano — Genómica de Soberanía Digital** es una plataforma soberana diseñada para proveer PRIMERA plataforma de genómica indígena donde los pueblos originarios son DUEÑOS de sus datos genéticos. Análisis de ancestría, haplogrupos, migraciones ancestr a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

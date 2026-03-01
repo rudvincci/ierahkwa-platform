@@ -1,4 +1,4 @@
-# BLUEPRINT: VoIP Soberano — Telefonía IP Soberana para 72 Millones de Personas
+# BLUEPRINT: VoIP Soberano — Telefonía IP Soberana para Más de Mil Millones de Personas
 
 **Planos Técnicos y Diagramas de Arquitectura**
 **Versión**: 1.0.0

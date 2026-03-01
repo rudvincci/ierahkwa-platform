@@ -1,10 +1,10 @@
 # Email Marketing Soberano — Ierahkwa Ne Kanienke
 
-> Email Marketing Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Plataforma de Email Marketing y Newsletter Soberana con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
+> Email Marketing Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Plataforma de Email Marketing y Newsletter Soberana con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
 
 ## Resumen
 
-**Email Marketing Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Cerebro (AI & Quantum Computing)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Email Marketing Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Cerebro (AI & Quantum Computing)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

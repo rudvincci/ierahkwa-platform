@@ -1,10 +1,10 @@
 # Educación Especial — Educación Inclusiva Especial
 
-> Educación Especial — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Educación Inclusiva Especial con cifrado
+> Educación Especial — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Educación Inclusiva Especial con cifrado
 
 ## Resumen
 
-**Educación Especial** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Escolar (Educación K-12)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Educación Especial** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Escolar (Educación K-12)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

@@ -1,10 +1,10 @@
 # Idiomas Soberano — Enseñanza de Idiomas
 
-> Idiomas Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Enseñanza de Idiomas con cifrado post-cuán
+> Idiomas Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Enseñanza de Idiomas con cifrado post-cuán
 
 ## Resumen
 
-**Idiomas Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Raíces (Cultura & Patrimonio)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Idiomas Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Raíces (Cultura & Patrimonio)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

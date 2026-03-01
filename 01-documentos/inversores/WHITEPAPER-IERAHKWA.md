@@ -5,14 +5,14 @@
 This paper presents Ierahkwa, the first complete sovereign digital infrastructure designed exclusively for indigenous peoples. Comprising 296 platforms on a post-quantum blockchain (MameyNode), with 42 AI engines, a sovereign central bank (BDET), and satellite telecommunications, Ierahkwa eliminates dependency on foreign technology while funding free education, healthcare, and infrastructure through platform revenue — with zero taxation of citizens.
 
 ### 1. Introduction
-The 476 million indigenous people worldwide, including 72 million in the Americas, have no sovereign digital infrastructure. They depend entirely on Big Tech platforms that extract value, ignore their languages, and claim ownership of their data. Ierahkwa changes this paradigm by providing every digital service a sovereign nation requires.
+Over 1 billion people across ALL the Americas (1,047,334,000+ across 35+ countries) lack sovereign digital infrastructure. They depend entirely on Big Tech platforms that extract value, ignore indigenous languages, and claim ownership of their data. Ierahkwa changes this paradigm by providing every digital service a sovereign nation requires — serving ALL people in ALL the Americas.
 
 ### 2. Architecture
 **2.1 MameyNode Blockchain**
 Custom EVM-compatible blockchain with 12,847 TPS, Proof of Sovereignty consensus, and NIST-approved post-quantum cryptography (ML-DSA/Dilithium-5 for signatures, ML-KEM/Kyber-1024 for key exchange). Chain ID: 574.
 
 **2.2 BDET Bank**
-11-engine sovereign central bank processing payments, escrow, forex, remittances, micro-credit, and insurance. Issues Wampum (WMP) digital currency with 10T fixed supply, serving 670M+ people across all the Americas.
+11-engine sovereign central bank processing payments, escrow, forex, remittances, micro-credit, and insurance. Issues Wampum (WMP) digital currency with 10T fixed supply, serving 1B+ people (1,047,334,000+) across all the Americas.
 
 **2.3 AI Fortress**
 42 specialized AI engines for NLP, computer vision, speech processing, translation (Atabey), fraud detection, content moderation, recommendation, search, and classification. Running on 8x A100 GPUs with 99.97% uptime.

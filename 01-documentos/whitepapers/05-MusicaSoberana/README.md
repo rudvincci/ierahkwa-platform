@@ -15,4 +15,4 @@ Streaming de música indígena y global. Artistas reciben 92% de ingresos (Spoti
 
 ### Revenue: Artista 92% · Plataforma 4% · Impuesto 4%
 ---
-*MúsicaSoberana · 72 millones de voces, un ritmo soberano 🌿*
+*MúsicaSoberana · Mas de 1 billion de voces, un ritmo soberano 🌿*

@@ -316,4 +316,4 @@ Dashboards Grafana pre-configurados en `04-infraestructura/grafana/veritas-dashb
 ---
 
 *Gobierno Soberano de Ierahkwa Ne Kanienke*
-*Soberania Digital para 72M de Personas*
+*Soberania Digital para 1B+ de Personas*

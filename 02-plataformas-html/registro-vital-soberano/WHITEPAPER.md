@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Registro Vital Soberano — Actas y Estadísticas Vitales** es una plataforma soberana diseñada para proveer Registro Vital Soberano — plataforma soberana para certificados de nacimiento, defunción, matrimonio y estadísticas vitales con blockchain MameyNode y cifrado post-cuántico. a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Registro Vital Soberano — Actas y Estadísticas Vitales** es una plataforma soberana diseñada para proveer Registro Vital Soberano — plataforma soberana para certificados de nacimiento, defunción, matrimonio y estadísticas vitales con blockchain MameyNode y cifrado post-cuántico. a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

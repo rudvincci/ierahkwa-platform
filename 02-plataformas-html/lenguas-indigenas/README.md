@@ -1,10 +1,10 @@
 # Lenguas Indígenas — Preservación de Lenguas Indígenas
 
-> Lenguas Indígenas — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Preservación de Lenguas Indígenas con cif
+> Lenguas Indígenas — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Preservación de Lenguas Indígenas con cif
 
 ## Resumen
 
-**Lenguas Indígenas** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Raíces (Cultura & Patrimonio)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Lenguas Indígenas** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Raíces (Cultura & Patrimonio)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

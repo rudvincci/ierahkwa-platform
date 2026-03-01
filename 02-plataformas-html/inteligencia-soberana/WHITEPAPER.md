@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Inteligencia Soberana — Agencia de Inteligencia Digital** es una plataforma soberana diseñada para proveer Inteligencia Soberana — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Agencia de Inteligencia Digital con c a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Inteligencia Soberana — Agencia de Inteligencia Digital** es una plataforma soberana diseñada para proveer Inteligencia Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Agencia de Inteligencia Digital con c a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

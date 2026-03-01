@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Gateway Soberano — API Gateway de Alto Rendimiento Post-Cuántico** es una plataforma soberana diseñada para proveer API Gateway soberano que reemplaza Microsoft Azure API Management y Ocelot .NET. Escrito en Rust con tokio async runtime, soporta 1M+ requests/segundo, rate limiting distribuido, c a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Gateway Soberano — API Gateway de Alto Rendimiento Post-Cuántico** es una plataforma soberana diseñada para proveer API Gateway soberano que reemplaza Microsoft Azure API Management y Ocelot .NET. Escrito en Rust con tokio async runtime, soporta 1M+ requests/segundo, rate limiting distribuido, c a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

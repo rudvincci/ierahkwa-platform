@@ -96,9 +96,9 @@
 <a href="#main" class="skip">Saltar al contenido principal</a>
 <nav><div class="brand"><span aria-hidden="true">📱</span> Nexus Voces</div><a href="../nexus-orbital/index.html" style="color:var(--txt2);font-size:.8rem">Orbital</a><button class="btn">Acceder</button></nav>
 <main id="main">
-<section class="hero" aria-label="Presentación"><div class="badge">Red Social & Media Soberana</div><h1><span>Nexus Voces</span></h1><p>Plataforma de comunicación y medios soberanos — redes sociales, streaming, noticias, traducción en 200+ lenguas indígenas, foros y videoconferencia para 72M ciudadanos.</p>
-<div class="counters"><div class="counter"><strong>72M</strong><span>Usuarios</span></div><div class="counter"><strong>200+</strong><span>Lenguas</span></div><div class="counter"><strong>24/7</strong><span>Streaming</span></div><div class="counter"><strong>E2E</strong><span>Cifrado</span></div><div class="counter"><strong>Zero</strong><span>Censura</span></div><div class="counter"><strong>AI</strong><span>Moderación</span></div></div></section>
-<div class="dash" aria-label="Dashboard"><div class="dash-card"><strong id="d-users">72M</strong><span>Usuarios Activos</span></div><div class="dash-card"><strong id="d-posts">14M</strong><span>Posts Diarios</span></div><div class="dash-card"><strong id="d-streams">2.1M</strong><span>Streams/día</span></div><div class="dash-card"><strong id="d-langs">200+</strong><span>Lenguas</span></div><div class="dash-card"><strong id="d-channels">847K</strong><span>Canales</span></div><div class="dash-card"><strong id="d-uptime">99.9%</strong><span>Uptime</span></div></div>
+<section class="hero" aria-label="Presentación"><div class="badge">Red Social & Media Soberana</div><h1><span>Nexus Voces</span></h1><p>Plataforma de comunicación y medios soberanos — redes sociales, streaming, noticias, traducción en 200+ lenguas indígenas, foros y videoconferencia para 1B+ ciudadanos.</p>
+<div class="counters"><div class="counter"><strong>1B+</strong><span>Usuarios</span></div><div class="counter"><strong>200+</strong><span>Lenguas</span></div><div class="counter"><strong>24/7</strong><span>Streaming</span></div><div class="counter"><strong>E2E</strong><span>Cifrado</span></div><div class="counter"><strong>Zero</strong><span>Censura</span></div><div class="counter"><strong>AI</strong><span>Moderación</span></div></div></section>
+<div class="dash" aria-label="Dashboard"><div class="dash-card"><strong id="d-users">1B+</strong><span>Usuarios Activos</span></div><div class="dash-card"><strong id="d-posts">14M</strong><span>Posts Diarios</span></div><div class="dash-card"><strong id="d-streams">2.1M</strong><span>Streams/día</span></div><div class="dash-card"><strong id="d-langs">200+</strong><span>Lenguas</span></div><div class="dash-card"><strong id="d-channels">847K</strong><span>Canales</span></div><div class="dash-card"><strong id="d-uptime">99.9%</strong><span>Uptime</span></div></div>
 
 <div class="quick-actions" aria-label="Acciones rápidas">
 <button class="qa" onclick="location.href='../sovereign-social/index.html'">Red Social</button>
@@ -264,7 +264,7 @@
 <div class="rev-card"><strong>$6.1M</strong><span>Monthly Recurring Revenue</span><div class="rev-trend up">+19.7% vs mes anterior</div></div>
 <div class="rev-card"><strong>$2.3M</strong><span>Ad Revenue / mes</span><div class="rev-trend up">+25.1% crecimiento</div></div>
 <div class="rev-card"><strong>$890K</strong><span>Subscriptions / mes</span><div class="rev-trend up">+14.3% tendencia</div></div>
-<div class="rev-card"><strong>72M</strong><span>Active Users</span><div class="rev-trend up">+2.1M este mes</div></div>
+<div class="rev-card"><strong>1B+</strong><span>Active Users</span><div class="rev-trend up">+2.1M este mes</div></div>
 </div>
 </section>
 
@@ -297,7 +297,7 @@ const SVC=[
   {name:'CultureService',port:5502},{name:'SportsService',port:5503},
   {name:'SocialService',port:5504}
 ];
-async function loadMetrics(){try{const r=await Ierahkwa.api.get('/api/media/stats');if(r){document.getElementById('d-users').textContent=r.users||'72M';document.getElementById('d-posts').textContent=r.posts||'14M';}}catch(e){console.log('[voces] metrics offline');}}
+async function loadMetrics(){try{const r=await Ierahkwa.api.get('/api/media/stats');if(r){document.getElementById('d-users').textContent=r.users||'1B+';document.getElementById('d-posts').textContent=r.posts||'14M';}}catch(e){console.log('[voces] metrics offline');}}
 async function updateServiceStatus(){const dots=document.querySelectorAll('.svc-dot');for(let i=0;i<SVC.length;i++){try{await Ierahkwa.api.get('/api/health/'+SVC[i].name);dots[i].className='svc-dot up';}catch(e){dots[i].className='svc-dot down';}}}
 function refreshActivityLog(){const log=document.getElementById('activity-log');const actions=['Post viral con 47K reacciones','Stream musical con '+Math.floor(Math.random()*50)+'K viewers','Foro debate activo con 340 participantes','Traducción completada Nahuatl→Quechua','Podcast publicado en 12 lenguas','Conferencia con '+Math.floor(Math.random()*200)+' asistentes','Noticia verificada por fact-check AI','Video corto trending con 100K views'];const svc=SVC[Math.floor(Math.random()*SVC.length)].name;const action=actions[Math.floor(Math.random()*actions.length)];const now=new Date();const time=now.toTimeString().slice(0,8);const entry=document.createElement('div');entry.className='log-entry';entry.innerHTML='<span class="log-time">'+time+'</span> '+svc+' — '+action;log.insertBefore(entry,log.firstChild);if(log.children.length>30)log.removeChild(log.lastChild);}
 loadMetrics();updateServiceStatus();setInterval(refreshActivityLog,7000);setInterval(updateServiceStatus,30000);

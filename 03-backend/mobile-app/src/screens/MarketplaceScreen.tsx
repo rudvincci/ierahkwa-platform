@@ -218,7 +218,7 @@ export default function MarketplaceScreen({ navigation }) {
         <View style={styles.sellInfo}>
           <Text style={styles.sellTitle}>{t('market_start_selling') || 'Start Selling'}</Text>
           <Text style={styles.sellDescription}>
-            {t('market_sell_desc') || 'Open your sovereign store and reach 72M citizens'}
+            {t('market_sell_desc') || 'Open your sovereign store and reach 1B+ citizens across ALL the Americas'}
           </Text>
         </View>
         <Button

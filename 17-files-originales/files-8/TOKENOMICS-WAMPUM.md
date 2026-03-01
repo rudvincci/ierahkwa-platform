@@ -20,7 +20,7 @@ Wampum (WMP) is the sovereign digital currency of Red Soberana, issued and gover
 | Community Treasury | 40% | 288M | Released by Council vote |
 | Ecosystem Rewards | 25% | 180M | 10-year linear |
 | Development Fund | 15% | 108M | 4-year cliff + 4-year vest |
-| BDET Bank Reserve | 10% | 72M | Liquidity backing |
+| BDET Bank Reserve | 10% | 1B+ | Liquidity backing |
 | Founders & Team | 5% | 36M | 2-year cliff + 3-year vest |
 | Impact Investors | 3% | 21.6M | 1-year cliff + 2-year vest |
 | Bug Bounties | 2% | 14.4M | On-demand |

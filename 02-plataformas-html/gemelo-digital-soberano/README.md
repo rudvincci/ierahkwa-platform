@@ -4,7 +4,7 @@
 
 ## Resumen
 
-**Gemelo Digital Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Gemelo Digital Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 
@@ -15,7 +15,7 @@
 5. **03 ⚖️ Sandbox de Políticas Prueba nuevas leyes y políticas públicas en simulación antes de su implementación real. Mide **
 6. **06 🎓 Simulador de Pipeline Educativo Proyecta resultados estudiantiles, necesidades docentes y capacidad de instalacione**
 7. **08 🏙️ Motor de Planificación Urbana Planificación urbana 3D con modelado de crecimiento poblacional. Diseña ciudades sob**
-8. **Simuladores Soberanos Diez motores de simulación que replican cada dimensión de las 19 naciones indígenas soberanas.**
+8. **Simuladores Soberanos Diez motores de simulación que replican cada dimensión de las 35+ países indígenas soberanas.**
 9. **10 🛡️ Simulador de Defensa y Cibersoberanía Modelado de amenazas cibernéticas y de soberanía territorial. War games defe**
 10. **05 🏥 Gemelo del Sistema de Salud Modela capacidad hospitalaria, propagación de epidemias y asignación de recursos médico**
 

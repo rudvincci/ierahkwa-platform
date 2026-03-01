@@ -1,10 +1,10 @@
 # Meteorología Soberana — Servicio Meteorológico Nacional
 
-> Meteorología Soberana — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Servicio Meteorológico Nacional con c
+> Meteorología Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Servicio Meteorológico Nacional con c
 
 ## Resumen
 
-**Meteorología Soberana** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Tierra (Naturaleza & Ambiente)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Meteorología Soberana** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Tierra (Naturaleza & Ambiente)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

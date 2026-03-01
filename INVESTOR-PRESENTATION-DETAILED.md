@@ -10,7 +10,7 @@
 
 **Big Tech is colonizing indigenous digital life.**
 
-Every day, 72 million indigenous people in the Americas are forced to use foreign technology that:
+Every day, over 1 billion people across ALL the Americas (1,047,334,000+ across 35+ countries) are forced to use foreign technology that:
 
 | Problem | Impact | Annual Cost |
 |---------|--------|-------------|
@@ -26,7 +26,7 @@ Every day, 72 million indigenous people in the Americas are forced to use foreig
 **Ierahkwa is a complete digital nation.** Not one app. Not one platform. An entire sovereign digital infrastructure — 190 platforms covering EVERY service a modern nation needs:
 
 - Own blockchain (MameyNode, 12,847 TPS)
-- Own currency (WAMPUM, 10T supply — all Americas, 670M+ people)
+- Own currency (WAMPUM, 10T supply — all Americas, 1B+ people (1,047,334,000+))
 - Own bank (BDET, 11 engines)
 - Own social media, email, messaging
 - Own marketplace, commerce, payments
@@ -687,10 +687,10 @@ Compliance: UNDRIP Articles 3-5, ILO Convention 169
 | Phase | Timeline | Target | Partners | Milestone |
 |-------|----------|--------|----------|-----------|
 | **1. Pilot** | Q1-Q2 2026 | 5 tribal nations (USA) | NCAI (574 tribes) | 50K users, core platforms live |
-| **2. Americas** | Q3-Q4 2026 | 3 LATAM countries | FILAC (19 countries) | Banking + telecom launch |
+| **2. Americas** | Q3-Q4 2026 | 3 LATAM countries | FILAC (35+ countries) | Banking + telecom launch |
 | **3. Amazon** | Q1-Q2 2027 | 9 Amazon basin countries | COICA (9 countries) | Full 190 platforms |
 | **4. Central America** | Q3-Q4 2027 | 7 Central American countries | CICA | 500K users, satellite launch |
-| **5. Breakeven** | 2028 | 19 countries | All partners | 2M users, $23.6M revenue |
+| **5. Breakeven** | 2028 | 35+ countries | All partners | 2M users, $23.6M revenue |
 | **6. Global** | 2029-2030 | Global indigenous | UN PFII | 10M users, $181M revenue |
 
 ---
@@ -746,6 +746,6 @@ The 12 inalienable digital rights are constitutionally guaranteed and unamendabl
 ---
 
 **Ierahkwa** — Sovereign Digital Nation
-**72M People | 19 Nations | 574 Tribes | 190 Platforms | 18,356 Files**
+**1B+ People (1,047,334,000+) | 35+ Countries | 574 Tribes | 190 Platforms | 18,356 Files**
 **Mamey Technologies (mamey.io) | AGPL-3.0**
 **v2.8.0 — 24 February 2026**

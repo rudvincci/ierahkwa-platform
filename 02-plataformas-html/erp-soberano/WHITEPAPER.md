@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**ERP Soberano — Planificación de Recursos Empresariales** es una plataforma soberana diseñada para proveer Sistema ERP modular completo que integra finanzas, RRHH, producción, cadena de suministro, CRM e inteligencia de negocios. Construido sobre MameyNode blockchain a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**ERP Soberano — Planificación de Recursos Empresariales** es una plataforma soberana diseñada para proveer Sistema ERP modular completo que integra finanzas, RRHH, producción, cadena de suministro, CRM e inteligencia de negocios. Construido sobre MameyNode blockchain a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

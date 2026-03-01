@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**UI Framework Soberano — Framework de Interfaces de Usuario Multi-Plataforma** es una plataforma soberana diseñada para proveer Framework UI que reemplaza Blazor, MAUI y WPF de .NET. Componentes reactivos compilados a WebAssembly, rendering nativo en iOS/Android/Desktop sin webview, design system Ierahkwa i a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**UI Framework Soberano — Framework de Interfaces de Usuario Multi-Plataforma** es una plataforma soberana diseñada para proveer Framework UI que reemplaza Blazor, MAUI y WPF de .NET. Componentes reactivos compilados a WebAssembly, rendering nativo en iOS/Android/Desktop sin webview, design system Ierahkwa i a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

@@ -2,7 +2,7 @@
 ## Mapas Soberanos — Reemplaza Google Maps
 **Versión:** 1.0 · **Estado:** ✅ Producción
 ### Descripción
-Mapas de comunidades indígenas, nodos soberanos, servicios. 847 nodos activos en 19 países. Visualización de la red: NCAI, FILAC, COICA, MameyNode HQ, territorios indígenas. Sin tracking de ubicación. Integración satelital.
+Mapas de comunidades indígenas, nodos soberanos, servicios. 847 nodos activos en 35+ países. Visualización de la red: NCAI, FILAC, COICA, MameyNode HQ, territorios indígenas. Sin tracking de ubicación. Integración satelital.
 ### Features
 - 🗺 Mapa interactivo con 13+ marcadores de comunidades
 - 📡 Vista satélite, mapa, nodos

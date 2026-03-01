@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**SDK Soberano — Kit de Desarrollo Completo para Naciones Digitales** es una plataforma soberana diseñada para proveer SDK completo que reemplaza Microsoft .NET SDK y Visual Studio. CLI soberano, templates para 19 tipos de proyecto, package manager WAMPUM, linter y formatter integrados, generador d a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**SDK Soberano — Kit de Desarrollo Completo para Naciones Digitales** es una plataforma soberana diseñada para proveer SDK completo que reemplaza Microsoft .NET SDK y Visual Studio. CLI soberano, templates para 19 tipos de proyecto, package manager WAMPUM, linter y formatter integrados, generador d a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

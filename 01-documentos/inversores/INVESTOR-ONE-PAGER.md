@@ -1,7 +1,7 @@
 # 🌐 Red Soberana — One-Pager para Inversionistas de Impacto
 
 ## El Problema
-72 millones de personas indígenas en las Américas sin soberanía digital. Big Tech extrae sus datos, cobra 30-45% en comisiones, y no soporta sus idiomas.
+Mas de mil millones de personas en TODAS las Americas (1,047,334,000+ en 35+ paises) sin soberania digital. Big Tech extrae sus datos, cobra 30-45% en comisiones, y no soporta idiomas indigenas.
 
 ## La Solución
 98 plataformas soberanas sobre blockchain propia. Email, redes sociales, marketplace, banco, telemedicina, educación, gobierno digital — todo construido, funcionando.
@@ -14,9 +14,9 @@
 - 12,847 estudiantes
 
 ## Mercado
-- TAM: 72M personas × $X ARPU = $XXB
-- SAM: 19 países latinoamericanos
-- SOM: Pilotos con NCAI (574 tribus), FILAC (19 países), COICA (9 países amazónicos)
+- TAM: 1B+ personas × $X ARPU = $XXB
+- SAM: 35+ países de las Americas
+- SOM: Pilotos con NCAI (574 tribus), FILAC (35+ países), COICA (9 países amazónicos)
 
 ## Modelo de Revenue
 - Micro-comisiones (2-12% según plataforma)

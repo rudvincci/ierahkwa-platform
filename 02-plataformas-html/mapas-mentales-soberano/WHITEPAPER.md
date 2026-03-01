@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Mapas Mentales — Mapas Mentales y Diagramas** es una plataforma soberana diseñada para proveer Mapas Mentales — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Mapas Mentales y Diagramas con cifrado post- a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Mapas Mentales — Mapas Mentales y Diagramas** es una plataforma soberana diseñada para proveer Mapas Mentales — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Mapas Mentales y Diagramas con cifrado post- a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

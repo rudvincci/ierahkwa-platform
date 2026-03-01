@@ -12,7 +12,7 @@
 
 ## 1. Abstract
 
-RentaSoberano es la plataforma #15 del ecosistema Red Soberana Digital de las Américas. Diseñada para servir a más de 72 millones de personas indígenas en 19 países del continente americano, opera sobre MameyNode blockchain con cifrado cuántico post-quantum y pagos integrados via BDET Bank.
+RentaSoberano es la plataforma #15 del ecosistema Red Soberana Digital de las Américas. Diseñada para servir a más de mas de 1 billion de personas indígenas en 35+ países del continente americano, opera sobre MameyNode blockchain con cifrado cuántico post-quantum y pagos integrados via BDET Bank.
 
 Este whitepaper describe la arquitectura técnica, modelo económico, gobernanza, y roadmap de RentaSoberano.
 
@@ -129,8 +129,8 @@ RentaSoberano se integra con todas las plataformas del ecosistema soberano:
 | Alpha | Q1 2026 | Lanzamiento interno, 1,000 usuarios |
 | Beta | Q2 2026 | Piloto con NCAI, FILAC, COICA |
 | v1.0 | Q3 2026 | Lanzamiento público, 50,000 usuarios |
-| v2.0 | Q4 2026 | Expansión 19 países, 500,000 usuarios |
-| v3.0 | 2027 | 72M+ alcance, todas las integraciones |
+| v2.0 | Q4 2026 | Expansión 35+ países, 500,000 usuarios |
+| v3.0 | 2027 | 1B+ alcance, todas las integraciones |
 
 ## 9. Equipo
 

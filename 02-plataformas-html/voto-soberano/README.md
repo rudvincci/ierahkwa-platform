@@ -4,7 +4,7 @@
 
 ## Resumen
 
-**Voto Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Consejo (Gobierno Digital)**. Disenada para la soberania electoral de 72 millones de personas indigenas en 19 naciones y 574 tribus.
+**Voto Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Consejo (Gobierno Digital)**. Disenada para la soberania electoral de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 Cada voto se registra como transaccion inmutable en MameyChain, con encriptacion post-quantum Kyber-768, balotaje anonimo y verificacion publica completa.
 

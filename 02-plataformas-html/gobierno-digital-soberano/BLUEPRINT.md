@@ -1,4 +1,4 @@
-# BLUEPRINT: Gobierno Digital Soberano — Plataforma de Gobierno Electrónico para 19 Naciones
+# BLUEPRINT: Gobierno Digital Soberano — Plataforma de Gobierno Electrónico para 35+ Países
 
 **Planos Técnicos y Diagramas de Arquitectura**
 **Versión**: 1.0.0

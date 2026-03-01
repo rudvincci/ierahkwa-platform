@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Homomorfica Soberana — Fully Homomorphic Encryption for Sovereign Public Services | Ierahkwa** es una plataforma soberana diseñada para proveer Plataforma soberana de Homomorfica para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Homomorfica Soberana — Fully Homomorphic Encryption for Sovereign Public Services | Ierahkwa** es una plataforma soberana diseñada para proveer Plataforma soberana de Homomorfica para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

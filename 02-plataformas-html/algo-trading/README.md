@@ -1,10 +1,10 @@
 # Algo Trading — Sovereign Algorithmic Trading
 
-> Algo Trading — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Sovereign Algorithmic Trading con cifrado post
+> Algo Trading — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sovereign Algorithmic Trading con cifrado post
 
 ## Resumen
 
-**Algo Trading** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Tesoro (Finanzas & Economía)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Algo Trading** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Tesoro (Finanzas & Economía)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

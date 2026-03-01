@@ -1,10 +1,10 @@
 # Mapas Mentales — Mapas Mentales y Diagramas
 
-> Mapas Mentales — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Mapas Mentales y Diagramas con cifrado post-
+> Mapas Mentales — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Mapas Mentales y Diagramas con cifrado post-
 
 ## Resumen
 
-**Mapas Mentales** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Salud (Salud & Bienestar)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Mapas Mentales** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Salud (Salud & Bienestar)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

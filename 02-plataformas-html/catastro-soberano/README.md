@@ -1,10 +1,10 @@
 # Catastro Soberano — Registro Catastral Nacional
 
-> Catastro Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Registro Catastral Nacional con cifrado p
+> Catastro Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Registro Catastral Nacional con cifrado p
 
 ## Resumen
 
-**Catastro Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Consejo (Gobierno & Legislación)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Catastro Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Consejo (Gobierno & Legislación)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

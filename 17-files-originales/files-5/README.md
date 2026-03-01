@@ -4,7 +4,7 @@
 
 [![MameyNode](https://img.shields.io/badge/MameyNode-v4.2-gold)]()
 [![Platforms](https://img.shields.io/badge/Plataformas-20-green)]()
-[![People](https://img.shields.io/badge/Alcance-72M+-blue)]()
+[![People](https://img.shields.io/badge/Alcance-1B+-blue)]()
 [![License](https://img.shields.io/badge/Licencia-Soberana_1.0-purple)]()
 
 ---
@@ -15,7 +15,7 @@
 |---------|-------|
 | Plataformas con UI | 20 |
 | Servicios totales | 296 |
-| Personas alcance | 72M+ |
+| Personas alcance | 1B+ |
 | Países | 19 |
 | Naciones tribales | 574 |
 | Motores AI | 42 |
@@ -111,7 +111,7 @@ kubectl apply -f infra/k8s/
 ## 🤝 Alianzas
 
 - **NCAI** — 574 naciones tribales (Norteamérica)
-- **FILAC** — 19 países (Latinoamérica)
+- **FILAC** — 35+ países (Latinoamérica)
 - **COICA** — 9 países amazónicos
 - **AFN** — 634 First Nations (Canadá)
 - **CONAIE** — Ecuador
@@ -124,4 +124,4 @@ Licencia Soberana 1.0: Uso libre para pueblos indígenas y organizaciones sin fi
 ---
 
 *Red Soberana Digital de las Américas · MameyNode · BDET Bank*
-*72M+ personas · 19 países · 574 naciones · Soberanía siempre 🌿*
+*1B+ personas · 35+ países · 574 naciones · Soberanía siempre 🌿*

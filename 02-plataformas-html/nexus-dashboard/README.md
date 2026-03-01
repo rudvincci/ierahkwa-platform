@@ -7,7 +7,7 @@ NEXUS que componen la infraestructura digital soberana de **Ierahkwa Ne Kanienke
 
 Proporciona visibilidad completa del estado operativo de las 422 plataformas,
 los 7 agentes AI y los 109 tokens IGT que conforman la nacion digital soberana
-para 72 millones de personas indigenas en 19 naciones y 574 naciones tribales.
+para más de mil millones de personas en las Américas en 35+ países y 574 naciones tribales.
 
 ## Version
 

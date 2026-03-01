@@ -1,10 +1,10 @@
 # Escuela Primaria — Sistema de Educación Primaria
 
-> Escuela Primaria — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Sistema de Educación Primaria con cifrado 
+> Escuela Primaria — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sistema de Educación Primaria con cifrado 
 
 ## Resumen
 
-**Escuela Primaria** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Escolar (Educación K-12)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Escuela Primaria** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Escolar (Educación K-12)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

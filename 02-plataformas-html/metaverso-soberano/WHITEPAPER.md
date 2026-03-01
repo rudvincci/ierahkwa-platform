@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Metaverso Soberano — Ierahkwa Ne Kanienke** es una plataforma soberana diseñada para proveer Metaverso Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Mundo Virtual 3D Descentralizado para 72M Personas con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total. a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Metaverso Soberano — Ierahkwa Ne Kanienke** es una plataforma soberana diseñada para proveer Metaverso Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Mundo Virtual 3D Descentralizado para 1B+ Personas con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total. a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

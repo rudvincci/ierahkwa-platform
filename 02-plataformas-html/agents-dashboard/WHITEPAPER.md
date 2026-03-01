@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Centro de Control — 7 Agentes AI Soberanos | Ierahkwa** es una plataforma soberana diseñada para proveer Centro de Control de los 7 Agentes AI Soberanos — Monitoreo en tiempo real de Guardian, Pattern, Anomaly, Trust, Shield, Forensic y Evolution a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Centro de Control — 7 Agentes AI Soberanos | Ierahkwa** es una plataforma soberana diseñada para proveer Centro de Control de los 7 Agentes AI Soberanos — Monitoreo en tiempo real de Guardian, Pattern, Anomaly, Trust, Shield, Forensic y Evolution a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Electricidad Soberana — Smart Grid y Energía Renovable** es una plataforma soberana diseñada para proveer Electricidad Soberana — plataforma soberana para gestión de energía eléctrica, facturación inteligente, smart grid y energías renovables con blockchain y cifrado post-cuántico. a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Electricidad Soberana — Smart Grid y Energía Renovable** es una plataforma soberana diseñada para proveer Electricidad Soberana — plataforma soberana para gestión de energía eléctrica, facturación inteligente, smart grid y energías renovables con blockchain y cifrado post-cuántico. a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

@@ -2,11 +2,11 @@
 
 ## Project Context
 
-This is the Ierahkwa Sovereign Digital Platform — a complete sovereign technology ecosystem serving 72 million indigenous people worldwide. It replaces Big Tech dependencies with 49 self-hosted platforms and 20 backend services.
+This is the Ierahkwa Sovereign Digital Platform — a complete sovereign technology ecosystem serving over 1 billion people across ALL the Americas (North, South, Central, Caribbean — 35+ countries). It replaces Big Tech dependencies with 422+ self-hosted platforms and 20 backend services.
 
 **Stack:** Node.js 22, .NET 10, Rust 1.80+, Go 1.22, PostgreSQL 16, Redis 7, Docker 27
 **Blockchain:** MameyNode (Rust-based, EVM Shanghai, Chain ID 777777, 3s blocks, 12,847 TPS)
-**Token:** WAMPUM (WMP) — 10T total supply, 0% tax — serving all Americas (670M+ people)
+**Token:** WAMPUM (WMP) — 10T total supply, 0% tax — serving ALL the Americas (1B+ people, 35+ countries)
 
 ## Architecture Patterns
 

@@ -1,10 +1,10 @@
 # Fauna Platform — Sovereign Wildlife Registry
 
-> Fauna Platform — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Sovereign Wildlife Registry con cifrado post
+> Fauna Platform — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sovereign Wildlife Registry con cifrado post
 
 ## Resumen
 
-**Fauna Platform** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Tierra (Naturaleza & Ambiente)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Fauna Platform** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Tierra (Naturaleza & Ambiente)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

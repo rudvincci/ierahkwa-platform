@@ -1,4 +1,4 @@
-# WHITEPAPER: VoIP Soberano — Telefonía IP Soberana para 72 Millones de Personas
+# WHITEPAPER: VoIP Soberano — Telefonía IP Soberana para Más de Mil Millones de Personas
 
 **Versión**: 1.0.0
 **Fecha**: 2026-02-28
@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**VoIP Soberano — Telefonía IP Soberana para 72 Millones de Personas** es una plataforma soberana diseñada para proveer Sistema de telefonía IP soberano que reemplaza Twilio, Vonage y RingCentral. Protocolo SIP sobre WireGuard, códec Opus soberano, videollamadas 4K P2P, buzón de  a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**VoIP Soberano — Telefonía IP Soberana para Más de Mil Millones de Personas** es una plataforma soberana diseñada para proveer Sistema de telefonía IP soberano que reemplaza Twilio, Vonage y RingCentral. Protocolo SIP sobre WireGuard, códec Opus soberano, videollamadas 4K P2P, buzón de  a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 
@@ -21,7 +21,7 @@ Las comunidades indígenas enfrentan:
 - **Exclusión digital**: Interfaces diseñadas sin considerar diversidad cultural y lingüística
 - **Centralización**: Puntos únicos de falla que afectan a millones de personas
 
-## 2. Solución: VoIP Soberano — Telefonía IP Soberana para 72 Millones de Personas
+## 2. Solución: VoIP Soberano — Telefonía IP Soberana para Más de Mil Millones de Personas
 
 ### Principios de Diseño
 
@@ -246,7 +246,7 @@ Producción:
 
 ## 11. Conclusión
 
-**VoIP Soberano — Telefonía IP Soberana para 72 Millones de Personas** representa un componente crítico de la infraestructura digital soberana de Ierahkwa Ne Kanienke. Construida sin dependencias externas, con protección post-quantum y 7 agentes AI autónomos, esta plataforma demuestra que la soberanía digital total es alcanzable.
+**VoIP Soberano — Telefonía IP Soberana para Más de Mil Millones de Personas** representa un componente crítico de la infraestructura digital soberana de Ierahkwa Ne Kanienke. Construida sin dependencias externas, con protección post-quantum y 7 agentes AI autónomos, esta plataforma demuestra que la soberanía digital total es alcanzable.
 
 ---
 

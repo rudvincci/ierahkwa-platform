@@ -5,7 +5,7 @@
 This paper presents Ierahkwa, the first complete sovereign digital infrastructure designed exclusively for indigenous peoples. Comprising 296 platforms on a post-quantum blockchain (MameyNode), with 42 AI engines, a sovereign central bank (BDET), and satellite telecommunications, Ierahkwa eliminates dependency on foreign technology while funding free education, healthcare, and infrastructure through platform revenue — with zero taxation of citizens.
 
 ### 1. Introduction
-The 476 million indigenous people worldwide, including 72 million in the Americas, have no sovereign digital infrastructure. They depend entirely on Big Tech platforms that extract value, ignore their languages, and claim ownership of their data. Ierahkwa changes this paradigm by providing every digital service a sovereign nation requires.
+The 476 million indigenous people worldwide, including over 1 billion across ALL the Americas, have no sovereign digital infrastructure. They depend entirely on Big Tech platforms that extract value, ignore their languages, and claim ownership of their data. Ierahkwa changes this paradigm by providing every digital service a sovereign nation requires.
 
 ### 2. Architecture
 **2.1 MameyNode Blockchain**

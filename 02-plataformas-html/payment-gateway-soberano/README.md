@@ -1,10 +1,10 @@
 # Payment Gateway Soberano — Ierahkwa Ne Kanienke
 
-> Payment Gateway Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Pasarela de Pagos Cripto para Comercios Soberanos con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
+> Payment Gateway Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Pasarela de Pagos Cripto para Comercios Soberanos con cifrado post-cuántico Kyber-768, blockchain MameyNode y soberanía digital total.
 
 ## Resumen
 
-**Payment Gateway Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Payment Gateway Soberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

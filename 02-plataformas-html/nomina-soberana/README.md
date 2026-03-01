@@ -1,10 +1,10 @@
 # Nómina Soberana — Sistema de Nómina Nacional
 
-> Sistema de nómina automatizado para las 19 naciones soberanas. Calcula salarios, deducciones, impuestos y beneficios. Pago en WAMPUM vía BDET Bank. Cumple regul
+> Sistema de nómina automatizado para las 35+ países soberanas. Calcula salarios, deducciones, impuestos y beneficios. Pago en WAMPUM vía BDET Bank. Cumple regul
 
 ## Resumen
 
-**Nómina Soberana** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de 72 millones de personas indígenas en 19 naciones y 574 tribus.
+**Nómina Soberana** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
 
 ## Características Principales
 

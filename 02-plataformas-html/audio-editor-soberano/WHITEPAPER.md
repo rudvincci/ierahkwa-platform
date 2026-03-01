@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Audio Editor Soberano — Editor de Audio Profesional** es una plataforma soberana diseñada para proveer Audio Editor Soberano — plataforma soberana de grado empresarial para las 19 naciones del ecosistema Ierahkwa Ne Kanienke. Editor de Audio Profesional con cifra a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Audio Editor Soberano — Editor de Audio Profesional** es una plataforma soberana diseñada para proveer Audio Editor Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Editor de Audio Profesional con cifra a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

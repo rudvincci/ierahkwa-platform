@@ -9,7 +9,7 @@
 
 Este es el sistema digital completo de la primera nacion digital indigena soberana del mundo. Contiene **296 plataformas** que reemplazan toda la infraestructura tecnologica de Big Tech (Google, Facebook, Amazon, etc.) con alternativas 100% controladas por pueblos indigenas.
 
-**Alcance:** 72 millones de indigenas en las Americas. 476 millones a nivel mundial.
+**Alcance:** Mas de mil millones de personas en TODAS las Americas (1,047,334,000+ en 35+ paises). La plataforma sirve a TODAS las personas en TODAS las Americas.
 
 ---
 

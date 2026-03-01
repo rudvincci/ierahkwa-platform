@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-**Nómina Soberana — Sistema de Nómina Nacional** es una plataforma soberana diseñada para proveer Sistema de nómina automatizado para las 19 naciones soberanas. Calcula salarios, deducciones, impuestos y beneficios. Pago en WAMPUM vía BDET Bank. Cumple regul a 72 millones de personas indígenas en 19 naciones y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**Nómina Soberana — Sistema de Nómina Nacional** es una plataforma soberana diseñada para proveer Sistema de nómina automatizado para las 35+ países soberanas. Calcula salarios, deducciones, impuestos y beneficios. Pago en WAMPUM vía BDET Bank. Cumple regul a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
 
 ## 1. Problema
 

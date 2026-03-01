@@ -8,7 +8,7 @@
 
 ### 100-Word Description
 
-Ierahkwa is the first complete sovereign digital infrastructure built exclusively for indigenous peoples. Running 296 platforms on a proprietary post-quantum blockchain (MameyNode), the system includes its own central bank (BDET), 42 AI engines, satellite telecommunications, and native support for 14 indigenous languages through the Atabey Translator. Platform revenue automatically funds free education, free healthcare, and infrastructure — with zero citizen taxation, guaranteed by an unamendable digital constitution. Serving 72 million indigenous people in the Americas and targeting 476 million worldwide, Ierahkwa replaces dependency on Big Tech with complete technological sovereignty governed democratically by participating indigenous nations.
+Ierahkwa is the first complete sovereign digital infrastructure built exclusively for indigenous peoples. Running 296 platforms on a proprietary post-quantum blockchain (MameyNode), the system includes its own central bank (BDET), 42 AI engines, satellite telecommunications, and native support for 14 indigenous languages through the Atabey Translator. Platform revenue automatically funds free education, free healthcare, and infrastructure — with zero citizen taxation, guaranteed by an unamendable digital constitution. Serving over 1 billion people across the Americas and targeting 476 million worldwide, Ierahkwa replaces dependency on Big Tech with complete technological sovereignty governed democratically by participating indigenous nations.
 
 ---
 
@@ -24,7 +24,7 @@ The fiscal model is revolutionary: zero citizen taxation. Platform transaction f
 
 Governance is democratic through the Consejo Digital Soberano, with one seat per participating nation. The Bill of Digital Rights guarantees 12 inalienable rights including data sovereignty and privacy.
 
-Ierahkwa serves 72 million indigenous people in the Americas and targets 476 million worldwide.
+Ierahkwa serves over 1 billion people across the Americas and targets 476 million worldwide.
 
 ---
 
@@ -44,7 +44,7 @@ The fiscal model eliminates citizen taxation entirely. Platform transaction fees
 
 Governance operates through the Consejo Digital Soberano with democratic representation: one seat per participating nation, equal voting power, and all decisions recorded on blockchain. The Bill of Digital Rights guarantees 12 inalienable rights including data sovereignty, privacy, free education, free healthcare, and zero taxation.
 
-The platform serves 72 million indigenous people in the Americas as its immediate market, with a path to 476 million indigenous people worldwide. Current traction includes 24,847 active users, 4,291 artisans selling through the marketplace, 847 daily medical consultations, and 12,847 enrolled students. Revenue projections: $330K (Year 1), $23.6M (Year 3), $181M (Year 5), with breakeven estimated Q4 2028.
+The platform serves over 1 billion people across the Americas as its immediate market, with a path to 476 million indigenous people worldwide. Current traction includes 24,847 active users, 4,291 artisans selling through the marketplace, 847 daily medical consultations, and 12,847 enrolled students. Revenue projections: $330K (Year 1), $23.6M (Year 3), $181M (Year 5), with breakeven estimated Q4 2028.
 
 Ierahkwa is developed by the Sovereign Government of Ierahkwa in partnership with FutureHead Group. There is no exit strategy. This is permanent sovereign infrastructure for permanent sovereign peoples.
 
@@ -75,7 +75,7 @@ Ierahkwa is developed by the Sovereign Government of Ierahkwa in partnership wit
 ### Market
 | Segment | Population | TAM |
 |---|---|---|
-| Indigenous Americas | 72 million | $8.6 billion |
+| Indigenous Americas | over 1 billion | $8.6 billion |
 | Indigenous worldwide | 476 million | $38 billion |
 | Adjacent (rural, underserved) | 1.2 billion | $48 billion |
 
@@ -96,7 +96,7 @@ Ierahkwa is developed by the Sovereign Government of Ierahkwa in partnership wit
 - **12,847 TPS** — Blockchain transaction throughput
 - **0%** — Tax rate for citizens (constitutionally guaranteed)
 - **88-95%** — Revenue share going to creators/workers
-- **72 million** — Indigenous people in the Americas
+- **over 1 billion** — Indigenous people in the Americas
 - **476 million** — Indigenous people worldwide
 - **574** — Federally recognized tribes in the USA (NCAI partnership target)
 - **19** — Countries in FILAC partnership target

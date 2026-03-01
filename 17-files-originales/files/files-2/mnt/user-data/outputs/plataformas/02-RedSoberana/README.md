@@ -4,7 +4,7 @@
 **Versión:** 1.0 · **MameyNode:** v4.2 · **Estado:** ✅ Producción
 
 ### Descripción
-Red social soberana para 72M+ personas indígenas. Sin algoritmos manipuladores, sin venta de datos, sin censura corporativa. Feed cronológico + AI soberana. Pagos BDET inline, encuestas en blockchain, eventos con traducción Atabey.
+Red social soberana para 1B+ personas indígenas. Sin algoritmos manipuladores, sin venta de datos, sin censura corporativa. Feed cronológico + AI soberana. Pagos BDET inline, encuestas en blockchain, eventos con traducción Atabey.
 
 ### Características
 - 🏠 Feed con posts, fotos, videos
