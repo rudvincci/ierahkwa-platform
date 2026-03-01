@@ -18,7 +18,7 @@ Ierahkwa is the first complete sovereign digital infrastructure designed exclusi
 
 At its core, Ierahkwa eliminates dependency on Big Tech platforms that extract an estimated $4.7 billion annually from indigenous communities through excessive fees, data harvesting, and language exclusion. Instead, 88-95% of every transaction goes to the creator or worker, compared to 55-70% at conventional platforms.
 
-The BDET Bank is a sovereign central bank with 11 engines processing payments, escrow, forex, remittances, microcredit, and insurance. It issues the WAMPUM (WMP) digital currency with a fixed supply of 720 million tokens and deflationary mechanics. The Atabey Translator provides AI-powered translation in 14 indigenous languages including Quechua, Nahuatl, Guarani, Aymara, Maya, Navajo, Cherokee, Lakota, Ojibwe, and Cree.
+The BDET Bank is a sovereign central bank with 11 engines processing payments, escrow, forex, remittances, microcredit, and insurance. It issues the WAMPUM (WMP) digital currency with a fixed supply of 10 trillion tokens and deflationary mechanics. The Atabey Translator provides AI-powered translation in 14 indigenous languages including Quechua, Nahuatl, Guarani, Aymara, Maya, Navajo, Cherokee, Lakota, Ojibwe, and Cree.
 
 The fiscal model is revolutionary: zero citizen taxation. Platform transaction fees (2-12%) are automatically allocated via smart contract to public services — 25% education, 25% healthcare, 20% infrastructure, 15% technology, 10% security, and 5% reserves. This is constitutionally guaranteed and unamendable.
 
@@ -36,7 +36,7 @@ The platform comprises 296 sovereign services running on MameyNode, a proprietar
 
 The ecosystem spans every category of digital service: sovereign email, social media, search, video, music, short-form content, messaging, document collaboration, mapping, news, podcasting, and a code repository. It also includes specialized platforms for indigenous artisan marketplace, hospitality, job matching, rental housing, investment, and a comprehensive education system from K-12 through university level.
 
-BDET Bank serves as the sovereign central bank, operating 11 specialized engines for payments, escrow, foreign exchange, remittances, microcredit, insurance, and community funds. It issues the WAMPUM (WMP) digital currency with a fixed supply of 720 million tokens and a 0.1% deflationary burn mechanism per transaction. BDET Bank provides banking services to communities that have been excluded from the traditional financial system, with account opening that requires no physical branch and remittance fees of 0.5-1% compared to the 8-15% charged by conventional services.
+BDET Bank serves as the sovereign central bank, operating 11 specialized engines for payments, escrow, foreign exchange, remittances, microcredit, insurance, and community funds. It issues the WAMPUM (WMP) digital currency with a fixed supply of 10 trillion tokens and a 0.1% deflationary burn mechanism per transaction. BDET Bank provides banking services to communities that have been excluded from the traditional financial system, with account opening that requires no physical branch and remittance fees of 0.5-1% compared to the 8-15% charged by conventional services.
 
 The Atabey Translator is an AI-powered neural machine translation engine supporting 14 indigenous languages: Quechua, Nahuatl, Guarani, Aymara, Mapudungun, Maya, Zapotec, Garifuna, Taino, Navajo, Cherokee, Lakota, Ojibwe, and Cree, plus 6 global languages. Atabey operates natively across all 296 platforms, allowing indigenous users to access every service in their mother tongue. The AI Fortress comprises 42 specialized engines handling natural language processing, computer vision, speech processing, fraud detection, content moderation, recommendation, and search — running on 8x NVIDIA A100 GPUs with 99.97% uptime.
 
@@ -147,7 +147,7 @@ Ierahkwa is developed by the Sovereign Government of Ierahkwa in partnership wit
 ### Banking: BDET Bank
 - 11 specialized processing engines
 - Full banking stack: payments, escrow, forex, remittances, microcredit, insurance
-- WAMPUM (WMP) digital currency: 720M fixed supply, 0.1% deflationary burn
+- WAMPUM (WMP) digital currency: 10T fixed supply, 0.1% deflationary burn
 - Designed for unbanked communities
 - Works with intermittent connectivity
 - Remittance fees: 0.5-1% (vs. industry average 8-15%)

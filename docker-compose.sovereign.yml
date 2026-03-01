@@ -122,9 +122,9 @@ services:
       - PORT=3001
       - NODE_ENV=production
       - MAMEYNODE_RPC=http://mameynode:8545
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
-      - JWT_SECRET=${IDENTITY_JWT_SECRET:-changeme}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - JWT_SECRET=${IDENTITY_JWT_SECRET:?JWT secret is required}
     depends_on:
       - mameynode
       - postgres
@@ -147,8 +147,8 @@ services:
     environment:
       - PORT=3002
       - NODE_ENV=production
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
     depends_on:
       - postgres
       - redis
@@ -170,8 +170,8 @@ services:
     environment:
       - PORT=3003
       - NODE_ENV=production
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
     depends_on:
       - postgres
       - redis
@@ -193,7 +193,7 @@ services:
     environment:
       - PORT=3004
       - NODE_ENV=production
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
       - SMTP_HOST=${SMTP_HOST:-localhost}
       - SMTP_PORT=${SMTP_PORT:-587}
     depends_on:
@@ -216,8 +216,8 @@ services:
     environment:
       - PORT=3005
       - NODE_ENV=production
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
     depends_on:
       - postgres
       - redis
@@ -240,7 +240,7 @@ services:
       - PORT=3006
       - NODE_ENV=production
       - MAMEYNODE_RPC=http://mameynode:8545
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
     depends_on:
       - mameynode
       - postgres
@@ -263,8 +263,8 @@ services:
       - PORT=3007
       - NODE_ENV=production
       - MAMEYNODE_RPC=http://mameynode:8545
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
     depends_on:
       - mameynode
       - postgres
@@ -290,8 +290,8 @@ services:
     environment:
       - PORT=3030
       - NODE_ENV=production
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
     depends_on:
       - postgres
       - redis
@@ -313,8 +313,8 @@ services:
     environment:
       - PORT=3100
       - NODE_ENV=production
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
     depends_on:
       - postgres
       - redis
@@ -336,7 +336,7 @@ services:
     environment:
       - PORT=3200
       - NODE_ENV=production
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
     depends_on:
       - postgres
     networks:
@@ -378,8 +378,8 @@ services:
       - PORT=3400
       - NODE_ENV=production
       - MAMEYNODE_RPC=http://mameynode:8545
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-sovereign_redis_2026}@redis:6379
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
     depends_on:
       - mameynode
       - postgres
@@ -402,7 +402,7 @@ services:
     environment:
       - PORT=3500
       - NODE_ENV=production
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
     depends_on:
       - postgres
     networks:
@@ -427,7 +427,7 @@ services:
       - PORT=3090
       - NODE_ENV=production
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3090}
-      - JWT_SECRET=${JWT_SECRET:-changeme}
+      - JWT_SECRET=${JWT_SECRET:?JWT secret is required}
     networks:
       - sovereign-net
     restart: unless-stopped
@@ -466,7 +466,7 @@ services:
       - PORT=3092
       - NODE_ENV=production
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3092}
-      - DATABASE_URL=postgres://${POSTGRES_USER:-sovereign_admin}:${POSTGRES_PASSWORD:-sovereign_dev_2026}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
     depends_on:
       - postgres
     networks:
@@ -474,6 +474,35 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3092/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================
+  # SOVEREIGN CORE — Universal Backend (441+ platforms)
+  # ==========================================
+  sovereign-core:
+    build:
+      context: ./03-backend/sovereign-core
+    container_name: sovereign-core
+    ports:
+      - "127.0.0.1:3050:3050"
+    environment:
+      - PORT=3050
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - JWT_SECRET=${JWT_SECRET:?JWT secret is required}
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://ierahkwa.gov}
+      - SMTP_HOST=${SMTP_HOST:-localhost}
+      - SMTP_PORT=${SMTP_PORT:-587}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sovereign-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3050/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -513,8 +542,8 @@ services:
       - "127.0.0.1:5432:5432"
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-ierahkwa_sovereign}
-      - POSTGRES_USER=${POSTGRES_USER:-sovereign_admin}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-sovereign_dev_2026}
+      - POSTGRES_USER=${POSTGRES_USER:?Postgres user is required}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Postgres password is required}
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./04-infraestructura/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
@@ -534,7 +563,7 @@ services:
       - "127.0.0.1:6379:6379"
     volumes:
       - redis-data:/data
-    command: redis-server --requirepass ${REDIS_PASSWORD:-sovereign_redis_2026}
+    command: redis-server --requirepass ${REDIS_PASSWORD:?Redis password is required}
     networks:
       - sovereign-net
     restart: unless-stopped
@@ -569,7 +598,7 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-sovereign_grafana_2026}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?Grafana admin password is required}
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - grafana-data:/var/lib/grafana

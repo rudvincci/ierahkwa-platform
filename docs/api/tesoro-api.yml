@@ -1,0 +1,1045 @@
+openapi: 3.0.3
+info:
+  title: Ierahkwa NEXUS — Tesoro Domain API
+  description: >
+    TESORO domain services for the Ierahkwa platform. Covers commerce, blockchain,
+    banking, insurance, employment, smart manufacturing, artisan marketplace, and tourism.
+  version: 3.3.0
+  x-api-version: "1.0.0"
+  contact:
+    name: Ierahkwa Platform Team
+    url: https://docs.ierahkwa.io
+
+servers:
+  - url: https://api.ierahkwa.io
+    description: Production
+  - url: http://localhost:5400
+    description: Local — commerce-service
+  - url: http://localhost:5401
+    description: Local — blockchain-service
+  - url: http://localhost:5402
+    description: Local — banking-service
+  - url: http://localhost:5403
+    description: Local — insurance-service
+  - url: http://localhost:5404
+    description: Local — employment-service
+  - url: http://localhost:5405
+    description: Local — smartfactory-service
+  - url: http://localhost:5406
+    description: Local — artisan-service
+  - url: http://localhost:5407
+    description: Local — tourism-service
+
+tags:
+  - name: commerce-service
+    description: Product catalog, orders, payments, marketplace
+  - name: blockchain-service
+    description: Chain management, smart contracts, token operations
+  - name: banking-service
+    description: Accounts, transfers, ledger, compliance
+  - name: insurance-service
+    description: Policy management, claims, underwriting
+  - name: employment-service
+    description: Job listings, applications, workforce analytics
+  - name: smartfactory-service
+    description: Manufacturing lines, quality control, supply chain
+  - name: artisan-service
+    description: Artisan profiles, craft listings, fair-trade tracking
+  - name: tourism-service
+    description: Destination catalog, bookings, itinerary planning
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ── commerce-service ──
+  /api/commerce/health:
+    get:
+      tags: [commerce-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/commerce/stats:
+    get:
+      tags: [commerce-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/commerce:
+    get:
+      tags: [commerce-service]
+      summary: List products
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+    post:
+      tags: [commerce-service]
+      summary: Create product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+                currency:
+                  type: string
+      responses:
+        '201':
+          description: Created
+  /api/commerce/{id}:
+    get:
+      tags: [commerce-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get product
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [commerce-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [commerce-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete product
+      responses:
+        '204':
+          description: Deleted
+  /api/commerce/orders:
+    post:
+      tags: [commerce-service]
+      summary: Place order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: string
+                      quantity:
+                        type: integer
+      responses:
+        '201':
+          description: Order placed
+  /api/commerce/checkout:
+    post:
+      tags: [commerce-service]
+      summary: Process checkout and payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                paymentMethod:
+                  type: string
+      responses:
+        '200':
+          description: Checkout processed
+
+  # ── blockchain-service ──
+  /api/blockchain/health:
+    get:
+      tags: [blockchain-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/blockchain/stats:
+    get:
+      tags: [blockchain-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/blockchain:
+    get:
+      tags: [blockchain-service]
+      summary: List chains
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [blockchain-service]
+      summary: Create chain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/blockchain/{id}:
+    get:
+      tags: [blockchain-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get chain
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [blockchain-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update chain config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [blockchain-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove chain
+      responses:
+        '204':
+          description: Deleted
+  /api/blockchain/contracts/deploy:
+    post:
+      tags: [blockchain-service]
+      summary: Deploy smart contract
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bytecode:
+                  type: string
+                abi:
+                  type: object
+                chainId:
+                  type: string
+      responses:
+        '201':
+          description: Contract deployed
+  /api/blockchain/tokens/mint:
+    post:
+      tags: [blockchain-service]
+      summary: Mint tokens
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contractId:
+                  type: string
+                amount:
+                  type: number
+                recipient:
+                  type: string
+      responses:
+        '200':
+          description: Tokens minted
+
+  # ── banking-service ──
+  /api/banking/health:
+    get:
+      tags: [banking-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/banking/stats:
+    get:
+      tags: [banking-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/banking:
+    get:
+      tags: [banking-service]
+      summary: List accounts
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [banking-service]
+      summary: Open account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/banking/{id}:
+    get:
+      tags: [banking-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get account
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [banking-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [banking-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Close account
+      responses:
+        '204':
+          description: Deleted
+  /api/banking/transfers:
+    post:
+      tags: [banking-service]
+      summary: Initiate fund transfer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fromAccountId:
+                  type: string
+                toAccountId:
+                  type: string
+                amount:
+                  type: number
+                currency:
+                  type: string
+      responses:
+        '200':
+          description: Transfer initiated
+  /api/banking/ledger:
+    get:
+      tags: [banking-service]
+      summary: Get transaction ledger
+      parameters:
+        - name: accountId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ledger entries
+
+  # ── insurance-service ──
+  /api/insurance/health:
+    get:
+      tags: [insurance-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/insurance/stats:
+    get:
+      tags: [insurance-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/insurance:
+    get:
+      tags: [insurance-service]
+      summary: List policies
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [insurance-service]
+      summary: Create policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/insurance/{id}:
+    get:
+      tags: [insurance-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get policy
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [insurance-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [insurance-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Cancel policy
+      responses:
+        '204':
+          description: Deleted
+  /api/insurance/claims:
+    post:
+      tags: [insurance-service]
+      summary: File insurance claim
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                policyId:
+                  type: string
+                description:
+                  type: string
+                amount:
+                  type: number
+      responses:
+        '201':
+          description: Claim filed
+  /api/insurance/underwrite:
+    post:
+      tags: [insurance-service]
+      summary: Run underwriting assessment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                applicantId:
+                  type: string
+                policyType:
+                  type: string
+      responses:
+        '200':
+          description: Assessment result
+
+  # ── employment-service ──
+  /api/employment/health:
+    get:
+      tags: [employment-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/employment/stats:
+    get:
+      tags: [employment-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/employment:
+    get:
+      tags: [employment-service]
+      summary: List job postings
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [employment-service]
+      summary: Create job posting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/employment/{id}:
+    get:
+      tags: [employment-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get job posting
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [employment-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update job posting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [employment-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove job posting
+      responses:
+        '204':
+          description: Deleted
+  /api/employment/apply:
+    post:
+      tags: [employment-service]
+      summary: Submit job application
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobId:
+                  type: string
+                applicantId:
+                  type: string
+                resumeUrl:
+                  type: string
+      responses:
+        '201':
+          description: Application submitted
+  /api/employment/workforce/analytics:
+    get:
+      tags: [employment-service]
+      summary: Get workforce analytics dashboard data
+      responses:
+        '200':
+          description: Analytics data
+
+  # ── smartfactory-service ──
+  /api/smartfactory/health:
+    get:
+      tags: [smartfactory-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/smartfactory/stats:
+    get:
+      tags: [smartfactory-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/smartfactory:
+    get:
+      tags: [smartfactory-service]
+      summary: List production lines
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [smartfactory-service]
+      summary: Create production line
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/smartfactory/{id}:
+    get:
+      tags: [smartfactory-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get production line
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [smartfactory-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update production line
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [smartfactory-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove production line
+      responses:
+        '204':
+          description: Deleted
+  /api/smartfactory/quality/inspect:
+    post:
+      tags: [smartfactory-service]
+      summary: Submit quality inspection result
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lineId:
+                  type: string
+                batchId:
+                  type: string
+                passed:
+                  type: boolean
+                defects:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Inspection recorded
+  /api/smartfactory/supply-chain/track:
+    get:
+      tags: [smartfactory-service]
+      summary: Track supply chain component status
+      parameters:
+        - name: componentId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tracking data
+
+  # ── artisan-service ──
+  /api/artisan/health:
+    get:
+      tags: [artisan-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/artisan/stats:
+    get:
+      tags: [artisan-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/artisan:
+    get:
+      tags: [artisan-service]
+      summary: List artisan profiles
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [artisan-service]
+      summary: Register artisan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/artisan/{id}:
+    get:
+      tags: [artisan-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get artisan
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [artisan-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update artisan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [artisan-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove artisan
+      responses:
+        '204':
+          description: Deleted
+  /api/artisan/crafts:
+    get:
+      tags: [artisan-service]
+      summary: Browse craft listings
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Craft listings
+  /api/artisan/fairtrade/verify:
+    post:
+      tags: [artisan-service]
+      summary: Verify fair-trade certification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                artisanId:
+                  type: string
+                productId:
+                  type: string
+      responses:
+        '200':
+          description: Verification result
+
+  # ── tourism-service ──
+  /api/tourism/health:
+    get:
+      tags: [tourism-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/tourism/stats:
+    get:
+      tags: [tourism-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/tourism:
+    get:
+      tags: [tourism-service]
+      summary: List destinations
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [tourism-service]
+      summary: Register destination
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/tourism/{id}:
+    get:
+      tags: [tourism-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get destination
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [tourism-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update destination
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [tourism-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove destination
+      responses:
+        '204':
+          description: Deleted
+  /api/tourism/bookings:
+    post:
+      tags: [tourism-service]
+      summary: Create travel booking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                destinationId:
+                  type: string
+                dates:
+                  type: object
+                  properties:
+                    start:
+                      type: string
+                      format: date
+                    end:
+                      type: string
+                      format: date
+                travelers:
+                  type: integer
+      responses:
+        '201':
+          description: Booking created
+  /api/tourism/itineraries/generate:
+    post:
+      tags: [tourism-service]
+      summary: Auto-generate travel itinerary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                destinationId:
+                  type: string
+                durationDays:
+                  type: integer
+                interests:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Generated itinerary
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+  headers:
+    X-RateLimit-Limit:
+      description: Maximum requests per window
+      schema:
+        type: integer
+        example: 100
+    X-RateLimit-Remaining:
+      description: Remaining requests in window
+      schema:
+        type: integer
+        example: 95
+    X-RateLimit-Reset:
+      description: Seconds until rate limit resets
+      schema:
+        type: integer
+        example: 30
+    X-Request-Id:
+      description: Unique request correlation ID
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+  responses:
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

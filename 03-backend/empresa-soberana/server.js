@@ -12,6 +12,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const { v4: uuidv4 } = require('uuid');
 const { corsConfig, applySecurityMiddleware, errorHandler } = require('../shared/security');
+const db = require('./db');
 
 const app = express();
 
@@ -26,14 +27,6 @@ app.use(express.json({ limit: '5mb' }));
 
 // Apply shared Ierahkwa security middleware
 const logger = applySecurityMiddleware(app, 'empresa-soberana');
-
-// ============================================================================
-// IN-MEMORY STORAGE
-// ============================================================================
-
-const contacts = new Map();
-const products = new Map();
-const invoices = new Map();
 
 // ============================================================================
 // ERP MODULES DEFINITION
@@ -91,23 +84,22 @@ const ERP_MODULES = [
 // HELPER FUNCTIONS
 // ============================================================================
 
-function paginateMap(map, query = {}) {
-  const { limit = 50, offset = 0, sort = 'createdAt', order = 'desc' } = query;
-  let items = Array.from(map.values());
-
-  // Sort
-  items.sort((a, b) => {
-    const aVal = a[sort] || '';
-    const bVal = b[sort] || '';
-    if (order === 'desc') return bVal > aVal ? 1 : -1;
-    return aVal > bVal ? 1 : -1;
-  });
-
-  const total = items.length;
-  const paginated = items.slice(Number(offset), Number(offset) + Number(limit));
-
-  return { items: paginated, total, limit: Number(limit), offset: Number(offset) };
-}
+/** Map camelCase sort field names to snake_case DB columns */
+const SORT_COLUMN_MAP = {
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+  name: 'name',
+  email: 'email',
+  company: 'company',
+  status: 'status',
+  sku: 'sku',
+  price: 'price',
+  stock: 'stock',
+  category: 'category',
+  invoiceNumber: 'invoice_number',
+  customer: 'customer',
+  total: 'total'
+};
 
 function validateRequired(body, fields) {
   const missing = fields.filter(f => !body[f] && body[f] !== 0);
@@ -117,28 +109,45 @@ function validateRequired(body, fields) {
   return null;
 }
 
+/** Resolve a sort column safely, defaulting to created_at */
+function resolveSortColumn(field) {
+  return SORT_COLUMN_MAP[field] || 'created_at';
+}
+
+/** Resolve sort order safely */
+function resolveSortOrder(order) {
+  return order === 'asc' ? 'ASC' : 'DESC';
+}
+
 // ============================================================================
 // REST API — HEALTH
 // ============================================================================
 
-app.get('/health', (req, res) => {
-  const totalRevenue = Array.from(invoices.values())
-    .filter(inv => inv.status === 'paid')
-    .reduce((sum, inv) => sum + inv.total, 0);
+app.get('/health', async (req, res) => {
+  try {
+    const [contactsRes, productsRes, invoicesRes, revenueRes] = await Promise.all([
+      db.query('SELECT COUNT(*)::int AS count FROM contacts'),
+      db.query('SELECT COUNT(*)::int AS count FROM products'),
+      db.query('SELECT COUNT(*)::int AS count FROM invoices'),
+      db.query("SELECT COALESCE(SUM(total), 0) AS revenue FROM invoices WHERE status = 'paid'")
+    ]);
 
-  res.json({
-    status: 'ok',
-    service: 'empresa-soberana',
-    version: '1.0.0',
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-    modules: ERP_MODULES.filter(m => m.status === 'active').length,
-    contacts: contacts.size,
-    products: products.size,
-    invoices: invoices.size,
-    revenue: totalRevenue,
-    poweredBy: 'MameyNode'
-  });
+    res.json({
+      status: 'ok',
+      service: 'empresa-soberana',
+      version: '1.0.0',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      modules: ERP_MODULES.filter(m => m.status === 'active').length,
+      contacts: contactsRes.rows[0].count,
+      products: productsRes.rows[0].count,
+      invoices: invoicesRes.rows[0].count,
+      revenue: Number(revenueRes.rows[0].revenue),
+      poweredBy: 'MameyNode'
+    });
+  } catch (error) {
+    res.status(500).json({ status: 'error', service: 'empresa-soberana', error: 'Database health check failed' });
+  }
 });
 
 // ============================================================================
@@ -146,7 +155,7 @@ app.get('/health', (req, res) => {
 // ============================================================================
 
 // Create contact
-app.post('/api/contacts', (req, res) => {
+app.post('/api/contacts', async (req, res) => {
   try {
     const { name, email, phone, company, status, notes, tags } = req.body;
     const error = validateRequired(req.body, ['name', 'email']);
@@ -155,25 +164,22 @@ app.post('/api/contacts', (req, res) => {
     }
 
     // Check duplicate email
-    const existing = Array.from(contacts.values()).find(c => c.email === email);
-    if (existing) {
+    const existing = await db.query('SELECT id FROM contacts WHERE email = $1', [email]);
+    if (existing.rows.length > 0) {
       return res.status(409).json({ success: false, error: 'Ya existe un contacto con ese email' });
     }
 
-    const contact = {
-      id: uuidv4(),
-      name,
-      email,
-      phone: phone || null,
-      company: company || null,
-      status: status || 'lead',
-      notes: notes || '',
-      tags: tags || [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+    const id = uuidv4();
+    const now = new Date().toISOString();
 
-    contacts.set(contact.id, contact);
+    const result = await db.query(
+      `INSERT INTO contacts (id, name, email, phone, company, status, notes, tags, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       RETURNING *`,
+      [id, name, email, phone || null, company || null, status || 'lead', notes || '', JSON.stringify(tags || []), now, now]
+    );
+
+    const contact = db.mapContactRow(result.rows[0]);
     logger.dataAccess(req, 'contacts', 'create');
 
     res.status(201).json({ success: true, contact });
@@ -183,54 +189,58 @@ app.post('/api/contacts', (req, res) => {
 });
 
 // List contacts
-app.get('/api/contacts', (req, res) => {
+app.get('/api/contacts', async (req, res) => {
   try {
     const { status, company, search, limit, offset, sort, order } = req.query;
-    let items = Array.from(contacts.values());
+
+    const conditions = [];
+    const params = [];
+    let paramIndex = 1;
 
     if (status) {
-      items = items.filter(c => c.status === status);
+      conditions.push(`status = $${paramIndex++}`);
+      params.push(status);
     }
     if (company) {
-      items = items.filter(c => c.company && c.company.toLowerCase().includes(company.toLowerCase()));
+      conditions.push(`company ILIKE $${paramIndex++}`);
+      params.push(`%${company}%`);
     }
     if (search) {
-      const term = search.toLowerCase();
-      items = items.filter(c =>
-        c.name.toLowerCase().includes(term) ||
-        c.email.toLowerCase().includes(term) ||
-        (c.company && c.company.toLowerCase().includes(term))
-      );
+      conditions.push(`(name ILIKE $${paramIndex} OR email ILIKE $${paramIndex} OR company ILIKE $${paramIndex})`);
+      params.push(`%${search}%`);
+      paramIndex++;
     }
 
-    // Sort
-    const sortField = sort || 'createdAt';
-    const sortOrder = order || 'desc';
-    items.sort((a, b) => {
-      const aVal = a[sortField] || '';
-      const bVal = b[sortField] || '';
-      if (sortOrder === 'desc') return bVal > aVal ? 1 : -1;
-      return aVal > bVal ? 1 : -1;
-    });
-
-    const total = items.length;
+    const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
+    const sortCol = resolveSortColumn(sort || 'createdAt');
+    const sortDir = resolveSortOrder(order || 'desc');
     const lim = Number(limit) || 50;
     const off = Number(offset) || 0;
-    const paginated = items.slice(off, off + lim);
 
-    res.json({ success: true, contacts: paginated, total, limit: lim, offset: off });
+    const countResult = await db.query(`SELECT COUNT(*)::int AS total FROM contacts ${whereClause}`, params);
+    const total = countResult.rows[0].total;
+
+    const dataResult = await db.query(
+      `SELECT * FROM contacts ${whereClause} ORDER BY ${sortCol} ${sortDir} LIMIT $${paramIndex++} OFFSET $${paramIndex++}`,
+      [...params, lim, off]
+    );
+
+    const contacts = dataResult.rows.map(db.mapContactRow);
+
+    res.json({ success: true, contacts, total, limit: lim, offset: off });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Error al listar contactos' });
   }
 });
 
 // Get contact by ID
-app.get('/api/contacts/:id', (req, res) => {
+app.get('/api/contacts/:id', async (req, res) => {
   try {
-    const contact = contacts.get(req.params.id);
-    if (!contact) {
+    const result = await db.query('SELECT * FROM contacts WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Contacto no encontrado' });
     }
+    const contact = db.mapContactRow(result.rows[0]);
     res.json({ success: true, contact });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Error al obtener contacto' });
@@ -238,24 +248,37 @@ app.get('/api/contacts/:id', (req, res) => {
 });
 
 // Update contact
-app.put('/api/contacts/:id', (req, res) => {
+app.put('/api/contacts/:id', async (req, res) => {
   try {
-    const contact = contacts.get(req.params.id);
-    if (!contact) {
+    const existing = await db.query('SELECT * FROM contacts WHERE id = $1', [req.params.id]);
+    if (existing.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Contacto no encontrado' });
     }
 
+    const row = existing.rows[0];
     const { name, email, phone, company, status, notes, tags } = req.body;
+    const now = new Date().toISOString();
 
-    if (name !== undefined) contact.name = name;
-    if (email !== undefined) contact.email = email;
-    if (phone !== undefined) contact.phone = phone;
-    if (company !== undefined) contact.company = company;
-    if (status !== undefined) contact.status = status;
-    if (notes !== undefined) contact.notes = notes;
-    if (tags !== undefined) contact.tags = tags;
-    contact.updatedAt = new Date().toISOString();
+    const result = await db.query(
+      `UPDATE contacts SET
+        name = $1, email = $2, phone = $3, company = $4,
+        status = $5, notes = $6, tags = $7, updated_at = $8
+       WHERE id = $9
+       RETURNING *`,
+      [
+        name !== undefined ? name : row.name,
+        email !== undefined ? email : row.email,
+        phone !== undefined ? phone : row.phone,
+        company !== undefined ? company : row.company,
+        status !== undefined ? status : row.status,
+        notes !== undefined ? notes : row.notes,
+        JSON.stringify(tags !== undefined ? tags : row.tags),
+        now,
+        req.params.id
+      ]
+    );
 
+    const contact = db.mapContactRow(result.rows[0]);
     logger.dataAccess(req, 'contacts', 'update');
 
     res.json({ success: true, contact });
@@ -265,13 +288,13 @@ app.put('/api/contacts/:id', (req, res) => {
 });
 
 // Delete contact
-app.delete('/api/contacts/:id', (req, res) => {
+app.delete('/api/contacts/:id', async (req, res) => {
   try {
-    if (!contacts.has(req.params.id)) {
+    const result = await db.query('DELETE FROM contacts WHERE id = $1 RETURNING id', [req.params.id]);
+    if (result.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Contacto no encontrado' });
     }
 
-    contacts.delete(req.params.id);
     logger.dataAccess(req, 'contacts', 'delete');
 
     res.json({ success: true, message: 'Contacto eliminado exitosamente' });
@@ -285,7 +308,7 @@ app.delete('/api/contacts/:id', (req, res) => {
 // ============================================================================
 
 // Create product
-app.post('/api/products', (req, res) => {
+app.post('/api/products', async (req, res) => {
   try {
     const { name, sku, description, price, stock, category, unit, minStock } = req.body;
     const error = validateRequired(req.body, ['name', 'sku', 'price']);
@@ -294,27 +317,22 @@ app.post('/api/products', (req, res) => {
     }
 
     // Check duplicate SKU
-    const existing = Array.from(products.values()).find(p => p.sku === sku);
-    if (existing) {
+    const existing = await db.query('SELECT id FROM products WHERE sku = $1', [sku]);
+    if (existing.rows.length > 0) {
       return res.status(409).json({ success: false, error: 'Ya existe un producto con ese SKU' });
     }
 
-    const product = {
-      id: uuidv4(),
-      name,
-      sku,
-      description: description || '',
-      price: Number(price),
-      stock: Number(stock) || 0,
-      category: category || 'general',
-      unit: unit || 'unidad',
-      minStock: Number(minStock) || 0,
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+    const id = uuidv4();
+    const now = new Date().toISOString();
 
-    products.set(product.id, product);
+    const result = await db.query(
+      `INSERT INTO products (id, name, sku, description, price, stock, category, unit, min_stock, is_active, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+       RETURNING *`,
+      [id, name, sku, description || '', Number(price), Number(stock) || 0, category || 'general', unit || 'unidad', Number(minStock) || 0, true, now, now]
+    );
+
+    const product = db.mapProductRow(result.rows[0]);
     logger.dataAccess(req, 'products', 'create');
 
     res.status(201).json({ success: true, product });
@@ -324,60 +342,62 @@ app.post('/api/products', (req, res) => {
 });
 
 // List products
-app.get('/api/products', (req, res) => {
+app.get('/api/products', async (req, res) => {
   try {
     const { category, search, inStock, limit, offset, sort, order } = req.query;
-    let items = Array.from(products.values());
+
+    const conditions = [];
+    const params = [];
+    let paramIndex = 1;
 
     if (category) {
-      items = items.filter(p => p.category === category);
+      conditions.push(`category = $${paramIndex++}`);
+      params.push(category);
     }
     if (search) {
-      const term = search.toLowerCase();
-      items = items.filter(p =>
-        p.name.toLowerCase().includes(term) ||
-        p.sku.toLowerCase().includes(term) ||
-        p.description.toLowerCase().includes(term)
-      );
+      conditions.push(`(name ILIKE $${paramIndex} OR sku ILIKE $${paramIndex} OR description ILIKE $${paramIndex})`);
+      params.push(`%${search}%`);
+      paramIndex++;
     }
     if (inStock === 'true') {
-      items = items.filter(p => p.stock > 0);
+      conditions.push('stock > 0');
     }
     if (inStock === 'false') {
-      items = items.filter(p => p.stock === 0);
+      conditions.push('stock = 0');
     }
 
-    // Sort
-    const sortField = sort || 'createdAt';
-    const sortOrder = order || 'desc';
-    items.sort((a, b) => {
-      const aVal = a[sortField] || '';
-      const bVal = b[sortField] || '';
-      if (sortOrder === 'desc') return bVal > aVal ? 1 : -1;
-      return aVal > bVal ? 1 : -1;
-    });
-
-    const total = items.length;
+    const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
+    const sortCol = resolveSortColumn(sort || 'createdAt');
+    const sortDir = resolveSortOrder(order || 'desc');
     const lim = Number(limit) || 50;
     const off = Number(offset) || 0;
-    const paginated = items.slice(off, off + lim);
 
-    // Low stock alerts
-    const lowStock = Array.from(products.values()).filter(p => p.stock > 0 && p.stock <= p.minStock);
+    const [countResult, dataResult, lowStockResult] = await Promise.all([
+      db.query(`SELECT COUNT(*)::int AS total FROM products ${whereClause}`, params),
+      db.query(
+        `SELECT * FROM products ${whereClause} ORDER BY ${sortCol} ${sortDir} LIMIT $${paramIndex++} OFFSET $${paramIndex++}`,
+        [...params, lim, off]
+      ),
+      db.query('SELECT COUNT(*)::int AS count FROM products WHERE stock > 0 AND stock <= min_stock')
+    ]);
 
-    res.json({ success: true, products: paginated, total, limit: lim, offset: off, lowStockCount: lowStock.length });
+    const total = countResult.rows[0].total;
+    const products = dataResult.rows.map(db.mapProductRow);
+
+    res.json({ success: true, products, total, limit: lim, offset: off, lowStockCount: lowStockResult.rows[0].count });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Error al listar productos' });
   }
 });
 
 // Get product by ID
-app.get('/api/products/:id', (req, res) => {
+app.get('/api/products/:id', async (req, res) => {
   try {
-    const product = products.get(req.params.id);
-    if (!product) {
+    const result = await db.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Producto no encontrado' });
     }
+    const product = db.mapProductRow(result.rows[0]);
     res.json({ success: true, product });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Error al obtener producto' });
@@ -385,26 +405,40 @@ app.get('/api/products/:id', (req, res) => {
 });
 
 // Update product
-app.put('/api/products/:id', (req, res) => {
+app.put('/api/products/:id', async (req, res) => {
   try {
-    const product = products.get(req.params.id);
-    if (!product) {
+    const existing = await db.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
+    if (existing.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Producto no encontrado' });
     }
 
+    const row = existing.rows[0];
     const { name, sku, description, price, stock, category, unit, minStock, isActive } = req.body;
+    const now = new Date().toISOString();
 
-    if (name !== undefined) product.name = name;
-    if (sku !== undefined) product.sku = sku;
-    if (description !== undefined) product.description = description;
-    if (price !== undefined) product.price = Number(price);
-    if (stock !== undefined) product.stock = Number(stock);
-    if (category !== undefined) product.category = category;
-    if (unit !== undefined) product.unit = unit;
-    if (minStock !== undefined) product.minStock = Number(minStock);
-    if (isActive !== undefined) product.isActive = isActive;
-    product.updatedAt = new Date().toISOString();
+    const result = await db.query(
+      `UPDATE products SET
+        name = $1, sku = $2, description = $3, price = $4,
+        stock = $5, category = $6, unit = $7, min_stock = $8,
+        is_active = $9, updated_at = $10
+       WHERE id = $11
+       RETURNING *`,
+      [
+        name !== undefined ? name : row.name,
+        sku !== undefined ? sku : row.sku,
+        description !== undefined ? description : row.description,
+        price !== undefined ? Number(price) : Number(row.price),
+        stock !== undefined ? Number(stock) : row.stock,
+        category !== undefined ? category : row.category,
+        unit !== undefined ? unit : row.unit,
+        minStock !== undefined ? Number(minStock) : row.min_stock,
+        isActive !== undefined ? isActive : row.is_active,
+        now,
+        req.params.id
+      ]
+    );
 
+    const product = db.mapProductRow(result.rows[0]);
     logger.dataAccess(req, 'products', 'update');
 
     res.json({ success: true, product });
@@ -414,13 +448,13 @@ app.put('/api/products/:id', (req, res) => {
 });
 
 // Delete product
-app.delete('/api/products/:id', (req, res) => {
+app.delete('/api/products/:id', async (req, res) => {
   try {
-    if (!products.has(req.params.id)) {
+    const result = await db.query('DELETE FROM products WHERE id = $1 RETURNING id', [req.params.id]);
+    if (result.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Producto no encontrado' });
     }
 
-    products.delete(req.params.id);
     logger.dataAccess(req, 'products', 'delete');
 
     res.json({ success: true, message: 'Producto eliminado exitosamente' });
@@ -434,7 +468,7 @@ app.delete('/api/products/:id', (req, res) => {
 // ============================================================================
 
 // Create invoice
-app.post('/api/invoices', (req, res) => {
+app.post('/api/invoices', async (req, res) => {
   try {
     const { customer, customerEmail, items, notes, dueDate, currency } = req.body;
     const error = validateRequired(req.body, ['customer', 'items']);
@@ -466,31 +500,29 @@ app.post('/api/invoices', (req, res) => {
     const taxAmount = subtotal * taxRate;
     const total = subtotal + taxAmount;
 
-    // Generate invoice number
-    const invoiceCount = invoices.size + 1;
+    // Generate invoice number based on current count in DB
+    const countResult = await db.query('SELECT COUNT(*)::int AS count FROM invoices');
+    const invoiceCount = countResult.rows[0].count + 1;
     const invoiceNumber = `INV-${new Date().getFullYear()}-${String(invoiceCount).padStart(5, '0')}`;
 
-    const invoice = {
-      id: uuidv4(),
-      invoiceNumber,
-      customer,
-      customerEmail: customerEmail || null,
-      items: lineItems,
-      subtotal: Math.round(subtotal * 100) / 100,
-      taxRate,
-      taxAmount: Math.round(taxAmount * 100) / 100,
-      total: Math.round(total * 100) / 100,
-      currency: currency || 'USD',
-      status: 'draft',
-      notes: notes || '',
-      dueDate: dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      issuedAt: new Date().toISOString(),
-      paidAt: null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+    const id = uuidv4();
+    const now = new Date().toISOString();
+    const defaultDueDate = dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    invoices.set(invoice.id, invoice);
+    const result = await db.query(
+      `INSERT INTO invoices (id, invoice_number, customer, customer_email, items, subtotal, tax_rate, tax_amount, total, currency, status, notes, due_date, issued_at, paid_at, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+       RETURNING *`,
+      [
+        id, invoiceNumber, customer, customerEmail || null,
+        JSON.stringify(lineItems),
+        Math.round(subtotal * 100) / 100, taxRate, Math.round(taxAmount * 100) / 100, Math.round(total * 100) / 100,
+        currency || 'USD', 'draft', notes || '', defaultDueDate,
+        now, null, now, now
+      ]
+    );
+
+    const invoice = db.mapInvoiceRow(result.rows[0]);
     logger.dataAccess(req, 'invoices', 'create');
 
     res.status(201).json({
@@ -504,53 +536,59 @@ app.post('/api/invoices', (req, res) => {
 });
 
 // List invoices
-app.get('/api/invoices', (req, res) => {
+app.get('/api/invoices', async (req, res) => {
   try {
     const { status, customer, search, limit, offset, sort, order } = req.query;
-    let items = Array.from(invoices.values());
+
+    const conditions = [];
+    const params = [];
+    let paramIndex = 1;
 
     if (status) {
-      items = items.filter(inv => inv.status === status);
+      conditions.push(`status = $${paramIndex++}`);
+      params.push(status);
     }
     if (customer) {
-      items = items.filter(inv => inv.customer.toLowerCase().includes(customer.toLowerCase()));
+      conditions.push(`customer ILIKE $${paramIndex++}`);
+      params.push(`%${customer}%`);
     }
     if (search) {
-      const term = search.toLowerCase();
-      items = items.filter(inv =>
-        inv.invoiceNumber.toLowerCase().includes(term) ||
-        inv.customer.toLowerCase().includes(term)
-      );
+      conditions.push(`(invoice_number ILIKE $${paramIndex} OR customer ILIKE $${paramIndex})`);
+      params.push(`%${search}%`);
+      paramIndex++;
     }
 
-    // Sort
-    const sortField = sort || 'createdAt';
-    const sortOrder = order || 'desc';
-    items.sort((a, b) => {
-      const aVal = a[sortField] || '';
-      const bVal = b[sortField] || '';
-      if (sortOrder === 'desc') return bVal > aVal ? 1 : -1;
-      return aVal > bVal ? 1 : -1;
-    });
-
-    const total = items.length;
+    const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
+    const sortCol = resolveSortColumn(sort || 'createdAt');
+    const sortDir = resolveSortOrder(order || 'desc');
     const lim = Number(limit) || 50;
     const off = Number(offset) || 0;
-    const paginated = items.slice(off, off + lim);
 
-    res.json({ success: true, invoices: paginated, total, limit: lim, offset: off });
+    const [countResult, dataResult] = await Promise.all([
+      db.query(`SELECT COUNT(*)::int AS total FROM invoices ${whereClause}`, params),
+      db.query(
+        `SELECT * FROM invoices ${whereClause} ORDER BY ${sortCol} ${sortDir} LIMIT $${paramIndex++} OFFSET $${paramIndex++}`,
+        [...params, lim, off]
+      )
+    ]);
+
+    const total = countResult.rows[0].total;
+    const invoices = dataResult.rows.map(db.mapInvoiceRow);
+
+    res.json({ success: true, invoices, total, limit: lim, offset: off });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Error al listar facturas' });
   }
 });
 
 // Get invoice by ID
-app.get('/api/invoices/:id', (req, res) => {
+app.get('/api/invoices/:id', async (req, res) => {
   try {
-    const invoice = invoices.get(req.params.id);
-    if (!invoice) {
+    const result = await db.query('SELECT * FROM invoices WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Factura no encontrada' });
     }
+    const invoice = db.mapInvoiceRow(result.rows[0]);
     res.json({ success: true, invoice });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Error al obtener factura' });
@@ -558,15 +596,17 @@ app.get('/api/invoices/:id', (req, res) => {
 });
 
 // Update invoice
-app.put('/api/invoices/:id', (req, res) => {
+app.put('/api/invoices/:id', async (req, res) => {
   try {
-    const invoice = invoices.get(req.params.id);
-    if (!invoice) {
+    const existing = await db.query('SELECT * FROM invoices WHERE id = $1', [req.params.id]);
+    if (existing.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Factura no encontrada' });
     }
 
+    const row = existing.rows[0];
+
     // Only allow editing draft invoices
-    if (invoice.status !== 'draft' && req.body.items) {
+    if (row.status !== 'draft' && req.body.items) {
       return res.status(400).json({
         success: false,
         error: 'Solo se pueden editar items en facturas con estado draft'
@@ -575,10 +615,17 @@ app.put('/api/invoices/:id', (req, res) => {
 
     const { customer, customerEmail, items, notes, dueDate, status } = req.body;
 
-    if (customer !== undefined) invoice.customer = customer;
-    if (customerEmail !== undefined) invoice.customerEmail = customerEmail;
-    if (notes !== undefined) invoice.notes = notes;
-    if (dueDate !== undefined) invoice.dueDate = dueDate;
+    let newCustomer = customer !== undefined ? customer : row.customer;
+    let newCustomerEmail = customerEmail !== undefined ? customerEmail : row.customer_email;
+    let newNotes = notes !== undefined ? notes : row.notes;
+    let newDueDate = dueDate !== undefined ? dueDate : row.due_date;
+    let newStatus = row.status;
+    let newPaidAt = row.paid_at;
+    let newItems = row.items;
+    let newSubtotal = Number(row.subtotal);
+    let newTaxRate = Number(row.tax_rate);
+    let newTaxAmount = Number(row.tax_amount);
+    let newTotal = Number(row.total);
 
     // Update status
     if (status !== undefined) {
@@ -589,15 +636,15 @@ app.put('/api/invoices/:id', (req, res) => {
           error: `Estado invalido. Valores validos: ${validStatuses.join(', ')}`
         });
       }
-      invoice.status = status;
+      newStatus = status;
       if (status === 'paid') {
-        invoice.paidAt = new Date().toISOString();
+        newPaidAt = new Date().toISOString();
       }
     }
 
     // Recalculate if items changed
     if (items && Array.isArray(items) && items.length > 0) {
-      invoice.items = items.map(item => {
+      newItems = items.map(item => {
         const quantity = Number(item.quantity) || 1;
         const unitPrice = Number(item.unitPrice) || 0;
         return {
@@ -610,14 +657,30 @@ app.put('/api/invoices/:id', (req, res) => {
         };
       });
 
-      const subtotal = invoice.items.reduce((sum, item) => sum + item.subtotal, 0);
-      invoice.subtotal = Math.round(subtotal * 100) / 100;
-      invoice.taxAmount = Math.round(subtotal * invoice.taxRate * 100) / 100;
-      invoice.total = Math.round((invoice.subtotal + invoice.taxAmount) * 100) / 100;
+      const subtotal = newItems.reduce((sum, item) => sum + item.subtotal, 0);
+      newSubtotal = Math.round(subtotal * 100) / 100;
+      newTaxAmount = Math.round(subtotal * newTaxRate * 100) / 100;
+      newTotal = Math.round((newSubtotal + newTaxAmount) * 100) / 100;
     }
 
-    invoice.updatedAt = new Date().toISOString();
+    const now = new Date().toISOString();
 
+    const result = await db.query(
+      `UPDATE invoices SET
+        customer = $1, customer_email = $2, items = $3, subtotal = $4,
+        tax_rate = $5, tax_amount = $6, total = $7, status = $8,
+        notes = $9, due_date = $10, paid_at = $11, updated_at = $12
+       WHERE id = $13
+       RETURNING *`,
+      [
+        newCustomer, newCustomerEmail, JSON.stringify(newItems), newSubtotal,
+        newTaxRate, newTaxAmount, newTotal, newStatus,
+        newNotes, newDueDate, newPaidAt, now,
+        req.params.id
+      ]
+    );
+
+    const invoice = db.mapInvoiceRow(result.rows[0]);
     logger.dataAccess(req, 'invoices', 'update');
 
     res.json({ success: true, invoice });
@@ -627,21 +690,21 @@ app.put('/api/invoices/:id', (req, res) => {
 });
 
 // Delete invoice
-app.delete('/api/invoices/:id', (req, res) => {
+app.delete('/api/invoices/:id', async (req, res) => {
   try {
-    const invoice = invoices.get(req.params.id);
-    if (!invoice) {
+    const existing = await db.query('SELECT id, status FROM invoices WHERE id = $1', [req.params.id]);
+    if (existing.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Factura no encontrada' });
     }
 
-    if (invoice.status === 'paid') {
+    if (existing.rows[0].status === 'paid') {
       return res.status(400).json({
         success: false,
         error: 'No se puede eliminar una factura pagada'
       });
     }
 
-    invoices.delete(req.params.id);
+    await db.query('DELETE FROM invoices WHERE id = $1', [req.params.id]);
     logger.dataAccess(req, 'invoices', 'delete');
 
     res.json({ success: true, message: 'Factura eliminada exitosamente' });
@@ -654,79 +717,102 @@ app.delete('/api/invoices/:id', (req, res) => {
 // REST API — DASHBOARD
 // ============================================================================
 
-app.get('/api/dashboard', (req, res) => {
+app.get('/api/dashboard', async (req, res) => {
   try {
-    const allInvoices = Array.from(invoices.values());
-    const paidInvoices = allInvoices.filter(inv => inv.status === 'paid');
-    const pendingInvoices = allInvoices.filter(inv => inv.status === 'sent' || inv.status === 'draft');
-    const overdueInvoices = allInvoices.filter(inv => inv.status === 'overdue');
+    const [
+      contactsCountRes,
+      productsCountRes,
+      invoicesCountRes,
+      revenueRes,
+      pendingRevenueRes,
+      overdueRevenueRes,
+      contactsByStatusRes,
+      stockStatsRes,
+      invoicesByStatusRes,
+      recentInvoicesRes
+    ] = await Promise.all([
+      db.query('SELECT COUNT(*)::int AS count FROM contacts'),
+      db.query('SELECT COUNT(*)::int AS count FROM products'),
+      db.query('SELECT COUNT(*)::int AS count FROM invoices'),
+      db.query("SELECT COALESCE(SUM(total), 0) AS revenue FROM invoices WHERE status = 'paid'"),
+      db.query("SELECT COALESCE(SUM(total), 0) AS revenue FROM invoices WHERE status IN ('sent', 'draft')"),
+      db.query("SELECT COALESCE(SUM(total), 0) AS revenue FROM invoices WHERE status = 'overdue'"),
+      db.query('SELECT status, COUNT(*)::int AS count FROM contacts GROUP BY status'),
+      db.query(`SELECT
+        COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE stock > 0)::int AS in_stock,
+        COUNT(*) FILTER (WHERE stock = 0)::int AS out_of_stock,
+        COUNT(*) FILTER (WHERE stock > 0 AND stock <= min_stock)::int AS low_stock,
+        COALESCE(SUM(price * stock), 0) AS total_stock_value
+       FROM products`),
+      db.query('SELECT status, COUNT(*)::int AS count FROM invoices GROUP BY status'),
+      db.query('SELECT id, invoice_number, customer, total, status, created_at FROM invoices ORDER BY created_at DESC LIMIT 5')
+    ]);
 
-    const totalRevenue = paidInvoices.reduce((sum, inv) => sum + inv.total, 0);
-    const pendingRevenue = pendingInvoices.reduce((sum, inv) => sum + inv.total, 0);
-    const overdueRevenue = overdueInvoices.reduce((sum, inv) => sum + inv.total, 0);
+    const totalContacts = contactsCountRes.rows[0].count;
+    const totalProducts = productsCountRes.rows[0].count;
+    const totalInvoices = invoicesCountRes.rows[0].count;
+    const totalRevenue = Number(revenueRes.rows[0].revenue);
+    const pendingRevenue = Number(pendingRevenueRes.rows[0].revenue);
+    const overdueRevenue = Number(overdueRevenueRes.rows[0].revenue);
 
     // Contact statistics
     const contactsByStatus = {};
-    for (const contact of contacts.values()) {
-      contactsByStatus[contact.status] = (contactsByStatus[contact.status] || 0) + 1;
+    for (const row of contactsByStatusRes.rows) {
+      contactsByStatus[row.status] = row.count;
     }
 
     // Product statistics
-    const allProducts = Array.from(products.values());
-    const totalStockValue = allProducts.reduce((sum, p) => sum + (p.price * p.stock), 0);
-    const lowStockProducts = allProducts.filter(p => p.stock > 0 && p.stock <= p.minStock);
-    const outOfStockProducts = allProducts.filter(p => p.stock === 0);
+    const stockStats = stockStatsRes.rows[0];
+    const totalStockValue = Number(stockStats.total_stock_value);
 
     // Invoice status breakdown
     const invoicesByStatus = {};
-    for (const inv of allInvoices) {
-      invoicesByStatus[inv.status] = (invoicesByStatus[inv.status] || 0) + 1;
+    for (const row of invoicesByStatusRes.rows) {
+      invoicesByStatus[row.status] = row.count;
     }
 
     // Recent invoices
-    const recentInvoices = allInvoices
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      .slice(0, 5)
-      .map(inv => ({
-        id: inv.id,
-        invoiceNumber: inv.invoiceNumber,
-        customer: inv.customer,
-        total: inv.total,
-        status: inv.status,
-        createdAt: inv.createdAt
-      }));
+    const recentInvoices = recentInvoicesRes.rows.map(row => ({
+      id: row.id,
+      invoiceNumber: row.invoice_number,
+      customer: row.customer,
+      total: Number(row.total),
+      status: row.status,
+      createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at
+    }));
 
     res.json({
       success: true,
       dashboard: {
         summary: {
-          totalContacts: contacts.size,
-          totalProducts: products.size,
-          totalInvoices: invoices.size,
+          totalContacts,
+          totalProducts,
+          totalInvoices,
           totalRevenue: Math.round(totalRevenue * 100) / 100,
           pendingRevenue: Math.round(pendingRevenue * 100) / 100,
           overdueRevenue: Math.round(overdueRevenue * 100) / 100,
           totalStockValue: Math.round(totalStockValue * 100) / 100
         },
         contacts: {
-          total: contacts.size,
+          total: totalContacts,
           byStatus: contactsByStatus
         },
         products: {
-          total: products.size,
-          inStock: allProducts.filter(p => p.stock > 0).length,
-          outOfStock: outOfStockProducts.length,
-          lowStock: lowStockProducts.length,
+          total: totalProducts,
+          inStock: stockStats.in_stock,
+          outOfStock: stockStats.out_of_stock,
+          lowStock: stockStats.low_stock,
           totalStockValue: Math.round(totalStockValue * 100) / 100
         },
         invoices: {
-          total: invoices.size,
+          total: totalInvoices,
           byStatus: invoicesByStatus,
           totalRevenue: Math.round(totalRevenue * 100) / 100,
           recentInvoices
         },
         activeModules: ERP_MODULES.filter(m => m.status === 'active').length,
-        taxRate: '0% — Sovereign Article VII',
+        taxRate: '0% --- Sovereign Article VII',
         lastUpdated: new Date().toISOString()
       }
     });
@@ -770,31 +856,59 @@ app.use(errorHandler('empresa-soberana'));
 // ============================================================================
 
 const PORT = process.env.PORT || 3092;
+let server;
 
-app.listen(PORT, () => {
-  console.log('');
-  console.log('  ============================================================');
-  console.log('  ||                                                        ||');
-  console.log('  ||     EMPRESA SOBERANA                                   ||');
-  console.log('  ||     Sovereign ERP — Enterprise Resource Planning       ||');
-  console.log('  ||                                                        ||');
-  console.log('  ||     Modules: CRM, Accounting, Inventory, HR, Mfg      ||');
-  console.log('  ||     Tax Rate: 0% — Sovereign Article VII               ||');
-  console.log('  ||                                                        ||');
-  console.log(`  ||     Port: ${PORT}                                         ||`);
-  console.log('  ||     Status: OPERATIONAL                                ||');
-  console.log('  ||                                                        ||');
-  console.log('  ||     Powered by MameyNode                               ||');
-  console.log('  ||     Ierahkwa Ne Kanienke Sovereign Platform            ||');
-  console.log('  ||                                                        ||');
-  console.log('  ============================================================');
-  console.log('');
-  console.log(`  [INFO] ERP API ready on http://localhost:${PORT}`);
-  console.log(`  [INFO] Active modules: ${ERP_MODULES.filter(m => m.status === 'active').length}/${ERP_MODULES.length}`);
-  console.log(`  [INFO] Endpoints: /api/contacts, /api/products, /api/invoices`);
-  console.log(`  [INFO] Dashboard: /api/dashboard`);
-  console.log(`  [INFO] Tax Rate: 0% (Constitutional Article VII)`);
-  console.log('');
+async function start() {
+  await db.initialize();
+
+  server = app.listen(PORT, () => {
+    console.log('');
+    console.log('  ============================================================');
+    console.log('  ||                                                        ||');
+    console.log('  ||     EMPRESA SOBERANA                                   ||');
+    console.log('  ||     Sovereign ERP --- Enterprise Resource Planning     ||');
+    console.log('  ||                                                        ||');
+    console.log('  ||     Modules: CRM, Accounting, Inventory, HR, Mfg      ||');
+    console.log('  ||     Tax Rate: 0% --- Sovereign Article VII             ||');
+    console.log('  ||     Storage: PostgreSQL                                ||');
+    console.log('  ||                                                        ||');
+    console.log(`  ||     Port: ${PORT}                                         ||`);
+    console.log('  ||     Status: OPERATIONAL                                ||');
+    console.log('  ||                                                        ||');
+    console.log('  ||     Powered by MameyNode                               ||');
+    console.log('  ||     Ierahkwa Ne Kanienke Sovereign Platform            ||');
+    console.log('  ||                                                        ||');
+    console.log('  ============================================================');
+    console.log('');
+    console.log(`  [INFO] ERP API ready on http://localhost:${PORT}`);
+    console.log(`  [INFO] Active modules: ${ERP_MODULES.filter(m => m.status === 'active').length}/${ERP_MODULES.length}`);
+    console.log(`  [INFO] Endpoints: /api/contacts, /api/products, /api/invoices`);
+    console.log(`  [INFO] Dashboard: /api/dashboard`);
+    console.log(`  [INFO] Tax Rate: 0% (Constitutional Article VII)`);
+    console.log(`  [INFO] Database: PostgreSQL connected`);
+    console.log('');
+  });
+}
+
+// Graceful shutdown
+async function shutdown(signal) {
+  console.log(`\n  [INFO] ${signal} received. Shutting down gracefully...`);
+  if (server) {
+    server.close(() => {
+      console.log('  [INFO] HTTP server closed');
+    });
+  }
+  await db.end();
+  console.log('  [INFO] Database pool closed');
+  process.exit(0);
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
+
+start().catch((err) => {
+  console.error('  [FATAL] Failed to start server:', err.message);
+  process.exit(1);
 });
 
 module.exports = app;

@@ -1,0 +1,700 @@
+openapi: 3.0.3
+info:
+  title: Ierahkwa NEXUS — Escudo Domain API
+  description: >
+    ESCUDO domain services for the Ierahkwa platform. Covers military operations,
+    drone fleet management, cybersecurity, intelligence analysis, and emergency response.
+  version: 3.3.0
+  x-api-version: "1.0.0"
+  contact:
+    name: Ierahkwa Platform Team
+    url: https://docs.ierahkwa.io
+
+servers:
+  - url: https://api.ierahkwa.io
+    description: Production
+  - url: http://localhost:5200
+    description: Local — military-service
+  - url: http://localhost:5201
+    description: Local — drone-service
+  - url: http://localhost:5202
+    description: Local — cybersec-service
+  - url: http://localhost:5203
+    description: Local — intelligence-service
+  - url: http://localhost:5204
+    description: Local — emergency-service
+
+tags:
+  - name: military-service
+    description: Military asset management, readiness tracking, operations planning
+  - name: drone-service
+    description: Drone fleet registration, mission planning, telemetry
+  - name: cybersec-service
+    description: Threat detection, vulnerability scanning, incident response
+  - name: intelligence-service
+    description: Intelligence report management and signal analysis
+  - name: emergency-service
+    description: Emergency dispatch, alert management, disaster coordination
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ── military-service ──
+  /api/military/health:
+    get:
+      tags: [military-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/military/stats:
+    get:
+      tags: [military-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/military:
+    get:
+      tags: [military-service]
+      summary: List military assets
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+    post:
+      tags: [military-service]
+      summary: Register military asset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                  enum: [personnel, vehicle, equipment, facility]
+                unitId:
+                  type: string
+      responses:
+        '201':
+          description: Created
+  /api/military/{id}:
+    get:
+      tags: [military-service]
+      summary: Get military asset
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [military-service]
+      summary: Update military asset
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [military-service]
+      summary: Decommission military asset
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Deleted
+  /api/military/readiness:
+    get:
+      tags: [military-service]
+      summary: Get unit readiness report
+      parameters:
+        - name: unitId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Readiness data
+  /api/military/operations/plan:
+    post:
+      tags: [military-service]
+      summary: Create operations plan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                objective:
+                  type: string
+                units:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Plan created
+
+  # ── drone-service ──
+  /api/drone/health:
+    get:
+      tags: [drone-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/drone/stats:
+    get:
+      tags: [drone-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/drone:
+    get:
+      tags: [drone-service]
+      summary: List drones
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [drone-service]
+      summary: Register drone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/drone/{id}:
+    get:
+      tags: [drone-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get drone
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [drone-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update drone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [drone-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Deregister drone
+      responses:
+        '204':
+          description: Deleted
+  /api/drone/missions:
+    post:
+      tags: [drone-service]
+      summary: Create drone mission with waypoints
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                droneId:
+                  type: string
+                waypoints:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      lat:
+                        type: number
+                      lng:
+                        type: number
+                      altitudeM:
+                        type: number
+      responses:
+        '201':
+          description: Mission created
+  /api/drone/{id}/telemetry:
+    get:
+      tags: [drone-service]
+      summary: Get live telemetry stream for drone
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Telemetry data
+
+  # ── cybersec-service ──
+  /api/cybersec/health:
+    get:
+      tags: [cybersec-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/cybersec/stats:
+    get:
+      tags: [cybersec-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/cybersec:
+    get:
+      tags: [cybersec-service]
+      summary: List security incidents
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [cybersec-service]
+      summary: Report security incident
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/cybersec/{id}:
+    get:
+      tags: [cybersec-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get incident
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [cybersec-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update incident
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [cybersec-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Close incident
+      responses:
+        '204':
+          description: Deleted
+  /api/cybersec/scan:
+    post:
+      tags: [cybersec-service]
+      summary: Initiate vulnerability scan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target:
+                  type: string
+                scanType:
+                  type: string
+                  enum: [network, application, container]
+      responses:
+        '202':
+          description: Scan queued
+  /api/cybersec/threats/feed:
+    get:
+      tags: [cybersec-service]
+      summary: Get real-time threat intelligence feed
+      responses:
+        '200':
+          description: Threat feed data
+
+  # ── intelligence-service ──
+  /api/intelligence/health:
+    get:
+      tags: [intelligence-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/intelligence/stats:
+    get:
+      tags: [intelligence-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/intelligence:
+    get:
+      tags: [intelligence-service]
+      summary: List intelligence reports
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [intelligence-service]
+      summary: Create intelligence report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/intelligence/{id}:
+    get:
+      tags: [intelligence-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get report
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [intelligence-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [intelligence-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete report
+      responses:
+        '204':
+          description: Deleted
+  /api/intelligence/signals/analyze:
+    post:
+      tags: [intelligence-service]
+      summary: Submit signal data for pattern analysis
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                signalType:
+                  type: string
+                  enum: [sigint, osint, humint, geoint]
+                payload:
+                  type: object
+      responses:
+        '202':
+          description: Analysis queued
+  /api/intelligence/correlations:
+    get:
+      tags: [intelligence-service]
+      summary: Get cross-report correlation graph
+      responses:
+        '200':
+          description: Correlation data
+
+  # ── emergency-service ──
+  /api/emergency/health:
+    get:
+      tags: [emergency-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/emergency/stats:
+    get:
+      tags: [emergency-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/emergency:
+    get:
+      tags: [emergency-service]
+      summary: List emergency events
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [emergency-service]
+      summary: Create emergency event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/emergency/{id}:
+    get:
+      tags: [emergency-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get emergency event
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [emergency-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update emergency event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [emergency-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Close emergency event
+      responses:
+        '204':
+          description: Deleted
+  /api/emergency/dispatch:
+    post:
+      tags: [emergency-service]
+      summary: Dispatch first responders to location
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  type: string
+                responderType:
+                  type: string
+                  enum: [fire, medical, police, hazmat]
+                location:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                    lng:
+                      type: number
+      responses:
+        '200':
+          description: Dispatched
+  /api/emergency/alerts/broadcast:
+    post:
+      tags: [emergency-service]
+      summary: Broadcast public emergency alert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                severity:
+                  type: string
+                  enum: [advisory, warning, critical]
+                message:
+                  type: string
+                regionCodes:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Alert broadcast
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+  headers:
+    X-RateLimit-Limit:
+      description: Maximum requests per window
+      schema:
+        type: integer
+        example: 100
+    X-RateLimit-Remaining:
+      description: Remaining requests in window
+      schema:
+        type: integer
+        example: 95
+    X-RateLimit-Reset:
+      description: Seconds until rate limit resets
+      schema:
+        type: integer
+        example: 30
+    X-Request-Id:
+      description: Unique request correlation ID
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+  responses:
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

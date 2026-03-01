@@ -1,0 +1,688 @@
+openapi: 3.0.3
+info:
+  title: Ierahkwa NEXUS — Consejo Domain API
+  description: >
+    CONSEJO domain services for the Ierahkwa platform. Covers governance operations,
+    justice system, diplomacy, citizen services, and social welfare programs.
+  version: 3.3.0
+  x-api-version: "1.0.0"
+  contact:
+    name: Ierahkwa Platform Team
+    url: https://docs.ierahkwa.io
+
+servers:
+  - url: https://api.ierahkwa.io
+    description: Production
+  - url: http://localhost:5600
+    description: Local — governance-service
+  - url: http://localhost:5601
+    description: Local — justice-service
+  - url: http://localhost:5602
+    description: Local — diplomacy-service
+  - url: http://localhost:5603
+    description: Local — citizen-service
+  - url: http://localhost:5604
+    description: Local — socialwelfare-service
+
+tags:
+  - name: governance-service
+    description: Legislative tracking, policy management, voting
+  - name: justice-service
+    description: Case management, court scheduling, legal records
+  - name: diplomacy-service
+    description: Treaties, diplomatic missions, international relations
+  - name: citizen-service
+    description: Citizen registry, document requests, civic participation
+  - name: socialwelfare-service
+    description: Benefits management, aid programs, eligibility assessment
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ── governance-service ──
+  /api/governance/health:
+    get:
+      tags: [governance-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/governance/stats:
+    get:
+      tags: [governance-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/governance:
+    get:
+      tags: [governance-service]
+      summary: List policies
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+    post:
+      tags: [governance-service]
+      summary: Create policy draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                body:
+                  type: string
+                category:
+                  type: string
+      responses:
+        '201':
+          description: Created
+  /api/governance/{id}:
+    get:
+      tags: [governance-service]
+      summary: Get policy
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [governance-service]
+      summary: Update policy
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [governance-service]
+      summary: Archive policy
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Archived
+  /api/governance/votes:
+    post:
+      tags: [governance-service]
+      summary: Cast vote on policy proposal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                policyId:
+                  type: string
+                vote:
+                  type: string
+                  enum: [yes, no, abstain]
+      responses:
+        '200':
+          description: Vote recorded
+  /api/governance/legislation/track:
+    get:
+      tags: [governance-service]
+      summary: Track legislation progress through stages
+      parameters:
+        - name: billId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Legislation status
+
+  # ── justice-service ──
+  /api/justice/health:
+    get:
+      tags: [justice-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/justice/stats:
+    get:
+      tags: [justice-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/justice:
+    get:
+      tags: [justice-service]
+      summary: List cases
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [justice-service]
+      summary: File case
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/justice/{id}:
+    get:
+      tags: [justice-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get case
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [justice-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update case
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [justice-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Close case
+      responses:
+        '204':
+          description: Closed
+  /api/justice/court/schedule:
+    get:
+      tags: [justice-service]
+      summary: Get court hearing schedule
+      parameters:
+        - name: courtId
+          in: query
+          schema:
+            type: string
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Schedule data
+  /api/justice/records/search:
+    get:
+      tags: [justice-service]
+      summary: Search legal records
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+
+  # ── diplomacy-service ──
+  /api/diplomacy/health:
+    get:
+      tags: [diplomacy-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/diplomacy/stats:
+    get:
+      tags: [diplomacy-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/diplomacy:
+    get:
+      tags: [diplomacy-service]
+      summary: List diplomatic missions
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [diplomacy-service]
+      summary: Create diplomatic mission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/diplomacy/{id}:
+    get:
+      tags: [diplomacy-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get mission
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [diplomacy-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update mission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [diplomacy-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Close mission
+      responses:
+        '204':
+          description: Closed
+  /api/diplomacy/treaties:
+    get:
+      tags: [diplomacy-service]
+      summary: List treaties and agreements
+      responses:
+        '200':
+          description: Treaties list
+    post:
+      tags: [diplomacy-service]
+      summary: Draft new treaty
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                parties:
+                  type: array
+                  items:
+                    type: string
+                terms:
+                  type: string
+      responses:
+        '201':
+          description: Treaty drafted
+  /api/diplomacy/relations:
+    get:
+      tags: [diplomacy-service]
+      summary: Get international relations status map
+      responses:
+        '200':
+          description: Relations data
+
+  # ── citizen-service ──
+  /api/citizen/health:
+    get:
+      tags: [citizen-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/citizen/stats:
+    get:
+      tags: [citizen-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/citizen:
+    get:
+      tags: [citizen-service]
+      summary: List citizen records
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [citizen-service]
+      summary: Register citizen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/citizen/{id}:
+    get:
+      tags: [citizen-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get citizen record
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [citizen-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update citizen record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [citizen-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Deactivate citizen record
+      responses:
+        '204':
+          description: Deactivated
+  /api/citizen/documents/request:
+    post:
+      tags: [citizen-service]
+      summary: Request official document (birth cert, passport, etc.)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                citizenId:
+                  type: string
+                documentType:
+                  type: string
+                  enum: [birth-certificate, passport, id-card, tax-record]
+      responses:
+        '201':
+          description: Request submitted
+  /api/citizen/participation/polls:
+    get:
+      tags: [citizen-service]
+      summary: List active civic participation polls
+      responses:
+        '200':
+          description: Polls list
+
+  # ── socialwelfare-service ──
+  /api/socialwelfare/health:
+    get:
+      tags: [socialwelfare-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/socialwelfare/stats:
+    get:
+      tags: [socialwelfare-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/socialwelfare:
+    get:
+      tags: [socialwelfare-service]
+      summary: List welfare programs
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [socialwelfare-service]
+      summary: Create welfare program
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/socialwelfare/{id}:
+    get:
+      tags: [socialwelfare-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get program
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [socialwelfare-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update program
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [socialwelfare-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Discontinue program
+      responses:
+        '204':
+          description: Discontinued
+  /api/socialwelfare/benefits/apply:
+    post:
+      tags: [socialwelfare-service]
+      summary: Apply for welfare benefits
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                citizenId:
+                  type: string
+                programId:
+                  type: string
+                householdSize:
+                  type: integer
+      responses:
+        '201':
+          description: Application submitted
+  /api/socialwelfare/eligibility/check:
+    post:
+      tags: [socialwelfare-service]
+      summary: Check eligibility for welfare programs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                citizenId:
+                  type: string
+                income:
+                  type: number
+      responses:
+        '200':
+          description: Eligibility results
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+  headers:
+    X-RateLimit-Limit:
+      description: Maximum requests per window
+      schema:
+        type: integer
+        example: 100
+    X-RateLimit-Remaining:
+      description: Remaining requests in window
+      schema:
+        type: integer
+        example: 95
+    X-RateLimit-Reset:
+      description: Seconds until rate limit resets
+      schema:
+        type: integer
+        example: 30
+    X-Request-Id:
+      description: Unique request correlation ID
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+  responses:
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

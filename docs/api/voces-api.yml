@@ -1,0 +1,689 @@
+openapi: 3.0.3
+info:
+  title: Ierahkwa NEXUS — Voces Domain API
+  description: >
+    VOCES domain services for the Ierahkwa platform. Covers media publishing,
+    messaging, cultural heritage, sports management, and social networking.
+  version: 3.3.0
+  x-api-version: "1.0.0"
+  contact:
+    name: Ierahkwa Platform Team
+    url: https://docs.ierahkwa.io
+
+servers:
+  - url: https://api.ierahkwa.io
+    description: Production
+  - url: http://localhost:5500
+    description: Local — media-service
+  - url: http://localhost:5501
+    description: Local — messaging-service
+  - url: http://localhost:5502
+    description: Local — culture-service
+  - url: http://localhost:5503
+    description: Local — sports-service
+  - url: http://localhost:5504
+    description: Local — social-service
+
+tags:
+  - name: media-service
+    description: Media publishing, content moderation, streaming
+  - name: messaging-service
+    description: Real-time messaging, channels, notifications
+  - name: culture-service
+    description: Cultural heritage preservation, events, archives
+  - name: sports-service
+    description: Sports leagues, events, athlete profiles, scores
+  - name: social-service
+    description: Social feeds, communities, user interactions
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ── media-service ──
+  /api/media/health:
+    get:
+      tags: [media-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/media/stats:
+    get:
+      tags: [media-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/media:
+    get:
+      tags: [media-service]
+      summary: List media content
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+    post:
+      tags: [media-service]
+      summary: Publish media content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                type:
+                  type: string
+                  enum: [article, video, podcast, gallery]
+                content:
+                  type: string
+      responses:
+        '201':
+          description: Created
+  /api/media/{id}:
+    get:
+      tags: [media-service]
+      summary: Get media item
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [media-service]
+      summary: Update media item
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [media-service]
+      summary: Delete media item
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Deleted
+  /api/media/stream/start:
+    post:
+      tags: [media-service]
+      summary: Start live stream session
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                resolution:
+                  type: string
+                  enum: [720p, 1080p, 4k]
+      responses:
+        '201':
+          description: Stream session created
+  /api/media/moderation/review:
+    post:
+      tags: [media-service]
+      summary: Submit content for moderation review
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contentId:
+                  type: string
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Review queued
+
+  # ── messaging-service ──
+  /api/messaging/health:
+    get:
+      tags: [messaging-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/messaging/stats:
+    get:
+      tags: [messaging-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/messaging:
+    get:
+      tags: [messaging-service]
+      summary: List channels
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [messaging-service]
+      summary: Create channel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/messaging/{id}:
+    get:
+      tags: [messaging-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get channel
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [messaging-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update channel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [messaging-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete channel
+      responses:
+        '204':
+          description: Deleted
+  /api/messaging/send:
+    post:
+      tags: [messaging-service]
+      summary: Send message to channel or user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channelId:
+                  type: string
+                body:
+                  type: string
+                attachments:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Message sent
+  /api/messaging/notifications:
+    get:
+      tags: [messaging-service]
+      summary: Get user notification feed
+      responses:
+        '200':
+          description: Notifications list
+
+  # ── culture-service ──
+  /api/culture/health:
+    get:
+      tags: [culture-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/culture/stats:
+    get:
+      tags: [culture-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/culture:
+    get:
+      tags: [culture-service]
+      summary: List cultural artifacts
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [culture-service]
+      summary: Register cultural artifact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/culture/{id}:
+    get:
+      tags: [culture-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get artifact
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [culture-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update artifact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [culture-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove artifact
+      responses:
+        '204':
+          description: Deleted
+  /api/culture/events:
+    get:
+      tags: [culture-service]
+      summary: List upcoming cultural events
+      parameters:
+        - name: region
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Events list
+  /api/culture/archives/digitize:
+    post:
+      tags: [culture-service]
+      summary: Submit item for digital archival
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                artifactId:
+                  type: string
+                format:
+                  type: string
+                  enum: [3d-scan, high-res-photo, audio, video]
+      responses:
+        '202':
+          description: Digitization queued
+
+  # ── sports-service ──
+  /api/sports/health:
+    get:
+      tags: [sports-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/sports/stats:
+    get:
+      tags: [sports-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/sports:
+    get:
+      tags: [sports-service]
+      summary: List sports events
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [sports-service]
+      summary: Create sports event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/sports/{id}:
+    get:
+      tags: [sports-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get event
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [sports-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [sports-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Cancel event
+      responses:
+        '204':
+          description: Deleted
+  /api/sports/scores/live:
+    get:
+      tags: [sports-service]
+      summary: Get live scores for active events
+      responses:
+        '200':
+          description: Live scores
+  /api/sports/athletes:
+    get:
+      tags: [sports-service]
+      summary: Search athlete profiles
+      parameters:
+        - name: sport
+          in: query
+          schema:
+            type: string
+        - name: name
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Athlete list
+
+  # ── social-service ──
+  /api/social/health:
+    get:
+      tags: [social-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/social/stats:
+    get:
+      tags: [social-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/social:
+    get:
+      tags: [social-service]
+      summary: List social posts
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [social-service]
+      summary: Create social post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/social/{id}:
+    get:
+      tags: [social-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get post
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [social-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [social-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete post
+      responses:
+        '204':
+          description: Deleted
+  /api/social/feed:
+    get:
+      tags: [social-service]
+      summary: Get personalized social feed
+      parameters:
+        - name: cursor
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Feed items
+  /api/social/communities:
+    get:
+      tags: [social-service]
+      summary: List communities
+      responses:
+        '200':
+          description: Communities list
+    post:
+      tags: [social-service]
+      summary: Create community
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                visibility:
+                  type: string
+                  enum: [public, private]
+      responses:
+        '201':
+          description: Community created
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+  headers:
+    X-RateLimit-Limit:
+      description: Maximum requests per window
+      schema:
+        type: integer
+        example: 100
+    X-RateLimit-Remaining:
+      description: Remaining requests in window
+      schema:
+        type: integer
+        example: 95
+    X-RateLimit-Reset:
+      description: Seconds until rate limit resets
+      schema:
+        type: integer
+        example: 30
+    X-Request-Id:
+      description: Unique request correlation ID
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+  responses:
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

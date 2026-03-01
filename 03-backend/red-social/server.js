@@ -5,6 +5,7 @@ const http = require('http');
 const { WebSocketServer } = require('ws');
 const rateLimit = require('express-rate-limit');
 const logger = require('./utils/logger');
+const db = require('./db');
 
 const app = express();
 const server = http.createServer(app);
@@ -32,14 +33,29 @@ app.use('/v1/fiscal', require('./routes/fiscal'));
 app.get('/health', (req, res) => res.json({
   bank: 'BDET — Blockchain Digital Exchange Trading Bank',
   version: '4.2.0', engines: 11, status: 'operational',
-  currency: 'Wampum (WMP)', supply: '720,000,000',
+  currency: 'Wampum (WMP)', supply: '10,000,000,000,000',
   blockchain: 'MameyNode v4.2', consensus: 'Proof of Sovereignty',
   taxRate: '0% — Constitutional Article VII',
+  db: db.stats(),
 }));
 
 // WebSocket — live market data + transaction feed
 require('./engines/market-feed')(wss);
 
 const PORT = process.env.BDET_PORT || 4000;
-server.listen(PORT, () => logger.info(`🏦 BDET Bank live on :${PORT} — 11 engines — 0% taxes`));
+
+(async () => {
+  await db.initialize();
+  server.listen(PORT, () => logger.info(`BDET Bank live on :${PORT} — 11 engines — 0% taxes — PostgreSQL ready`));
+})();
+
+// Graceful shutdown
+async function shutdown() {
+  server.close();
+  await db.end();
+  process.exit(0);
+}
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+
 module.exports = { app, server, wss };

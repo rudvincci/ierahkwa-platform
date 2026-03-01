@@ -1,40 +1,140 @@
 const router = require('express').Router();
 const auth = require('../middleware/auth');
 const fiscal = require('../utils/fiscal');
-const books = {}, trades = [];
-function getBook(p) { if (!books[p]) books[p] = { bids: [], asks: [] }; return books[p]; }
-router.post('/order', auth, (req, res) => {
-  const { pair='WMP/USD', side, type='limit', price, amount } = req.body;
-  if (!['buy','sell'].includes(side) || amount <= 0) return res.status(400).json({ error: 'Invalid' });
-  const o = { id:'ord_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,6), userId:req.userId, pair, side, type, price: type==='market'?null:price, amount, filled:0, remaining:amount, status:'open', createdAt:new Date() };
+const db = require('./db');
+
+// POST /v1/trading/order
+router.post('/order', auth, async (req, res) => {
+  const { pair = 'WMP/USD', side, type = 'limit', price, amount } = req.body;
+  if (!['buy', 'sell'].includes(side) || amount <= 0) return res.status(400).json({ error: 'Invalid' });
+
+  const id = 'ord_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
+
   if (type === 'market') {
-    const book = getBook(pair), opp = side==='buy'?book.asks:book.bids;
+    // Find best opposing order
+    const oppSide = side === 'buy' ? 'sell' : 'buy';
+    const orderDir = side === 'buy' ? 'ASC' : 'DESC';
+    const { rows: opp } = await db.query(
+      `SELECT * FROM trading_orders
+       WHERE pair = $1 AND side = $2 AND status = 'open'
+       ORDER BY price ${orderDir} LIMIT 1`,
+      [pair, oppSide]
+    );
     if (!opp.length) return res.status(400).json({ error: 'No liquidity' });
-    o.executedPrice = opp[0].price; o.filled = amount; o.remaining = 0; o.status = 'filled';
-    const f = amount*o.executedPrice*0.001; o.fee = +f.toFixed(8); o.fiscal = fiscal.allocate(f);
-    trades.push({ pair, price:o.executedPrice, amount, side, ts:Date.now() });
-  } else {
-    const book = getBook(pair);
-    if (side==='buy') { book.bids.push(o); book.bids.sort((a,b)=>b.price-a.price); }
-    else { book.asks.push(o); book.asks.sort((a,b)=>a.price-b.price); }
+
+    const executedPrice = Number(opp[0].price);
+    const fee = +(amount * executedPrice * 0.001).toFixed(8);
+    const fiscalData = fiscal.allocate(fee);
+
+    // Insert filled market order
+    await db.query(
+      `INSERT INTO trading_orders (id, user_id, pair, side, type, price, amount, filled, remaining, status, executed_price, fee, fiscal)
+       VALUES ($1, $2, $3, $4, 'market', NULL, $5, $5, 0, 'filled', $6, $7, $8)`,
+      [id, req.userId, pair, side, amount, executedPrice, fee, JSON.stringify(fiscalData)]
+    );
+
+    // Record the trade
+    const ts = Date.now();
+    await db.query(
+      `INSERT INTO trades (pair, price, amount, side, ts) VALUES ($1, $2, $3, $4, $5)`,
+      [pair, executedPrice, amount, side, ts]
+    );
+
+    const o = {
+      id, userId: req.userId, pair, side, type: 'market', price: null,
+      amount, filled: amount, remaining: 0, status: 'filled',
+      executedPrice, fee, fiscal: fiscalData, createdAt: new Date(),
+    };
+    return res.json({ order: o, taxPaid: 0 });
   }
+
+  // Limit order — insert into order book
+  await db.query(
+    `INSERT INTO trading_orders (id, user_id, pair, side, type, price, amount, filled, remaining, status)
+     VALUES ($1, $2, $3, $4, 'limit', $5, $6, 0, $6, 'open')`,
+    [id, req.userId, pair, side, price, amount]
+  );
+
+  const o = {
+    id, userId: req.userId, pair, side, type: 'limit', price,
+    amount, filled: 0, remaining: amount, status: 'open', createdAt: new Date(),
+  };
   res.json({ order: o, taxPaid: 0 });
 });
-router.delete('/order/:id', auth, (req, res) => {
-  for (const b of Object.values(books)) { b.bids=b.bids.filter(o=>o.id!==req.params.id); b.asks=b.asks.filter(o=>o.id!==req.params.id); }
+
+// DELETE /v1/trading/order/:id
+router.delete('/order/:id', auth, async (req, res) => {
+  await db.query(
+    `UPDATE trading_orders SET status = 'cancelled' WHERE id = $1 AND user_id = $2 AND status = 'open'`,
+    [req.params.id, req.userId]
+  );
   res.json({ cancelled: true });
 });
-router.get('/orderbook/:pair', (req, res) => {
-  const p = req.params.pair.replace(/-/g,'/'), b = getBook(p);
-  res.json({ pair:p, bids:b.bids.slice(0,20).map(o=>({price:o.price,amount:o.remaining})), asks:b.asks.slice(0,20).map(o=>({price:o.price,amount:o.remaining})) });
+
+// GET /v1/trading/orderbook/:pair
+router.get('/orderbook/:pair', async (req, res) => {
+  const p = req.params.pair.replace(/-/g, '/');
+
+  const { rows: bids } = await db.query(
+    `SELECT price, remaining AS amount FROM trading_orders
+     WHERE pair = $1 AND side = 'buy' AND status = 'open'
+     ORDER BY price DESC LIMIT 20`,
+    [p]
+  );
+  const { rows: asks } = await db.query(
+    `SELECT price, remaining AS amount FROM trading_orders
+     WHERE pair = $1 AND side = 'sell' AND status = 'open'
+     ORDER BY price ASC LIMIT 20`,
+    [p]
+  );
+
+  res.json({
+    pair: p,
+    bids: bids.map(r => ({ price: Number(r.price), amount: Number(r.amount) })),
+    asks: asks.map(r => ({ price: Number(r.price), amount: Number(r.amount) })),
+  });
 });
-router.get('/trades/:pair', (req, res) => {
-  res.json({ pair:req.params.pair.replace(/-/g,'/'), trades:trades.filter(t=>t.pair===req.params.pair.replace(/-/g,'/')).slice(-50).reverse() });
+
+// GET /v1/trading/trades/:pair
+router.get('/trades/:pair', async (req, res) => {
+  const p = req.params.pair.replace(/-/g, '/');
+  const { rows } = await db.query(
+    `SELECT pair, price, amount, side, ts FROM trades
+     WHERE pair = $1 ORDER BY ts DESC LIMIT 50`,
+    [p]
+  );
+  res.json({
+    pair: p,
+    trades: rows.map(r => ({
+      pair: r.pair,
+      price: Number(r.price),
+      amount: Number(r.amount),
+      side: r.side,
+      ts: Number(r.ts),
+    })),
+  });
 });
+
+// GET /v1/trading/candles/:pair — synthetic candle data (same as original)
 router.get('/candles/:pair', (req, res) => {
-  const { interval='1h', limit=100 } = req.query;
-  const candles = []; let p = 0.1150; const now = Date.now(), ms = interval==='1h'?3600000:interval==='1d'?86400000:60000;
-  for (let i=+limit;i>0;i--) { const o=p; p+=(Math.random()-0.48)*0.003; candles.push({t:now-i*ms,o:+o.toFixed(4),h:+(Math.max(o,p)+Math.random()*0.001).toFixed(4),l:+(Math.min(o,p)-Math.random()*0.001).toFixed(4),c:+p.toFixed(4),v:Math.floor(10000+Math.random()*50000)}); }
-  res.json({ pair:req.params.pair.replace(/-/g,'/'), interval, candles });
+  const { interval = '1h', limit = 100 } = req.query;
+  const candles = [];
+  let p = 0.115;
+  const now = Date.now();
+  const ms = interval === '1h' ? 3600000 : interval === '1d' ? 86400000 : 60000;
+  for (let i = +limit; i > 0; i--) {
+    const o = p;
+    p += (Math.random() - 0.48) * 0.003;
+    candles.push({
+      t: now - i * ms,
+      o: +o.toFixed(4),
+      h: +(Math.max(o, p) + Math.random() * 0.001).toFixed(4),
+      l: +(Math.min(o, p) - Math.random() * 0.001).toFixed(4),
+      c: +p.toFixed(4),
+      v: Math.floor(10000 + Math.random() * 50000),
+    });
+  }
+  res.json({ pair: req.params.pair.replace(/-/g, '/'), interval, candles });
 });
+
 module.exports = router;

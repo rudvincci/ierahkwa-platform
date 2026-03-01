@@ -1,24 +1,23 @@
 'use strict';
-const router = require('express').Router();
-const { asyncHandler } = require('../../shared/error-handler');
-const { createLogger } = require('../../shared/logger');
-const log = createLogger('chain');
 
-router.get('/', asyncHandler(async (req, res) => {
-  log.info('List request', { page: req.query.page });
-  res.json({ data: [], total: 0, page: parseInt(req.query.page) || 1, limit: 20 });
-}));
-router.get('/:id', asyncHandler(async (req, res) => {
-  res.json({ id: req.params.id, status: 'active' });
-}));
-router.post('/', asyncHandler(async (req, res) => {
-  log.info('Create', { body: Object.keys(req.body) });
-  res.status(201).json({ id: Date.now().toString(36), ...req.body, created: new Date().toISOString() });
-}));
-router.put('/:id', asyncHandler(async (req, res) => {
-  res.json({ id: req.params.id, ...req.body, updated: new Date().toISOString() });
-}));
-router.delete('/:id', asyncHandler(async (req, res) => {
-  res.json({ id: req.params.id, deleted: true });
-}));
+// ============================================================
+// Chain Routes — /v1/chain
+// Reverse proxy to MameyNode blockchain RPC
+// Downstream: mameynode:8545
+// ============================================================
+
+const { Router } = require('express');
+const { proxyRequest } = require('../lib/proxy');
+const { createLogger } = require('../../shared/logger');
+
+const router = Router();
+const log = createLogger('chain-proxy');
+
+const SERVICE_URL = process.env.CHAIN_SERVICE_URL || 'http://mameynode:8545';
+
+router.all('/*', (req, res) => {
+  log.info('Proxy → mameynode (blockchain)', { method: req.method, path: req.url });
+  proxyRequest(req, res, SERVICE_URL);
+});
+
 module.exports = router;

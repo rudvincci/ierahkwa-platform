@@ -63,7 +63,7 @@ app.use(helmet({
 
 // 2. CORS
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['https://ierahkwa.gov', 'https://app.ierahkwa.gov'],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id', 'X-Tenant-Id'],
   exposedHeaders: ['X-Request-Id', 'X-RateLimit-Remaining'],
@@ -189,6 +189,10 @@ app.use('/v1/map',      require('./routes/map'));
 // Governance & AI
 app.use('/v1/atabey',   require('./routes/atabey'));
 app.use('/v1/ai',       require('./routes/ai'));
+
+// Sovereign Core — Universal backend for all platforms
+// Service: sovereign-core:3050
+// Routes: /v1/users, /v1/payments, /v1/messages, /v1/votes, /v1/storage, /v1/analytics
 
 // ============================================================
 // ERROR HANDLING

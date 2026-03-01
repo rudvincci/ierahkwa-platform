@@ -1,0 +1,1013 @@
+openapi: 3.0.3
+info:
+  title: Ierahkwa NEXUS — Orbital Domain API
+  description: >
+    ORBITAL domain services for the Ierahkwa platform. Covers space operations,
+    telecommunications, genomics, IoT/robotics, quantum computing, AI engine,
+    network infrastructure, and developer tools.
+  version: 3.3.0
+  x-api-version: "1.0.0"
+  contact:
+    name: Ierahkwa Platform Team
+    url: https://docs.ierahkwa.io
+
+servers:
+  - url: https://api.ierahkwa.io
+    description: Production
+  - url: http://localhost:5100
+    description: Local — space-service
+  - url: http://localhost:5101
+    description: Local — telecom-service
+  - url: http://localhost:5102
+    description: Local — genomics-service
+  - url: http://localhost:5103
+    description: Local — iot-robotics-service
+  - url: http://localhost:5104
+    description: Local — quantum-service
+  - url: http://localhost:5105
+    description: Local — ai-engine-service
+  - url: http://localhost:5106
+    description: Local — network-service
+  - url: http://localhost:5107
+    description: Local — devtools-service
+
+tags:
+  - name: space-service
+    description: Satellite tracking, orbital mechanics, launch scheduling
+  - name: telecom-service
+    description: Telecommunications infrastructure and spectrum management
+  - name: genomics-service
+    description: Genomic sequencing, CRISPR pipelines, biobank management
+  - name: iot-robotics-service
+    description: IoT device registry and robotics fleet coordination
+  - name: quantum-service
+    description: Quantum circuit execution and qubit management
+  - name: ai-engine-service
+    description: Model training, inference endpoints, prompt management
+  - name: network-service
+    description: Network topology, routing, bandwidth allocation
+  - name: devtools-service
+    description: SDK generation, API playground, developer portals
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ── space-service ──
+  /api/space/health:
+    get:
+      tags: [space-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/space/stats:
+    get:
+      tags: [space-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/space:
+    get:
+      tags: [space-service]
+      summary: List space assets
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+    post:
+      tags: [space-service]
+      summary: Register space asset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                  enum: [satellite, probe, station]
+                orbitAltitudeKm:
+                  type: number
+      responses:
+        '201':
+          description: Created
+  /api/space/{id}:
+    get:
+      tags: [space-service]
+      summary: Get space asset by ID
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [space-service]
+      summary: Update space asset
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [space-service]
+      summary: Delete space asset
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Deleted
+  /api/space/satellites/track:
+    post:
+      tags: [space-service]
+      summary: Initiate real-time satellite tracking session
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                noradId:
+                  type: string
+                durationMinutes:
+                  type: integer
+      responses:
+        '200':
+          description: Tracking session started
+  /api/space/launches/schedule:
+    get:
+      tags: [space-service]
+      summary: List upcoming launch windows
+      responses:
+        '200':
+          description: OK
+
+  # ── telecom-service ──
+  /api/telecom/health:
+    get:
+      tags: [telecom-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/telecom/stats:
+    get:
+      tags: [telecom-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/telecom:
+    get:
+      tags: [telecom-service]
+      summary: List telecom channels
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+    post:
+      tags: [telecom-service]
+      summary: Create telecom channel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/telecom/{id}:
+    get:
+      tags: [telecom-service]
+      summary: Get channel by ID
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [telecom-service]
+      summary: Update channel
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [telecom-service]
+      summary: Delete channel
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Deleted
+  /api/telecom/spectrum/allocate:
+    post:
+      tags: [telecom-service]
+      summary: Allocate frequency spectrum band
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bandMhz:
+                  type: number
+                region:
+                  type: string
+      responses:
+        '200':
+          description: Allocated
+  /api/telecom/towers/coverage:
+    get:
+      tags: [telecom-service]
+      summary: Get tower coverage map data
+      parameters:
+        - name: lat
+          in: query
+          schema:
+            type: number
+        - name: lng
+          in: query
+          schema:
+            type: number
+        - name: radiusKm
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Coverage data
+
+  # ── genomics-service ──
+  /api/genomics/health:
+    get:
+      tags: [genomics-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/genomics/stats:
+    get:
+      tags: [genomics-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/genomics:
+    get:
+      tags: [genomics-service]
+      summary: List genomic samples
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [genomics-service]
+      summary: Submit genomic sample
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/genomics/{id}:
+    get:
+      tags: [genomics-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get sample by ID
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [genomics-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update sample
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [genomics-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete sample
+      responses:
+        '204':
+          description: Deleted
+  /api/genomics/sequence:
+    post:
+      tags: [genomics-service]
+      summary: Start sequencing pipeline
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sampleId:
+                  type: string
+                pipeline:
+                  type: string
+                  enum: [whole-genome, exome, rna-seq]
+      responses:
+        '202':
+          description: Pipeline queued
+  /api/genomics/variants/{sampleId}:
+    get:
+      tags: [genomics-service]
+      summary: Get variant annotations for a sample
+      parameters:
+        - name: sampleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Variant list
+
+  # ── iot-robotics-service ──
+  /api/iot-robotics/health:
+    get:
+      tags: [iot-robotics-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/iot-robotics/stats:
+    get:
+      tags: [iot-robotics-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/iot-robotics:
+    get:
+      tags: [iot-robotics-service]
+      summary: List registered devices
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [iot-robotics-service]
+      summary: Register device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/iot-robotics/{id}:
+    get:
+      tags: [iot-robotics-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get device
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [iot-robotics-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [iot-robotics-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Deregister device
+      responses:
+        '204':
+          description: Deleted
+  /api/iot-robotics/devices/telemetry:
+    post:
+      tags: [iot-robotics-service]
+      summary: Ingest device telemetry batch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deviceId:
+                  type: string
+                readings:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '202':
+          description: Accepted
+  /api/iot-robotics/robots/commands:
+    post:
+      tags: [iot-robotics-service]
+      summary: Send command to robot fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fleetId:
+                  type: string
+                command:
+                  type: string
+      responses:
+        '200':
+          description: Command dispatched
+
+  # ── quantum-service ──
+  /api/quantum/health:
+    get:
+      tags: [quantum-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/quantum/stats:
+    get:
+      tags: [quantum-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/quantum:
+    get:
+      tags: [quantum-service]
+      summary: List quantum jobs
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [quantum-service]
+      summary: Submit quantum job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/quantum/{id}:
+    get:
+      tags: [quantum-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get quantum job
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [quantum-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update quantum job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [quantum-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Cancel quantum job
+      responses:
+        '204':
+          description: Deleted
+  /api/quantum/circuits/execute:
+    post:
+      tags: [quantum-service]
+      summary: Execute quantum circuit on available QPU
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                qasm:
+                  type: string
+                shots:
+                  type: integer
+                backend:
+                  type: string
+      responses:
+        '202':
+          description: Execution queued
+  /api/quantum/qubits/status:
+    get:
+      tags: [quantum-service]
+      summary: Get qubit coherence and error rates
+      responses:
+        '200':
+          description: Qubit status array
+
+  # ── ai-engine-service ──
+  /api/ai-engine/health:
+    get:
+      tags: [ai-engine-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/ai-engine/stats:
+    get:
+      tags: [ai-engine-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/ai-engine:
+    get:
+      tags: [ai-engine-service]
+      summary: List AI models
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [ai-engine-service]
+      summary: Register AI model
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/ai-engine/{id}:
+    get:
+      tags: [ai-engine-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get model details
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [ai-engine-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update model metadata
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [ai-engine-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete model
+      responses:
+        '204':
+          description: Deleted
+  /api/ai-engine/inference:
+    post:
+      tags: [ai-engine-service]
+      summary: Run inference against a deployed model
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                modelId:
+                  type: string
+                input:
+                  type: object
+      responses:
+        '200':
+          description: Inference result
+  /api/ai-engine/training/jobs:
+    post:
+      tags: [ai-engine-service]
+      summary: Launch model training job
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                datasetId:
+                  type: string
+                hyperparameters:
+                  type: object
+      responses:
+        '202':
+          description: Training job queued
+
+  # ── network-service ──
+  /api/network/health:
+    get:
+      tags: [network-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/network/stats:
+    get:
+      tags: [network-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/network:
+    get:
+      tags: [network-service]
+      summary: List network nodes
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [network-service]
+      summary: Register network node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/network/{id}:
+    get:
+      tags: [network-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get node
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [network-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [network-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove node
+      responses:
+        '204':
+          description: Deleted
+  /api/network/topology:
+    get:
+      tags: [network-service]
+      summary: Get full network topology graph
+      responses:
+        '200':
+          description: Topology data
+  /api/network/bandwidth/allocate:
+    post:
+      tags: [network-service]
+      summary: Allocate bandwidth for a route
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sourceNodeId:
+                  type: string
+                destNodeId:
+                  type: string
+                mbps:
+                  type: integer
+      responses:
+        '200':
+          description: Bandwidth allocated
+
+  # ── devtools-service ──
+  /api/devtools/health:
+    get:
+      tags: [devtools-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/devtools/stats:
+    get:
+      tags: [devtools-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/devtools:
+    get:
+      tags: [devtools-service]
+      summary: List developer tools & SDKs
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [devtools-service]
+      summary: Register developer tool
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/devtools/{id}:
+    get:
+      tags: [devtools-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get tool details
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [devtools-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update tool
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [devtools-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete tool
+      responses:
+        '204':
+          description: Deleted
+  /api/devtools/sdk/generate:
+    post:
+      tags: [devtools-service]
+      summary: Generate client SDK from OpenAPI spec
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                specUrl:
+                  type: string
+                language:
+                  type: string
+                  enum: [typescript, python, go, java, rust]
+      responses:
+        '200':
+          description: SDK bundle URL
+  /api/devtools/playground/sessions:
+    post:
+      tags: [devtools-service]
+      summary: Create interactive API playground session
+      responses:
+        '201':
+          description: Session created
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+  headers:
+    X-RateLimit-Limit:
+      description: Maximum requests per window
+      schema:
+        type: integer
+        example: 100
+    X-RateLimit-Remaining:
+      description: Remaining requests in window
+      schema:
+        type: integer
+        example: 95
+    X-RateLimit-Reset:
+      description: Seconds until rate limit resets
+      schema:
+        type: integer
+        example: 30
+    X-Request-Id:
+      description: Unique request correlation ID
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+  responses:
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

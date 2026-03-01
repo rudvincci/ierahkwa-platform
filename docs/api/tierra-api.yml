@@ -1,0 +1,682 @@
+openapi: 3.0.3
+info:
+  title: Ierahkwa NEXUS — Tierra Domain API
+  description: >
+    TIERRA domain services for the Ierahkwa platform. Covers agriculture,
+    natural resource management, environmental monitoring, waste management,
+    and energy grid operations.
+  version: 3.3.0
+  x-api-version: "1.0.0"
+  contact:
+    name: Ierahkwa Platform Team
+    url: https://docs.ierahkwa.io
+
+servers:
+  - url: https://api.ierahkwa.io
+    description: Production
+  - url: http://localhost:5700
+    description: Local — agriculture-service
+  - url: http://localhost:5701
+    description: Local — naturalresource-service
+  - url: http://localhost:5702
+    description: Local — environment-service
+  - url: http://localhost:5703
+    description: Local — waste-service
+  - url: http://localhost:5704
+    description: Local — energy-service
+
+tags:
+  - name: agriculture-service
+    description: Crop management, soil analytics, harvest forecasting
+  - name: naturalresource-service
+    description: Forest, water, mineral resource tracking and conservation
+  - name: environment-service
+    description: Air/water quality monitoring, climate data, impact assessments
+  - name: waste-service
+    description: Waste collection scheduling, recycling tracking, landfill management
+  - name: energy-service
+    description: Power grid management, renewable energy, consumption analytics
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ── agriculture-service ──
+  /api/agriculture/health:
+    get:
+      tags: [agriculture-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/agriculture/stats:
+    get:
+      tags: [agriculture-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/agriculture:
+    get:
+      tags: [agriculture-service]
+      summary: List farms and plots
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+    post:
+      tags: [agriculture-service]
+      summary: Register farm or plot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                areaHectares:
+                  type: number
+                cropType:
+                  type: string
+                location:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                    lng:
+                      type: number
+      responses:
+        '201':
+          description: Created
+  /api/agriculture/{id}:
+    get:
+      tags: [agriculture-service]
+      summary: Get farm details
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [agriculture-service]
+      summary: Update farm
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [agriculture-service]
+      summary: Remove farm
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Deleted
+  /api/agriculture/soil/analyze:
+    post:
+      tags: [agriculture-service]
+      summary: Submit soil sample for analysis
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                plotId:
+                  type: string
+                sampleDepthCm:
+                  type: integer
+      responses:
+        '202':
+          description: Analysis queued
+  /api/agriculture/harvest/forecast:
+    get:
+      tags: [agriculture-service]
+      summary: Get harvest yield forecast
+      parameters:
+        - name: plotId
+          in: query
+          schema:
+            type: string
+        - name: season
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Forecast data
+
+  # ── naturalresource-service ──
+  /api/naturalresource/health:
+    get:
+      tags: [naturalresource-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/naturalresource/stats:
+    get:
+      tags: [naturalresource-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/naturalresource:
+    get:
+      tags: [naturalresource-service]
+      summary: List natural resources
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [naturalresource-service]
+      summary: Register natural resource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/naturalresource/{id}:
+    get:
+      tags: [naturalresource-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get resource
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [naturalresource-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update resource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [naturalresource-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove resource record
+      responses:
+        '204':
+          description: Deleted
+  /api/naturalresource/water/levels:
+    get:
+      tags: [naturalresource-service]
+      summary: Get water table and reservoir levels
+      parameters:
+        - name: region
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Water level data
+  /api/naturalresource/forestry/coverage:
+    get:
+      tags: [naturalresource-service]
+      summary: Get forest coverage analysis
+      parameters:
+        - name: region
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Coverage data
+
+  # ── environment-service ──
+  /api/environment/health:
+    get:
+      tags: [environment-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/environment/stats:
+    get:
+      tags: [environment-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/environment:
+    get:
+      tags: [environment-service]
+      summary: List monitoring stations
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [environment-service]
+      summary: Register monitoring station
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/environment/{id}:
+    get:
+      tags: [environment-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get station
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [environment-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update station
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [environment-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove station
+      responses:
+        '204':
+          description: Deleted
+  /api/environment/air-quality:
+    get:
+      tags: [environment-service]
+      summary: Get real-time air quality index readings
+      parameters:
+        - name: stationId
+          in: query
+          schema:
+            type: string
+        - name: region
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: AQI data
+  /api/environment/impact/assess:
+    post:
+      tags: [environment-service]
+      summary: Submit environmental impact assessment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                projectId:
+                  type: string
+                region:
+                  type: string
+                projectType:
+                  type: string
+      responses:
+        '202':
+          description: Assessment queued
+
+  # ── waste-service ──
+  /api/waste/health:
+    get:
+      tags: [waste-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/waste/stats:
+    get:
+      tags: [waste-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/waste:
+    get:
+      tags: [waste-service]
+      summary: List waste collection zones
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [waste-service]
+      summary: Create collection zone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/waste/{id}:
+    get:
+      tags: [waste-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get zone
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [waste-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update zone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [waste-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove zone
+      responses:
+        '204':
+          description: Deleted
+  /api/waste/collection/schedule:
+    get:
+      tags: [waste-service]
+      summary: Get waste collection schedule
+      parameters:
+        - name: zoneId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Schedule data
+  /api/waste/recycling/rates:
+    get:
+      tags: [waste-service]
+      summary: Get recycling rates and diversion metrics
+      parameters:
+        - name: region
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recycling metrics
+
+  # ── energy-service ──
+  /api/energy/health:
+    get:
+      tags: [energy-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/energy/stats:
+    get:
+      tags: [energy-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/energy:
+    get:
+      tags: [energy-service]
+      summary: List energy sources
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [energy-service]
+      summary: Register energy source
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/energy/{id}:
+    get:
+      tags: [energy-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get energy source
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [energy-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update energy source
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [energy-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove energy source
+      responses:
+        '204':
+          description: Deleted
+  /api/energy/grid/status:
+    get:
+      tags: [energy-service]
+      summary: Get power grid real-time status
+      responses:
+        '200':
+          description: Grid status data
+  /api/energy/consumption/analytics:
+    get:
+      tags: [energy-service]
+      summary: Get energy consumption analytics by region
+      parameters:
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [hourly, daily, weekly, monthly]
+      responses:
+        '200':
+          description: Consumption analytics
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+  headers:
+    X-RateLimit-Limit:
+      description: Maximum requests per window
+      schema:
+        type: integer
+        example: 100
+    X-RateLimit-Remaining:
+      description: Remaining requests in window
+      schema:
+        type: integer
+        example: 95
+    X-RateLimit-Reset:
+      description: Seconds until rate limit resets
+      schema:
+        type: integer
+        example: 30
+    X-Request-Id:
+      description: Unique request correlation ID
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+  responses:
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

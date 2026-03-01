@@ -69,8 +69,46 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "media" {
   rule { apply_server_side_encryption_by_default { sse_algorithm = "aws:kms" } }
 }
 
-variable "region" { default = "us-east-1" }
-variable "db_password" { sensitive = true }
+# Security Group for RDS
+resource "aws_security_group" "db" {
+  name_prefix = "soberana-db-"
+  vpc_id      = module.vpc.vpc_id
 
+  ingress {
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [module.eks.cluster_security_group_id]
+    description     = "PostgreSQL from EKS cluster"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "soberana-db-sg" }
+}
+
+# DB Subnet Group
+resource "aws_db_subnet_group" "soberana" {
+  name       = "soberana-db-subnet"
+  subnet_ids = module.vpc.private_subnets
+
+  tags = { Name = "soberana-db-subnet-group" }
+}
+
+# Variables
+variable "region" { default = "us-east-1" }
+variable "db_password" {
+  sensitive   = true
+  description = "PostgreSQL master password"
+}
+
+# Outputs
 output "cluster_endpoint" { value = module.eks.cluster_endpoint }
 output "db_endpoint" { value = aws_db_instance.soberana.endpoint }
+output "vpc_id" { value = module.vpc.vpc_id }
+output "redis_endpoint" { value = aws_elasticache_cluster.soberana.cache_nodes[0].address }

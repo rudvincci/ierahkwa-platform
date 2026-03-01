@@ -1,0 +1,694 @@
+openapi: 3.0.3
+info:
+  title: Ierahkwa NEXUS — Forja Domain API
+  description: >
+    FORJA domain services for the Ierahkwa platform. Covers DevOps pipelines,
+    low-code platform, browser automation, productivity tools, and cloud infrastructure.
+  version: 3.3.0
+  x-api-version: "1.0.0"
+  contact:
+    name: Ierahkwa Platform Team
+    url: https://docs.ierahkwa.io
+
+servers:
+  - url: https://api.ierahkwa.io
+    description: Production
+  - url: http://localhost:5800
+    description: Local — devops-service
+  - url: http://localhost:5801
+    description: Local — lowcode-service
+  - url: http://localhost:5802
+    description: Local — browser-service
+  - url: http://localhost:5803
+    description: Local — productivity-service
+  - url: http://localhost:5804
+    description: Local — cloud-service
+
+tags:
+  - name: devops-service
+    description: CI/CD pipelines, container orchestration, deployment management
+  - name: lowcode-service
+    description: Visual app builder, component library, form designer
+  - name: browser-service
+    description: Browser automation, scraping, testing, session management
+  - name: productivity-service
+    description: Task management, calendars, document collaboration
+  - name: cloud-service
+    description: Cloud resource provisioning, scaling, cost management
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ── devops-service ──
+  /api/devops/health:
+    get:
+      tags: [devops-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/devops/stats:
+    get:
+      tags: [devops-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/devops:
+    get:
+      tags: [devops-service]
+      summary: List pipelines
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+    post:
+      tags: [devops-service]
+      summary: Create pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                repository:
+                  type: string
+                trigger:
+                  type: string
+                  enum: [push, tag, manual, schedule]
+                stages:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Created
+  /api/devops/{id}:
+    get:
+      tags: [devops-service]
+      summary: Get pipeline
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [devops-service]
+      summary: Update pipeline
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [devops-service]
+      summary: Delete pipeline
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Deleted
+  /api/devops/pipelines/{id}/trigger:
+    post:
+      tags: [devops-service]
+      summary: Trigger pipeline execution
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                branch:
+                  type: string
+                variables:
+                  type: object
+      responses:
+        '202':
+          description: Pipeline triggered
+  /api/devops/deployments:
+    get:
+      tags: [devops-service]
+      summary: List deployments across environments
+      parameters:
+        - name: environment
+          in: query
+          schema:
+            type: string
+            enum: [dev, staging, production]
+      responses:
+        '200':
+          description: Deployments list
+
+  # ── lowcode-service ──
+  /api/lowcode/health:
+    get:
+      tags: [lowcode-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/lowcode/stats:
+    get:
+      tags: [lowcode-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/lowcode:
+    get:
+      tags: [lowcode-service]
+      summary: List low-code applications
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [lowcode-service]
+      summary: Create application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/lowcode/{id}:
+    get:
+      tags: [lowcode-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get application
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [lowcode-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [lowcode-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete application
+      responses:
+        '204':
+          description: Deleted
+  /api/lowcode/components:
+    get:
+      tags: [lowcode-service]
+      summary: List available UI components
+      responses:
+        '200':
+          description: Component catalog
+  /api/lowcode/apps/{id}/publish:
+    post:
+      tags: [lowcode-service]
+      summary: Publish low-code app to production
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: App published
+
+  # ── browser-service ──
+  /api/browser/health:
+    get:
+      tags: [browser-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/browser/stats:
+    get:
+      tags: [browser-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/browser:
+    get:
+      tags: [browser-service]
+      summary: List browser sessions
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [browser-service]
+      summary: Create browser session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/browser/{id}:
+    get:
+      tags: [browser-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get session
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [browser-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update session config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [browser-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Terminate session
+      responses:
+        '204':
+          description: Terminated
+  /api/browser/automate:
+    post:
+      tags: [browser-service]
+      summary: Execute browser automation script
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sessionId:
+                  type: string
+                script:
+                  type: string
+                timeout:
+                  type: integer
+      responses:
+        '200':
+          description: Execution result
+  /api/browser/screenshot:
+    post:
+      tags: [browser-service]
+      summary: Capture screenshot of current page
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sessionId:
+                  type: string
+                fullPage:
+                  type: boolean
+      responses:
+        '200':
+          description: Screenshot URL
+
+  # ── productivity-service ──
+  /api/productivity/health:
+    get:
+      tags: [productivity-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/productivity/stats:
+    get:
+      tags: [productivity-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/productivity:
+    get:
+      tags: [productivity-service]
+      summary: List tasks
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [productivity-service]
+      summary: Create task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/productivity/{id}:
+    get:
+      tags: [productivity-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get task
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [productivity-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [productivity-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete task
+      responses:
+        '204':
+          description: Deleted
+  /api/productivity/calendar/events:
+    get:
+      tags: [productivity-service]
+      summary: List calendar events
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Events list
+  /api/productivity/documents/collaborate:
+    post:
+      tags: [productivity-service]
+      summary: Start real-time document collaboration session
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                documentId:
+                  type: string
+                participants:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Collaboration session created
+
+  # ── cloud-service ──
+  /api/cloud/health:
+    get:
+      tags: [cloud-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/cloud/stats:
+    get:
+      tags: [cloud-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/cloud:
+    get:
+      tags: [cloud-service]
+      summary: List cloud resources
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [cloud-service]
+      summary: Provision cloud resource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/cloud/{id}:
+    get:
+      tags: [cloud-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get resource
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [cloud-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update resource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [cloud-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Deprovision resource
+      responses:
+        '204':
+          description: Deprovisioned
+  /api/cloud/scale:
+    post:
+      tags: [cloud-service]
+      summary: Auto-scale resource group
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resourceGroupId:
+                  type: string
+                minInstances:
+                  type: integer
+                maxInstances:
+                  type: integer
+                targetCpuPercent:
+                  type: number
+      responses:
+        '200':
+          description: Scaling policy applied
+  /api/cloud/costs:
+    get:
+      tags: [cloud-service]
+      summary: Get cloud cost breakdown and projections
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [daily, weekly, monthly]
+      responses:
+        '200':
+          description: Cost analytics
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+  headers:
+    X-RateLimit-Limit:
+      description: Maximum requests per window
+      schema:
+        type: integer
+        example: 100
+    X-RateLimit-Remaining:
+      description: Remaining requests in window
+      schema:
+        type: integer
+        example: 95
+    X-RateLimit-Reset:
+      description: Seconds until rate limit resets
+      schema:
+        type: integer
+        example: 30
+    X-Request-Id:
+      description: Unique request correlation ID
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+  responses:
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

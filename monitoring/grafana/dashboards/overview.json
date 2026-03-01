@@ -1,0 +1,347 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [
+    { "title": "Orbital", "url": "/d/nexus-orbital", "type": "link" },
+    { "title": "Escudo", "url": "/d/nexus-escudo", "type": "link" },
+    { "title": "Cerebro", "url": "/d/nexus-cerebro", "type": "link" },
+    { "title": "Tesoro", "url": "/d/nexus-tesoro", "type": "link" },
+    { "title": "Voces", "url": "/d/nexus-voces", "type": "link" },
+    { "title": "Consejo", "url": "/d/nexus-consejo", "type": "link" },
+    { "title": "Tierra", "url": "/d/nexus-tierra", "type": "link" },
+    { "title": "Forja", "url": "/d/nexus-forja", "type": "link" },
+    { "title": "Urbe", "url": "/d/nexus-urbe", "type": "link" },
+    { "title": "Raices", "url": "/d/nexus-raices", "type": "link" }
+  ],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "NEXUS Platform Overview - 84 Services (incl. AI Model Server)",
+      "type": "row"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [{ "options": { "0": { "color": "red", "text": "DOWN" }, "1": { "color": "green", "text": "UP" } }, "type": "value" }],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 0, "y": 1 },
+      "id": 2,
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "count(up{namespace=\"$namespace\", job=~\"orbital-.*\"} == 1)", "legendFormat": "Orbital (8 svc)" }],
+      "title": "Orbital",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [{ "options": { "0": { "color": "red", "text": "DOWN" }, "1": { "color": "green", "text": "UP" } }, "type": "value" }],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "#f44336", "value": 1 }, { "color": "green", "value": 5 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 5, "y": 1 },
+      "id": 3,
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "count(up{namespace=\"$namespace\", job=~\"escudo-.*\"} == 1)", "legendFormat": "Escudo (5 svc)" }],
+      "title": "Escudo",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 4 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 10, "y": 1 },
+      "id": 4,
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "count(up{namespace=\"$namespace\", job=~\"cerebro-.*\"} == 1)", "legendFormat": "Cerebro (4 svc)" }],
+      "title": "Cerebro",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 8 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 15, "y": 1 },
+      "id": 5,
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "count(up{namespace=\"$namespace\", job=~\"tesoro-.*\"} == 1)", "legendFormat": "Tesoro (8 svc)" }],
+      "title": "Tesoro",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 5 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 0, "y": 5 },
+      "id": 6,
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "count(up{namespace=\"$namespace\", job=~\"voces-.*\"} == 1)", "legendFormat": "Voces (5 svc)" }],
+      "title": "Voces",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 5 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 5, "y": 5 },
+      "id": 7,
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "count(up{namespace=\"$namespace\", job=~\"consejo-.*\"} == 1)", "legendFormat": "Consejo (5 svc)" }],
+      "title": "Consejo",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 5 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 10, "y": 5 },
+      "id": 8,
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "count(up{namespace=\"$namespace\", job=~\"tierra-.*\"} == 1)", "legendFormat": "Tierra (5 svc)" }],
+      "title": "Tierra",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 5 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 15, "y": 5 },
+      "id": 9,
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "count(up{namespace=\"$namespace\", job=~\"forja-.*\"} == 1)", "legendFormat": "Forja (5 svc)" }],
+      "title": "Forja",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 4 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 0, "y": 9 },
+      "id": 10,
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "count(up{namespace=\"$namespace\", job=~\"urbe-.*\"} == 1)", "legendFormat": "Urbe (4 svc)" }],
+      "title": "Urbe",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 4 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 5, "x": 5, "y": 9 },
+      "id": 11,
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "count(up{namespace=\"$namespace\", job=~\"raices-.*\"} == 1)", "legendFormat": "Raices (4 svc)" }],
+      "title": "Raices",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 83 }] } }
+      },
+      "gridPos": { "h": 4, "w": 9, "x": 10, "y": 9 },
+      "id": 12,
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "count(up{namespace=\"$namespace\"} == 1)", "legendFormat": "Total Healthy Services" }],
+      "title": "Total Services Healthy / 83",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 13 },
+      "id": 20,
+      "title": "Cluster Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2, "fillOpacity": 15 }, "unit": "reqps" }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+      "id": 21,
+      "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "sum(rate(http_requests_total{namespace=\"$namespace\"}[5m])) by (job)", "legendFormat": "{{job}}" }
+      ],
+      "title": "Total Request Rate by Domain",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2, "fillOpacity": 15 }, "unit": "s" }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+      "id": 22,
+      "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace=\"$namespace\"}[5m])) by (le, job))", "legendFormat": "p95 {{job}}" }
+      ],
+      "title": "P95 Latency by Domain",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2, "fillOpacity": 20 }, "unit": "percentunit" }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
+      "id": 23,
+      "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "sum(rate(http_requests_total{namespace=\"$namespace\", status=~\"5..\"}[5m])) by (job) / sum(rate(http_requests_total{namespace=\"$namespace\"}[5m])) by (job)", "legendFormat": "{{job}}" }
+      ],
+      "title": "Error Rate by Domain (5xx)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 1, "fillOpacity": 10 }, "unit": "percent" }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 },
+      "id": 24,
+      "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\"}[5m])) by (pod) * 100", "legendFormat": "{{pod}}" }
+      ],
+      "title": "CPU Usage by Pod",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 1, "fillOpacity": 10 }, "unit": "bytes" }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 30 },
+      "id": 25,
+      "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "sum(container_memory_working_set_bytes{namespace=\"$namespace\"}) by (pod)", "legendFormat": "{{pod}}" }
+      ],
+      "title": "Memory Usage by Pod",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2, "fillOpacity": 10 }, "unit": "Bps" }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 30 },
+      "id": 26,
+      "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "sum(rate(container_network_receive_bytes_total{namespace=\"$namespace\"}[5m])) by (pod)", "legendFormat": "rx {{pod}}" },
+        { "expr": "sum(rate(container_network_transmit_bytes_total{namespace=\"$namespace\"}[5m])) by (pod)", "legendFormat": "tx {{pod}}" }
+      ],
+      "title": "Network I/O by Pod",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 38 },
+      "id": 30,
+      "title": "AI Model Server",
+      "type": "row"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [{ "options": { "0": { "color": "red", "text": "DOWN" }, "1": { "color": "green", "text": "UP" } }, "type": "value" }],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 39 },
+      "id": 31,
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "up{namespace=\"$namespace\", job=\"ai-model-server\"}", "legendFormat": "AI Model Server" }],
+      "title": "AI Model Server Health",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2, "fillOpacity": 15 }, "unit": "reqps" }
+      },
+      "gridPos": { "h": 6, "w": 9, "x": 6, "y": 39 },
+      "id": 32,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "sum(rate(http_requests_total{namespace=\"$namespace\", job=\"ai-model-server\"}[5m]))", "legendFormat": "Total" },
+        { "expr": "sum(rate(http_requests_total{namespace=\"$namespace\", job=\"ai-model-server\", handler=\"/ai/models/{id}/download\"}[5m]))", "legendFormat": "Model Downloads" }
+      ],
+      "title": "AI Model Server Requests",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2, "fillOpacity": 10 }, "unit": "s" }
+      },
+      "gridPos": { "h": 6, "w": 9, "x": 15, "y": 39 },
+      "id": 33,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=\"ai-model-server\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=\"ai-model-server\"}[5m])) by (le))", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=\"ai-model-server\"}[5m])) by (le))", "legendFormat": "p99" }
+      ],
+      "title": "AI Model Server Latency",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["ierahkwa", "nexus", "overview"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": false, "text": "ierahkwa", "value": "ierahkwa" },
+        "hide": 0,
+        "label": "Namespace",
+        "name": "namespace",
+        "options": [{ "selected": true, "text": "ierahkwa", "value": "ierahkwa" }],
+        "query": "ierahkwa",
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "Ierahkwa NEXUS Platform Overview",
+  "uid": "nexus-overview",
+  "version": 1
+}

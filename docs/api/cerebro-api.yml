@@ -1,0 +1,600 @@
+openapi: 3.0.3
+info:
+  title: Ierahkwa NEXUS — Cerebro Domain API
+  description: >
+    CEREBRO domain services for the Ierahkwa platform. Covers education management,
+    research collaboration, language processing, and search infrastructure.
+  version: 3.3.0
+  x-api-version: "1.0.0"
+  contact:
+    name: Ierahkwa Platform Team
+    url: https://docs.ierahkwa.io
+
+servers:
+  - url: https://api.ierahkwa.io
+    description: Production
+  - url: http://localhost:5300
+    description: Local — education-service
+  - url: http://localhost:5301
+    description: Local — research-service
+  - url: http://localhost:5302
+    description: Local — language-service
+  - url: http://localhost:5303
+    description: Local — search-service
+
+tags:
+  - name: education-service
+    description: Course management, enrollment, certifications, learning paths
+  - name: research-service
+    description: Research project tracking, paper repository, grants
+  - name: language-service
+    description: NLP, translation, language preservation, speech processing
+  - name: search-service
+    description: Full-text search, indexing, semantic search, query analytics
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ── education-service ──
+  /api/education/health:
+    get:
+      tags: [education-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/education/stats:
+    get:
+      tags: [education-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/education:
+    get:
+      tags: [education-service]
+      summary: List courses
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+    post:
+      tags: [education-service]
+      summary: Create course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                level:
+                  type: string
+                  enum: [beginner, intermediate, advanced]
+      responses:
+        '201':
+          description: Created
+  /api/education/{id}:
+    get:
+      tags: [education-service]
+      summary: Get course
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [education-service]
+      summary: Update course
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [education-service]
+      summary: Delete course
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Deleted
+  /api/education/enroll:
+    post:
+      tags: [education-service]
+      summary: Enroll student in course
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                studentId:
+                  type: string
+                courseId:
+                  type: string
+      responses:
+        '200':
+          description: Enrolled
+  /api/education/certifications:
+    get:
+      tags: [education-service]
+      summary: List certifications for a student
+      parameters:
+        - name: studentId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Certifications list
+  /api/education/learning-paths:
+    get:
+      tags: [education-service]
+      summary: Get recommended learning paths
+      responses:
+        '200':
+          description: Learning paths
+
+  # ── research-service ──
+  /api/research/health:
+    get:
+      tags: [research-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/research/stats:
+    get:
+      tags: [research-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/research:
+    get:
+      tags: [research-service]
+      summary: List research projects
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [research-service]
+      summary: Create research project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/research/{id}:
+    get:
+      tags: [research-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get project
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [research-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [research-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete project
+      responses:
+        '204':
+          description: Deleted
+  /api/research/papers/submit:
+    post:
+      tags: [research-service]
+      summary: Submit paper for peer review
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                abstract:
+                  type: string
+                authors:
+                  type: array
+                  items:
+                    type: string
+                projectId:
+                  type: string
+      responses:
+        '201':
+          description: Paper submitted
+  /api/research/grants:
+    get:
+      tags: [research-service]
+      summary: List available research grants
+      responses:
+        '200':
+          description: Grants list
+
+  # ── language-service ──
+  /api/language/health:
+    get:
+      tags: [language-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/language/stats:
+    get:
+      tags: [language-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/language:
+    get:
+      tags: [language-service]
+      summary: List supported languages
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [language-service]
+      summary: Register language resource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/language/{id}:
+    get:
+      tags: [language-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get language resource
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [language-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update language resource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [language-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete language resource
+      responses:
+        '204':
+          description: Deleted
+  /api/language/translate:
+    post:
+      tags: [language-service]
+      summary: Translate text between languages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                sourceLang:
+                  type: string
+                targetLang:
+                  type: string
+      responses:
+        '200':
+          description: Translation result
+  /api/language/speech/transcribe:
+    post:
+      tags: [language-service]
+      summary: Transcribe audio to text
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                audio:
+                  type: string
+                  format: binary
+                language:
+                  type: string
+      responses:
+        '200':
+          description: Transcription result
+
+  # ── search-service ──
+  /api/search/health:
+    get:
+      tags: [search-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/search/stats:
+    get:
+      tags: [search-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/search:
+    get:
+      tags: [search-service]
+      summary: List search indices
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [search-service]
+      summary: Create search index
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/search/{id}:
+    get:
+      tags: [search-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get index details
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [search-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update index settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [search-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete index
+      responses:
+        '204':
+          description: Deleted
+  /api/search/query:
+    post:
+      tags: [search-service]
+      summary: Execute full-text or semantic search query
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                index:
+                  type: string
+                mode:
+                  type: string
+                  enum: [fulltext, semantic, hybrid]
+                filters:
+                  type: object
+      responses:
+        '200':
+          description: Search results
+  /api/search/reindex:
+    post:
+      tags: [search-service]
+      summary: Trigger reindex of a data source
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                indexId:
+                  type: string
+                source:
+                  type: string
+      responses:
+        '202':
+          description: Reindex queued
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+  headers:
+    X-RateLimit-Limit:
+      description: Maximum requests per window
+      schema:
+        type: integer
+        example: 100
+    X-RateLimit-Remaining:
+      description: Remaining requests in window
+      schema:
+        type: integer
+        example: 95
+    X-RateLimit-Reset:
+      description: Seconds until rate limit resets
+      schema:
+        type: integer
+        example: 30
+    X-Request-Id:
+      description: Unique request correlation ID
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+  responses:
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

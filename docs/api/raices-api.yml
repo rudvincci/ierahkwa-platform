@@ -1,0 +1,628 @@
+openapi: 3.0.3
+info:
+  title: Ierahkwa NEXUS — Raices Domain API
+  description: >
+    RAICES domain services for the Ierahkwa platform. Covers identity management,
+    health systems, NEXUS cross-domain aggregation, and licensing/compliance.
+  version: 3.3.0
+  x-api-version: "1.0.0"
+  contact:
+    name: Ierahkwa Platform Team
+    url: https://docs.ierahkwa.io
+
+servers:
+  - url: https://api.ierahkwa.io
+    description: Production
+  - url: http://localhost:6000
+    description: Local — identity-service
+  - url: http://localhost:6001
+    description: Local — health-service
+  - url: http://localhost:6002
+    description: Local — nexusaggregation-service
+  - url: http://localhost:6003
+    description: Local — licensing-service
+
+tags:
+  - name: identity-service
+    description: Identity verification, SSO, role management, access tokens
+  - name: health-service
+    description: Patient records, appointments, pharmacy, health analytics
+  - name: nexusaggregation-service
+    description: Cross-domain data aggregation, unified dashboards, federation
+  - name: licensing-service
+    description: License issuance, compliance audits, regulatory tracking
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ── identity-service ──
+  /api/identity/health:
+    get:
+      tags: [identity-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/identity/stats:
+    get:
+      tags: [identity-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/identity:
+    get:
+      tags: [identity-service]
+      summary: List identity profiles
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+    post:
+      tags: [identity-service]
+      summary: Create identity profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                roles:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Created
+  /api/identity/{id}:
+    get:
+      tags: [identity-service]
+      summary: Get identity profile
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [identity-service]
+      summary: Update identity profile
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [identity-service]
+      summary: Deactivate identity
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Deactivated
+  /api/identity/verify:
+    post:
+      tags: [identity-service]
+      summary: Verify identity with multi-factor authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                identityId:
+                  type: string
+                method:
+                  type: string
+                  enum: [sms, email, totp, biometric]
+                code:
+                  type: string
+      responses:
+        '200':
+          description: Verification result
+  /api/identity/tokens/refresh:
+    post:
+      tags: [identity-service]
+      summary: Refresh access token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: New token pair
+  /api/identity/roles:
+    get:
+      tags: [identity-service]
+      summary: List available roles and permissions
+      responses:
+        '200':
+          description: Roles list
+
+  # ── health-service ──
+  /api/health-svc/health:
+    get:
+      tags: [health-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/health-svc/stats:
+    get:
+      tags: [health-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/health-svc:
+    get:
+      tags: [health-service]
+      summary: List patient records
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [health-service]
+      summary: Create patient record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/health-svc/{id}:
+    get:
+      tags: [health-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get patient record
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [health-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update patient record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [health-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Archive patient record
+      responses:
+        '204':
+          description: Archived
+  /api/health-svc/appointments:
+    post:
+      tags: [health-service]
+      summary: Schedule medical appointment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                patientId:
+                  type: string
+                providerId:
+                  type: string
+                datetime:
+                  type: string
+                  format: date-time
+                type:
+                  type: string
+                  enum: [consultation, followup, emergency, lab]
+      responses:
+        '201':
+          description: Appointment scheduled
+  /api/health-svc/prescriptions:
+    get:
+      tags: [health-service]
+      summary: Get prescriptions for a patient
+      parameters:
+        - name: patientId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Prescriptions list
+  /api/health-svc/analytics/population:
+    get:
+      tags: [health-service]
+      summary: Get population health analytics
+      parameters:
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: metric
+          in: query
+          schema:
+            type: string
+            enum: [vaccination-rate, disease-incidence, life-expectancy]
+      responses:
+        '200':
+          description: Analytics data
+
+  # ── nexusaggregation-service ──
+  /api/nexusaggregation/health:
+    get:
+      tags: [nexusaggregation-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/nexusaggregation/stats:
+    get:
+      tags: [nexusaggregation-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/nexusaggregation:
+    get:
+      tags: [nexusaggregation-service]
+      summary: List aggregation pipelines
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [nexusaggregation-service]
+      summary: Create aggregation pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/nexusaggregation/{id}:
+    get:
+      tags: [nexusaggregation-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get pipeline
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [nexusaggregation-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [nexusaggregation-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Delete pipeline
+      responses:
+        '204':
+          description: Deleted
+  /api/nexusaggregation/dashboard:
+    get:
+      tags: [nexusaggregation-service]
+      summary: Get unified cross-domain dashboard data
+      parameters:
+        - name: domains
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+      responses:
+        '200':
+          description: Dashboard data
+  /api/nexusaggregation/federation/query:
+    post:
+      tags: [nexusaggregation-service]
+      summary: Execute federated query across NEXUS domains
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                targetDomains:
+                  type: array
+                  items:
+                    type: string
+                joinStrategy:
+                  type: string
+                  enum: [merge, union, intersect]
+      responses:
+        '200':
+          description: Federated query result
+
+  # ── licensing-service ──
+  /api/licensing/health:
+    get:
+      tags: [licensing-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/licensing/stats:
+    get:
+      tags: [licensing-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/licensing:
+    get:
+      tags: [licensing-service]
+      summary: List licenses
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [licensing-service]
+      summary: Issue license
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/licensing/{id}:
+    get:
+      tags: [licensing-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get license
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [licensing-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update license
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [licensing-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Revoke license
+      responses:
+        '204':
+          description: Revoked
+  /api/licensing/compliance/audit:
+    post:
+      tags: [licensing-service]
+      summary: Initiate compliance audit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entityId:
+                  type: string
+                auditType:
+                  type: string
+                  enum: [regulatory, internal, certification]
+                scope:
+                  type: string
+      responses:
+        '202':
+          description: Audit initiated
+  /api/licensing/regulations:
+    get:
+      tags: [licensing-service]
+      summary: List applicable regulations and compliance requirements
+      parameters:
+        - name: industry
+          in: query
+          schema:
+            type: string
+        - name: jurisdiction
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Regulations list
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+  headers:
+    X-RateLimit-Limit:
+      description: Maximum requests per window
+      schema:
+        type: integer
+        example: 100
+    X-RateLimit-Remaining:
+      description: Remaining requests in window
+      schema:
+        type: integer
+        example: 95
+    X-RateLimit-Reset:
+      description: Seconds until rate limit resets
+      schema:
+        type: integer
+        example: 30
+    X-Request-Id:
+      description: Unique request correlation ID
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+  responses:
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

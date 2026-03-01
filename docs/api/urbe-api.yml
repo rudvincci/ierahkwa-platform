@@ -1,0 +1,612 @@
+openapi: 3.0.3
+info:
+  title: Ierahkwa NEXUS — Urbe Domain API
+  description: >
+    URBE domain services for the Ierahkwa platform. Covers urban planning,
+    transportation management, postal/mapping services, and housing programs.
+  version: 3.3.0
+  x-api-version: "1.0.0"
+  contact:
+    name: Ierahkwa Platform Team
+    url: https://docs.ierahkwa.io
+
+servers:
+  - url: https://api.ierahkwa.io
+    description: Production
+  - url: http://localhost:5900
+    description: Local — urban-service
+  - url: http://localhost:5901
+    description: Local — transport-service
+  - url: http://localhost:5902
+    description: Local — postalmaps-service
+  - url: http://localhost:5903
+    description: Local — housing-service
+
+tags:
+  - name: urban-service
+    description: City planning, zoning, infrastructure projects, smart city sensors
+  - name: transport-service
+    description: Public transit, traffic monitoring, fleet management, routing
+  - name: postalmaps-service
+    description: Postal delivery, address resolution, geocoding, map tiles
+  - name: housing-service
+    description: Housing registry, rental programs, property assessment
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ── urban-service ──
+  /api/urban/health:
+    get:
+      tags: [urban-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/urban/stats:
+    get:
+      tags: [urban-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/urban:
+    get:
+      tags: [urban-service]
+      summary: List urban zones
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+    post:
+      tags: [urban-service]
+      summary: Create urban zone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                  enum: [residential, commercial, industrial, mixed, green]
+                areaKm2:
+                  type: number
+      responses:
+        '201':
+          description: Created
+  /api/urban/{id}:
+    get:
+      tags: [urban-service]
+      summary: Get zone
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [urban-service]
+      summary: Update zone
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [urban-service]
+      summary: Remove zone
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Deleted
+  /api/urban/zoning/permits:
+    post:
+      tags: [urban-service]
+      summary: Submit zoning permit application
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zoneId:
+                  type: string
+                projectDescription:
+                  type: string
+                applicantId:
+                  type: string
+      responses:
+        '201':
+          description: Application submitted
+  /api/urban/sensors:
+    get:
+      tags: [urban-service]
+      summary: Get smart city sensor readings
+      parameters:
+        - name: zoneId
+          in: query
+          schema:
+            type: string
+        - name: sensorType
+          in: query
+          schema:
+            type: string
+            enum: [traffic, noise, air, water, pedestrian]
+      responses:
+        '200':
+          description: Sensor data
+
+  # ── transport-service ──
+  /api/transport/health:
+    get:
+      tags: [transport-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/transport/stats:
+    get:
+      tags: [transport-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/transport:
+    get:
+      tags: [transport-service]
+      summary: List transit routes
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [transport-service]
+      summary: Create transit route
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/transport/{id}:
+    get:
+      tags: [transport-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get route
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [transport-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update route
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [transport-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove route
+      responses:
+        '204':
+          description: Deleted
+  /api/transport/traffic/live:
+    get:
+      tags: [transport-service]
+      summary: Get live traffic conditions
+      parameters:
+        - name: region
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Traffic data
+  /api/transport/routing/optimize:
+    post:
+      tags: [transport-service]
+      summary: Calculate optimized route between points
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                origin:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                    lng:
+                      type: number
+                destination:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                    lng:
+                      type: number
+                mode:
+                  type: string
+                  enum: [driving, transit, cycling, walking]
+      responses:
+        '200':
+          description: Optimized route
+
+  # ── postalmaps-service ──
+  /api/postalmaps/health:
+    get:
+      tags: [postalmaps-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/postalmaps/stats:
+    get:
+      tags: [postalmaps-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/postalmaps:
+    get:
+      tags: [postalmaps-service]
+      summary: List postal zones
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [postalmaps-service]
+      summary: Create postal zone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/postalmaps/{id}:
+    get:
+      tags: [postalmaps-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get postal zone
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [postalmaps-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update postal zone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [postalmaps-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove postal zone
+      responses:
+        '204':
+          description: Deleted
+  /api/postalmaps/geocode:
+    post:
+      tags: [postalmaps-service]
+      summary: Geocode address to coordinates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+      responses:
+        '200':
+          description: Geocode result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lat:
+                    type: number
+                  lng:
+                    type: number
+                  confidence:
+                    type: number
+  /api/postalmaps/delivery/track:
+    get:
+      tags: [postalmaps-service]
+      summary: Track postal delivery status
+      parameters:
+        - name: trackingCode
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tracking data
+
+  # ── housing-service ──
+  /api/housing/health:
+    get:
+      tags: [housing-service]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/housing/stats:
+    get:
+      tags: [housing-service]
+      summary: Service statistics
+      responses:
+        '200':
+          description: OK
+  /api/housing:
+    get:
+      tags: [housing-service]
+      summary: List housing units
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list
+    post:
+      tags: [housing-service]
+      summary: Register housing unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /api/housing/{id}:
+    get:
+      tags: [housing-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Get housing unit
+      responses:
+        '200':
+          description: OK
+    put:
+      tags: [housing-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Update housing unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+    delete:
+      tags: [housing-service]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      summary: Remove housing unit
+      responses:
+        '204':
+          description: Deleted
+  /api/housing/programs/apply:
+    post:
+      tags: [housing-service]
+      summary: Apply for housing assistance program
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                citizenId:
+                  type: string
+                programType:
+                  type: string
+                  enum: [affordable-rental, first-time-buyer, renovation-grant]
+                householdSize:
+                  type: integer
+      responses:
+        '201':
+          description: Application submitted
+  /api/housing/assessment:
+    post:
+      tags: [housing-service]
+      summary: Request property value assessment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                propertyId:
+                  type: string
+                assessmentType:
+                  type: string
+                  enum: [market-value, tax, insurance]
+      responses:
+        '200':
+          description: Assessment result
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        service:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+  headers:
+    X-RateLimit-Limit:
+      description: Maximum requests per window
+      schema:
+        type: integer
+        example: 100
+    X-RateLimit-Remaining:
+      description: Remaining requests in window
+      schema:
+        type: integer
+        example: 95
+    X-RateLimit-Reset:
+      description: Seconds until rate limit resets
+      schema:
+        type: integer
+        example: 30
+    X-Request-Id:
+      description: Unique request correlation ID
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+  responses:
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

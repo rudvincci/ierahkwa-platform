@@ -1,0 +1,107 @@
+# WAMPUM Blockchain Engine — Docker Compose
+# Local development / testnet setup
+version: '3.9'
+
+services:
+  wampum-node-1:
+    build: .
+    container_name: wampum-validator-1
+    ports:
+      - "8545:8545"
+      - "8546:8546"
+      - "30303:30303"
+      - "9090:9090"
+    volumes:
+      - wampum-data-1:/data/wampum
+      - ./wampum-blockchain.config.json:/etc/ierahkwa/config.json:ro
+    environment:
+      - WAMPUM_NETWORK=testnet
+      - WAMPUM_VALIDATOR=true
+      - WAMPUM_NODE_ID=validator-1
+    networks:
+      - wampum-net
+    restart: unless-stopped
+
+  wampum-node-2:
+    build: .
+    container_name: wampum-validator-2
+    ports:
+      - "8555:8545"
+      - "8556:8546"
+      - "30304:30303"
+    volumes:
+      - wampum-data-2:/data/wampum
+      - ./wampum-blockchain.config.json:/etc/ierahkwa/config.json:ro
+    environment:
+      - WAMPUM_NETWORK=testnet
+      - WAMPUM_VALIDATOR=true
+      - WAMPUM_NODE_ID=validator-2
+      - WAMPUM_BOOTNODE=enode://validator-1@wampum-node-1:30303
+    networks:
+      - wampum-net
+    depends_on:
+      - wampum-node-1
+    restart: unless-stopped
+
+  wampum-node-3:
+    build: .
+    container_name: wampum-validator-3
+    ports:
+      - "8565:8545"
+      - "8566:8546"
+      - "30305:30303"
+    volumes:
+      - wampum-data-3:/data/wampum
+      - ./wampum-blockchain.config.json:/etc/ierahkwa/config.json:ro
+    environment:
+      - WAMPUM_NETWORK=testnet
+      - WAMPUM_VALIDATOR=true
+      - WAMPUM_NODE_ID=validator-3
+      - WAMPUM_BOOTNODE=enode://validator-1@wampum-node-1:30303
+    networks:
+      - wampum-net
+    depends_on:
+      - wampum-node-1
+    restart: unless-stopped
+
+  wampum-explorer:
+    image: ierahkwa.azurecr.io/wampum-explorer:latest
+    container_name: wampum-explorer
+    ports:
+      - "4000:4000"
+    environment:
+      - EXPLORER_RPC=http://wampum-node-1:8545
+      - EXPLORER_WS=ws://wampum-node-1:8546
+      - DATABASE_URL=postgresql://${WAMPUM_DB_USER:-wampum}:${WAMPUM_DB_PASSWORD}@wampum-db:5432/${WAMPUM_DB_NAME:-explorer}
+    networks:
+      - wampum-net
+    depends_on:
+      - wampum-node-1
+      - wampum-db
+    restart: unless-stopped
+
+  wampum-db:
+    image: postgres:16-alpine
+    container_name: wampum-db
+    environment:
+      POSTGRES_USER: ${WAMPUM_DB_USER:-wampum}
+      POSTGRES_PASSWORD: ${WAMPUM_DB_PASSWORD:?Set WAMPUM_DB_PASSWORD in .env}
+      POSTGRES_DB: ${WAMPUM_DB_NAME:-explorer}
+    volumes:
+      - wampum-db-data:/var/lib/postgresql/data
+    networks:
+      - wampum-net
+    restart: unless-stopped
+
+volumes:
+  wampum-data-1:
+  wampum-data-2:
+  wampum-data-3:
+  wampum-db-data:
+
+networks:
+  wampum-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

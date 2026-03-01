@@ -1,24 +1,26 @@
 'use strict';
-const router = require('express').Router();
-const { asyncHandler } = require('../../shared/error-handler');
-const { createLogger } = require('../../shared/logger');
-const log = createLogger('map');
 
-router.get('/', asyncHandler(async (req, res) => {
-  log.info('List request', { page: req.query.page });
-  res.json({ data: [], total: 0, page: parseInt(req.query.page) || 1, limit: 20 });
-}));
-router.get('/:id', asyncHandler(async (req, res) => {
-  res.json({ id: req.params.id, status: 'active' });
-}));
-router.post('/', asyncHandler(async (req, res) => {
-  log.info('Create', { body: Object.keys(req.body) });
-  res.status(201).json({ id: Date.now().toString(36), ...req.body, created: new Date().toISOString() });
-}));
-router.put('/:id', asyncHandler(async (req, res) => {
-  res.json({ id: req.params.id, ...req.body, updated: new Date().toISOString() });
-}));
-router.delete('/:id', asyncHandler(async (req, res) => {
-  res.json({ id: req.params.id, deleted: true });
-}));
+// ============================================================
+// Map Routes — /v1/map
+// Reverse proxy to Sovereign Core (map content)
+// Downstream: sovereign-core:3050/v1/content?type=map
+// ============================================================
+
+const { Router } = require('express');
+const { proxyRequest } = require('../lib/proxy');
+const { createLogger } = require('../../shared/logger');
+
+const router = Router();
+const log = createLogger('map-proxy');
+
+const SERVICE_URL = process.env.SOVEREIGN_CORE_URL || 'http://sovereign-core:3050';
+
+router.all('/*', (req, res) => {
+  log.info('Proxy → sovereign-core (map)', { method: req.method, path: req.url });
+  proxyRequest(req, res, SERVICE_URL, {
+    pathPrefix: '/v1/content',
+    extraHeaders: { 'x-content-type': 'map' }
+  });
+});
+
 module.exports = router;

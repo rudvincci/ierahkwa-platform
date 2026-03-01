@@ -10,7 +10,7 @@ Wampum (WMP) is the sovereign digital currency of Red Soberana, issued and gover
 | Symbol | WMP (Ⓦ) |
 | Blockchain | MameyNode v4.2 |
 | Standard | MN-20 (ERC-20 compatible) |
-| Total Supply | 720,000,000 Ⓦ (fixed) |
+| Total Supply | 10,000,000,000,000 (10T) Ⓦ (fixed) |
 | Decimals | 18 |
 | Consensus | Proof of Sovereignty |
 

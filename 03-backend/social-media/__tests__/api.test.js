@@ -69,7 +69,7 @@ describe('Social Media (BDET Bank) - API Routes', () => {
         engines: 11,
         status: 'operational',
         currency: 'Wampum (WMP)',
-        supply: '720,000,000',
+        supply: '10,000,000,000,000',
         blockchain: 'MameyNode v4.2',
         consensus: 'Proof of Sovereignty',
         taxRate: '0% — Constitutional Article VII'
@@ -78,7 +78,7 @@ describe('Social Media (BDET Bank) - API Routes', () => {
       expect(response.status).toBe('operational');
       expect(response.blockchain).toBe('MameyNode v4.2');
       expect(response.consensus).toBe('Proof of Sovereignty');
-      expect(response.supply).toBe('720,000,000');
+      expect(response.supply).toBe('10,000,000,000,000');
     });
   });
 

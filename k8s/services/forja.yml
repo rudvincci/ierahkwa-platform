@@ -1,0 +1,202 @@
+# Ierahkwa Platform — NEXUS Forja K8s Manifests
+# v3.3.0 — 5 microservices (ports 5800-5804)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: devops-service, namespace: ierahkwa, labels: { app: devops-service, nexus: forja, version: v3.3.0 } }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: devops-service } }
+  template:
+    metadata: { labels: { app: devops-service, nexus: forja } }
+    spec:
+      containers:
+      - name: devops-service
+        image: ierahkwa.azurecr.io/devops-service:latest
+        ports: [{ containerPort: 8080 }]
+        env: [{ name: ASPNETCORE_ENVIRONMENT, value: Production }]
+        resources: { requests: { cpu: 200m, memory: 256Mi }, limits: { cpu: 1000m, memory: 1Gi } }
+        livenessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 10, periodSeconds: 30 }
+        readinessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 5, periodSeconds: 10 }
+        securityContext: { runAsNonRoot: true, readOnlyRootFilesystem: true, allowPrivilegeEscalation: false }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: devops-service, namespace: ierahkwa, labels: { nexus: forja } }
+spec: { type: ClusterIP, selector: { app: devops-service }, ports: [{ port: 5800, targetPort: 8080, protocol: TCP }] }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: devops-service-hpa, namespace: ierahkwa }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: devops-service }
+  minReplicas: 2
+  maxReplicas: 10
+  metrics: [{ type: Resource, resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } } }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: lowcode-service, namespace: ierahkwa, labels: { app: lowcode-service, nexus: forja, version: v3.3.0 } }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: lowcode-service } }
+  template:
+    metadata: { labels: { app: lowcode-service, nexus: forja } }
+    spec:
+      containers:
+      - name: lowcode-service
+        image: ierahkwa.azurecr.io/lowcode-service:latest
+        ports: [{ containerPort: 8080 }]
+        env: [{ name: ASPNETCORE_ENVIRONMENT, value: Production }]
+        resources: { requests: { cpu: 200m, memory: 256Mi }, limits: { cpu: 1000m, memory: 1Gi } }
+        livenessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 10, periodSeconds: 30 }
+        readinessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 5, periodSeconds: 10 }
+        securityContext: { runAsNonRoot: true, readOnlyRootFilesystem: true, allowPrivilegeEscalation: false }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: lowcode-service, namespace: ierahkwa }
+spec: { type: ClusterIP, selector: { app: lowcode-service }, ports: [{ port: 5801, targetPort: 8080 }] }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: lowcode-service-hpa, namespace: ierahkwa }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: lowcode-service }
+  minReplicas: 2
+  maxReplicas: 10
+  metrics: [{ type: Resource, resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } } }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: browser-service, namespace: ierahkwa, labels: { app: browser-service, nexus: forja, version: v3.3.0 } }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: browser-service } }
+  template:
+    metadata: { labels: { app: browser-service, nexus: forja } }
+    spec:
+      containers:
+      - name: browser-service
+        image: ierahkwa.azurecr.io/browser-service:latest
+        ports: [{ containerPort: 8080 }]
+        env: [{ name: ASPNETCORE_ENVIRONMENT, value: Production }]
+        resources: { requests: { cpu: 100m, memory: 128Mi }, limits: { cpu: 500m, memory: 512Mi } }
+        livenessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 10, periodSeconds: 30 }
+        readinessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 5, periodSeconds: 10 }
+        securityContext: { runAsNonRoot: true, readOnlyRootFilesystem: true, allowPrivilegeEscalation: false }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: browser-service, namespace: ierahkwa }
+spec: { type: ClusterIP, selector: { app: browser-service }, ports: [{ port: 5802, targetPort: 8080 }] }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: browser-service-hpa, namespace: ierahkwa }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: browser-service }
+  minReplicas: 2
+  maxReplicas: 10
+  metrics: [{ type: Resource, resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } } }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: productivity-service, namespace: ierahkwa, labels: { app: productivity-service, nexus: forja, version: v3.3.0 } }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: productivity-service } }
+  template:
+    metadata: { labels: { app: productivity-service, nexus: forja } }
+    spec:
+      containers:
+      - name: productivity-service
+        image: ierahkwa.azurecr.io/productivity-service:latest
+        ports: [{ containerPort: 8080 }]
+        env: [{ name: ASPNETCORE_ENVIRONMENT, value: Production }]
+        resources: { requests: { cpu: 100m, memory: 128Mi }, limits: { cpu: 500m, memory: 512Mi } }
+        livenessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 10, periodSeconds: 30 }
+        readinessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 5, periodSeconds: 10 }
+        securityContext: { runAsNonRoot: true, readOnlyRootFilesystem: true, allowPrivilegeEscalation: false }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: productivity-service, namespace: ierahkwa }
+spec: { type: ClusterIP, selector: { app: productivity-service }, ports: [{ port: 5803, targetPort: 8080 }] }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: productivity-service-hpa, namespace: ierahkwa }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: productivity-service }
+  minReplicas: 2
+  maxReplicas: 10
+  metrics: [{ type: Resource, resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } } }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: cloud-service, namespace: ierahkwa, labels: { app: cloud-service, nexus: forja, version: v3.3.0 } }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: cloud-service } }
+  template:
+    metadata: { labels: { app: cloud-service, nexus: forja } }
+    spec:
+      containers:
+      - name: cloud-service
+        image: ierahkwa.azurecr.io/cloud-service:latest
+        ports: [{ containerPort: 8080 }]
+        env: [{ name: ASPNETCORE_ENVIRONMENT, value: Production }]
+        resources: { requests: { cpu: 300m, memory: 512Mi }, limits: { cpu: 1500m, memory: 2Gi } }
+        livenessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 10, periodSeconds: 30 }
+        readinessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 5, periodSeconds: 10 }
+        securityContext: { runAsNonRoot: true, readOnlyRootFilesystem: true, allowPrivilegeEscalation: false }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: cloud-service, namespace: ierahkwa }
+spec: { type: ClusterIP, selector: { app: cloud-service }, ports: [{ port: 5804, targetPort: 8080 }] }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: cloud-service-hpa, namespace: ierahkwa }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: cloud-service }
+  minReplicas: 2
+  maxReplicas: 10
+  metrics: [{ type: Resource, resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } } }]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: nexus-forja-policy
+  namespace: ierahkwa
+spec:
+  podSelector:
+    matchLabels:
+      nexus: forja
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ierahkwa
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: ierahkwa
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6379
+        - protocol: UDP
+          port: 53

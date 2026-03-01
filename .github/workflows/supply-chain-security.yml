@@ -33,11 +33,11 @@ jobs:
         run: |
           echo "🔍 Auditing root package.json..."
           if [ -f "package-lock.json" ]; then
-            npm audit --audit-level=high 2>/dev/null || echo "⚠️ Some audit warnings found"
+            npm audit --audit-level=high
           else
             echo "⏭️ No package-lock.json at root — generating..."
             npm install --package-lock-only --ignore-scripts 2>/dev/null || true
-            npm audit --audit-level=high 2>/dev/null || echo "⚠️ Some audit warnings found"
+            npm audit --audit-level=high
           fi
           echo "✅ Root audit complete"
 
@@ -51,7 +51,7 @@ jobs:
               SERVICES_CHECKED=$((SERVICES_CHECKED + 1))
               if [ -f "$dir/package-lock.json" ]; then
                 cd "$dir"
-                npm audit --audit-level=high 2>/dev/null || echo "  ⚠️ Issues in $SERVICE"
+                npm audit --audit-level=high || { echo "  ❌ Audit failed for $SERVICE"; exit 1; }
                 cd "$GITHUB_WORKSPACE"
               fi
             fi

@@ -6,7 +6,7 @@ This is the Ierahkwa Sovereign Digital Platform — a complete sovereign technol
 
 **Stack:** Node.js 22, .NET 10, Rust 1.80+, Go 1.22, PostgreSQL 16, Redis 7, Docker 27
 **Blockchain:** MameyNode (Rust-based, EVM Shanghai, Chain ID 777777, 3s blocks, 12,847 TPS)
-**Token:** WAMPUM (WMP) — 720M total supply, 0% tax
+**Token:** WAMPUM (WMP) — 10T total supply, 0% tax — serving all Americas (670M+ people)
 
 ## Architecture Patterns
 

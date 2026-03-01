@@ -222,7 +222,7 @@ ierahkwa-platform/
 | Capa | Tecnologia | Detalle |
 |------|-----------|---------|
 | **Blockchain** | MameyNode v4.2 | Chain ID 777777, 12,847 TPS, 6 lenguajes |
-| **Token** | WAMPUM | Gas + gobernanza, 720M max supply |
+| **Token** | WAMPUM | Gas + gobernanza, 10T max supply — todas las Américas |
 | **Stablecoin** | SICBDC | Moneda digital del banco central |
 | **Backend** | .NET 10 | 139 proyectos framework + 37 microservicios |
 | **Backend** | Rust | MameyForge CLI + SDK gRPC blockchain |

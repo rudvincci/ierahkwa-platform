@@ -1,0 +1,225 @@
+{
+  "$schema": "https://ierahkwa.io/schemas/wampum-blockchain-v3.3.0.json",
+  "name": "WAMPUM Blockchain Engine",
+  "version": "3.3.0",
+  "description": "Motor blockchain soberano — Moneda digital WAMPUM para 574 naciones tribales y 72M ciudadanos indígenas",
+  "network": {
+    "name": "wampum-mainnet",
+    "chainId": 574,
+    "networkId": 574,
+    "consensus": "proof-of-stake",
+    "blockTime": 5,
+    "maxBlockSize": "2MB",
+    "genesisTimestamp": "2024-01-01T00:00:00Z",
+    "nativeCurrency": {
+      "name": "WAMPUM",
+      "symbol": "WPM",
+      "decimals": 18
+    },
+    "testnet": {
+      "name": "wampum-testnet",
+      "chainId": 5740,
+      "faucetUrl": "https://faucet.testnet.ierahkwa.io"
+    }
+  },
+  "nodes": {
+    "validator": {
+      "count": 21,
+      "minStake": "100000 WPM",
+      "maxValidators": 100,
+      "electionPeriod": "7d",
+      "slashingPenalty": 0.05,
+      "rewardPerBlock": "2 WPM",
+      "delegationEnabled": true
+    },
+    "fullNode": {
+      "syncMode": "fast",
+      "pruning": "archive",
+      "maxPeers": 50,
+      "port": 30303,
+      "rpcPort": 8545,
+      "wsPort": 8546
+    },
+    "bootNodes": [
+      "enode://node1@boot1.ierahkwa.io:30303",
+      "enode://node2@boot2.ierahkwa.io:30303",
+      "enode://node3@boot3.ierahkwa.io:30303"
+    ]
+  },
+  "smartContracts": {
+    "vm": "wampum-evm",
+    "solidity": {
+      "version": "0.8.24",
+      "optimizer": { "enabled": true, "runs": 200 }
+    },
+    "precompiled": {
+      "identity": "0x0000000000000000000000000000000001",
+      "tribalVoting": "0x0000000000000000000000000000000002",
+      "landRegistry": "0x0000000000000000000000000000000003",
+      "culturalAssets": "0x0000000000000000000000000000000004",
+      "wampumToken": "0x0000000000000000000000000000000005"
+    },
+    "gasConfig": {
+      "minGasPrice": "1 gwei",
+      "maxGasLimit": 30000000,
+      "baseFee": { "enabled": true, "targetGasPerBlock": 15000000 },
+      "freeTransactions": {
+        "enabled": true,
+        "dailyLimit": 10,
+        "eligibility": "verified-citizen"
+      }
+    }
+  },
+  "tokens": {
+    "WPM": {
+      "type": "native",
+      "totalSupply": "1000000000",
+      "initialDistribution": {
+        "tribalNations": 0.40,
+        "citizenAirdrop": 0.20,
+        "developmentFund": 0.15,
+        "educationFund": 0.10,
+        "healthFund": 0.05,
+        "culturalPreservation": 0.05,
+        "liquidityPool": 0.05
+      },
+      "inflation": {
+        "type": "decreasing",
+        "initialRate": 0.05,
+        "minimumRate": 0.01,
+        "decreasePerYear": 0.005
+      }
+    },
+    "NFT": {
+      "standards": ["WRC-721", "WRC-1155"],
+      "categories": ["cultural-artifact", "land-deed", "tribal-id", "art", "music", "document"],
+      "marketplace": {
+        "enabled": true,
+        "feePercent": 2.5,
+        "feeRecipient": "cultural-preservation-fund"
+      }
+    },
+    "stablecoin": {
+      "name": "WAMPUM-USD",
+      "symbol": "wUSD",
+      "peg": "USD",
+      "collateral": "multi-asset",
+      "collateralRatio": 1.5
+    }
+  },
+  "governance": {
+    "dao": {
+      "name": "Consejo Soberano DAO",
+      "votingPeriod": "7d",
+      "quorum": 0.10,
+      "proposalThreshold": "10000 WPM",
+      "executionDelay": "2d",
+      "vetoCouncil": {
+        "enabled": true,
+        "members": 7,
+        "vetoThreshold": 5
+      }
+    },
+    "tribalCouncils": {
+      "enabled": true,
+      "maxCouncils": 574,
+      "localVotingEnabled": true,
+      "delegationEnabled": true,
+      "minimumParticipation": 0.05
+    }
+  },
+  "identity": {
+    "did": {
+      "method": "did:wampum",
+      "registry": "on-chain",
+      "verifiableCredentials": true,
+      "biometric": false,
+      "recovery": {
+        "method": "social-recovery",
+        "guardians": 3,
+        "threshold": 2,
+        "cooldownPeriod": "7d"
+      }
+    },
+    "kyc": {
+      "required": false,
+      "tribalVerification": true,
+      "levels": [
+        { "level": 0, "name": "anonymous",  "dailyLimit": "100 WPM" },
+        { "level": 1, "name": "citizen",    "dailyLimit": "10000 WPM" },
+        { "level": 2, "name": "verified",   "dailyLimit": "100000 WPM" },
+        { "level": 3, "name": "institution", "dailyLimit": "unlimited" }
+      ]
+    }
+  },
+  "storage": {
+    "stateDB": {
+      "engine": "leveldb",
+      "path": "/data/wampum/state",
+      "cache": "512MB"
+    },
+    "blockDB": {
+      "engine": "leveldb",
+      "path": "/data/wampum/blocks",
+      "cache": "256MB"
+    },
+    "ipfs": {
+      "enabled": true,
+      "gateway": "https://ipfs.ierahkwa.io",
+      "pinning": true,
+      "maxFileSize": "100MB"
+    }
+  },
+  "api": {
+    "rpc": {
+      "enabled": true,
+      "host": "0.0.0.0",
+      "port": 8545,
+      "cors": ["https://*.ierahkwa.io"],
+      "maxBatchSize": 100,
+      "rateLimit": { "enabled": true, "maxRequests": 1000, "windowMs": 60000 }
+    },
+    "websocket": {
+      "enabled": true,
+      "port": 8546,
+      "maxConnections": 10000,
+      "subscriptions": ["newHeads", "logs", "pendingTransactions"]
+    },
+    "graphql": {
+      "enabled": true,
+      "port": 8547,
+      "playground": false
+    }
+  },
+  "bridge": {
+    "enabled": true,
+    "chains": [
+      { "name": "Ethereum", "chainId": 1,     "bridge": "lock-and-mint", "confirmations": 12 },
+      { "name": "Polygon",  "chainId": 137,   "bridge": "lock-and-mint", "confirmations": 32 },
+      { "name": "BSC",      "chainId": 56,    "bridge": "lock-and-mint", "confirmations": 15 }
+    ],
+    "relayers": 5,
+    "threshold": 3,
+    "fee": "0.1%"
+  },
+  "monitoring": {
+    "prometheus": {
+      "enabled": true,
+      "port": 9090,
+      "metrics": ["block_height", "peer_count", "tx_pool_size", "gas_price", "validator_uptime"]
+    },
+    "explorer": {
+      "enabled": true,
+      "url": "https://explorer.ierahkwa.io",
+      "indexer": "graph-node"
+    }
+  },
+  "sovereignty": {
+    "dataResidency": "indigenous-territory",
+    "jurisdictions": ["tribal-sovereign", "autonomous-digital"],
+    "regulatoryCompliance": ["tribal-law", "UNDRIP", "ILO-169"],
+    "censorshipResistance": true,
+    "decentralizedGovernance": true,
+    "communityOwned": true
+  }
+}

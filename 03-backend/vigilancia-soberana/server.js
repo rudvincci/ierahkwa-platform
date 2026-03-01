@@ -12,6 +12,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const { v4: uuidv4 } = require('uuid');
 const { corsConfig, applySecurityMiddleware, errorHandler } = require('../shared/security');
+const db = require('./db');
 
 const app = express();
 
@@ -28,109 +29,72 @@ app.use(express.json({ limit: '5mb' }));
 const logger = applySecurityMiddleware(app, 'vigilancia-soberana');
 
 // ============================================================================
-// IN-MEMORY EVENT STORAGE — CIRCULAR BUFFER (max 10,000 events)
+// CONFIGURATION
 // ============================================================================
 
 const MAX_EVENTS = 10000;
 
-class CircularEventBuffer {
-  constructor(maxSize) {
-    this.maxSize = maxSize;
-    this.buffer = [];
-    this.totalIngested = 0;
-  }
+// ============================================================================
+// HELPER — Row to camelCase event object (preserves original JSON shape)
+// ============================================================================
 
-  push(event) {
-    if (this.buffer.length >= this.maxSize) {
-      this.buffer.shift(); // Remove oldest event
-    }
-    this.buffer.push(event);
-    this.totalIngested++;
-  }
-
-  getAll() {
-    return [...this.buffer];
-  }
-
-  query(filters = {}) {
-    let results = [...this.buffer];
-
-    if (filters.severity) {
-      results = results.filter(e => e.severity === filters.severity);
-    }
-
-    if (filters.source) {
-      results = results.filter(e =>
-        e.source.toLowerCase().includes(filters.source.toLowerCase())
-      );
-    }
-
-    if (filters.timeFrom) {
-      const from = new Date(filters.timeFrom).getTime();
-      results = results.filter(e => new Date(e.timestamp).getTime() >= from);
-    }
-
-    if (filters.timeTo) {
-      const to = new Date(filters.timeTo).getTime();
-      results = results.filter(e => new Date(e.timestamp).getTime() <= to);
-    }
-
-    if (filters.category) {
-      results = results.filter(e => e.category === filters.category);
-    }
-
-    if (filters.search) {
-      const term = filters.search.toLowerCase();
-      results = results.filter(e =>
-        e.message.toLowerCase().includes(term) ||
-        e.source.toLowerCase().includes(term)
-      );
-    }
-
-    return results;
-  }
-
-  getStats() {
-    const severityCounts = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
-    const sourceCounts = {};
-    const categoryCounts = {};
-
-    for (const event of this.buffer) {
-      // Count by severity
-      if (severityCounts[event.severity] !== undefined) {
-        severityCounts[event.severity]++;
-      }
-
-      // Count by source
-      sourceCounts[event.source] = (sourceCounts[event.source] || 0) + 1;
-
-      // Count by category
-      if (event.category) {
-        categoryCounts[event.category] = (categoryCounts[event.category] || 0) + 1;
-      }
-    }
-
-    return { severityCounts, sourceCounts, categoryCounts };
-  }
-
-  get size() {
-    return this.buffer.length;
-  }
+function rowToEvent(row) {
+  return {
+    id: row.id,
+    source: row.source,
+    severity: row.severity,
+    message: row.message,
+    category: row.category,
+    metadata: row.metadata,
+    ip: row.ip,
+    userAgent: row.user_agent,
+    timestamp: row.timestamp instanceof Date ? row.timestamp.toISOString() : row.timestamp
+  };
 }
 
-const eventBuffer = new CircularEventBuffer(MAX_EVENTS);
+function rowToRule(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    condition: row.condition,
+    value: row.value,
+    threshold: row.threshold,
+    action: row.action,
+    alertSeverity: row.alert_severity,
+    enabled: row.enabled,
+    triggerCount: row.trigger_count,
+    lastTriggered: row.last_triggered ? (row.last_triggered instanceof Date ? row.last_triggered.toISOString() : row.last_triggered) : null,
+    createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at
+  };
+}
+
+function rowToTriggeredAlert(row) {
+  return {
+    id: row.id,
+    ruleId: row.rule_id,
+    ruleName: row.rule_name,
+    severity: row.severity,
+    message: row.message,
+    event: {
+      id: row.event_id,
+      source: row.event_source,
+      severity: row.event_severity
+    },
+    action: row.action,
+    triggeredAt: row.triggered_at instanceof Date ? row.triggered_at.toISOString() : row.triggered_at
+  };
+}
 
 // ============================================================================
-// ALERT RULES STORAGE
+// ALERT RULE EVALUATION (PostgreSQL-backed)
 // ============================================================================
 
-const alertRules = new Map();
-const triggeredAlerts = [];
+async function evaluateAlertRules(event) {
+  const { rows: rules } = await db.query(
+    'SELECT * FROM alert_rules WHERE enabled = TRUE'
+  );
 
-function evaluateAlertRules(event) {
-  for (const [id, rule] of alertRules.entries()) {
-    if (!rule.enabled) continue;
-
+  for (const rule of rules) {
     let matches = false;
 
     switch (rule.condition) {
@@ -151,97 +115,57 @@ function evaluateAlertRules(event) {
     }
 
     if (matches) {
-      rule.triggerCount = (rule.triggerCount || 0) + 1;
-      rule.lastTriggered = new Date().toISOString();
+      const newTriggerCount = (rule.trigger_count || 0) + 1;
+      const now = new Date().toISOString();
 
-      // Check threshold
-      if (rule.triggerCount >= (rule.threshold || 1)) {
-        const alert = {
-          id: uuidv4(),
-          ruleId: id,
-          ruleName: rule.name,
-          severity: rule.alertSeverity || event.severity,
-          message: `Alert rule "${rule.name}" triggered: ${event.message}`,
-          event: { id: event.id, source: event.source, severity: event.severity },
-          action: rule.action,
-          triggeredAt: new Date().toISOString()
-        };
-        triggeredAlerts.push(alert);
+      if (newTriggerCount >= (rule.threshold || 1)) {
+        // Fire the alert
+        const alertId = uuidv4();
+        const alertMessage = `Alert rule "${rule.name}" triggered: ${event.message}`;
+
+        await db.query(
+          `INSERT INTO triggered_alerts (id, rule_id, rule_name, severity, message, event_id, event_source, event_severity, action, triggered_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+          [alertId, rule.id, rule.name, rule.alert_severity || event.severity, alertMessage, event.id, event.source, event.severity, rule.action, now]
+        );
 
         // Keep only the last 1000 triggered alerts
-        if (triggeredAlerts.length > 1000) {
-          triggeredAlerts.shift();
-        }
+        await db.query(`
+          DELETE FROM triggered_alerts
+          WHERE id IN (
+            SELECT id FROM triggered_alerts
+            ORDER BY triggered_at DESC
+            OFFSET 1000
+          )
+        `);
 
         // Reset counter after alert fires
-        rule.triggerCount = 0;
+        await db.query(
+          'UPDATE alert_rules SET trigger_count = 0, last_triggered = $1 WHERE id = $2',
+          [now, rule.id]
+        );
+      } else {
+        // Increment trigger count
+        await db.query(
+          'UPDATE alert_rules SET trigger_count = $1, last_triggered = $2 WHERE id = $3',
+          [newTriggerCount, now, rule.id]
+        );
       }
     }
   }
 }
 
 // ============================================================================
-// COMPLIANCE FRAMEWORK DEFINITIONS
+// COMPLIANCE HELPER (PostgreSQL-backed)
 // ============================================================================
 
-const complianceFrameworks = {
-  'OWASP-TOP-10': {
-    name: 'OWASP Top 10:2025',
-    controls: [
-      { id: 'A01', name: 'Broken Access Control', status: 'pass', score: 92 },
-      { id: 'A02', name: 'Cryptographic Failures', status: 'pass', score: 95 },
-      { id: 'A03', name: 'Injection', status: 'pass', score: 98 },
-      { id: 'A04', name: 'Insecure Design', status: 'pass', score: 88 },
-      { id: 'A05', name: 'Security Misconfiguration', status: 'pass', score: 90 },
-      { id: 'A06', name: 'Vulnerable Components', status: 'warning', score: 78 },
-      { id: 'A07', name: 'Authentication Failures', status: 'pass', score: 94 },
-      { id: 'A08', name: 'Software Integrity Failures', status: 'pass', score: 91 },
-      { id: 'A09', name: 'Logging & Monitoring Failures', status: 'pass', score: 96 },
-      { id: 'A10', name: 'Server-Side Request Forgery', status: 'pass', score: 93 }
-    ]
-  },
-  'PCI-DSS': {
-    name: 'PCI DSS v4.0',
-    controls: [
-      { id: 'R1', name: 'Network Security Controls', status: 'pass', score: 90 },
-      { id: 'R2', name: 'Secure Configurations', status: 'pass', score: 88 },
-      { id: 'R3', name: 'Protect Stored Account Data', status: 'pass', score: 95 },
-      { id: 'R4', name: 'Encrypt Transmission', status: 'pass', score: 97 },
-      { id: 'R5', name: 'Malware Protection', status: 'pass', score: 85 },
-      { id: 'R6', name: 'Secure Systems & Software', status: 'warning', score: 80 },
-      { id: 'R7', name: 'Restrict Access', status: 'pass', score: 92 },
-      { id: 'R8', name: 'Identify Users & Auth', status: 'pass', score: 94 },
-      { id: 'R9', name: 'Physical Access', status: 'pass', score: 88 },
-      { id: 'R10', name: 'Log & Monitor', status: 'pass', score: 96 },
-      { id: 'R11', name: 'Test Security', status: 'pass', score: 87 },
-      { id: 'R12', name: 'Security Policies', status: 'pass', score: 91 }
-    ]
-  },
-  'HIPAA': {
-    name: 'HIPAA Security Rule',
-    controls: [
-      { id: 'AD1', name: 'Security Management Process', status: 'pass', score: 92 },
-      { id: 'AD2', name: 'Assigned Security Responsibility', status: 'pass', score: 95 },
-      { id: 'AD3', name: 'Workforce Security', status: 'pass', score: 88 },
-      { id: 'AD4', name: 'Information Access Management', status: 'pass', score: 90 },
-      { id: 'AD5', name: 'Security Awareness Training', status: 'warning', score: 76 },
-      { id: 'AD6', name: 'Security Incident Procedures', status: 'pass', score: 94 },
-      { id: 'PH1', name: 'Facility Access Controls', status: 'pass', score: 87 },
-      { id: 'PH2', name: 'Workstation Use', status: 'pass', score: 89 },
-      { id: 'PH3', name: 'Device & Media Controls', status: 'pass', score: 85 },
-      { id: 'TE1', name: 'Access Control', status: 'pass', score: 93 },
-      { id: 'TE2', name: 'Audit Controls', status: 'pass', score: 96 },
-      { id: 'TE3', name: 'Integrity', status: 'pass', score: 91 },
-      { id: 'TE4', name: 'Transmission Security', status: 'pass', score: 97 }
-    ]
-  }
-};
-
-function getComplianceScore(framework) {
-  const fw = complianceFrameworks[framework];
-  if (!fw) return null;
-  const totalScore = fw.controls.reduce((sum, c) => sum + c.score, 0);
-  return Math.round(totalScore / fw.controls.length);
+async function getComplianceScore(framework) {
+  const { rows } = await db.query(
+    'SELECT ROUND(AVG(score)) AS avg_score FROM compliance_controls WHERE framework_key = $1',
+    [framework]
+  );
+  if (rows.length === 0 || rows[0].avg_score === null) return null;
+  return Number(rows[0].avg_score);
 }
 
 // ============================================================================
@@ -249,22 +173,45 @@ function getComplianceScore(framework) {
 // ============================================================================
 
 // Health check
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    service: 'vigilancia-soberana',
-    version: '1.0.0',
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-    eventsStored: eventBuffer.size,
-    totalIngested: eventBuffer.totalIngested,
-    alertRules: alertRules.size,
-    poweredBy: 'MameyNode'
-  });
+app.get('/health', async (req, res) => {
+  try {
+    const { rows: countRows } = await db.query('SELECT COUNT(*) AS cnt FROM events');
+    const eventsStored = Number(countRows[0].cnt);
+
+    const { rows: counterRows } = await db.query("SELECT value FROM counters WHERE key = 'totalIngested'");
+    const totalIngested = counterRows.length > 0 ? Number(counterRows[0].value) : 0;
+
+    const { rows: rulesRows } = await db.query('SELECT COUNT(*) AS cnt FROM alert_rules');
+    const alertRulesCount = Number(rulesRows[0].cnt);
+
+    res.json({
+      status: 'ok',
+      service: 'vigilancia-soberana',
+      version: '1.0.0',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      eventsStored,
+      totalIngested,
+      alertRules: alertRulesCount,
+      poweredBy: 'MameyNode'
+    });
+  } catch (error) {
+    res.json({
+      status: 'ok',
+      service: 'vigilancia-soberana',
+      version: '1.0.0',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      eventsStored: 0,
+      totalIngested: 0,
+      alertRules: 0,
+      poweredBy: 'MameyNode'
+    });
+  }
 });
 
 // Ingest security events
-app.post('/api/events', (req, res) => {
+app.post('/api/events', async (req, res) => {
   try {
     const events = Array.isArray(req.body) ? req.body : [req.body];
     const ingested = [];
@@ -299,18 +246,39 @@ app.post('/api/events', (req, res) => {
         timestamp: new Date().toISOString()
       };
 
-      eventBuffer.push(event);
-      evaluateAlertRules(event);
+      await db.query(
+        `INSERT INTO events (id, source, severity, message, category, metadata, ip, user_agent, timestamp)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [event.id, event.source, event.severity, event.message, event.category, JSON.stringify(event.metadata), event.ip, event.userAgent, event.timestamp]
+      );
+
+      // Increment totalIngested counter
+      await db.query("UPDATE counters SET value = value + 1 WHERE key = 'totalIngested'");
+
+      // Enforce max events cap (remove oldest beyond MAX_EVENTS)
+      await db.query(`
+        DELETE FROM events
+        WHERE id IN (
+          SELECT id FROM events
+          ORDER BY timestamp DESC
+          OFFSET $1
+        )
+      `, [MAX_EVENTS]);
+
+      await evaluateAlertRules(event);
       ingested.push(event);
     }
 
     logger.dataAccess(req, 'events', 'ingest');
 
+    const { rows: countRows } = await db.query('SELECT COUNT(*) AS cnt FROM events');
+    const bufferSize = Number(countRows[0].cnt);
+
     res.status(201).json({
       success: true,
       ingested: ingested.length,
       events: ingested,
-      bufferSize: eventBuffer.size,
+      bufferSize,
       message: `${ingested.length} evento(s) registrado(s) exitosamente`
     });
   } catch (error) {
@@ -319,33 +287,74 @@ app.post('/api/events', (req, res) => {
 });
 
 // Query events with filters
-app.get('/api/events', (req, res) => {
+app.get('/api/events', async (req, res) => {
   try {
     const { severity, source, timeFrom, timeTo, category, search, limit = 100, offset = 0 } = req.query;
 
-    const filters = {};
-    if (severity) filters.severity = severity;
-    if (source) filters.source = source;
-    if (timeFrom) filters.timeFrom = timeFrom;
-    if (timeTo) filters.timeTo = timeTo;
-    if (category) filters.category = category;
-    if (search) filters.search = search;
+    const conditions = [];
+    const params = [];
+    let paramIndex = 1;
 
-    let results = eventBuffer.query(filters);
+    if (severity) {
+      conditions.push(`severity = $${paramIndex++}`);
+      params.push(severity);
+    }
 
-    // Sort newest first
-    results.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    if (source) {
+      conditions.push(`LOWER(source) LIKE $${paramIndex++}`);
+      params.push(`%${source.toLowerCase()}%`);
+    }
 
-    const total = results.length;
-    const paginated = results.slice(Number(offset), Number(offset) + Number(limit));
+    if (timeFrom) {
+      conditions.push(`timestamp >= $${paramIndex++}`);
+      params.push(new Date(timeFrom).toISOString());
+    }
+
+    if (timeTo) {
+      conditions.push(`timestamp <= $${paramIndex++}`);
+      params.push(new Date(timeTo).toISOString());
+    }
+
+    if (category) {
+      conditions.push(`category = $${paramIndex++}`);
+      params.push(category);
+    }
+
+    if (search) {
+      conditions.push(`(LOWER(message) LIKE $${paramIndex} OR LOWER(source) LIKE $${paramIndex})`);
+      params.push(`%${search.toLowerCase()}%`);
+      paramIndex++;
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    // Get total count
+    const { rows: countRows } = await db.query(
+      `SELECT COUNT(*) AS cnt FROM events ${whereClause}`,
+      params
+    );
+    const total = Number(countRows[0].cnt);
+
+    // Get paginated results
+    const paginatedParams = [...params, Number(limit), Number(offset)];
+    const { rows } = await db.query(
+      `SELECT * FROM events ${whereClause} ORDER BY timestamp DESC LIMIT $${paramIndex++} OFFSET $${paramIndex++}`,
+      paginatedParams
+    );
+
+    const events = rows.map(rowToEvent);
+
+    // Get buffer size (total events stored)
+    const { rows: bufferRows } = await db.query('SELECT COUNT(*) AS cnt FROM events');
+    const bufferSize = Number(bufferRows[0].cnt);
 
     res.json({
       success: true,
-      events: paginated,
+      events,
       total,
       limit: Number(limit),
       offset: Number(offset),
-      bufferSize: eventBuffer.size
+      bufferSize
     });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Error al consultar eventos' });
@@ -353,59 +362,90 @@ app.get('/api/events', (req, res) => {
 });
 
 // Dashboard summary
-app.get('/api/dashboard', (req, res) => {
+app.get('/api/dashboard', async (req, res) => {
   try {
-    const stats = eventBuffer.getStats();
+    // Severity counts
+    const { rows: sevRows } = await db.query(
+      `SELECT severity, COUNT(*) AS cnt FROM events GROUP BY severity`
+    );
+    const severityCounts = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
+    for (const row of sevRows) {
+      if (severityCounts[row.severity] !== undefined) {
+        severityCounts[row.severity] = Number(row.cnt);
+      }
+    }
 
-    // Top sources (sorted by count, top 10)
-    const topSources = Object.entries(stats.sourceCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([source, count]) => ({ source, count }));
+    // Top sources (top 10)
+    const { rows: sourceRows } = await db.query(
+      `SELECT source, COUNT(*) AS cnt FROM events GROUP BY source ORDER BY cnt DESC LIMIT 10`
+    );
+    const topSources = sourceRows.map(r => ({ source: r.source, count: Number(r.cnt) }));
 
     // Recent alerts (last 20)
-    const recentAlerts = triggeredAlerts.slice(-20).reverse();
+    const { rows: alertRows } = await db.query(
+      `SELECT * FROM triggered_alerts ORDER BY triggered_at DESC LIMIT 20`
+    );
+    const recentAlerts = alertRows.map(rowToTriggeredAlert);
 
     // Events per hour (last 24 hours)
     const now = Date.now();
     const eventsPerHour = [];
     for (let i = 23; i >= 0; i--) {
-      const hourStart = now - (i + 1) * 60 * 60 * 1000;
-      const hourEnd = now - i * 60 * 60 * 1000;
-      const count = eventBuffer.getAll().filter(e => {
-        const ts = new Date(e.timestamp).getTime();
-        return ts >= hourStart && ts < hourEnd;
-      }).length;
+      const hourStart = new Date(now - (i + 1) * 60 * 60 * 1000).toISOString();
+      const hourEnd = new Date(now - i * 60 * 60 * 1000).toISOString();
+      const { rows: hourRows } = await db.query(
+        `SELECT COUNT(*) AS cnt FROM events WHERE timestamp >= $1 AND timestamp < $2`,
+        [hourStart, hourEnd]
+      );
       eventsPerHour.push({
-        hour: new Date(hourEnd).toISOString(),
-        count
+        hour: hourEnd,
+        count: Number(hourRows[0].cnt)
       });
     }
 
     // Category breakdown
-    const categoryBreakdown = Object.entries(stats.categoryCounts)
-      .map(([category, count]) => ({ category, count }))
-      .sort((a, b) => b.count - a.count);
+    const { rows: catRows } = await db.query(
+      `SELECT category, COUNT(*) AS cnt FROM events GROUP BY category ORDER BY cnt DESC`
+    );
+    const categoryBreakdown = catRows.map(r => ({ category: r.category, count: Number(r.cnt) }));
+
+    // Overview stats
+    const { rows: countRows } = await db.query('SELECT COUNT(*) AS cnt FROM events');
+    const totalEvents = Number(countRows[0].cnt);
+
+    const { rows: counterRows } = await db.query("SELECT value FROM counters WHERE key = 'totalIngested'");
+    const totalIngested = counterRows.length > 0 ? Number(counterRows[0].value) : 0;
+
+    const { rows: rulesCountRows } = await db.query('SELECT COUNT(*) AS cnt FROM alert_rules');
+    const activeAlertRules = Number(rulesCountRows[0].cnt);
+
+    const { rows: triggeredCountRows } = await db.query('SELECT COUNT(*) AS cnt FROM triggered_alerts');
+    const triggeredAlertsCount = Number(triggeredCountRows[0].cnt);
+
+    // Compliance overview
+    const owaspScore = await getComplianceScore('OWASP-TOP-10');
+    const pciScore = await getComplianceScore('PCI-DSS');
+    const hipaaScore = await getComplianceScore('HIPAA');
 
     res.json({
       success: true,
       dashboard: {
         overview: {
-          totalEvents: eventBuffer.size,
-          totalIngested: eventBuffer.totalIngested,
-          activeAlertRules: alertRules.size,
-          triggeredAlertsCount: triggeredAlerts.length,
-          bufferCapacity: `${eventBuffer.size}/${MAX_EVENTS}`
+          totalEvents,
+          totalIngested,
+          activeAlertRules,
+          triggeredAlertsCount,
+          bufferCapacity: `${totalEvents}/${MAX_EVENTS}`
         },
-        severityCounts: stats.severityCounts,
+        severityCounts,
         topSources,
         recentAlerts,
         eventsPerHour,
         categoryBreakdown,
         complianceOverview: {
-          'OWASP-TOP-10': getComplianceScore('OWASP-TOP-10'),
-          'PCI-DSS': getComplianceScore('PCI-DSS'),
-          'HIPAA': getComplianceScore('HIPAA')
+          'OWASP-TOP-10': owaspScore,
+          'PCI-DSS': pciScore,
+          'HIPAA': hipaaScore
         },
         lastUpdated: new Date().toISOString()
       }
@@ -416,7 +456,7 @@ app.get('/api/dashboard', (req, res) => {
 });
 
 // Create alert rule
-app.post('/api/alerts', (req, res) => {
+app.post('/api/alerts', async (req, res) => {
   try {
     const { name, condition, value, threshold, action, alertSeverity, enabled } = req.body;
 
@@ -449,7 +489,11 @@ app.post('/api/alerts', (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    alertRules.set(rule.id, rule);
+    await db.query(
+      `INSERT INTO alert_rules (id, name, condition, value, threshold, action, alert_severity, enabled, trigger_count, last_triggered, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+      [rule.id, rule.name, rule.condition, rule.value, rule.threshold, rule.action, rule.alertSeverity, rule.enabled, rule.triggerCount, rule.lastTriggered, rule.createdAt]
+    );
 
     logger.dataAccess(req, 'alert-rules', 'create');
 
@@ -464,21 +508,32 @@ app.post('/api/alerts', (req, res) => {
 });
 
 // List alert rules
-app.get('/api/alerts', (req, res) => {
+app.get('/api/alerts', async (req, res) => {
   try {
-    const rules = Array.from(alertRules.values());
     const { enabled } = req.query;
 
-    let filtered = rules;
+    let rulesQuery = 'SELECT * FROM alert_rules';
+    const params = [];
+
     if (enabled !== undefined) {
-      filtered = rules.filter(r => r.enabled === (enabled === 'true'));
+      rulesQuery += ' WHERE enabled = $1';
+      params.push(enabled === 'true');
     }
+
+    const { rows } = await db.query(rulesQuery, params);
+    const rules = rows.map(rowToRule);
+
+    // Recent triggered alerts (last 10)
+    const { rows: recentRows } = await db.query(
+      'SELECT * FROM triggered_alerts ORDER BY triggered_at DESC LIMIT 10'
+    );
+    const recentlyTriggered = recentRows.map(rowToTriggeredAlert);
 
     res.json({
       success: true,
-      rules: filtered,
-      total: filtered.length,
-      recentlyTriggered: triggeredAlerts.slice(-10).reverse()
+      rules,
+      total: rules.length,
+      recentlyTriggered
     });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Error al listar reglas de alerta' });
@@ -486,43 +541,69 @@ app.get('/api/alerts', (req, res) => {
 });
 
 // Compliance status
-app.get('/api/compliance', (req, res) => {
+app.get('/api/compliance', async (req, res) => {
   try {
     const { framework } = req.query;
 
-    if (framework && complianceFrameworks[framework]) {
-      const fw = complianceFrameworks[framework];
-      return res.json({
-        success: true,
-        framework: framework,
-        name: fw.name,
-        overallScore: getComplianceScore(framework),
-        controls: fw.controls,
-        assessedAt: new Date().toISOString()
-      });
+    if (framework) {
+      // Check if framework exists
+      const { rows: fwRows } = await db.query(
+        'SELECT * FROM compliance_frameworks WHERE key = $1',
+        [framework]
+      );
+
+      if (fwRows.length > 0) {
+        const fw = fwRows[0];
+        const { rows: controlRows } = await db.query(
+          'SELECT control_id AS id, name, status, score FROM compliance_controls WHERE framework_key = $1',
+          [framework]
+        );
+
+        const overallScore = await getComplianceScore(framework);
+
+        return res.json({
+          success: true,
+          framework: framework,
+          name: fw.name,
+          overallScore,
+          controls: controlRows,
+          assessedAt: new Date().toISOString()
+        });
+      }
     }
 
     // Return all frameworks
+    const { rows: allFwRows } = await db.query('SELECT * FROM compliance_frameworks');
     const allFrameworks = {};
-    for (const [key, fw] of Object.entries(complianceFrameworks)) {
-      allFrameworks[key] = {
+
+    for (const fw of allFwRows) {
+      const { rows: controlRows } = await db.query(
+        'SELECT control_id AS id, name, status, score FROM compliance_controls WHERE framework_key = $1',
+        [fw.key]
+      );
+
+      const overallScore = await getComplianceScore(fw.key);
+
+      allFrameworks[fw.key] = {
         name: fw.name,
-        overallScore: getComplianceScore(key),
-        totalControls: fw.controls.length,
-        passing: fw.controls.filter(c => c.status === 'pass').length,
-        warnings: fw.controls.filter(c => c.status === 'warning').length,
-        failing: fw.controls.filter(c => c.status === 'fail').length
+        overallScore,
+        totalControls: controlRows.length,
+        passing: controlRows.filter(c => c.status === 'pass').length,
+        warnings: controlRows.filter(c => c.status === 'warning').length,
+        failing: controlRows.filter(c => c.status === 'fail').length
       };
     }
+
+    // Calculate overall compliance
+    const scores = Object.values(allFrameworks).map(f => f.overallScore).filter(s => s !== null);
+    const overallCompliance = scores.length > 0
+      ? Math.round(scores.reduce((sum, s) => sum + s, 0) / scores.length)
+      : 0;
 
     res.json({
       success: true,
       frameworks: allFrameworks,
-      overallCompliance: Math.round(
-        Object.keys(complianceFrameworks)
-          .map(k => getComplianceScore(k))
-          .reduce((sum, s) => sum + s, 0) / Object.keys(complianceFrameworks).length
-      ),
+      overallCompliance,
       assessedAt: new Date().toISOString()
     });
   } catch (error) {
@@ -552,31 +633,62 @@ app.use(errorHandler('vigilancia-soberana'));
 
 const PORT = process.env.PORT || 3091;
 
-app.listen(PORT, () => {
-  console.log('');
-  console.log('  ============================================================');
-  console.log('  ||                                                        ||');
-  console.log('  ||     VIGILANCIA SOBERANA                                ||');
-  console.log('  ||     Sovereign SIEM / Security Monitoring               ||');
-  console.log('  ||                                                        ||');
-  console.log('  ||     Real-time Event Ingestion & Analysis               ||');
-  console.log('  ||     Alert Rules Engine + Compliance Tracking           ||');
-  console.log('  ||                                                        ||');
-  console.log(`  ||     Port: ${PORT}                                         ||`);
-  console.log('  ||     Status: OPERATIONAL                                ||');
-  console.log('  ||                                                        ||');
-  console.log('  ||     Powered by MameyNode                               ||');
-  console.log('  ||     Ierahkwa Ne Kanienke Sovereign Platform            ||');
-  console.log('  ||                                                        ||');
-  console.log('  ============================================================');
-  console.log('');
-  console.log(`  [INFO] SIEM API ready on http://localhost:${PORT}`);
-  console.log(`  [INFO] Event buffer capacity: ${MAX_EVENTS}`);
-  console.log(`  [INFO] Compliance frameworks: OWASP, PCI-DSS, HIPAA`);
-  console.log(`  [INFO] OWASP Score: ${getComplianceScore('OWASP-TOP-10')}%`);
-  console.log(`  [INFO] PCI-DSS Score: ${getComplianceScore('PCI-DSS')}%`);
-  console.log(`  [INFO] HIPAA Score: ${getComplianceScore('HIPAA')}%`);
-  console.log('');
-});
+async function start() {
+  try {
+    // Initialize database schema and seed data
+    await db.initialize();
+
+    const server = app.listen(PORT, () => {
+      console.log('');
+      console.log('  ============================================================');
+      console.log('  ||                                                        ||');
+      console.log('  ||     VIGILANCIA SOBERANA                                ||');
+      console.log('  ||     Sovereign SIEM / Security Monitoring               ||');
+      console.log('  ||                                                        ||');
+      console.log('  ||     Real-time Event Ingestion & Analysis               ||');
+      console.log('  ||     Alert Rules Engine + Compliance Tracking           ||');
+      console.log('  ||                                                        ||');
+      console.log(`  ||     Port: ${PORT}                                         ||`);
+      console.log('  ||     Status: OPERATIONAL                                ||');
+      console.log('  ||     Storage: PostgreSQL                                ||');
+      console.log('  ||                                                        ||');
+      console.log('  ||     Powered by MameyNode                               ||');
+      console.log('  ||     Ierahkwa Ne Kanienke Sovereign Platform            ||');
+      console.log('  ||                                                        ||');
+      console.log('  ============================================================');
+      console.log('');
+      console.log(`  [INFO] SIEM API ready on http://localhost:${PORT}`);
+      console.log(`  [INFO] Event buffer capacity: ${MAX_EVENTS}`);
+      console.log(`  [INFO] Compliance frameworks: OWASP, PCI-DSS, HIPAA`);
+      console.log(`  [INFO] Database: ${process.env.DATABASE_URL || 'postgresql://localhost:5432/vigilancia_soberana'}`);
+      console.log('');
+    });
+
+    // Graceful shutdown
+    const shutdown = async (signal) => {
+      console.log(`\n  [INFO] ${signal} received — shutting down gracefully`);
+      server.close(async () => {
+        await db.end();
+        console.log('  [INFO] Database pool closed');
+        process.exit(0);
+      });
+
+      // Force shutdown after 10s
+      setTimeout(() => {
+        console.error('  [ERROR] Forced shutdown after timeout');
+        process.exit(1);
+      }, 10000);
+    };
+
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
+
+  } catch (err) {
+    console.error('  [FATAL] Failed to start server:', err.message);
+    process.exit(1);
+  }
+}
+
+start();
 
 module.exports = app;

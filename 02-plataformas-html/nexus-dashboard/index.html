@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Ierahkwa NEXUS Dashboard v5.5.0 — Monitoreo en tiempo real de los 18 mega-portales NEXUS, 422 plataformas soberanas">
+<meta name="theme-color" content="#00FF41">
+<link rel="canonical" href="https://ierahkwa.nation/nexus-dashboard/">
+<meta property="og:title" content="NEXUS Dashboard | Ierahkwa v5.5.0">
+<meta property="og:description" content="Centro de comando para los 18 mega-portales NEXUS — 422 plataformas, 7 agentes AI, 109 tokens IGT">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/nexus-dashboard/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NEXUS Dashboard | Ierahkwa v5.5.0">
+<meta name="twitter:description" content="Centro de comando para los 18 mega-portales NEXUS soberanos">
+<title>NEXUS Dashboard — Ierahkwa v5.5.0</title>
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
+<style>
+/* === NEXUS Dashboard Custom Properties === */
+:root {
+  --accent: #00FF41;
+  --accent-glow: rgba(0,255,65,.3);
+  --bg-dark: #0a0a0f;
+  --bg-card: rgba(13,26,45,.85);
+  --card-border: rgba(0,255,65,.2);
+  --card-hover: rgba(0,255,65,.08);
+  --header-bg: rgba(10,10,15,.96);
+  --nx-orbital: #00bcd4;
+  --nx-escudo: #f44336;
+  --nx-cerebro: #7c4dff;
+  --nx-tesoro: #ffd600;
+  --nx-voces: #e040fb;
+  --nx-consejo: #1565c0;
+  --nx-tierra: #43a047;
+  --nx-forja: #00e676;
+  --nx-urbe: #ff9100;
+  --nx-raices: #00FF41;
+  --nx-salud: #FF5722;
+  --nx-academia: #9C27B0;
+  --nx-escolar: #1E88E5;
+  --nx-entretenimiento: #E91E63;
+  --nx-escritorio: #26C6DA;
+  --nx-comercio: #FF6D00;
+  --nx-amparo: #607D8B;
+  --nx-cosmos: #1a237e;
+}
+
+/* === Body Override === */
+body {
+  background: var(--bg-dark);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(0,255,65,.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(0,188,212,.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(124,77,255,.02) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* === Skip Navigation === */
+.skip-nav {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #000;
+  padding: .7rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  z-index: 2000;
+  transition: top .2s;
+  text-decoration: none;
+}
+.skip-nav:focus { top: 1rem; }
+
+/* === Header === */
+.dash-header {
+  background: var(--header-bg);
+  border-bottom: 2px solid var(--accent);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.header-left { display: flex; align-items: center; gap: .85rem; }
+
+.logo-icon {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--accent), #00cc33);
+  border-radius: 14px;
+  display: grid; place-items: center;
+  font-weight: 900; font-size: 1.3rem; color: #000;
+  box-shadow: 0 0 22px var(--accent-glow);
+  flex-shrink: 0;
+}
+
+.header-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.2rem;
+  color: var(--accent);
+  letter-spacing: -.02em;
+  line-height: 1.2;
+}
+.header-title small {
+  display: block; font-size: .7rem;
+  color: #888; font-family: 'Exo 2', system-ui, sans-serif;
+  font-weight: 400; letter-spacing: 0;
+}
+
+.header-nav {
+  display: flex; align-items: center; gap: .5rem;
+  list-style: none;
+}
+.header-nav a {
+  padding: .4rem .85rem;
+  border-radius: 8px;
+  font-size: .78rem;
+  font-weight: 600;
+  color: #888;
+  transition: all .25s;
+  font-family: 'Exo 2', system-ui, sans-serif;
+}
+.header-nav a:hover, .header-nav a.active {
+  color: var(--accent);
+  background: rgba(0,255,65,.08);
+}
+
+.header-right { display: flex; align-items: center; gap: 1rem; }
+
+.status-live {
+  display: flex; align-items: center; gap: .4rem;
+  font-size: .72rem; font-weight: 600;
+  color: var(--accent);
+  padding: .3rem .7rem;
+  border-radius: 2rem;
+  background: rgba(0,255,65,.08);
+  border: 1px solid rgba(0,255,65,.2);
+}
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(0,255,65,.6);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; }
+  50% { opacity: .35; }
+}
+
+.encrypted-badge {
+  font-size: .68rem;
+  padding: .25rem .6rem;
+  border-radius: 6px;
+  background: rgba(124,77,255,.12);
+  border: 1px solid rgba(124,77,255,.3);
+  color: #b388ff;
+  font-weight: 600;
+}
+
+/* === Main Container === */
+.dashboard-main {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* === Hero Section === */
+.hero {
+  text-align: center;
+  padding: 3rem 1.5rem 2.5rem;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .45rem 1.2rem;
+  border-radius: 2rem;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(0,255,65,.06);
+  border: 1px solid rgba(0,255,65,.2);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 1.25rem;
+}
+.hero-badge::before {
+  content: '';
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(0,255,65,.6);
+  animation: pulse-dot 2s infinite;
+}
+.hero h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: #fff;
+  margin-bottom: .5rem;
+  letter-spacing: -.02em;
+}
+.hero h1 span { color: var(--accent); }
+.hero-sub {
+  font-size: 1rem;
+  color: #888;
+  max-width: 640px;
+  margin: 0 auto 2rem;
+}
+
+/* === Stats Row === */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all .3s;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent);
+  opacity: .6;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,255,65,.1);
+  border-color: rgba(0,255,65,.4);
+}
+.stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: .25rem;
+}
+.stat-label {
+  font-size: .78rem;
+  color: #888;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.stat-card[data-type="nexus"] .stat-value { color: #00bcd4; }
+.stat-card[data-type="nexus"]::before { background: #00bcd4; }
+.stat-card[data-type="agents"] .stat-value { color: #7c4dff; }
+.stat-card[data-type="agents"]::before { background: #7c4dff; }
+.stat-card[data-type="tokens"] .stat-value { color: #ffd600; }
+.stat-card[data-type="tokens"]::before { background: #ffd600; }
+
+/* === Section Headings === */
+.section-heading {
+  display: flex; align-items: center; gap: .75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: .75rem;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.section-heading h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.15rem;
+  color: #fff;
+  letter-spacing: -.01em;
+}
+.section-heading .section-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  font-size: 1rem;
+  background: rgba(0,255,65,.1);
+  color: var(--accent);
+}
+.section-count {
+  margin-left: auto;
+  font-size: .72rem;
+  color: #666;
+  font-weight: 600;
+  padding: .2rem .6rem;
+  border-radius: 6px;
+  background: rgba(255,255,255,.04);
+}
+
+/* === NEXUS Grid === */
+.nexus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+}
+
+.nexus-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all .3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.nexus-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--nx-color, var(--accent));
+  opacity: .7;
+  transition: opacity .3s;
+}
+.nexus-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.4);
+  border-color: var(--nx-color, var(--accent));
+}
+.nexus-card:hover::before { opacity: 1; }
+.nexus-card:focus-within {
+  outline: 2px solid var(--nx-color, var(--accent));
+  outline-offset: 2px;
+}
+
+.nexus-top {
+  display: flex; align-items: center; gap: .85rem;
+  margin-bottom: 1rem;
+}
+.nexus-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  transition: all .3s;
+}
+.nexus-card:hover .nexus-icon {
+  box-shadow: 0 0 16px rgba(var(--nx-rgb, 0,255,65), .3);
+}
+.nexus-info { flex: 1; }
+.nexus-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: .92rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: .1rem;
+}
+.nexus-category {
+  font-size: .72rem;
+  color: #666;
+  font-weight: 500;
+}
+.nexus-status {
+  display: flex; align-items: center; gap: .35rem;
+  font-size: .68rem; font-weight: 600;
+  padding: .2rem .5rem;
+  border-radius: 2rem;
+  background: rgba(0,255,65,.08);
+  color: var(--accent);
+  align-self: flex-start;
+}
+.nexus-status .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 4px rgba(0,255,65,.5);
+}
+
+.nexus-stats-row {
+  display: flex; gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: .85rem;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.nexus-stat {
+  flex: 1;
+}
+.nexus-stat-val {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: .15rem;
+}
+.nexus-stat-lbl {
+  font-size: .62rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+/* === Mini Bar Chart === */
+.mini-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 32px;
+  margin-bottom: 1rem;
+}
+.mini-bar {
+  flex: 1;
+  border-radius: 3px 3px 0 0;
+  min-height: 4px;
+  transition: height .4s ease;
+  opacity: .7;
+}
+.mini-bar:hover { opacity: 1; }
+
+/* === Expandable Sub-platforms === */
+.nexus-expand-btn {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%;
+  background: none; border: none;
+  color: #888;
+  font-size: .72rem;
+  font-weight: 600;
+  padding: .5rem 0 0;
+  cursor: pointer;
+  font-family: 'Exo 2', system-ui, sans-serif;
+  transition: color .2s;
+}
+.nexus-expand-btn:hover { color: var(--accent); }
+.nexus-expand-btn .arrow {
+  transition: transform .3s;
+  font-size: .65rem;
+}
+.nexus-card.expanded .nexus-expand-btn .arrow {
+  transform: rotate(180deg);
+}
+.nexus-subplatforms {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s ease;
+}
+.nexus-card.expanded .nexus-subplatforms {
+  max-height: 600px;
+}
+.sub-list {
+  list-style: none;
+  padding: .75rem 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .35rem;
+}
+.sub-list li {
+  font-size: .68rem;
+  color: #888;
+  padding: .25rem .5rem;
+  border-radius: 6px;
+  background: rgba(255,255,255,.03);
+  transition: all .2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sub-list li::before {
+  content: '\25CF ';
+  font-size: .4rem;
+  vertical-align: middle;
+  margin-right: .25rem;
+}
+.sub-list li:hover {
+  background: rgba(0,255,65,.06);
+  color: var(--accent);
+}
+
+/* === Interactive Map === */
+.nexus-map-section {
+  margin-bottom: 3rem;
+}
+.nexus-map {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 20px;
+  padding: 2.5rem;
+  position: relative;
+  min-height: 420px;
+  overflow: hidden;
+}
+.map-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #00cc33);
+  display: grid; place-items: center;
+  font-family: 'Orbitron', sans-serif;
+  font-size: .7rem;
+  font-weight: 900;
+  color: #000;
+  z-index: 10;
+  box-shadow: 0 0 40px var(--accent-glow), 0 0 80px rgba(0,255,65,.15);
+  text-align: center;
+  line-height: 1.2;
+}
+.map-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(0,255,65,.1);
+}
+.map-ring-1 { width: 200px; height: 200px; }
+.map-ring-2 { width: 340px; height: 340px; border-color: rgba(0,255,65,.06); }
+.map-ring-3 { width: 480px; height: 480px; border-color: rgba(0,255,65,.04); }
+
+.map-node {
+  position: absolute;
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  font-size: .85rem;
+  background: var(--bg-card);
+  border: 2px solid var(--node-color, #333);
+  cursor: pointer;
+  transition: all .3s;
+  z-index: 5;
+}
+.map-node:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(var(--node-rgb, 0,255,65), .4);
+  z-index: 15;
+}
+.map-node-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: .55rem;
+  font-weight: 700;
+  color: #666;
+  white-space: nowrap;
+  font-family: 'Exo 2', system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.map-node:hover .map-node-label { color: var(--node-color, #888); }
+
+.map-connection {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,255,65,.15), transparent);
+  transform-origin: left center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* === Health Monitor === */
+.health-section { margin-bottom: 3rem; }
+.health-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+.health-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+.health-card-title {
+  font-size: .78rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 1rem;
+}
+.health-score {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: .5rem;
+}
+.health-score.excellent { color: var(--accent); }
+.health-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.06);
+  overflow: hidden;
+  margin-bottom: .5rem;
+}
+.health-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width .6s ease;
+}
+.health-label {
+  font-size: .68rem;
+  color: #666;
+}
+.uptime-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: .6rem 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.uptime-item:last-child { border-bottom: none; }
+.uptime-name { font-size: .78rem; color: #ccc; }
+.uptime-val {
+  font-family: 'Orbitron', sans-serif;
+  font-size: .82rem;
+  font-weight: 700;
+}
+.uptime-val.good { color: var(--accent); }
+
+/* === Activity Feed === */
+.activity-section { margin-bottom: 3rem; }
+.activity-list {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.activity-item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  transition: background .2s;
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-item:hover { background: rgba(255,255,255,.02); }
+.activity-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  font-size: .9rem;
+  flex-shrink: 0;
+}
+.activity-icon.deploy {
+  background: rgba(0,255,65,.1);
+  color: var(--accent);
+}
+.activity-icon.update {
+  background: rgba(0,188,212,.1);
+  color: #00bcd4;
+}
+.activity-icon.security {
+  background: rgba(124,77,255,.1);
+  color: #7c4dff;
+}
+.activity-icon.token {
+  background: rgba(255,214,0,.1);
+  color: #ffd600;
+}
+.activity-content { flex: 1; }
+.activity-title {
+  font-size: .82rem;
+  font-weight: 600;
+  color: #ddd;
+  margin-bottom: .1rem;
+}
+.activity-desc {
+  font-size: .7rem;
+  color: #666;
+}
+.activity-time {
+  font-size: .68rem;
+  color: #555;
+  white-space: nowrap;
+  font-family: 'Exo 2', system-ui, sans-serif;
+}
+
+/* === Footer === */
+.dash-footer {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-top: 1px solid rgba(255,255,255,.06);
+  margin-top: 2rem;
+}
+.dash-footer p {
+  font-size: .72rem;
+  color: #555;
+}
+.dash-footer a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* === Responsive === */
+@media (max-width: 1024px) {
+  .nexus-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  .nexus-map { min-height: 320px; padding: 1.5rem; }
+  .map-ring-3 { width: 380px; height: 380px; }
+}
+@media (max-width: 768px) {
+  .dash-header { padding: .85rem 1rem; }
+  .header-nav { display: none; }
+  .dashboard-main { padding: 1.25rem 1rem 3rem; }
+  .hero { padding: 2rem 1rem 1.5rem; }
+  .nexus-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .sub-list { grid-template-columns: 1fr; }
+  .nexus-map { min-height: 260px; }
+  .map-ring-2, .map-ring-3 { display: none; }
+}
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: 1fr; }
+  .health-grid { grid-template-columns: 1fr; }
+}
+
+/* === Reduced Motion === */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Skip Navigation -->
+<a href="#main-content" class="skip-nav" aria-label="Saltar al contenido principal">Saltar al contenido</a>
+
+<!-- Header -->
+<header class="dash-header" role="banner">
+  <div class="header-left">
+    <div class="logo-icon" aria-hidden="true">N</div>
+    <h1 class="header-title">
+      Ierahkwa NEXUS Dashboard
+      <small>Centro de Comando Soberano v5.5.0</small>
+    </h1>
+  </div>
+  <nav aria-label="Navegacion principal">
+    <ul class="header-nav">
+      <li><a href="../index.html">Portal</a></li>
+      <li><a href="#nexus-grid" class="active">NEXUS</a></li>
+      <li><a href="#health-section">Salud</a></li>
+      <li><a href="#activity-section">Actividad</a></li>
+      <li><a href="../admin-dashboard/">Admin</a></li>
+      <li><a href="../agents-dashboard/">Agentes AI</a></li>
+    </ul>
+  </nav>
+  <div class="header-right">
+    <div class="status-live">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span>EN VIVO</span>
+    </div>
+    <span class="encrypted-badge" aria-label="Seguridad cuantica activa">&#9883; Quantum-Safe</span>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main id="main-content" class="dashboard-main" role="main">
+
+  <!-- Hero Section -->
+  <section class="hero" aria-label="Resumen del sistema NEXUS">
+    <div class="hero-badge" role="status">NEXUS Command Center</div>
+    <h1>Panel de Control <span>NEXUS</span></h1>
+    <p class="hero-sub">
+      Monitoreo en tiempo real de los 18 mega-portales soberanos que conforman
+      la infraestructura digital de Ierahkwa Ne Kanienke.
+    </p>
+  </section>
+
+  <!-- Summary Stats -->
+  <section class="stats-row" aria-label="Estadisticas globales del sistema">
+    <div class="stat-card" role="region" aria-label="Total de plataformas">
+      <div class="stat-value" id="stat-platforms">422</div>
+      <div class="stat-label">Plataformas</div>
+    </div>
+    <div class="stat-card" data-type="nexus" role="region" aria-label="NEXUS activos">
+      <div class="stat-value" id="stat-nexus">18</div>
+      <div class="stat-label">NEXUS Activos</div>
+    </div>
+    <div class="stat-card" data-type="agents" role="region" aria-label="Agentes AI">
+      <div class="stat-value" id="stat-agents">7</div>
+      <div class="stat-label">Agentes AI</div>
+    </div>
+    <div class="stat-card" data-type="tokens" role="region" aria-label="Tokens IGT">
+      <div class="stat-value" id="stat-tokens">109</div>
+      <div class="stat-label">Tokens IGT</div>
+    </div>
+  </section>
+
+  <!-- NEXUS Grid -->
+  <section id="nexus-grid" aria-label="Cuadricula de los 18 mega-portales NEXUS">
+    <div class="section-heading">
+      <div class="section-icon" aria-hidden="true">&#9672;</div>
+      <h2>18 Mega-Portales NEXUS</h2>
+      <span class="section-count">422 plataformas</span>
+    </div>
+    <div class="nexus-grid" id="nexusGrid" role="list">
+      <!-- Cards injected by JS -->
+    </div>
+  </section>
+
+  <!-- Interactive Map -->
+  <section class="nexus-map-section" aria-label="Mapa de conexiones inter-NEXUS">
+    <div class="section-heading">
+      <div class="section-icon" aria-hidden="true">&#9789;</div>
+      <h2>Mapa de Conexiones NEXUS</h2>
+      <span class="section-count">324 enlaces activos</span>
+    </div>
+    <div class="nexus-map" id="nexusMap" role="img" aria-label="Visualizacion del mapa de interconexion entre los 18 NEXUS">
+      <div class="map-ring map-ring-1" aria-hidden="true"></div>
+      <div class="map-ring map-ring-2" aria-hidden="true"></div>
+      <div class="map-ring map-ring-3" aria-hidden="true"></div>
+      <div class="map-center" aria-hidden="true">NEXUS<br>CORE</div>
+      <!-- Map nodes injected by JS -->
+    </div>
+  </section>
+
+  <!-- Health Monitor -->
+  <section id="health-section" class="health-section" aria-label="Monitor de salud del sistema">
+    <div class="section-heading">
+      <div class="section-icon" aria-hidden="true">&#9829;</div>
+      <h2>Monitor de Salud</h2>
+      <span class="section-count" id="healthTime">Actualizado hace 12s</span>
+    </div>
+    <div class="health-grid">
+      <!-- Overall Score -->
+      <div class="health-card" role="region" aria-label="Puntuacion general del sistema">
+        <div class="health-card-title">Puntuacion General</div>
+        <div class="health-score excellent" id="overallScore">98.7</div>
+        <div class="health-bar">
+          <div class="health-bar-fill" style="width:98.7%;background:var(--accent);" aria-label="98.7 de 100"></div>
+        </div>
+        <div class="health-label">Rendimiento excelente - Todos los sistemas operativos</div>
+      </div>
+      <!-- Uptime -->
+      <div class="health-card" role="region" aria-label="Tiempos de actividad">
+        <div class="health-card-title">Tiempo de Actividad</div>
+        <div class="uptime-item">
+          <span class="uptime-name">Infraestructura Central</span>
+          <span class="uptime-val good">99.99%</span>
+        </div>
+        <div class="uptime-item">
+          <span class="uptime-name">Portales NEXUS</span>
+          <span class="uptime-val good">99.97%</span>
+        </div>
+        <div class="uptime-item">
+          <span class="uptime-name">Agentes AI</span>
+          <span class="uptime-val good">99.95%</span>
+        </div>
+        <div class="uptime-item">
+          <span class="uptime-name">Blockchain MameyNode</span>
+          <span class="uptime-val good">100.0%</span>
+        </div>
+        <div class="uptime-item">
+          <span class="uptime-name">CDN Soberana</span>
+          <span class="uptime-val good">99.98%</span>
+        </div>
+      </div>
+      <!-- System Info -->
+      <div class="health-card" role="region" aria-label="Informacion del sistema">
+        <div class="health-card-title">Sistema</div>
+        <div class="uptime-item">
+          <span class="uptime-name">Version</span>
+          <span class="uptime-val good">v5.5.0</span>
+        </div>
+        <div class="uptime-item">
+          <span class="uptime-name">Ultima actualizacion</span>
+          <span class="uptime-val" style="color:#00bcd4;" id="lastUpdate">2026-03-01</span>
+        </div>
+        <div class="uptime-item">
+          <span class="uptime-name">Archivos totales</span>
+          <span class="uptime-val" style="color:#e040fb;">19,580</span>
+        </div>
+        <div class="uptime-item">
+          <span class="uptime-name">Tamano del proyecto</span>
+          <span class="uptime-val" style="color:#ffd600;">254 MB</span>
+        </div>
+        <div class="uptime-item">
+          <span class="uptime-name">Lineas de codigo</span>
+          <span class="uptime-val" style="color:#ff9100;">~2M</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Activity Feed -->
+  <section id="activity-section" class="activity-section" aria-label="Feed de actividad reciente">
+    <div class="section-heading">
+      <div class="section-icon" aria-hidden="true">&#9889;</div>
+      <h2>Actividad Reciente</h2>
+      <span class="section-count">Ultimas 24h</span>
+    </div>
+    <div class="activity-list" role="feed" aria-label="Lista de actividad reciente">
+      <div class="activity-item" role="article">
+        <div class="activity-icon deploy" aria-hidden="true">&#9650;</div>
+        <div class="activity-content">
+          <div class="activity-title">NEXUS Cosmos desplegado</div>
+          <div class="activity-desc">8 plataformas satelitales activadas en produccion</div>
+        </div>
+        <div class="activity-time">hace 2h</div>
+      </div>
+      <div class="activity-item" role="article">
+        <div class="activity-icon update" aria-hidden="true">&#8635;</div>
+        <div class="activity-content">
+          <div class="activity-title">ierahkwa-agents.js actualizado a v2.1</div>
+          <div class="activity-desc">7 agentes AI reconfigurados con nuevas reglas de evolucion</div>
+        </div>
+        <div class="activity-time">hace 4h</div>
+      </div>
+      <div class="activity-item" role="article">
+        <div class="activity-icon security" aria-hidden="true">&#128274;</div>
+        <div class="activity-content">
+          <div class="activity-title">Auditoria de seguridad completada</div>
+          <div class="activity-desc">422 plataformas verificadas - 0 vulnerabilidades criticas</div>
+        </div>
+        <div class="activity-time">hace 6h</div>
+      </div>
+      <div class="activity-item" role="article">
+        <div class="activity-icon token" aria-hidden="true">&#9670;</div>
+        <div class="activity-content">
+          <div class="activity-title">3 nuevos tokens IGT registrados</div>
+          <div class="activity-desc">COSMOS-SAT, COSMOS-ORB, COSMOS-TEL en MameyNode</div>
+        </div>
+        <div class="activity-time">hace 8h</div>
+      </div>
+      <div class="activity-item" role="article">
+        <div class="activity-icon deploy" aria-hidden="true">&#9650;</div>
+        <div class="activity-content">
+          <div class="activity-title">NEXUS Forja: 5 herramientas nuevas</div>
+          <div class="activity-desc">Pipeline CI/CD, linter soberano, test-runner, code-review AI, deploy-bot</div>
+        </div>
+        <div class="activity-time">hace 12h</div>
+      </div>
+      <div class="activity-item" role="article">
+        <div class="activity-icon update" aria-hidden="true">&#8635;</div>
+        <div class="activity-content">
+          <div class="activity-title">ierahkwa.css actualizado a v3.5</div>
+          <div class="activity-desc">Nuevas variables NEXUS, mejoras de accesibilidad GAAD</div>
+        </div>
+        <div class="activity-time">hace 18h</div>
+      </div>
+      <div class="activity-item" role="article">
+        <div class="activity-icon security" aria-hidden="true">&#128274;</div>
+        <div class="activity-content">
+          <div class="activity-title">Guardian Agent: 14 amenazas bloqueadas</div>
+          <div class="activity-desc">Phishing (8), DDoS (4), inyeccion SQL (2) - todas neutralizadas</div>
+        </div>
+        <div class="activity-time">hace 22h</div>
+      </div>
+      <div class="activity-item" role="article">
+        <div class="activity-icon deploy" aria-hidden="true">&#9650;</div>
+        <div class="activity-content">
+          <div class="activity-title">NEXUS Escritorio: 2 apps publicadas</div>
+          <div class="activity-desc">editor-codigo-soberano y terminal-soberana disponibles</div>
+        </div>
+        <div class="activity-time">hace 24h</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="dash-footer" role="contentinfo">
+  <p>&copy; 2026 Ierahkwa Ne Kanienke &mdash; Nacion Digital Soberana</p>
+  <p style="margin-top:.4rem;">
+    <a href="../index.html">Portal Principal</a> &middot;
+    <a href="../admin-dashboard/">Admin</a> &middot;
+    <a href="../agents-dashboard/">Agentes AI</a> &middot;
+    <a href="https://github.com/rudvincci/ierahkwa-platform" target="_blank" rel="noopener">GitHub</a>
+  </p>
+</footer>
+
+<script>
+/* ===========================================================
+   Ierahkwa NEXUS Dashboard — Core Logic
+   v5.5.0 — Self-contained, zero external dependencies
+   =========================================================== */
+(function(){
+'use strict';
+
+/* --- NEXUS Data --- */
+const NEXUS_DATA = [
+  { id:'orbital',         name:'Orbital',         icon:'\uD83D\uDEF0\uFE0F', color:'#00bcd4', rgb:'0,188,212',     cat:'Telecom',           count:21, subplatforms:['telecom-soberano','satelite-soberano','radio-soberana','antena-mesh','espectro-digital','iot-soberano','5g-soberano','fibra-soberana','vpn-soberana','dns-soberano','red-mesh','comunicaciones-emergencia','radio-comunitaria','carrier-soberano','frequencia-soberana','bandwidth-soberano','routing-soberano','signaling-soberano','microwave-link','tower-soberano','orbital-command'] },
+  { id:'escudo',          name:'Escudo',          icon:'\uD83D\uDEE1\uFE0F', color:'#f44336', rgb:'244,67,54',      cat:'Defense',           count:21, subplatforms:['cyber-defensa','antivirus-soberano','firewall-soberano','forense-digital','ids-soberano','waf-soberano','vault-soberano','honeypot-soberano','pentest-soberano','soc-soberano','cert-soberano','threat-intel','malware-lab','crypto-shield','escudo-ddos','zero-trust','endpoint-soberano','identity-soberano','backup-seguro','escudo-command','audit-trail'] },
+  { id:'cerebro',         name:'Cerebro',         icon:'\uD83E\uDDE0',       color:'#7c4dff', rgb:'124,77,255',     cat:'AI / Quantum',      count:23, subplatforms:['ai-soberano','quantum-soberano','ml-pipeline','nlp-soberano','vision-soberana','rag-soberano','agente-soberano','llm-soberano','neural-soberano','deeplearning-soberano','reinforcement-soberano','generative-soberano','speech-soberano','ai-ethics','quantum-crypto','quantum-sim','neuromorphic-soberano','cerebro-command','ai-agent-dev','agents-dashboard','data-labeling','model-registry','inference-engine'] },
+  { id:'tesoro',          name:'Tesoro',          icon:'\uD83D\uDCB0',       color:'#ffd600', rgb:'255,214,0',      cat:'Finance',           count:36, subplatforms:['banco-soberano','crypto-soberano','defi-soberano','wallet-soberano','exchange-soberano','prestamos-soberano','seguros-soberano','contabilidad-soberana','impuestos-soberano','tesoreria-soberana','finanzas-personales','pagos-soberano','facturacion-soberana','auditoria-soberana','compliance-soberano','kyc-soberano','aml-soberano','algo-trading','tokenizacion','staking-soberano','yield-farming','nft-marketplace','remesas-soberano','microfinanzas','crowdfunding-soberano','invoice-soberano','payroll-soberano','treasury-bonds','pension-soberana','credit-score','fund-management','asset-tokenization','derivados-soberano','forex-soberano','risk-management','tesoro-command'] },
+  { id:'voces',           name:'Voces',           icon:'\uD83D\uDCE2',       color:'#e040fb', rgb:'224,64,251',     cat:'Social / Media',    count:16, subplatforms:['red-social-soberana','noticias-soberano','streaming-soberano','podcast-soberano','foro-soberano','blog-soberano','mensajeria-soberana','video-soberano','galeria-soberana','encuestas-soberano','radio-digital','magazine-soberano','press-soberano','voces-command','contenido-soberano','media-analytics'] },
+  { id:'consejo',         name:'Consejo',         icon:'\uD83C\uDFDB\uFE0F', color:'#1565c0', rgb:'21,101,192',     cat:'Government',        count:27, subplatforms:['gobierno-soberano','justicia-soberana','legislacion-soberana','censo-soberano','registro-civil','elecciones-soberano','diplomacia-soberana','parlamento-soberano','ministerios-soberano','gobernanza-digital','identidad-soberana','pasaporte-soberano','tramites-soberano','transparencia-soberana','licitaciones-soberano','presupuesto-soberano','regulacion-soberana','notaria-soberana','catastro-soberano','aduana-soberana','migracion-soberana','consejo-command','consulado-soberano','defensoria-soberana','contraloria-soberana','procuraduria-soberana','tribunal-soberano'] },
+  { id:'tierra',          name:'Tierra',          icon:'\uD83C\uDF3F',       color:'#43a047', rgb:'67,160,71',      cat:'Nature',            count:22, subplatforms:['agricultura-soberana','agua-soberana','energia-soberana','mineria-soberana','forestal-soberano','clima-soberano','biodiversidad-soberana','residuos-soberano','suelo-soberano','oceano-soberano','parques-soberano','ecosistema-soberano','carbono-soberano','renovables-soberano','conservacion-soberana','meteorologia-soberana','acuicultura-soberana','ganaderia-soberana','alimentacion-soberana','ambiente-soberano','tierra-command','semillas-soberanas'] },
+  { id:'forja',           name:'Forja',           icon:'\u2692\uFE0F',       color:'#00e676', rgb:'0,230,118',      cat:'Dev Tools',         count:101,subplatforms:['ide-soberano','git-soberano','ci-cd-soberano','container-soberano','kubernetes-soberano','serverless-soberano','api-gateway','database-soberana','cache-soberano','queue-soberano','monitoring-soberano','logging-soberano','testing-soberano','documentation-soberana','package-soberano','registry-soberano','sandbox-soberano','debugger-soberano','profiler-soberano','linter-soberano','formatter-soberano','build-soberano','deploy-soberano','infra-soberano','terraform-soberano','ansible-soberano','vault-config','secrets-soberano','mesh-soberano','grpc-soberano','graphql-soberano','rest-soberano','websocket-soberano','sse-soberano','cron-soberano','etl-soberano','data-pipeline','stream-soberano','event-soberano','pubsub-soberano','forja-command','...y 60 mas'] },
+  { id:'urbe',            name:'Urbe',            icon:'\uD83C\uDFD9\uFE0F', color:'#ff9100', rgb:'255,145,0',      cat:'Smart City',        count:11, subplatforms:['transporte-soberano','trafico-soberano','alumbrado-soberano','seguridad-urbana','wifi-urbano','parking-soberano','basura-soberana','emergencias-soberano','urbanismo-soberano','catastro-urbano','urbe-command'] },
+  { id:'raices',          name:'Raices',          icon:'\uD83C\uDFAD',       color:'#00FF41', rgb:'0,255,65',       cat:'Culture',           count:16, subplatforms:['lenguas-soberanas','historia-soberana','museos-soberano','artesania-soberana','musica-soberana','danza-soberana','ceremonias-soberano','gastronomia-soberana','vestimenta-soberana','archivo-ancestral','tradiciones-soberanas','folklore-soberano','patrimonio-soberano','raices-command','biblioteca-ancestral','calendario-ceremonial'] },
+  { id:'salud',           name:'Salud',           icon:'\u2695\uFE0F',       color:'#FF5722', rgb:'255,87,34',      cat:'Health',            count:9,  subplatforms:['hospital-soberano','farmacia-soberana','telemedicina-soberana','laboratorio-soberano','salud-mental','nutricion-soberana','emergencias-medicas','expediente-medico','salud-command'] },
+  { id:'academia',        name:'Academia',        icon:'\uD83C\uDF93',       color:'#9C27B0', rgb:'156,39,176',     cat:'University',        count:5,  subplatforms:['universidad-soberana','investigacion-soberana','posgrado-soberano','extension-soberana','academia-command'] },
+  { id:'escolar',         name:'Escolar',         icon:'\uD83D\uDCDA',       color:'#1E88E5', rgb:'30,136,229',     cat:'K-12 School',       count:10, subplatforms:['primaria-soberana','secundaria-soberana','preescolar-soberano','tutoria-soberana','evaluacion-soberana','material-didactico','aula-virtual','biblioteca-escolar','deportes-escolares','escolar-command'] },
+  { id:'entretenimiento', name:'Entretenimiento', icon:'\uD83C\uDFAE',       color:'#E91E63', rgb:'233,30,99',      cat:'Entertainment',     count:13, subplatforms:['gaming-soberano','streaming-video','streaming-musica','deportes-soberano','apuestas-soberano','casino-soberano','loteria-soberana','eventos-soberano','cine-soberano','teatro-soberano','comics-soberano','entretenimiento-command','realidad-virtual'] },
+  { id:'escritorio',      name:'Escritorio',      icon:'\uD83D\uDDA5\uFE0F', color:'#26C6DA', rgb:'38,198,218',     cat:'Desktop Apps',      count:17, subplatforms:['editor-texto-soberano','hoja-calculo-soberana','presentaciones-soberano','email-soberano','calendario-soberano','notas-soberano','gestor-archivos','calculadora-soberana','editor-imagenes','editor-video','editor-audio','terminal-soberana','navegador-soberano','antivirus-desktop','backup-desktop','vpn-desktop','escritorio-command'] },
+  { id:'comercio',        name:'Comercio',        icon:'\uD83D\uDED2',       color:'#FF6D00', rgb:'255,109,0',      cat:'Commerce',          count:17, subplatforms:['marketplace-soberano','tienda-virtual','catalogo-soberano','inventario-soberano','envios-soberano','punto-venta','erp-soberano','crm-soberano','proveedor-soberano','logistica-soberana','aduanas-comercio','importacion-soberana','exportacion-soberana','wholesale-soberano','dropship-soberano','afiliados-soberano','comercio-command'] },
+  { id:'amparo',          name:'Amparo',          icon:'\uD83E\uDD1D',       color:'#607D8B', rgb:'96,125,139',     cat:'Social Protection', count:13, subplatforms:['vivienda-soberana','empleo-soberano','pension-soberana','seguro-social','asistencia-social','discapacidad-soberana','infancia-soberana','adulto-mayor','migrantes-soberano','refugiados-soberano','genero-soberano','derechos-humanos','amparo-command'] },
+  { id:'cosmos',          name:'Cosmos',          icon:'\uD83D\uDE80',       color:'#1a237e', rgb:'26,35,126',      cat:'Space / Satellite', count:8,  subplatforms:['satelite-orbital','estacion-terrestre','telemetria-espacial','comunicacion-satelital','navegacion-espacial','observacion-terrestre','lanzamiento-soberano','cosmos-command'] }
+];
+
+const TOTAL_PLATFORMS = 422;
+
+/* --- Render NEXUS Cards --- */
+function renderNexusCards() {
+  const grid = document.getElementById('nexusGrid');
+  if (!grid) return;
+
+  grid.innerHTML = NEXUS_DATA.map(function(nx) {
+    const bars = generateBars(nx.count, nx.color);
+    const subs = nx.subplatforms.slice(0, 20).map(function(s) {
+      return '<li>' + s + '</li>';
+    }).join('');
+
+    return '' +
+    '<div class="nexus-card" role="listitem" style="--nx-color:' + nx.color + ';--nx-rgb:' + nx.rgb + ';" tabindex="0" aria-label="NEXUS ' + nx.name + ' - ' + nx.count + ' plataformas">' +
+      '<div class="nexus-top">' +
+        '<div class="nexus-icon" style="background:rgba(' + nx.rgb + ',.12);border-color:rgba(' + nx.rgb + ',.3);color:' + nx.color + ';" aria-hidden="true">' + nx.icon + '</div>' +
+        '<div class="nexus-info">' +
+          '<div class="nexus-name" style="color:' + nx.color + ';">' + nx.name + '</div>' +
+          '<div class="nexus-category">' + nx.cat + '</div>' +
+        '</div>' +
+        '<div class="nexus-status"><span class="dot" aria-hidden="true"></span>Activo</div>' +
+      '</div>' +
+      '<div class="nexus-stats-row">' +
+        '<div class="nexus-stat">' +
+          '<div class="nexus-stat-val" style="color:' + nx.color + ';">' + nx.count + '</div>' +
+          '<div class="nexus-stat-lbl">Plataformas</div>' +
+        '</div>' +
+        '<div class="nexus-stat">' +
+          '<div class="nexus-stat-val" style="color:' + nx.color + ';">' + Math.round(nx.count / TOTAL_PLATFORMS * 100) + '%</div>' +
+          '<div class="nexus-stat-lbl">Del Total</div>' +
+        '</div>' +
+        '<div class="nexus-stat">' +
+          '<div class="nexus-stat-val" style="color:var(--accent);">99.' + (90 + Math.floor(Math.random() * 10)) + '%</div>' +
+          '<div class="nexus-stat-lbl">Uptime</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="mini-chart" aria-hidden="true">' + bars + '</div>' +
+      '<button class="nexus-expand-btn" aria-expanded="false" aria-controls="sub-' + nx.id + '">' +
+        '<span>Ver ' + Math.min(nx.subplatforms.length, 20) + ' sub-plataformas</span>' +
+        '<span class="arrow" aria-hidden="true">&#9660;</span>' +
+      '</button>' +
+      '<div class="nexus-subplatforms" id="sub-' + nx.id + '">' +
+        '<ul class="sub-list">' + subs + '</ul>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  /* Attach expand handlers */
+  grid.querySelectorAll('.nexus-expand-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var card = this.closest('.nexus-card');
+      var isExpanded = card.classList.toggle('expanded');
+      this.setAttribute('aria-expanded', isExpanded);
+    });
+  });
+
+  /* Keyboard support */
+  grid.querySelectorAll('.nexus-card').forEach(function(card) {
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.querySelector('.nexus-expand-btn').click();
+      }
+    });
+  });
+}
+
+function generateBars(count, color) {
+  var bars = '';
+  var numBars = 12;
+  for (var i = 0; i < numBars; i++) {
+    var h = Math.max(15, Math.random() * 100);
+    bars += '<div class="mini-bar" style="height:' + h + '%;background:' + color + ';"></div>';
+  }
+  return bars;
+}
+
+/* --- Render Map Nodes --- */
+function renderMapNodes() {
+  var map = document.getElementById('nexusMap');
+  if (!map) return;
+
+  var mapW = map.offsetWidth;
+  var mapH = map.offsetHeight;
+  var cx = mapW / 2;
+  var cy = mapH / 2;
+  var radius = Math.min(cx, cy) * 0.7;
+
+  NEXUS_DATA.forEach(function(nx, i) {
+    var angle = (i / NEXUS_DATA.length) * 2 * Math.PI - Math.PI / 2;
+    var x = cx + radius * Math.cos(angle) - 24;
+    var y = cy + radius * Math.sin(angle) - 24;
+
+    var node = document.createElement('div');
+    node.className = 'map-node';
+    node.style.cssText = 'left:' + x + 'px;top:' + y + 'px;--node-color:' + nx.color + ';--node-rgb:' + nx.rgb + ';border-color:' + nx.color + ';';
+    node.setAttribute('role', 'button');
+    node.setAttribute('tabindex', '0');
+    node.setAttribute('aria-label', 'NEXUS ' + nx.name + ' - ' + nx.count + ' plataformas');
+    node.innerHTML = '<span aria-hidden="true">' + nx.icon + '</span><span class="map-node-label">' + nx.name + '</span>';
+
+    node.addEventListener('click', function() {
+      var target = document.querySelector('[aria-label="NEXUS ' + nx.name + ' - ' + nx.count + ' plataformas"]');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.style.boxShadow = '0 0 30px rgba(' + nx.rgb + ',.5)';
+        setTimeout(function() { target.style.boxShadow = ''; }, 2000);
+      }
+    });
+
+    map.appendChild(node);
+
+    /* Draw connection line to center */
+    var line = document.createElement('div');
+    line.className = 'map-connection';
+    var dx = (x + 24) - cx;
+    var dy = (y + 24) - cy;
+    var dist = Math.sqrt(dx * dx + dy * dy);
+    var ang = Math.atan2(dy, dx) * (180 / Math.PI);
+    line.style.cssText = 'left:' + cx + 'px;top:' + cy + 'px;width:' + dist + 'px;transform:rotate(' + ang + 'deg);';
+    map.appendChild(line);
+  });
+}
+
+/* --- Animate Stats Counters --- */
+function animateCounters() {
+  var targets = [
+    { el: document.getElementById('stat-platforms'), val: 422 },
+    { el: document.getElementById('stat-nexus'), val: 18 },
+    { el: document.getElementById('stat-agents'), val: 7 },
+    { el: document.getElementById('stat-tokens'), val: 109 }
+  ];
+
+  targets.forEach(function(t) {
+    if (!t.el) return;
+    var start = 0;
+    var duration = 1500;
+    var startTime = null;
+
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var progress = Math.min((ts - startTime) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      t.el.textContent = Math.round(eased * t.val);
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+/* --- Health Monitor Timer --- */
+function startHealthTimer() {
+  var healthEl = document.getElementById('healthTime');
+  var seconds = 12;
+  setInterval(function() {
+    seconds++;
+    if (seconds < 60) {
+      healthEl.textContent = 'Actualizado hace ' + seconds + 's';
+    } else {
+      var m = Math.floor(seconds / 60);
+      healthEl.textContent = 'Actualizado hace ' + m + 'm ' + (seconds % 60) + 's';
+    }
+  }, 1000);
+}
+
+/* --- Overall Score Pulse --- */
+function pulseScore() {
+  var scoreEl = document.getElementById('overallScore');
+  if (!scoreEl) return;
+  setInterval(function() {
+    var base = 98.7;
+    var variation = (Math.random() - 0.5) * 0.4;
+    scoreEl.textContent = (base + variation).toFixed(1);
+  }, 5000);
+}
+
+/* --- Initialize --- */
+function init() {
+  renderNexusCards();
+  renderMapNodes();
+  animateCounters();
+  startHealthTimer();
+  pulseScore();
+
+  /* Resize handler for map */
+  var resizeTimeout;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+      var map = document.getElementById('nexusMap');
+      if (map) {
+        var nodes = map.querySelectorAll('.map-node, .map-connection');
+        nodes.forEach(function(n) { n.remove(); });
+        renderMapNodes();
+      }
+    }, 250);
+  });
+
+  /* Set last update date */
+  var updateEl = document.getElementById('lastUpdate');
+  if (updateEl) {
+    var now = new Date();
+    updateEl.textContent = now.toISOString().split('T')[0];
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+})();
+</script>
+<script src="../shared/ierahkwa-api.js"></script>
+<script src="../shared/ierahkwa-agents.js"></script>
+</body>
+</html>

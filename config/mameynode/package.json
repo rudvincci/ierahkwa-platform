@@ -1,0 +1,57 @@
+{
+  "name": "@ierahkwa/mameynode",
+  "version": "3.3.0",
+  "description": "MameyNode — Runtime soberano Node.js para la plataforma Ierahkwa",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "cluster": "node src/cluster.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "build": "tsc && node scripts/build.js",
+    "docker:build": "docker build -t ierahkwa.azurecr.io/mameynode:latest .",
+    "docker:push": "docker push ierahkwa.azurecr.io/mameynode:latest",
+    "migrate": "node src/db/migrate.js",
+    "seed": "node src/db/seed.js",
+    "health": "curl -f http://localhost:3000/health || exit 1"
+  },
+  "dependencies": {
+    "fastify": "^4.26.0",
+    "@fastify/cors": "^9.0.1",
+    "@fastify/helmet": "^11.1.1",
+    "@fastify/compress": "^7.0.0",
+    "@fastify/rate-limit": "^9.1.0",
+    "@fastify/jwt": "^8.0.0",
+    "@fastify/websocket": "^10.0.1",
+    "@fastify/static": "^7.0.1",
+    "@fastify/swagger": "^8.14.0",
+    "@fastify/swagger-ui": "^3.0.0",
+    "ioredis": "^5.3.2",
+    "pg": "^8.11.3",
+    "prom-client": "^15.1.0",
+    "@opentelemetry/sdk-node": "^0.48.0",
+    "@opentelemetry/exporter-jaeger": "^1.21.0",
+    "pino": "^8.19.0",
+    "pino-pretty": "^10.3.1",
+    "dotenv": "^16.4.4",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "vitest": "^1.3.0",
+    "typescript": "^5.3.3",
+    "eslint": "^8.56.0",
+    "@types/node": "^20.11.16"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ierahkwa/mameynode.git"
+  },
+  "keywords": ["ierahkwa", "mameynode", "sovereign", "runtime", "indigenous", "platform"]
+}

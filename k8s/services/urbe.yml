@@ -1,0 +1,130 @@
+# Ierahkwa Platform — NEXUS Urbe K8s Manifests
+# v3.3.0 — 4 microservices (ports 5900-5903)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: urban-service, namespace: ierahkwa, labels: { app: urban-service, nexus: urbe, version: v3.3.0 } }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: urban-service } }
+  template:
+    metadata: { labels: { app: urban-service, nexus: urbe } }
+    spec:
+      containers:
+      - name: urban-service
+        image: ierahkwa.azurecr.io/urban-service:latest
+        ports: [{ containerPort: 8080 }]
+        env: [{ name: ASPNETCORE_ENVIRONMENT, value: Production }]
+        resources: { requests: { cpu: 200m, memory: 256Mi }, limits: { cpu: 1000m, memory: 1Gi } }
+        livenessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 10, periodSeconds: 30 }
+        readinessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 5, periodSeconds: 10 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: urban-service, namespace: ierahkwa, labels: { nexus: urbe } }
+spec: { type: ClusterIP, selector: { app: urban-service }, ports: [{ port: 5900, targetPort: 8080, protocol: TCP }] }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: urban-service-hpa, namespace: ierahkwa }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: urban-service }
+  minReplicas: 2
+  maxReplicas: 10
+  metrics: [{ type: Resource, resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } } }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: transport-service, namespace: ierahkwa, labels: { app: transport-service, nexus: urbe, version: v3.3.0 } }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: transport-service } }
+  template:
+    metadata: { labels: { app: transport-service, nexus: urbe } }
+    spec:
+      containers:
+      - name: transport-service
+        image: ierahkwa.azurecr.io/transport-service:latest
+        ports: [{ containerPort: 8080 }]
+        env: [{ name: ASPNETCORE_ENVIRONMENT, value: Production }]
+        resources: { requests: { cpu: 200m, memory: 256Mi }, limits: { cpu: 1000m, memory: 1Gi } }
+        livenessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 10, periodSeconds: 30 }
+        readinessProbe: { httpGet: { path: /health/ready, port: 8080 }, initialDelaySeconds: 5, periodSeconds: 10, timeoutSeconds: 3, failureThreshold: 3 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: transport-service, namespace: ierahkwa }
+spec: { type: ClusterIP, selector: { app: transport-service }, ports: [{ port: 5901, targetPort: 8080 }] }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: transport-service-hpa, namespace: ierahkwa }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: transport-service }
+  minReplicas: 2
+  maxReplicas: 10
+  metrics: [{ type: Resource, resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } } }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: postalmaps-service, namespace: ierahkwa, labels: { app: postalmaps-service, nexus: urbe, version: v3.3.0 } }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: postalmaps-service } }
+  template:
+    metadata: { labels: { app: postalmaps-service, nexus: urbe } }
+    spec:
+      containers:
+      - name: postalmaps-service
+        image: ierahkwa.azurecr.io/postalmaps-service:latest
+        ports: [{ containerPort: 8080 }]
+        env: [{ name: ASPNETCORE_ENVIRONMENT, value: Production }]
+        resources: { requests: { cpu: 100m, memory: 128Mi }, limits: { cpu: 500m, memory: 512Mi } }
+        livenessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 10, periodSeconds: 30 }
+        readinessProbe: { httpGet: { path: /health/ready, port: 8080 }, initialDelaySeconds: 5, periodSeconds: 10, timeoutSeconds: 3, failureThreshold: 3 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: postalmaps-service, namespace: ierahkwa }
+spec: { type: ClusterIP, selector: { app: postalmaps-service }, ports: [{ port: 5902, targetPort: 8080 }] }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: postalmaps-service-hpa, namespace: ierahkwa }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: postalmaps-service }
+  minReplicas: 2
+  maxReplicas: 10
+  metrics: [{ type: Resource, resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } } }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: housing-service, namespace: ierahkwa, labels: { app: housing-service, nexus: urbe, version: v3.3.0 } }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: housing-service } }
+  template:
+    metadata: { labels: { app: housing-service, nexus: urbe } }
+    spec:
+      containers:
+      - name: housing-service
+        image: ierahkwa.azurecr.io/housing-service:latest
+        ports: [{ containerPort: 8080 }]
+        env: [{ name: ASPNETCORE_ENVIRONMENT, value: Production }]
+        resources: { requests: { cpu: 100m, memory: 128Mi }, limits: { cpu: 500m, memory: 512Mi } }
+        livenessProbe: { httpGet: { path: /health, port: 8080 }, initialDelaySeconds: 10, periodSeconds: 30 }
+        readinessProbe: { httpGet: { path: /health/ready, port: 8080 }, initialDelaySeconds: 5, periodSeconds: 10, timeoutSeconds: 3, failureThreshold: 3 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: housing-service, namespace: ierahkwa }
+spec: { type: ClusterIP, selector: { app: housing-service }, ports: [{ port: 5903, targetPort: 8080 }] }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: housing-service-hpa, namespace: ierahkwa }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: housing-service }
+  minReplicas: 2
+  maxReplicas: 10
+  metrics: [{ type: Resource, resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } } }]

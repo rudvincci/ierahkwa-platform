@@ -534,7 +534,7 @@ Tests: `sast-autofix.test.js`, `sast-scanner.test.js`
 | Chain ID | 777777 |
 | Throughput | 12,847 TPS |
 | Cryptography | Post-quantum: ML-DSA-65 + ML-KEM-1024 |
-| Token | WAMPUM CBDC (720M max supply) |
+| Token | WAMPUM CBDC (10T max supply — all Americas) |
 | Smart Contracts | Solidity (5 contracts) + Rust (mamey-forge) |
 | Consensus | Custom (in MameyNode core) |
 | Bridge | MultichainBridge microservice |

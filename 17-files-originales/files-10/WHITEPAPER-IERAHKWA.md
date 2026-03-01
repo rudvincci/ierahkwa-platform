@@ -12,7 +12,7 @@ The 476 million indigenous people worldwide, including 72 million in the America
 Custom EVM-compatible blockchain with 12,847 TPS, Proof of Sovereignty consensus, and NIST-approved post-quantum cryptography (ML-DSA/Dilithium-5 for signatures, ML-KEM/Kyber-1024 for key exchange). Chain ID: 574.
 
 **2.2 BDET Bank**
-11-engine sovereign central bank processing payments, escrow, forex, remittances, micro-credit, and insurance. Issues Wampum (WMP) digital currency with 720M fixed supply.
+11-engine sovereign central bank processing payments, escrow, forex, remittances, micro-credit, and insurance. Issues Wampum (WMP) digital currency with 10T fixed supply.
 
 **2.3 AI Fortress**
 42 specialized AI engines for NLP, computer vision, speech processing, translation (Atabey), fraud detection, content moderation, recommendation, search, and classification. Running on 8x A100 GPUs with 99.97% uptime.

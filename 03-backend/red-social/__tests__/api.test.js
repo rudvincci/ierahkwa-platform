@@ -76,7 +76,7 @@ describe('Red Social (BDET Bank) - API Routes', () => {
         engines: 11,
         status: 'operational',
         currency: 'Wampum (WMP)',
-        supply: '720,000,000',
+        supply: '10,000,000,000,000',
         blockchain: 'MameyNode v4.2',
         consensus: 'Proof of Sovereignty',
         taxRate: '0% — Constitutional Article VII'

@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
+<meta name="description" content="Voto Soberano - Plataforma de votacion digital en blockchain para 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="theme-color" content="#1565c0">
+<link rel="canonical" href="https://ierahkwa.nation/voto-soberano/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="Voto Soberano — Ierahkwa">
+<meta property="og:description" content="Democracia digital en blockchain para 574 naciones tribales soberanas">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/voto-soberano/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Voto Soberano — Ierahkwa">
+<meta name="twitter:description" content="Democracia digital en blockchain para 574 naciones tribales soberanas">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
+<title>Voto Soberano — Ierahkwa</title>
+<style>
+:root{--accent:#1565c0}
+
+/* Platform-specific overrides */
+.hero{background:radial-gradient(ellipse at 50% 0%,rgba(21,101,192,.10),transparent 70%)}
+.hero::before{background:radial-gradient(circle,rgba(21,101,192,.12),transparent 65%)}
+.badge{background:rgba(21,101,192,.10);border-color:rgba(21,101,192,.30);color:var(--accent)}
+.card::before,.feature-card::before{background:linear-gradient(90deg,transparent,rgba(21,101,192,.06),transparent)}
+.card:hover,.feature-card:hover{border-color:var(--accent);box-shadow:0 10px 30px rgba(21,101,192,.12)}
+.stat:hover{border-color:var(--accent);box-shadow:0 8px 25px rgba(21,101,192,.12)}
+.card-icon,.feature-icon{background:linear-gradient(135deg,rgba(21,101,192,.18),rgba(21,101,192,.06))}
+.btn,.hero-btn{background:linear-gradient(135deg,#1565c0,#1976d2)}
+.btn:hover,.hero-btn:hover{box-shadow:0 8px 25px rgba(21,101,192,.35)}
+footer{border-top-color:var(--accent)}
+nav,.header-nav{border-bottom-color:var(--accent)}
+
+/* Login Section */
+.login-section{max-width:480px;margin:0 auto 2rem;padding:2rem}
+.login-box{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:2rem;text-align:center}
+.login-box h3{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent);margin-bottom:1rem}
+.login-box p{color:var(--txt2);font-size:.85rem;margin-bottom:1.5rem}
+.form-group{margin-bottom:1rem;text-align:left}
+.form-group label{display:block;font-size:.75rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem}
+.form-group input{width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:.65rem 1rem;color:var(--txt);font-size:.9rem;transition:border-color .2s}
+.form-group input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(21,101,192,.15)}
+.login-actions{display:flex;gap:.75rem;margin-top:1.25rem}
+.login-actions .btn{flex:1;text-align:center;padding:.65rem 1rem;font-size:.8rem}
+.btn-outline{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:.65rem 1rem;border-radius:var(--r);font-family:'Orbitron',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;transition:all .3s}
+.btn-outline:hover{background:rgba(21,101,192,.1)}
+.user-bar{display:none;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1rem 1.5rem;align-items:center;gap:1rem;max-width:700px;margin:0 auto 2rem}
+.user-bar.active{display:flex}
+.user-bar .avatar{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),#1976d2);border-radius:50%;display:grid;place-items:center;font-size:1rem;font-weight:700;color:#fff;flex-shrink:0}
+.user-bar .info{flex:1}
+.user-bar .info strong{font-size:.9rem}
+.user-bar .info span{display:block;font-size:.7rem;color:var(--txt2)}
+
+/* Elections Section */
+.elections-section{max-width:900px;margin:0 auto;padding:0 2rem 2rem}
+.election-list{display:grid;gap:1rem}
+.election-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;transition:all .3s;cursor:pointer}
+.election-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 25px rgba(21,101,192,.12)}
+.election-card .ec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.election-card h4{font-family:'Orbitron',sans-serif;font-size:.95rem;color:var(--txt)}
+.ec-status{font-size:.65rem;padding:.2rem .6rem;border-radius:2rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.ec-status.active{background:rgba(0,230,118,.12);color:#00e676;border:1px solid rgba(0,230,118,.3)}
+.ec-status.closed{background:rgba(255,145,0,.12);color:#ff9100;border:1px solid rgba(255,145,0,.3)}
+.ec-status.upcoming{background:rgba(21,101,192,.12);color:#1565c0;border:1px solid rgba(21,101,192,.3)}
+.election-card .ec-meta{display:flex;gap:1.5rem;font-size:.78rem;color:var(--txt2);margin-bottom:.5rem}
+.election-card .ec-desc{font-size:.82rem;color:var(--txt2);line-height:1.55}
+.ec-progress{margin-top:1rem}
+.ec-progress .bar-bg{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.ec-progress .bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),#42a5f5);transition:width 1s}
+.ec-progress .bar-label{display:flex;justify-content:space-between;font-size:.7rem;color:var(--txt2);margin-top:.35rem}
+
+/* Voting Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:500;place-items:center}
+.modal-overlay.active{display:grid}
+.modal{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:2rem;max-width:600px;width:95%;max-height:85vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:1rem;right:1rem;background:transparent;border:1px solid var(--brd);color:var(--txt2);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:grid;place-items:center;transition:all .2s}
+.modal-close:hover{border-color:var(--accent);color:var(--accent)}
+.modal h3{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--accent);margin-bottom:.5rem}
+.modal .modal-desc{font-size:.85rem;color:var(--txt2);margin-bottom:1.5rem;line-height:1.5}
+.choice-grid{display:grid;gap:.75rem;margin-bottom:1.5rem}
+.choice-card{background:var(--bg);border:2px solid var(--brd);border-radius:var(--r);padding:1.25rem;cursor:pointer;transition:all .3s;text-align:center}
+.choice-card:hover{border-color:rgba(21,101,192,.5);background:rgba(21,101,192,.04)}
+.choice-card.selected{border-color:var(--accent);background:rgba(21,101,192,.08);box-shadow:0 0 15px rgba(21,101,192,.15)}
+.choice-card h4{font-family:'Orbitron',sans-serif;font-size:.9rem;margin-bottom:.3rem}
+.choice-card p{font-size:.78rem;color:var(--txt2)}
+.vote-confirm{text-align:center;margin-top:1rem}
+.vote-confirm .btn{padding:.75rem 2.5rem;font-size:.9rem}
+.vote-receipt{display:none;text-align:center;padding:1.5rem 0}
+.vote-receipt.show{display:block}
+.vote-receipt .check{font-size:3rem;margin-bottom:.75rem}
+.vote-receipt h4{font-family:'Orbitron',sans-serif;color:var(--accent);margin-bottom:.5rem}
+.vote-receipt p{font-size:.82rem;color:var(--txt2)}
+.vote-receipt .tx-hash{font-family:'Courier New',monospace;font-size:.72rem;color:var(--accent);background:var(--bg);padding:.5rem;border-radius:8px;margin-top:.75rem;word-break:break-all}
+
+/* Results Section */
+.results-section{max-width:900px;margin:0 auto;padding:0 2rem 2rem}
+.result-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem}
+.result-card h4{font-family:'Orbitron',sans-serif;font-size:.95rem;margin-bottom:1rem}
+.result-bar{margin-bottom:.75rem}
+.result-bar .rb-header{display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:.35rem}
+.result-bar .rb-header span:last-child{color:var(--accent);font-weight:700}
+.result-bar .rb-track{height:10px;background:var(--bg3);border-radius:5px;overflow:hidden}
+.result-bar .rb-fill{height:100%;border-radius:5px;transition:width 1.5s ease}
+.rb-fill.c1{background:linear-gradient(90deg,#1565c0,#42a5f5)}
+.rb-fill.c2{background:linear-gradient(90deg,#00e676,#69f0ae)}
+.rb-fill.c3{background:linear-gradient(90deg,#ffd600,#ffee58)}
+.rb-fill.c4{background:linear-gradient(90deg,#ff5722,#ff8a65)}
+.result-card .rc-footer{display:flex;justify-content:space-between;font-size:.72rem;color:var(--txt2);margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--brd)}
+
+/* History Section */
+.history-section{max-width:900px;margin:0 auto;padding:0 2rem 2rem}
+.history-table{width:100%;border-collapse:collapse;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden}
+.history-table th{font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;padding:.75rem 1rem;text-align:left;background:var(--bg3);border-bottom:1px solid var(--brd)}
+.history-table td{font-size:.82rem;padding:.65rem 1rem;border-bottom:1px solid rgba(30,58,95,.3);color:var(--txt2)}
+.history-table tr:last-child td{border-bottom:none}
+.history-table .verified{color:#00e676;font-size:.7rem;font-weight:600}
+
+/* Create Election (Admin) */
+.admin-section{max-width:700px;margin:0 auto;padding:0 2rem 2rem;display:none}
+.admin-section.active{display:block}
+.admin-form{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:2rem}
+.admin-form h3{font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--accent);margin-bottom:1.25rem}
+.admin-form textarea{width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:.65rem 1rem;color:var(--txt);font-size:.85rem;font-family:inherit;resize:vertical;min-height:80px;transition:border-color .2s}
+.admin-form textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(21,101,192,.15)}
+.option-list{margin-bottom:1rem}
+.option-item{display:flex;gap:.5rem;margin-bottom:.5rem}
+.option-item input{flex:1}
+.option-item button{background:transparent;border:1px solid rgba(244,67,54,.3);color:#f44336;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:.9rem;transition:all .2s;flex-shrink:0}
+.option-item button:hover{background:rgba(244,67,54,.1)}
+.btn-add{background:transparent;border:1px dashed var(--brd);color:var(--txt2);padding:.5rem 1rem;border-radius:8px;cursor:pointer;font-size:.8rem;width:100%;transition:all .2s;margin-bottom:1rem}
+.btn-add:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Empty state */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--txt2)}
+.empty-state .icon{font-size:2.5rem;margin-bottom:.75rem;opacity:.5}
+.empty-state p{font-size:.85rem}
+
+/* CTA */
+.cta{text-align:center;padding:4rem 2rem;background:radial-gradient(ellipse at 50% 50%,rgba(21,101,192,.06),transparent 70%)}
+.cta h2{font-family:'Orbitron',sans-serif;font-size:clamp(1.4rem,3vw,2rem);margin-bottom:.75rem}
+.cta p{color:var(--txt2);max-width:550px;margin:0 auto 1.5rem;font-size:.95rem}
+</style>
+</head>
+<body role="document">
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+
+<!-- Navigation -->
+<header>
+  <div class="logo">
+    <div class="logo-icon" aria-hidden="true" style="background:linear-gradient(135deg,#1565c0,#1976d2)">VS</div>
+    <h1 style="color:var(--accent)">Voto <span>Soberano</span></h1>
+  </div>
+  <nav aria-label="Navegacion principal">
+    <a href="#elections" aria-current="page">Elecciones</a>
+    <a href="#results">Resultados</a>
+    <a href="#history">Mi Historial</a>
+    <a href="#features">Funciones</a>
+    <a href="../NEXUS-consejo-gobierno/index.html" title="Volver a NEXUS Consejo">NEXUS</a>
+  </nav>
+</header>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-content">
+    <div class="badge"><span class="status-dot" aria-hidden="true"></span> NEXUS Consejo &mdash; Gobierno Digital</div>
+    <h1>Voto <span class="accent">Soberano</span></h1>
+    <p class="tagline">Democracia Digital en Blockchain &mdash; Cada voz cuenta, cada voto es inalterable</p>
+    <p style="color:var(--txt2);font-size:.9rem;max-width:600px;margin:0 auto 1.5rem">Plataforma de votacion soberana con verificacion en blockchain, balotaje anonimo, encriptacion post-quantum y gobernanza DAO para 72 millones de ciudadanos indigenas.</p>
+    <button class="hero-btn" onclick="document.getElementById('elections').scrollIntoView({behavior:'smooth'})" aria-label="Comenzar a votar">
+      <span aria-hidden="true">&#x1F5F3;&#xFE0F;</span> Comenzar a Votar
+    </button>
+  </div>
+</header>
+
+<!-- Stats -->
+<div class="stats" role="list" aria-label="Estadisticas principales">
+  <div class="stat" role="listitem"><div class="val" id="stat-elections">47</div><div class="lbl">Elecciones</div></div>
+  <div class="stat" role="listitem"><div class="val" id="stat-active">5</div><div class="lbl">Votos Activos</div></div>
+  <div class="stat" role="listitem"><div class="val" id="stat-participation">94.7%</div><div class="lbl">Participacion</div></div>
+  <div class="stat" role="listitem"><div class="val" id="stat-verified"><span aria-hidden="true">&#x2705;</span> 100%</div><div class="lbl">Verificados en Blockchain</div></div>
+</div>
+
+<main id="main">
+  <!-- Login / Auth Section -->
+  <section class="login-section" id="auth-section">
+    <div class="login-box" id="login-box">
+      <h3><span aria-hidden="true">&#x1F512;</span> Acceso Soberano</h3>
+      <p>Inicia sesion con tu identidad soberana Ierahkwa para votar</p>
+      <div class="form-group">
+        <label for="login-id">ID Soberano</label>
+        <input type="text" id="login-id" placeholder="IER-XXXX-XXXX-XXXX" autocomplete="username" aria-required="true">
+      </div>
+      <div class="form-group">
+        <label for="login-pass">Clave Post-Quantum</label>
+        <input type="password" id="login-pass" placeholder="Tu clave segura" autocomplete="current-password" aria-required="true">
+      </div>
+      <div class="login-actions">
+        <button class="btn" id="btn-login" type="button">Iniciar Sesion</button>
+        <button class="btn-outline" id="btn-register" type="button">Registrarse</button>
+      </div>
+    </div>
+    <div class="user-bar" id="user-bar">
+      <div class="avatar" id="user-avatar">VS</div>
+      <div class="info">
+        <strong id="user-name">Ciudadano Soberano</strong>
+        <span id="user-role">Votante verificado &middot; Trust Score: <span id="user-trust">100</span></span>
+      </div>
+      <button class="btn-outline" id="btn-logout" type="button" style="padding:.4rem .8rem;font-size:.7rem">Cerrar Sesion</button>
+    </div>
+  </section>
+
+  <!-- Active Elections -->
+  <section id="elections" aria-labelledby="elections-title">
+    <div class="section-header">
+      <h2 id="elections-title">Elecciones <span class="accent">Activas</span></h2>
+      <p>Participa en las votaciones abiertas de tu nacion soberana. Cada voto se registra inmutablemente en MameyChain.</p>
+    </div>
+    <div class="elections-section">
+      <div class="election-list" id="election-list">
+        <!-- Election 1 -->
+        <article class="election-card" data-election="1" tabindex="0" role="button" aria-label="Votar en: Consejo Supremo 2026">
+          <div class="ec-header">
+            <h4><span aria-hidden="true">&#x1F3DB;&#xFE0F;</span> Consejo Supremo 2026</h4>
+            <span class="ec-status active">Activa</span>
+          </div>
+          <div class="ec-meta">
+            <span><span aria-hidden="true">&#x1F4C5;</span> Cierra: 15 Mar 2026</span>
+            <span><span aria-hidden="true">&#x1F465;</span> 12,847 votos</span>
+            <span><span aria-hidden="true">&#x1F30E;</span> 574 naciones</span>
+          </div>
+          <p class="ec-desc">Eleccion del Consejo Supremo de Gobernanza para el periodo 2026-2030. Elige a los representantes que guiaran la nacion digital soberana.</p>
+          <div class="ec-progress">
+            <div class="bar-bg"><div class="bar-fill" style="width:67%"></div></div>
+            <div class="bar-label"><span>Participacion: 67%</span><span>Meta: 80%</span></div>
+          </div>
+        </article>
+        <!-- Election 2 -->
+        <article class="election-card" data-election="2" tabindex="0" role="button" aria-label="Votar en: Presupuesto Soberano Q2 2026">
+          <div class="ec-header">
+            <h4><span aria-hidden="true">&#x1F4B0;</span> Presupuesto Soberano Q2 2026</h4>
+            <span class="ec-status active">Activa</span>
+          </div>
+          <div class="ec-meta">
+            <span><span aria-hidden="true">&#x1F4C5;</span> Cierra: 20 Mar 2026</span>
+            <span><span aria-hidden="true">&#x1F465;</span> 8,234 votos</span>
+            <span><span aria-hidden="true">&#x1F4CA;</span> 500M IGT</span>
+          </div>
+          <p class="ec-desc">Decide la asignacion del presupuesto soberano para el segundo trimestre: infraestructura, educacion, salud o defensa digital.</p>
+          <div class="ec-progress">
+            <div class="bar-bg"><div class="bar-fill" style="width:43%"></div></div>
+            <div class="bar-label"><span>Participacion: 43%</span><span>Meta: 75%</span></div>
+          </div>
+        </article>
+        <!-- Election 3 -->
+        <article class="election-card" data-election="3" tabindex="0" role="button" aria-label="Votar en: Protocolo de Identidad v3">
+          <div class="ec-header">
+            <h4><span aria-hidden="true">&#x1F510;</span> Protocolo de Identidad v3</h4>
+            <span class="ec-status active">Activa</span>
+          </div>
+          <div class="ec-meta">
+            <span><span aria-hidden="true">&#x1F4C5;</span> Cierra: 10 Mar 2026</span>
+            <span><span aria-hidden="true">&#x1F465;</span> 15,102 votos</span>
+            <span><span aria-hidden="true">&#x1F6E1;&#xFE0F;</span> Seguridad</span>
+          </div>
+          <p class="ec-desc">Referendum sobre la adopcion del nuevo protocolo de identidad soberana con biometria descentralizada y claves post-quantum Kyber-1024.</p>
+          <div class="ec-progress">
+            <div class="bar-bg"><div class="bar-fill" style="width:82%"></div></div>
+            <div class="bar-label"><span>Participacion: 82%</span><span>Meta: 70%</span></div>
+          </div>
+        </article>
+        <!-- Election 4 - Upcoming -->
+        <article class="election-card" data-election="4" tabindex="0" role="button" aria-label="Proxima: Tratado Inter-Naciones">
+          <div class="ec-header">
+            <h4><span aria-hidden="true">&#x1F91D;</span> Tratado Inter-Naciones</h4>
+            <span class="ec-status upcoming">Proxima</span>
+          </div>
+          <div class="ec-meta">
+            <span><span aria-hidden="true">&#x1F4C5;</span> Inicia: 1 Abr 2026</span>
+            <span><span aria-hidden="true">&#x1F30D;</span> 19 naciones</span>
+            <span><span aria-hidden="true">&#x1F4DC;</span> Tratado</span>
+          </div>
+          <p class="ec-desc">Votacion del tratado de cooperacion tecnologica entre las 19 naciones soberanas del ecosistema Ierahkwa.</p>
+        </article>
+        <!-- Election 5 - Closed -->
+        <article class="election-card" data-election="5" tabindex="0" role="button" aria-label="Resultados: Ley de Datos Soberanos">
+          <div class="ec-header">
+            <h4><span aria-hidden="true">&#x1F4CB;</span> Ley de Datos Soberanos</h4>
+            <span class="ec-status closed">Cerrada</span>
+          </div>
+          <div class="ec-meta">
+            <span><span aria-hidden="true">&#x1F4C5;</span> Cerro: 15 Feb 2026</span>
+            <span><span aria-hidden="true">&#x1F465;</span> 48,291 votos</span>
+            <span><span aria-hidden="true">&#x2705;</span> Aprobada</span>
+          </div>
+          <p class="ec-desc">Ley que establece la soberania total sobre los datos de ciudadanos indigenas. Aprobada con 91.3% de votos a favor.</p>
+          <div class="ec-progress">
+            <div class="bar-bg"><div class="bar-fill" style="width:95%"></div></div>
+            <div class="bar-label"><span>Participacion: 95%</span><span>Aprobada</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Voting Modal -->
+  <div class="modal-overlay" id="vote-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <button class="modal-close" id="modal-close" aria-label="Cerrar">&times;</button>
+      <div id="modal-vote-form">
+        <h3 id="modal-title">Emitir Voto</h3>
+        <p class="modal-desc" id="modal-desc">Selecciona tu opcion. Tu voto sera encriptado con Kyber-768 y registrado en MameyChain.</p>
+        <div class="choice-grid" id="choice-grid">
+          <!-- Choices injected by JS -->
+        </div>
+        <div class="vote-confirm">
+          <button class="btn" id="btn-cast-vote" disabled aria-label="Confirmar y emitir voto">
+            <span aria-hidden="true">&#x1F5F3;&#xFE0F;</span> Emitir Voto
+          </button>
+          <p style="font-size:.7rem;color:var(--txt2);margin-top:.5rem">Tu voto es anonimo e irreversible una vez confirmado</p>
+        </div>
+      </div>
+      <div class="vote-receipt" id="vote-receipt">
+        <div class="check" aria-hidden="true">&#x2705;</div>
+        <h4>Voto Registrado con Exito</h4>
+        <p>Tu voto ha sido encriptado y registrado en MameyChain</p>
+        <div class="tx-hash" id="tx-hash" aria-label="Hash de transaccion">0x...</div>
+        <p style="font-size:.7rem;color:var(--txt2);margin-top:.75rem">Guarda este hash como comprobante de tu voto soberano</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <section id="results" aria-labelledby="results-title">
+    <div class="section-header">
+      <h2 id="results-title">Resultados en <span class="accent">Tiempo Real</span></h2>
+      <p>Transparencia total. Cada resultado verificable en blockchain por cualquier ciudadano.</p>
+    </div>
+    <div class="results-section" id="results-container">
+      <div class="result-card">
+        <h4><span aria-hidden="true">&#x1F4CB;</span> Ley de Datos Soberanos &mdash; Resultado Final</h4>
+        <div class="result-bar">
+          <div class="rb-header"><span>A Favor &mdash; Soberania Total</span><span>91.3%</span></div>
+          <div class="rb-track"><div class="rb-fill c1" style="width:91.3%" role="progressbar" aria-valuenow="91.3" aria-valuemin="0" aria-valuemax="100"></div></div>
+        </div>
+        <div class="result-bar">
+          <div class="rb-header"><span>En Contra</span><span>5.2%</span></div>
+          <div class="rb-track"><div class="rb-fill c4" style="width:5.2%" role="progressbar" aria-valuenow="5.2" aria-valuemin="0" aria-valuemax="100"></div></div>
+        </div>
+        <div class="result-bar">
+          <div class="rb-header"><span>Abstencion</span><span>3.5%</span></div>
+          <div class="rb-track"><div class="rb-fill c3" style="width:3.5%" role="progressbar" aria-valuenow="3.5" aria-valuemin="0" aria-valuemax="100"></div></div>
+        </div>
+        <div class="rc-footer">
+          <span>Total: 48,291 votos</span>
+          <span>Verificado en bloque #1,847,203</span>
+          <span class="encrypted-badge"><span aria-hidden="true">&#x1F512;</span> Kyber-768</span>
+        </div>
+      </div>
+      <div class="result-card">
+        <h4><span aria-hidden="true">&#x1F510;</span> Protocolo de Identidad v3 &mdash; En Curso</h4>
+        <div class="result-bar">
+          <div class="rb-header"><span>Aprobar Kyber-1024</span><span>73.8%</span></div>
+          <div class="rb-track"><div class="rb-fill c1" style="width:73.8%" role="progressbar" aria-valuenow="73.8" aria-valuemin="0" aria-valuemax="100"></div></div>
+        </div>
+        <div class="result-bar">
+          <div class="rb-header"><span>Mantener Kyber-768</span><span>18.4%</span></div>
+          <div class="rb-track"><div class="rb-fill c2" style="width:18.4%" role="progressbar" aria-valuenow="18.4" aria-valuemin="0" aria-valuemax="100"></div></div>
+        </div>
+        <div class="result-bar">
+          <div class="rb-header"><span>Evaluar alternativas</span><span>7.8%</span></div>
+          <div class="rb-track"><div class="rb-fill c3" style="width:7.8%" role="progressbar" aria-valuenow="7.8" aria-valuemin="0" aria-valuemax="100"></div></div>
+        </div>
+        <div class="rc-footer">
+          <span>Total: 15,102 votos</span>
+          <span>Bloque actual: #1,849,017</span>
+          <span class="encrypted-badge"><span aria-hidden="true">&#x1F512;</span> En vivo</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- My Voting History -->
+  <section id="history" aria-labelledby="history-title">
+    <div class="section-header">
+      <h2 id="history-title">Mi Historial de <span class="accent">Votos</span></h2>
+      <p>Registro inmutable y verificable de todos tus votos soberanos.</p>
+    </div>
+    <div class="history-section">
+      <div id="history-logged-out" class="empty-state">
+        <div class="icon" aria-hidden="true">&#x1F512;</div>
+        <p>Inicia sesion para ver tu historial de votos soberanos</p>
+      </div>
+      <div id="history-table-wrap" style="display:none;overflow-x:auto">
+        <table class="history-table" aria-label="Historial de votos">
+          <thead>
+            <tr>
+              <th scope="col">Eleccion</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Tu Voto</th>
+              <th scope="col">Blockchain</th>
+              <th scope="col">Estado</th>
+            </tr>
+          </thead>
+          <tbody id="history-body">
+            <tr>
+              <td>Ley de Datos Soberanos</td>
+              <td>14 Feb 2026</td>
+              <td>A Favor</td>
+              <td style="font-family:'Courier New',monospace;font-size:.7rem;color:var(--accent)">0x7a3f...e291</td>
+              <td><span class="verified">&#x2705; Verificado</span></td>
+            </tr>
+            <tr>
+              <td>Reforma Educativa Ancestral</td>
+              <td>28 Ene 2026</td>
+              <td>Opcion B</td>
+              <td style="font-family:'Courier New',monospace;font-size:.7rem;color:var(--accent)">0x4b8c...d107</td>
+              <td><span class="verified">&#x2705; Verificado</span></td>
+            </tr>
+            <tr>
+              <td>Fondo Soberano 2026</td>
+              <td>15 Ene 2026</td>
+              <td>Aprobar</td>
+              <td style="font-family:'Courier New',monospace;font-size:.7rem;color:var(--accent)">0x91d2...a845</td>
+              <td><span class="verified">&#x2705; Verificado</span></td>
+            </tr>
+            <tr>
+              <td>Consejo de Ancianos 2025</td>
+              <td>20 Dic 2025</td>
+              <td>Candidato 3</td>
+              <td style="font-family:'Courier New',monospace;font-size:.7rem;color:var(--accent)">0xe5a7...c439</td>
+              <td><span class="verified">&#x2705; Verificado</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Create Election (Admin) -->
+  <section class="admin-section" id="admin-section" aria-labelledby="admin-title">
+    <div class="section-header">
+      <h2 id="admin-title">Crear <span class="accent">Eleccion</span></h2>
+      <p>Herramienta administrativa para crear nuevas votaciones soberanas.</p>
+    </div>
+    <div class="admin-form">
+      <h3><span aria-hidden="true">&#x2699;&#xFE0F;</span> Nueva Eleccion</h3>
+      <div class="form-group">
+        <label for="admin-title-input">Titulo de la Eleccion</label>
+        <input type="text" id="admin-title-input" placeholder="Nombre de la eleccion">
+      </div>
+      <div class="form-group">
+        <label for="admin-desc-input">Descripcion</label>
+        <textarea id="admin-desc-input" placeholder="Describe la eleccion y su importancia para la nacion soberana..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Opciones de Voto</label>
+        <div class="option-list" id="option-list">
+          <div class="option-item"><input type="text" placeholder="Opcion 1"><button type="button" aria-label="Eliminar opcion">&times;</button></div>
+          <div class="option-item"><input type="text" placeholder="Opcion 2"><button type="button" aria-label="Eliminar opcion">&times;</button></div>
+        </div>
+        <button class="btn-add" id="btn-add-option" type="button">+ Agregar Opcion</button>
+      </div>
+      <div class="form-group">
+        <label for="admin-end">Fecha de Cierre</label>
+        <input type="date" id="admin-end">
+      </div>
+      <button class="btn" id="btn-create-election" type="button" style="width:100%;margin-top:.5rem">
+        <span aria-hidden="true">&#x1F5F3;&#xFE0F;</span> Crear Eleccion en Blockchain
+      </button>
+    </div>
+  </section>
+
+  <!-- Feature Cards -->
+  <section id="features" aria-labelledby="feat-title">
+    <div class="section-header">
+      <h2 id="feat-title">Tecnologia de <span class="accent">Voto Soberano</span></h2>
+      <p>Diez pilares tecnologicos que garantizan elecciones justas, transparentes y soberanas para 574 naciones tribales.</p>
+    </div>
+    <div class="features-grid">
+      <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">&#x26D3;&#xFE0F;</div>
+        <h3>Verificacion en Blockchain</h3>
+        <p>Cada voto se registra como transaccion inmutable en MameyChain. Auditable por cualquier ciudadano, imposible de alterar o eliminar.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">&#x1F464;</div>
+        <h3>Una Persona, Un Voto</h3>
+        <p>Identidad soberana verificada con biometria descentralizada. Imposible votar dos veces gracias a pruebas de conocimiento cero.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">&#x1F5F3;&#xFE0F;</div>
+        <h3>Balotaje Anonimo</h3>
+        <p>Protocolo de mezcla criptografica que desvincula la identidad del votante de su eleccion. Privacidad total garantizada.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">&#x26A1;</div>
+        <h3>Resultados en Tiempo Real</h3>
+        <p>Conteo instantaneo y transparente. Los resultados se actualizan en vivo conforme se confirman los bloques en la cadena.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">&#x1F510;</div>
+        <h3>Encriptacion Post-Quantum</h3>
+        <p>CRYSTALS-Kyber-768 protege cada voto contra ataques de computacion cuantica. Seguridad preparada para el futuro.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">&#x1F50D;</div>
+        <h3>Pista de Auditoria</h3>
+        <p>Registro forense completo de cada proceso electoral. Trazabilidad de extremo a extremo sin comprometer el anonimato.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">&#x1F30D;</div>
+        <h3>Multi-Idioma</h3>
+        <p>Soporte para 200+ lenguas indigenas y 6 idiomas globales. Cada ciudadano vota en su lengua materna ancestral.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">&#x1F4F1;</div>
+        <h3>Listo para Movil</h3>
+        <p>PWA nativa que funciona offline. Vota desde cualquier dispositivo, incluso en areas remotas sin conexion permanente.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">&#x1F3DB;&#xFE0F;</div>
+        <h3>Gobernanza DAO</h3>
+        <p>Organizacion autonoma descentralizada donde cada nacion tribal tiene voz y voto proporcional en la toma de decisiones.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon" aria-hidden="true">&#x1F4A7;</div>
+        <h3>Democracia Liquida</h3>
+        <p>Delega tu voto a expertos de confianza por tema o vota directamente. Flexibilidad total con revocacion instantanea.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Tu voz. Tu voto. Tu <span style="color:var(--accent)">soberania</span>.</h2>
+    <p>Unete a 72 millones de ciudadanos indigenas construyendo la democracia digital del futuro en blockchain.</p>
+    <button class="hero-btn" onclick="document.getElementById('auth-section').scrollIntoView({behavior:'smooth'})">
+      <span aria-hidden="true">&#x1F5F3;&#xFE0F;</span> Votar Ahora
+    </button>
+  </section>
+</main>
+
+<footer>
+  <p>Voto Soberano &mdash; Ecosistema Digital Ierahkwa &copy; 2026. Soberania para 72M de ciudadanos indigenas.</p>
+  <div style="margin-top:.75rem">
+    <span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa">
+      <span class="sec-icon" aria-hidden="true">&#x1F6E1;&#xFE0F;</span> Seguro
+    </span>
+    <span class="encrypted-badge" style="margin-left:.5rem">
+      <span aria-hidden="true">&#x26D3;&#xFE0F;</span> MameyChain Verificado
+    </span>
+  </div>
+</footer>
+
+<!-- API SDK -->
+<script src="../shared/ierahkwa-api.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  /* ========================
+     Platform Configuration
+     ======================== */
+  var PLATFORM = 'voto-soberano';
+  var NEXUS = 'consejo';
+  window.PLATFORM_API = '/api/nexus';
+
+  /* ========================
+     Election Data (mock — replaced by IerahkwaAPI in production)
+     ======================== */
+  var elections = {
+    '1': {
+      title: 'Consejo Supremo 2026',
+      desc: 'Elige a los representantes que guiaran la nacion digital soberana para el periodo 2026-2030.',
+      choices: [
+        {id:'a', name:'Candidata Aiyana Whitehawk', desc:'Lider en soberania tecnologica y educacion ancestral'},
+        {id:'b', name:'Candidato Koda Runningbear', desc:'Experto en blockchain y gobernanza descentralizada'},
+        {id:'c', name:'Candidata Nokomis Skydancer', desc:'Defensora de derechos digitales y privacidad soberana'},
+        {id:'d', name:'Candidato Takoda Brightstar', desc:'Visionario en economia tokenizada y comercio soberano'}
+      ]
+    },
+    '2': {
+      title: 'Presupuesto Soberano Q2 2026',
+      desc: 'Decide la asignacion del presupuesto soberano para el segundo trimestre de 2026.',
+      choices: [
+        {id:'a', name:'Infraestructura Digital (40%)', desc:'Expansion de red mesh y nodos MameyChain'},
+        {id:'b', name:'Educacion Ancestral (35%)', desc:'Plataformas educativas en lenguas indigenas'},
+        {id:'c', name:'Salud Soberana (15%)', desc:'Telemedicina y registros medicos en blockchain'},
+        {id:'d', name:'Defensa Digital (10%)', desc:'Ciberseguridad post-quantum y anti-vigilancia'}
+      ]
+    },
+    '3': {
+      title: 'Protocolo de Identidad v3',
+      desc: 'Referendum sobre la adopcion del protocolo de identidad soberana con biometria descentralizada y Kyber-1024.',
+      choices: [
+        {id:'a', name:'Aprobar Kyber-1024', desc:'Adoptar el nuevo estandar post-quantum de mayor seguridad'},
+        {id:'b', name:'Mantener Kyber-768', desc:'Conservar el protocolo actual hasta evaluacion completa'},
+        {id:'c', name:'Evaluar alternativas', desc:'Extender periodo de evaluacion con otras opciones PQC'}
+      ]
+    }
+  };
+
+  /* ========================
+     State
+     ======================== */
+  var state = {
+    loggedIn: false,
+    user: null,
+    selectedChoice: null,
+    currentElection: null,
+    isAdmin: false
+  };
+
+  /* ========================
+     DOM References
+     ======================== */
+  var loginBox = document.getElementById('login-box');
+  var userBar = document.getElementById('user-bar');
+  var btnLogin = document.getElementById('btn-login');
+  var btnRegister = document.getElementById('btn-register');
+  var btnLogout = document.getElementById('btn-logout');
+  var loginId = document.getElementById('login-id');
+  var loginPass = document.getElementById('login-pass');
+  var userName = document.getElementById('user-name');
+  var userTrust = document.getElementById('user-trust');
+  var userAvatar = document.getElementById('user-avatar');
+  var historyOut = document.getElementById('history-logged-out');
+  var historyTable = document.getElementById('history-table-wrap');
+  var adminSection = document.getElementById('admin-section');
+  var voteModal = document.getElementById('vote-modal');
+  var modalClose = document.getElementById('modal-close');
+  var modalTitle = document.getElementById('modal-title');
+  var modalDesc = document.getElementById('modal-desc');
+  var choiceGrid = document.getElementById('choice-grid');
+  var btnCast = document.getElementById('btn-cast-vote');
+  var voteForm = document.getElementById('modal-vote-form');
+  var voteReceipt = document.getElementById('vote-receipt');
+  var txHash = document.getElementById('tx-hash');
+  var btnAddOption = document.getElementById('btn-add-option');
+  var btnCreateElection = document.getElementById('btn-create-election');
+
+  /* ========================
+     Auth Functions
+     ======================== */
+  function doLogin() {
+    var id = loginId.value.trim();
+    var pass = loginPass.value.trim();
+    if (!id || !pass) return;
+
+    // Try IerahkwaAPI if available
+    if (window.IerahkwaAPI && window.IerahkwaAPI.auth) {
+      try {
+        IerahkwaAPI.auth.login(id, pass);
+      } catch(e) { /* fallback to local */ }
+    }
+
+    state.loggedIn = true;
+    state.user = { id: id, name: 'Ciudadano ' + id.substring(0,8), trust: 100 };
+    state.isAdmin = id.toLowerCase().indexOf('admin') !== -1;
+    updateUI();
+  }
+
+  function doLogout() {
+    if (window.IerahkwaAPI && window.IerahkwaAPI.auth) {
+      try { IerahkwaAPI.auth.logout(); } catch(e) {}
+    }
+    state.loggedIn = false;
+    state.user = null;
+    state.isAdmin = false;
+    loginId.value = '';
+    loginPass.value = '';
+    updateUI();
+  }
+
+  function updateUI() {
+    if (state.loggedIn) {
+      loginBox.style.display = 'none';
+      userBar.classList.add('active');
+      userName.textContent = state.user.name;
+      userTrust.textContent = state.user.trust;
+      userAvatar.textContent = state.user.name.charAt(0).toUpperCase();
+      historyOut.style.display = 'none';
+      historyTable.style.display = 'block';
+      if (state.isAdmin) adminSection.classList.add('active');
+      else adminSection.classList.remove('active');
+    } else {
+      loginBox.style.display = 'block';
+      userBar.classList.remove('active');
+      historyOut.style.display = 'block';
+      historyTable.style.display = 'none';
+      adminSection.classList.remove('active');
+    }
+  }
+
+  btnLogin.addEventListener('click', doLogin);
+  btnRegister.addEventListener('click', function() {
+    if (window.IerahkwaAPI && window.IerahkwaAPI.auth) {
+      try { IerahkwaAPI.auth.register(); } catch(e) {}
+    }
+    alert('Redirigiendo al portal de registro soberano...');
+  });
+  btnLogout.addEventListener('click', doLogout);
+  loginPass.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  /* ========================
+     Voting Modal
+     ======================== */
+  function openVoteModal(electionId) {
+    var el = elections[electionId];
+    if (!el) return;
+    state.currentElection = electionId;
+    state.selectedChoice = null;
+    btnCast.disabled = true;
+    voteForm.style.display = 'block';
+    voteReceipt.classList.remove('show');
+    modalTitle.textContent = el.title;
+    modalDesc.textContent = el.desc;
+    choiceGrid.innerHTML = '';
+    el.choices.forEach(function(c) {
+      var div = document.createElement('div');
+      div.className = 'choice-card';
+      div.setAttribute('tabindex', '0');
+      div.setAttribute('role', 'radio');
+      div.setAttribute('aria-checked', 'false');
+      div.setAttribute('data-choice', c.id);
+      div.innerHTML = '<h4>' + c.name + '</h4><p>' + c.desc + '</p>';
+      div.addEventListener('click', function() { selectChoice(c.id); });
+      div.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectChoice(c.id); }
+      });
+      choiceGrid.appendChild(div);
+    });
+    voteModal.classList.add('active');
+    voteModal.querySelector('.modal').focus();
+  }
+
+  function selectChoice(choiceId) {
+    state.selectedChoice = choiceId;
+    var cards = choiceGrid.querySelectorAll('.choice-card');
+    cards.forEach(function(card) {
+      if (card.getAttribute('data-choice') === choiceId) {
+        card.classList.add('selected');
+        card.setAttribute('aria-checked', 'true');
+      } else {
+        card.classList.remove('selected');
+        card.setAttribute('aria-checked', 'false');
+      }
+    });
+    btnCast.disabled = false;
+  }
+
+  function closeModal() {
+    voteModal.classList.remove('active');
+    state.currentElection = null;
+    state.selectedChoice = null;
+  }
+
+  function castVote() {
+    if (!state.selectedChoice || !state.currentElection) return;
+    btnCast.disabled = true;
+    btnCast.textContent = 'Encriptando voto...';
+
+    // Attempt API call
+    if (window.IerahkwaAPI && window.IerahkwaAPI.votes) {
+      try { IerahkwaAPI.votes.cast(state.currentElection, state.selectedChoice); } catch(e) {}
+    }
+
+    // Simulate blockchain confirmation
+    setTimeout(function() {
+      var hash = '0x' + generateHash(64);
+      txHash.textContent = hash;
+      voteForm.style.display = 'none';
+      voteReceipt.classList.add('show');
+      btnCast.textContent = 'Emitir Voto';
+      console.log('[' + PLATFORM + '] Vote cast — Election: ' + state.currentElection + ' | Choice: ' + state.selectedChoice + ' | TX: ' + hash);
+    }, 1500);
+  }
+
+  function generateHash(len) {
+    var chars = '0123456789abcdef';
+    var result = '';
+    for (var i = 0; i < len; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  voteModal.addEventListener('click', function(e) {
+    if (e.target === voteModal) closeModal();
+  });
+  btnCast.addEventListener('click', castVote);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && voteModal.classList.contains('active')) closeModal();
+  });
+
+  /* ========================
+     Election Card Clicks
+     ======================== */
+  var elCards = document.querySelectorAll('.election-card[data-election]');
+  elCards.forEach(function(card) {
+    card.addEventListener('click', function() {
+      var eid = card.getAttribute('data-election');
+      var status = card.querySelector('.ec-status');
+      if (status && status.classList.contains('active')) {
+        if (!state.loggedIn) {
+          document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
+          return;
+        }
+        openVoteModal(eid);
+      } else if (status && status.classList.contains('closed')) {
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+    });
+  });
+
+  /* ========================
+     Admin: Create Election
+     ======================== */
+  if (btnAddOption) {
+    btnAddOption.addEventListener('click', function() {
+      var list = document.getElementById('option-list');
+      var count = list.querySelectorAll('.option-item').length + 1;
+      var div = document.createElement('div');
+      div.className = 'option-item';
+      div.innerHTML = '<input type="text" placeholder="Opcion ' + count + '"><button type="button" aria-label="Eliminar opcion">&times;</button>';
+      div.querySelector('button').addEventListener('click', function() { div.remove(); });
+      list.appendChild(div);
+    });
+  }
+  // Wire up existing remove buttons
+  document.querySelectorAll('.option-item button').forEach(function(btn) {
+    btn.addEventListener('click', function() { btn.parentElement.remove(); });
+  });
+
+  if (btnCreateElection) {
+    btnCreateElection.addEventListener('click', function() {
+      var title = document.getElementById('admin-title-input').value.trim();
+      if (!title) { alert('Ingresa un titulo para la eleccion'); return; }
+      if (window.IerahkwaAPI && window.IerahkwaAPI.votes) {
+        try { IerahkwaAPI.votes.create({ title: title }); } catch(e) {}
+      }
+      alert('Eleccion "' + title + '" creada en MameyChain con exito.');
+      console.log('[' + PLATFORM + '] Election created: ' + title);
+    });
+  }
+
+  /* ========================
+     Load Active Elections from API
+     ======================== */
+  function loadActiveElections() {
+    if (window.IerahkwaAPI && window.IerahkwaAPI.votes && window.IerahkwaAPI.votes.active) {
+      try {
+        var active = IerahkwaAPI.votes.active();
+        if (active && active.length) {
+          console.log('[' + PLATFORM + '] Loaded ' + active.length + ' active elections from API');
+        }
+      } catch(e) {
+        console.log('[' + PLATFORM + '] Using local election data');
+      }
+    }
+  }
+
+  /* ========================
+     Stats Animation
+     ======================== */
+  function animateStats() {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.stat, .feature-card, .election-card, .result-card').forEach(function(el) {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity .6s ease, transform .6s ease';
+      observer.observe(el);
+    });
+  }
+
+  /* ========================
+     Check existing auth
+     ======================== */
+  function checkAuth() {
+    if (window.IerahkwaAPI && window.IerahkwaAPI.auth && window.IerahkwaAPI.auth.isLoggedIn && window.IerahkwaAPI.auth.isLoggedIn()) {
+      state.loggedIn = true;
+      var u = IerahkwaAPI.auth.getUser ? IerahkwaAPI.auth.getUser() : null;
+      state.user = u || { id: 'IER-USER', name: 'Ciudadano Soberano', trust: 100 };
+      state.isAdmin = (state.user.role === 'admin');
+      updateUI();
+    } else {
+      console.log('[' + PLATFORM + '] No active session — showing login');
+    }
+  }
+
+  /* ========================
+     Init
+     ======================== */
+  checkAuth();
+  loadActiveElections();
+  animateStats();
+  console.log('[' + PLATFORM + '] Platform initialized | NEXUS: ' + NEXUS);
+})();
+</script>
+<!-- Security & Shared Modules -->
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script src="../shared/ierahkwa-protocols.js"></script>
+<script src="../shared/ierahkwa-interconnect.js"></script>
+<!-- Service Worker -->
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
+<!-- AI Agents -->
+<script src="../shared/ierahkwa-agents.js"></script>
+</body>
+</html>

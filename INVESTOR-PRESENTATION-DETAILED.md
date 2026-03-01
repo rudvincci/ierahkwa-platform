@@ -26,7 +26,7 @@ Every day, 72 million indigenous people in the Americas are forced to use foreig
 **Ierahkwa is a complete digital nation.** Not one app. Not one platform. An entire sovereign digital infrastructure — 190 platforms covering EVERY service a modern nation needs:
 
 - Own blockchain (MameyNode, 12,847 TPS)
-- Own currency (WAMPUM, 720M supply)
+- Own currency (WAMPUM, 10T supply — all Americas, 670M+ people)
 - Own bank (BDET, 11 engines)
 - Own social media, email, messaging
 - Own marketplace, commerce, payments
@@ -243,7 +243,7 @@ Every microservice follows Clean Architecture: API layer, Application (CQRS), Do
 | Specification | Value |
 |--------------|-------|
 | Token Name | WAMPUM (WMP) |
-| Max Supply | 720,000,000 WMP |
+| Max Supply | 10,000,000,000,000 WMP (10T) |
 | Burn Rate | 0.1% per transaction (deflationary) |
 | Governance | Consejo Digital Soberano (1 nation = 1 vote) |
 | Use Cases | All platform transactions, payments, remittances, staking, governance |

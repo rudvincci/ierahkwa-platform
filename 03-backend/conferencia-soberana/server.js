@@ -14,6 +14,7 @@ const compression = require('compression');
 const { Server: SocketIO } = require('socket.io');
 const { v4: uuidv4 } = require('uuid');
 const { corsConfig, applySecurityMiddleware, errorHandler } = require('../shared/security');
+const db = require('./db');
 
 const app = express();
 const server = http.createServer(app);
@@ -46,12 +47,9 @@ app.use(express.json({ limit: '1mb' }));
 const logger = applySecurityMiddleware(app, 'conferencia-soberana');
 
 // ============================================================================
-// IN-MEMORY ROOM STORAGE
+// STUN/TURN CONFIGURATION
 // ============================================================================
 
-const rooms = new Map();
-
-// STUN/TURN server configuration
 const ICE_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' },
@@ -64,72 +62,71 @@ const ICE_SERVERS = [
 ];
 
 // ============================================================================
-// HELPER FUNCTIONS
+// CLEANUP TIMER
 // ============================================================================
 
-function createRoom(options = {}) {
-  const id = uuidv4().slice(0, 12);
-  const room = {
-    id,
-    name: options.name || `Sala-${id.slice(0, 6)}`,
-    host: options.host || 'anonymous',
-    participants: [],
-    maxParticipants: options.maxParticipants || 50,
-    status: 'waiting',
-    isLocked: false,
-    recording: false,
-    encryption: 'E2EE-AES-256-GCM',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-  rooms.set(id, room);
-  return room;
-}
-
-function getRoomSafe(id) {
-  const room = rooms.get(id);
-  if (!room) return null;
-  return { ...room };
-}
-
-function cleanupEmptyRooms() {
-  const now = Date.now();
-  for (const [id, room] of rooms.entries()) {
-    const age = now - new Date(room.updatedAt).getTime();
-    // Remove rooms older than 24h with no participants
-    if (room.participants.length === 0 && age > 24 * 60 * 60 * 1000) {
-      rooms.delete(id);
-    }
-  }
-}
-
-// Cleanup every 30 minutes
-setInterval(cleanupEmptyRooms, 30 * 60 * 1000).unref();
+// Cleanup empty rooms older than 24h every 30 minutes
+const cleanupTimer = setInterval(() => {
+  db.cleanupEmptyRooms().catch(err => {
+    console.error('[CLEANUP] Error cleaning up empty rooms:', err.message);
+  });
+}, 30 * 60 * 1000);
+cleanupTimer.unref();
 
 // ============================================================================
 // REST API ENDPOINTS
 // ============================================================================
 
 // Health check
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    service: 'conferencia-soberana',
-    version: '1.0.0',
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-    activeRooms: rooms.size,
-    totalParticipants: Array.from(rooms.values()).reduce((sum, r) => sum + r.participants.length, 0),
-    encryption: 'E2EE-AES-256-GCM',
-    poweredBy: 'MameyNode'
-  });
+app.get('/health', async (req, res) => {
+  try {
+    const [activeRooms, totalParticipants] = await Promise.all([
+      db.getRoomCount(),
+      db.getTotalParticipants()
+    ]);
+
+    res.json({
+      status: 'ok',
+      service: 'conferencia-soberana',
+      version: '1.0.0',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      activeRooms,
+      totalParticipants,
+      encryption: 'E2EE-AES-256-GCM',
+      poweredBy: 'MameyNode'
+    });
+  } catch (error) {
+    res.json({
+      status: 'ok',
+      service: 'conferencia-soberana',
+      version: '1.0.0',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      activeRooms: 0,
+      totalParticipants: 0,
+      encryption: 'E2EE-AES-256-GCM',
+      poweredBy: 'MameyNode'
+    });
+  }
 });
 
 // Create a new conference room
-app.post('/api/rooms', (req, res) => {
+app.post('/api/rooms', async (req, res) => {
   try {
     const { name, host, maxParticipants } = req.body;
-    const room = createRoom({ name, host, maxParticipants });
+    const id = uuidv4().slice(0, 12);
+    const now = new Date().toISOString();
+
+    const room = await db.createRoom({
+      id,
+      name: name || `Sala-${id.slice(0, 6)}`,
+      host: host || 'anonymous',
+      maxParticipants: maxParticipants || 50,
+      encryption: 'E2EE-AES-256-GCM',
+      createdAt: now,
+      updatedAt: now
+    });
 
     logger.dataAccess(req, 'rooms', 'create');
 
@@ -145,25 +142,20 @@ app.post('/api/rooms', (req, res) => {
 });
 
 // List active rooms
-app.get('/api/rooms', (req, res) => {
+app.get('/api/rooms', async (req, res) => {
   try {
     const { status, limit = 50, offset = 0 } = req.query;
-    let roomList = Array.from(rooms.values());
 
-    if (status) {
-      roomList = roomList.filter(r => r.status === status);
-    }
-
-    // Sort by most recently updated
-    roomList.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-
-    const total = roomList.length;
-    const paginated = roomList.slice(Number(offset), Number(offset) + Number(limit));
+    const result = await db.listRooms({
+      status: status || null,
+      limit: Number(limit),
+      offset: Number(offset)
+    });
 
     res.json({
       success: true,
-      rooms: paginated,
-      total,
+      rooms: result.rooms,
+      total: result.total,
       limit: Number(limit),
       offset: Number(offset)
     });
@@ -173,9 +165,9 @@ app.get('/api/rooms', (req, res) => {
 });
 
 // Get room info
-app.get('/api/rooms/:id', (req, res) => {
+app.get('/api/rooms/:id', async (req, res) => {
   try {
-    const room = getRoomSafe(req.params.id);
+    const room = await db.getRoom(req.params.id);
     if (!room) {
       return res.status(404).json({ success: false, error: 'Sala no encontrada' });
     }
@@ -187,9 +179,9 @@ app.get('/api/rooms/:id', (req, res) => {
 });
 
 // Join a room
-app.post('/api/rooms/:id/join', (req, res) => {
+app.post('/api/rooms/:id/join', async (req, res) => {
   try {
-    const room = rooms.get(req.params.id);
+    const room = await db.getRoom(req.params.id);
     if (!room) {
       return res.status(404).json({ success: false, error: 'Sala no encontrada' });
     }
@@ -211,16 +203,17 @@ app.post('/api/rooms/:id/join', (req, res) => {
       video: true
     };
 
-    room.participants.push(participant);
-    room.status = 'active';
-    room.updatedAt = new Date().toISOString();
+    await db.addParticipant(req.params.id, participant);
 
     logger.dataAccess(req, 'rooms', 'join');
+
+    // Fetch the updated room to return
+    const updatedRoom = await db.getRoom(req.params.id);
 
     res.json({
       success: true,
       participant,
-      room: getRoomSafe(req.params.id),
+      room: updatedRoom,
       iceServers: ICE_SERVERS,
       message: `Unido a sala: ${room.name}`
     });
@@ -230,27 +223,24 @@ app.post('/api/rooms/:id/join', (req, res) => {
 });
 
 // Leave a room
-app.post('/api/rooms/:id/leave', (req, res) => {
+app.post('/api/rooms/:id/leave', async (req, res) => {
   try {
-    const room = rooms.get(req.params.id);
+    const room = await db.getRoom(req.params.id);
     if (!room) {
       return res.status(404).json({ success: false, error: 'Sala no encontrada' });
     }
 
     const { userId } = req.body;
-    room.participants = room.participants.filter(p => p.id !== userId);
-
-    if (room.participants.length === 0) {
-      room.status = 'waiting';
-    }
-
-    room.updatedAt = new Date().toISOString();
+    await db.removeParticipant(req.params.id, userId);
 
     logger.dataAccess(req, 'rooms', 'leave');
 
+    // Fetch the updated room to return
+    const updatedRoom = await db.getRoom(req.params.id);
+
     res.json({
       success: true,
-      room: getRoomSafe(req.params.id),
+      room: updatedRoom,
       message: 'Has salido de la sala'
     });
   } catch (error) {
@@ -269,6 +259,8 @@ app.get('/api/ice-servers', (req, res) => {
 
 // ============================================================================
 // SOCKET.IO SIGNALING
+// WebRTC signaling remains in-memory (ephemeral by nature).
+// Room/participant metadata validation uses the database.
 // ============================================================================
 
 io.on('connection', (socket) => {
@@ -276,40 +268,46 @@ io.on('connection', (socket) => {
   let currentRoom = null;
 
   // Join a signaling room
-  socket.on('room:join', (data) => {
+  socket.on('room:join', async (data) => {
     const { roomId, userId, displayName } = data;
-    const room = rooms.get(roomId);
 
-    if (!room) {
-      socket.emit('error', { message: 'Sala no encontrada' });
-      return;
+    try {
+      const room = await db.getRoom(roomId);
+
+      if (!room) {
+        socket.emit('error', { message: 'Sala no encontrada' });
+        return;
+      }
+
+      if (room.isLocked) {
+        socket.emit('error', { message: 'Sala bloqueada' });
+        return;
+      }
+
+      currentRoom = roomId;
+      socket.join(roomId);
+
+      // Notify other participants
+      socket.to(roomId).emit('peer:joined', {
+        peerId: socket.id,
+        userId,
+        displayName: displayName || 'Participante'
+      });
+
+      // Send list of existing peers in the room
+      const peersInRoom = Array.from(io.sockets.adapter.rooms.get(roomId) || [])
+        .filter(id => id !== socket.id);
+
+      socket.emit('room:peers', {
+        roomId,
+        peers: peersInRoom
+      });
+
+      console.log(`[WS] ${displayName || socket.id} joined room ${roomId}`);
+    } catch (err) {
+      console.error(`[WS] Error joining room ${roomId}:`, err.message);
+      socket.emit('error', { message: 'Error al unirse a la sala' });
     }
-
-    if (room.isLocked) {
-      socket.emit('error', { message: 'Sala bloqueada' });
-      return;
-    }
-
-    currentRoom = roomId;
-    socket.join(roomId);
-
-    // Notify other participants
-    socket.to(roomId).emit('peer:joined', {
-      peerId: socket.id,
-      userId,
-      displayName: displayName || 'Participante'
-    });
-
-    // Send list of existing peers in the room
-    const peersInRoom = Array.from(io.sockets.adapter.rooms.get(roomId) || [])
-      .filter(id => id !== socket.id);
-
-    socket.emit('room:peers', {
-      roomId,
-      peers: peersInRoom
-    });
-
-    console.log(`[WS] ${displayName || socket.id} joined room ${roomId}`);
   });
 
   // WebRTC signaling: relay offer
@@ -377,15 +375,10 @@ io.on('connection', (socket) => {
     if (currentRoom) {
       socket.to(currentRoom).emit('peer:left', { peerId: socket.id });
 
-      // Remove from room participant list
-      const room = rooms.get(currentRoom);
-      if (room) {
-        room.participants = room.participants.filter(p => p.id !== socket.id);
-        if (room.participants.length === 0) {
-          room.status = 'waiting';
-        }
-        room.updatedAt = new Date().toISOString();
-      }
+      // Remove from room participant list in database
+      db.removeParticipant(currentRoom, socket.id).catch(err => {
+        console.error(`[WS] Error removing participant on disconnect:`, err.message);
+      });
     }
     console.log(`[WS] Client disconnected: ${socket.id}`);
   });
@@ -413,29 +406,58 @@ app.use(errorHandler('conferencia-soberana'));
 
 const PORT = process.env.PORT || 3090;
 
-server.listen(PORT, () => {
-  console.log('');
-  console.log('  ============================================================');
-  console.log('  ||                                                        ||');
-  console.log('  ||     CONFERENCIA SOBERANA                               ||');
-  console.log('  ||     Sovereign Video Conferencing API                   ||');
-  console.log('  ||                                                        ||');
-  console.log('  ||     WebRTC Signaling + E2E Encryption                  ||');
-  console.log('  ||     Socket.IO Real-Time Communication                  ||');
-  console.log('  ||                                                        ||');
-  console.log(`  ||     Port: ${PORT}                                         ||`);
-  console.log('  ||     Status: OPERATIONAL                                ||');
-  console.log('  ||                                                        ||');
-  console.log('  ||     Powered by MameyNode                               ||');
-  console.log('  ||     Ierahkwa Ne Kanienke Sovereign Platform            ||');
-  console.log('  ||                                                        ||');
-  console.log('  ============================================================');
-  console.log('');
-  console.log(`  [INFO] REST API ready on http://localhost:${PORT}`);
-  console.log(`  [INFO] WebSocket signaling active on ws://localhost:${PORT}`);
-  console.log(`  [INFO] ICE servers configured: ${ICE_SERVERS.length}`);
-  console.log(`  [INFO] Encryption: E2EE-AES-256-GCM`);
-  console.log('');
+async function start() {
+  // Initialize database schema before accepting connections
+  await db.initialize();
+
+  server.listen(PORT, () => {
+    console.log('');
+    console.log('  ============================================================');
+    console.log('  ||                                                        ||');
+    console.log('  ||     CONFERENCIA SOBERANA                               ||');
+    console.log('  ||     Sovereign Video Conferencing API                   ||');
+    console.log('  ||                                                        ||');
+    console.log('  ||     WebRTC Signaling + E2E Encryption                  ||');
+    console.log('  ||     Socket.IO Real-Time Communication                  ||');
+    console.log('  ||                                                        ||');
+    console.log(`  ||     Port: ${PORT}                                         ||`);
+    console.log('  ||     Status: OPERATIONAL                                ||');
+    console.log('  ||     Storage: PostgreSQL                                ||');
+    console.log('  ||                                                        ||');
+    console.log('  ||     Powered by MameyNode                               ||');
+    console.log('  ||     Ierahkwa Ne Kanienke Sovereign Platform            ||');
+    console.log('  ||                                                        ||');
+    console.log('  ============================================================');
+    console.log('');
+    console.log(`  [INFO] REST API ready on http://localhost:${PORT}`);
+    console.log(`  [INFO] WebSocket signaling active on ws://localhost:${PORT}`);
+    console.log(`  [INFO] ICE servers configured: ${ICE_SERVERS.length}`);
+    console.log(`  [INFO] Encryption: E2EE-AES-256-GCM`);
+    console.log(`  [INFO] Database: PostgreSQL connected`);
+    console.log('');
+  });
+}
+
+// Graceful shutdown
+function shutdown(signal) {
+  console.log(`\n  [INFO] ${signal} received — shutting down gracefully`);
+  clearInterval(cleanupTimer);
+  server.close(async () => {
+    await db.end();
+    console.log('  [INFO] Database pool closed');
+    process.exit(0);
+  });
+  // Force exit after 10s
+  setTimeout(() => process.exit(1), 10000).unref();
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
+
+// Start the server
+start().catch(err => {
+  console.error('  [FATAL] Failed to start server:', err.message);
+  process.exit(1);
 });
 
 module.exports = { app, server, io };

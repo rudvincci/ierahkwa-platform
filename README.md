@@ -8,12 +8,12 @@
 <p align="center">
   <a href="https://github.com/rudvincci/ierahkwa-platform/actions"><img src="https://github.com/rudvincci/ierahkwa-platform/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Sovereign--1.0-gold.svg" alt="License"></a>
-  <a href="#platforms"><img src="https://img.shields.io/badge/Platforms-347+-2dd4a8.svg" alt="Platforms"></a>
+  <a href="#platforms"><img src="https://img.shields.io/badge/Platforms-422+-2dd4a8.svg" alt="Platforms"></a>
   <a href="#blockchain"><img src="https://img.shields.io/badge/MameyNode-v4.2-purple.svg" alt="MameyNode"></a>
   <a href="#languages"><img src="https://img.shields.io/badge/Languages-43-9b6dff.svg" alt="Languages"></a>
   <a href="#zero-tax"><img src="https://img.shields.io/badge/Tax_Rate-0%25-ff6b4a.svg" alt="Zero Tax"></a>
   <br>
-  <a href="#tech-stack"><img src="https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet" alt=".NET"></a>
+  <a href="#tech-stack"><img src="https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet" alt=".NET"></a>
   <a href="#tech-stack"><img src="https://img.shields.io/badge/Node.js-22-339933?logo=nodedotjs&logoColor=white" alt="Node.js"></a>
   <a href="#tech-stack"><img src="https://img.shields.io/badge/Rust-stable-DEA584?logo=rust" alt="Rust"></a>
   <a href="#tech-stack"><img src="https://img.shields.io/badge/Go-1.22-00ADD8?logo=go&logoColor=white" alt="Go"></a>
@@ -22,12 +22,12 @@
 </p>
 
 <p align="center">
-  <strong>85+ sovereign platforms replacing Big Tech for indigenous communities across 19 countries.</strong><br>
+  <strong>422+ sovereign platforms replacing Big Tech for indigenous communities across 19 countries.</strong><br>
   <strong>Zero taxes. Free schools. Free hospitals. Post-quantum encryption.</strong>
 </p>
 
 <p align="center">
-  <em>85+ plataformas soberanas reemplazando Big Tech para comunidades indigenas en 19 paises.</em><br>
+  <em>422+ plataformas soberanas reemplazando Big Tech para comunidades indigenas en 19 paises.</em><br>
   <em>Cero impuestos. Escuelas gratis. Hospitales gratis. Encriptacion post-cuantica.</em>
 </p>
 
@@ -39,7 +39,7 @@
 - [Quick Start](#quick-start)
 - [Architecture](#architecture)
 - [Project Structure](#project-structure)
-- [Platforms (347+)](#platforms)
+- [Platforms (422+)](#platforms)
 - [Services & Ports](#services--ports)
 - [Technology Stack](#tech-stack)
 - [Continuous AI](#-continuous-ai--agentic-workflows)
@@ -67,13 +67,16 @@ All services run on **MameyNode**, a post-quantum blockchain with **12,847 TPS**
 | Indigenous people served | **72M+** across the Americas |
 | Countries | **19** |
 | Tribal nations | **574** (NCAI recognized) |
-| Platforms | **347+** (85 flagship) |
+| Platforms | **422+** across **18 NEXUS** portals |
+| IGT Sovereign Tokens | **103** |
 | Languages | **43** (37 indigenous + 6 global) |
 | Tax rate | **0%** |
 | Blockchain TPS | **12,847** |
-| .NET microservices | **37+** |
-| Node.js services | **19** |
+| .NET microservices | **76** (+ 8 en desarrollo) |
+| Node.js services | **20** |
+| AI Agents | **7** (Guardian, Pattern, Anomaly, Trust, Shield, Forensic, Evolution) |
 | Mamey Framework projects | **139** |
+| Total codebase | **~2M lines** across 11+ languages |
 
 ---
 
@@ -104,7 +107,7 @@ docker compose -f docker-compose.sovereign.yml up -d
 |------|----------|---------|
 | Docker + Compose | Yes | Container orchestration |
 | Node.js >= 20 | Yes | Backend services |
-| .NET 10 SDK | Optional | .NET microservices |
+| .NET 9 SDK | Optional | .NET microservices |
 | Rust (stable) | Optional | MameyForge CLI & SDK |
 | Go 1.22+ | Optional | Go microservices & SDKs |
 | Git | Yes | Version control |
@@ -141,7 +144,7 @@ graph TB
             Identity[Identity :5001]
             ZKP[ZKP Service :5002]
             Treasury[Treasury :5003]
-            Micro37["37 Microservices"]
+            Micro76["76 Microservices"]
         end
 
         subgraph Blockchain ["MameyNode Blockchain"]
@@ -181,8 +184,8 @@ All services bind to `127.0.0.1` only. All traffic encrypted with post-quantum a
 ```
 ierahkwa-platform/
 ├── 01-documentos/              Legal framework, investors, whitepapers
-├── 02-plataformas-html/        88 platform front-end UIs
-├── 03-backend/                 19 Node.js services
+├── 02-plataformas-html/        422+ platform front-end UIs (18 NEXUS portals)
+├── 03-backend/                 20 Node.js services
 │   ├── api-gateway/            API Gateway
 │   ├── blockchain-api/         MameyNode RPC interface
 │   ├── plataforma-principal/   BDET Bank core
@@ -216,7 +219,7 @@ ierahkwa-platform/
 │   ├── framework/              Mamey Framework (139 projects)
 │   ├── government/             Identity, Monolith, Portal, Pupitre, Portals
 │   ├── banking/                INKG Bank, NET10
-│   ├── microservices/          37 sovereign microservices
+│   ├── microservices/          84 sovereign microservices
 │   ├── platform/               Platform libraries
 │   └── ui/                     MameyNode.UI (Blazor)
 ├── 09-assets/                  Logo, branding
@@ -224,7 +227,7 @@ ierahkwa-platform/
 ├── 11-sdks/                    SDKs (Go, Python, TypeScript)
 ├── 12-rust/                    MameyForge CLI + gRPC SDK
 ├── 13-ai/                      MameyFutureAI + code generator
-├── 14-blockchain/              Quantum, 210+ tokens, FutureWampum
+├── 14-blockchain/              Quantum, 103 IGT tokens, FutureWampum, MameyNode
 ├── 15-utilities/               Barcode, image processing, templates
 ├── 16-docs/                    Technical docs + 368 government docs
 ├── 17-files-originales/        Original project files archive
@@ -248,7 +251,7 @@ ierahkwa-platform/
 ---
 
 <a name="platforms"></a>
-## Platforms (85 Flagship)
+## Platforms (422+ across 18 NEXUS Portals)
 
 | # | Platform | Replaces | Category |
 |---|----------|----------|----------|
@@ -336,7 +339,7 @@ ierahkwa-platform/
 | 82 | Energía Soberana | N/A | Decentralized Energy (P2P trading, microgrids, AI) |
 | 83 | Genómica Soberana | N/A | Sovereign Genomics (sequencing, pharmacogenomics) |
 | 84 | Archivo Eterno Soberano | N/A | Quantum-Proof Archive (IPFS, CRYSTALS-Kyber) |
-| 85 | Moneda Soberana CBDC | N/A | WAMPUM CBDC (720M supply, offline NFC, P2P) |
+| 85 | Moneda Soberana CBDC | N/A | WAMPUM CBDC (10T supply, offline NFC, P2P — all Americas) |
 
 ---
 
@@ -355,7 +358,7 @@ ierahkwa-platform/
 | Identity Service | 5001 | Self-sovereign identity (Face + Sovereign ID) |
 | ZKP Service | 5002 | Zero-knowledge proof verification |
 | Treasury Service | 5003 | Wampum (WMP) token treasury |
-| + 37 microservices | 5010+ | AI Fraud, Biometrics, DeFi, HRM, Voting, etc. |
+| + 76 microservices | 5010+ | AI Fraud, Biometrics, DeFi, HRM, Voting, etc. |
 
 ### Node.js Services
 
@@ -396,14 +399,14 @@ ierahkwa-platform/
 | Layer | Technology | Details |
 |-------|-----------|---------|
 | **Blockchain** | MameyNode v4.2 | 12,847 TPS, Proof-of-Sovereignty, Chain ID 777777 |
-| **Token** | Wampum (WMP) | 720M max supply, 0.1% burn, governance + gas |
+| **Token** | Wampum (WMP) | 10T max supply, 0.1% burn, governance + gas — serving 670M+ people across all Americas |
 | **Stablecoin** | SICBDC | Central bank digital currency |
-| **Backend** | .NET 10 | 139 framework projects + 37 microservices |
-| **Backend** | Node.js 22 | 19 sovereign services |
+| **Backend** | .NET 9 | 139 framework projects + 76 microservices (+ 8 en desarrollo) |
+| **Backend** | Node.js 22 | 20 sovereign services |
 | **Backend** | Rust | MameyForge CLI + gRPC blockchain SDK |
 | **Backend** | Go | Microservices + API SDKs |
-| **AI** | Python | MameyFutureAI (42 engines), fraud detection |
-| **Frontend** | HTML/CSS/JS | 347+ responsive platforms |
+| **AI** | JavaScript + Python | 7 AI agents (client-side), ML backends en desarrollo |
+| **Frontend** | HTML/CSS/JS | 422+ responsive platforms, 18 NEXUS portals |
 | **Frontend** | Blazor | MameyNode.UI + Pupitre education |
 | **Database** | PostgreSQL 16 | Primary relational data |
 | **Cache** | Redis 7 | Sessions, rate limiting, pub/sub |
@@ -436,7 +439,7 @@ ierahkwa-platform/
 
 - WCAG 2.2 AA compliance across all platforms
 - Shared accessibility middleware (`03-backend/shared/accessibility.js`)
-- Automated a11y audit tool scanning 88 platforms (12 WCAG checks)
+- Automated a11y audit tool scanning 422+ platforms (12 WCAG checks)
 - E2E accessibility testing with Playwright
 - Accessibility CI workflow on every PR touching HTML
 - See [ACCESSIBILITY.md](ACCESSIBILITY.md) for full details
@@ -543,8 +546,9 @@ Free for all indigenous communities and sovereign nations. Commercial use by non
 
 - **Organization:** Sovereign Government of Ierahkwa Ne Kanienke / FutureHead Group
 - **GitHub:** [@rudvincci](https://github.com/rudvincci)
-- **Blockchain:** MameyNode v4.2 (Chain ID 777777)
+- **Blockchain:** MameyNode v4.2 (Chain ID 777777) — 103 IGT Sovereign Tokens
 - **Token:** Wampum (WMP)
+- **Version:** v5.5.0
 
 ---
 

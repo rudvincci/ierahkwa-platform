@@ -31,7 +31,7 @@ app.use('/v1/fiscal', require('./routes/fiscal'));
 app.get('/health', (req, res) => res.json({
   bank: 'BDET — Blockchain Digital Exchange Trading Bank',
   version: '4.2.0', engines: 11, status: 'operational',
-  currency: 'Wampum (WMP)', supply: '720,000,000',
+  currency: 'Wampum (WMP)', supply: '10,000,000,000,000',
   blockchain: 'MameyNode v4.2', consensus: 'Proof of Sovereignty',
   taxRate: '0% — Constitutional Article VII',
 }));

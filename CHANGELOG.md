@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Energía Soberana** — Decentralized energy platform with P2P energy trading, microgrids, smart grid AI, and renewable integration
 - **Genómica Soberana** — Sovereign genomics platform with on-premises sequencing, pharmacogenomics, and indigenous biobank with data sovereignty
 - **Archivo Eterno Soberano** — Quantum-proof digital archive with IPFS + blockchain, CRYSTALS-Kyber encryption, oral history preservation
-- **Moneda Soberana CBDC (WAMPUM)** — Central bank digital currency with 720M max supply, offline NFC payments, P2P transfers, and programmable monetary policy
+- **Moneda Soberana CBDC (WAMPUM)** — Central bank digital currency with 10T max supply serving all Americas (670M+ people), offline NFC payments, P2P transfers, and programmable monetary policy
 
 ### Changed
 - Platform count updated from 70 to **85 flagship** (347+ total)
