@@ -1,0 +1,614 @@
+# ============================================================================
+# Ierahkwa Ne Kanienke — Enterprise Orchestrator
+# Levanta los 84 microservicios .NET + infraestructura de una sola vez
+#
+# Uso:
+#   docker-compose -f docker-compose.infra.yml -f docker-compose.enterprise.yml up -d
+#
+# Prerequisitos:
+#   - docker-compose.infra.yml levantado (PostgreSQL, Redis, MongoDB, MinIO)
+#   - .env con las variables requeridas (ver .env.example)
+#
+# Los servicios están organizados por dominio:
+#   Ports 5100-5119: AI & Intelligence
+#   Ports 5120-5139: Government Core
+#   Ports 5140-5159: Finance & Banking
+#   Ports 5160-5179: Citizen Services
+#   Ports 5180-5199: Infrastructure & DevOps
+#   Ports 5200-5219: Economy & Commerce
+#   Ports 5220-5239: Social & Culture
+#   Ports 5240-5259: Resources & Environment
+#   Ports 5260-5279: Security & Justice
+#   Ports 5280-5299: Education & Science
+#   Ports 5300-5319: Communications & Media
+#   Ports 5320-5339: Blockchain & DeFi
+# ============================================================================
+
+x-dotnet-defaults: &dotnet-defaults
+  restart: unless-stopped
+  networks: [enterprise-net]
+  environment: &dotnet-env
+    ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+    ConnectionStrings__DefaultConnection: Host=${POSTGRES_HOST:-mamey-postgres};Database=${POSTGRES_DB:-mamey};Username=${POSTGRES_USER:-mamey};Password=${POSTGRES_PASSWORD:?required}
+    ConnectionStrings__Redis: ${REDIS_HOST:-mamey-redis}:6379,password=${REDIS_PASSWORD:-}
+    Jwt__Secret: ${JWT_SECRET:?required}
+    Jwt__Issuer: ${JWT_ISSUER:-ierahkwa.org}
+  deploy:
+    resources:
+      limits:
+        memory: 256M
+        cpus: "0.5"
+  healthcheck:
+    test: ["CMD-SHELL", "curl -sf http://localhost:80/health || exit 1"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+    start_period: 30s
+
+networks:
+  enterprise-net:
+    driver: bridge
+    name: ierahkwa-enterprise
+
+services:
+
+  # ═══════════════════════════════════════════════════════════════════
+  # AI & INTELLIGENCE (5100-5119)
+  # ═══════════════════════════════════════════════════════════════════
+
+  ai-engine:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/AIEngineService
+    container_name: ie-ai-engine
+    ports: ["${AI_ENGINE_PORT:-5100}:80"]
+
+  ai-fraud-detection:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/AIFraudDetection
+    container_name: ie-ai-fraud
+    ports: ["${AI_FRAUD_PORT:-5101}:80"]
+
+  ai-model-server:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/AIModelServer
+    container_name: ie-ai-model
+    ports: ["${AI_MODEL_PORT:-5102}:80"]
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "2.0"
+
+  intelligence-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/IntelligenceService
+    container_name: ie-intelligence
+    ports: ["${INTELLIGENCE_PORT:-5103}:80"]
+
+  quantum-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/QuantumService
+    container_name: ie-quantum
+    ports: ["${QUANTUM_PORT:-5104}:80"]
+
+  # ═══════════════════════════════════════════════════════════════════
+  # GOVERNMENT CORE (5120-5139)
+  # ═══════════════════════════════════════════════════════════════════
+
+  governance-dao:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/GovernanceDAO
+    container_name: ie-governance-dao
+    ports: ["${GOVERNANCE_DAO_PORT:-5120}:80"]
+
+  governance-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/GovernanceService
+    container_name: ie-governance
+    ports: ["${GOVERNANCE_PORT:-5121}:80"]
+
+  voting-system:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/VotingSystem
+    container_name: ie-voting
+    ports: ["${VOTING_PORT:-5122}:80"]
+
+  diplomacy-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/DiplomacyService
+    container_name: ie-diplomacy
+    ports: ["${DIPLOMACY_PORT:-5123}:80"]
+
+  justice-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/JusticeService
+    container_name: ie-justice
+    ports: ["${JUSTICE_PORT:-5124}:80"]
+
+  military-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/MilitaryService
+    container_name: ie-military
+    ports: ["${MILITARY_PORT:-5125}:80"]
+
+  advocate-office:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/AdvocateOffice
+    container_name: ie-advocate
+    ports: ["${ADVOCATE_PORT:-5126}:80"]
+
+  compliance:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/compliance
+    container_name: ie-compliance
+    ports: ["${COMPLIANCE_PORT:-5127}:80"]
+
+  identity:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/identity
+    container_name: ie-identity
+    ports: ["${IDENTITY_PORT:-5128}:80"]
+
+  audit-trail:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/AuditTrail
+    container_name: ie-audit
+    ports: ["${AUDIT_PORT:-5129}:80"]
+
+  # ═══════════════════════════════════════════════════════════════════
+  # FINANCE & BANKING (5140-5159)
+  # ═══════════════════════════════════════════════════════════════════
+
+  tax-authority:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/TaxAuthority
+    container_name: ie-tax
+    ports: ["${TAX_PORT:-5140}:80"]
+
+  treasury:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/treasury
+    container_name: ie-treasury
+    ports: ["${TREASURY_PORT:-5141}:80"]
+
+  budget-control:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/BudgetControl
+    container_name: ie-budget
+    ports: ["${BUDGET_PORT:-5142}:80"]
+
+  insurance-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/InsuranceService
+    container_name: ie-insurance
+    ports: ["${INSURANCE_PORT:-5143}:80"]
+
+  procurement-hub:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/ProcurementHub
+    container_name: ie-procurement
+    ports: ["${PROCUREMENT_PORT:-5144}:80"]
+
+  trade-x:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/TradeX
+    container_name: ie-tradex
+    ports: ["${TRADEX_PORT:-5145}:80"]
+
+  transaction-codes:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/TransactionCodes
+    container_name: ie-txcodes
+    ports: ["${TXCODES_PORT:-5146}:80"]
+
+  # ═══════════════════════════════════════════════════════════════════
+  # CITIZEN SERVICES (5160-5179)
+  # ═══════════════════════════════════════════════════════════════════
+
+  citizen-crm:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/CitizenCRM
+    container_name: ie-citizen-crm
+    ports: ["${CITIZEN_CRM_PORT:-5160}:80"]
+
+  citizen-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/CitizenService
+    container_name: ie-citizen
+    ports: ["${CITIZEN_PORT:-5161}:80"]
+
+  bio-metrics:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/BioMetrics
+    container_name: ie-biometrics
+    ports: ["${BIOMETRICS_PORT:-5162}:80"]
+
+  health-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/HealthService
+    container_name: ie-health
+    ports: ["${HEALTH_PORT:-5163}:80"]
+
+  employment-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/EmploymentService
+    container_name: ie-employment
+    ports: ["${EMPLOYMENT_PORT:-5164}:80"]
+
+  social-welfare:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/SocialWelfareService
+    container_name: ie-welfare
+    ports: ["${WELFARE_PORT:-5165}:80"]
+
+  emergency-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/EmergencyService
+    container_name: ie-emergency
+    ports: ["${EMERGENCY_PORT:-5166}:80"]
+
+  postal-maps:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/PostalMapsService
+    container_name: ie-postal
+    ports: ["${POSTAL_PORT:-5167}:80"]
+
+  housing-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/UrbanService
+    container_name: ie-urban
+    ports: ["${URBAN_PORT:-5168}:80"]
+
+  # ═══════════════════════════════════════════════════════════════════
+  # INFRASTRUCTURE & DEVOPS (5180-5199)
+  # ═══════════════════════════════════════════════════════════════════
+
+  devops-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/DevOpsService
+    container_name: ie-devops
+    ports: ["${DEVOPS_PORT:-5180}:80"]
+
+  devtools-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/DevToolsService
+    container_name: ie-devtools
+    ports: ["${DEVTOOLS_PORT:-5181}:80"]
+
+  network-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/NetworkService
+    container_name: ie-network
+    ports: ["${NETWORK_PORT:-5182}:80"]
+
+  iot-robotics:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/IoTRoboticsService
+    container_name: ie-iot
+    ports: ["${IOT_PORT:-5183}:80"]
+
+  workflow-engine:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/WorkflowEngine
+    container_name: ie-workflow
+    ports: ["${WORKFLOW_PORT:-5184}:80"]
+
+  notify-hub:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/NotifyHub
+    container_name: ie-notify
+    ports: ["${NOTIFY_PORT:-5185}:80"]
+
+  notifications:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/notifications
+    container_name: ie-notifications
+    ports: ["${NOTIFICATIONS_PORT:-5186}:80"]
+
+  service-desk:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/ServiceDesk
+    container_name: ie-servicedesk
+    ports: ["${SERVICEDESK_PORT:-5187}:80"]
+
+  search-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/SearchService
+    container_name: ie-search
+    ports: ["${SEARCH_PORT:-5188}:80"]
+
+  browser-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/BrowserService
+    container_name: ie-browser
+    ports: ["${BROWSER_PORT:-5189}:80"]
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ECONOMY & COMMERCE (5200-5219)
+  # ═══════════════════════════════════════════════════════════════════
+
+  inventory-manager:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/InventoryManager
+    container_name: ie-inventory
+    ports: ["${INVENTORY_PORT:-5200}:80"]
+
+  farm-factory:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/FarmFactory
+    container_name: ie-farm
+    ports: ["${FARM_PORT:-5201}:80"]
+
+  smart-factory:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/SmartFactoryService
+    container_name: ie-smartfactory
+    ports: ["${SMARTFACTORY_PORT:-5202}:80"]
+
+  artisan-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/ArtisanService
+    container_name: ie-artisan
+    ports: ["${ARTISAN_PORT:-5203}:80"]
+
+  tourism-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/TourismService
+    container_name: ie-tourism
+    ports: ["${TOURISM_PORT:-5204}:80"]
+
+  agriculture-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/AgricultureService
+    container_name: ie-agriculture
+    ports: ["${AGRICULTURE_PORT:-5205}:80"]
+
+  natural-resources:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/NaturalResourceService
+    container_name: ie-resources
+    ports: ["${RESOURCES_PORT:-5206}:80"]
+
+  # ═══════════════════════════════════════════════════════════════════
+  # SOCIAL & CULTURE (5220-5239)
+  # ═══════════════════════════════════════════════════════════════════
+
+  culture-archive:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/CultureArchiveService
+    container_name: ie-culture
+    ports: ["${CULTURE_PORT:-5220}:80"]
+
+  sports-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/SportsService
+    container_name: ie-sports
+    ports: ["${SPORTS_PORT:-5221}:80"]
+
+  language-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/LanguageService
+    container_name: ie-language
+    ports: ["${LANGUAGE_PORT:-5222}:80"]
+
+  messaging-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/MessagingService
+    container_name: ie-messaging
+    ports: ["${MESSAGING_PORT:-5223}:80"]
+
+  # ═══════════════════════════════════════════════════════════════════
+  # RESOURCES & ENVIRONMENT (5240-5259)
+  # ═══════════════════════════════════════════════════════════════════
+
+  environment-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/EnvironmentService
+    container_name: ie-environment
+    ports: ["${ENVIRONMENT_PORT:-5240}:80"]
+
+  waste-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/WasteService
+    container_name: ie-waste
+    ports: ["${WASTE_PORT:-5241}:80"]
+
+  energy-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/TransportService
+    container_name: ie-transport
+    ports: ["${TRANSPORT_PORT:-5242}:80"]
+
+  space-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/SpaceService
+    container_name: ie-space
+    ports: ["${SPACE_PORT:-5243}:80"]
+
+  drone-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/DroneService
+    container_name: ie-drone
+    ports: ["${DRONE_PORT:-5244}:80"]
+
+  # ═══════════════════════════════════════════════════════════════════
+  # SECURITY & JUSTICE (5260-5279)
+  # ═══════════════════════════════════════════════════════════════════
+
+  cybersec-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/CyberSecService
+    container_name: ie-cybersec
+    ports: ["${CYBERSEC_PORT:-5260}:80"]
+
+  e-signature:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/ESignature
+    container_name: ie-esign
+    ports: ["${ESIGN_PORT:-5261}:80"]
+
+  digital-vault:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/DigitalVault
+    container_name: ie-vault
+    ports: ["${VAULT_PORT:-5262}:80"]
+
+  contract-manager:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/ContractManager
+    container_name: ie-contracts
+    ports: ["${CONTRACTS_PORT:-5263}:80"]
+
+  # ═══════════════════════════════════════════════════════════════════
+  # EDUCATION & SCIENCE (5280-5299)
+  # ═══════════════════════════════════════════════════════════════════
+
+  smart-school:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/SmartSchool
+    container_name: ie-school
+    ports: ["${SCHOOL_PORT:-5280}:80"]
+
+  genomics-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/GenomicsService
+    container_name: ie-genomics
+    ports: ["${GENOMICS_PORT:-5281}:80"]
+
+  # ═══════════════════════════════════════════════════════════════════
+  # COMMUNICATIONS & MEDIA (5300-5319)
+  # ═══════════════════════════════════════════════════════════════════
+
+  telecom-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/TelecomService
+    container_name: ie-telecom
+    ports: ["${TELECOM_PORT:-5300}:80"]
+
+  media-content:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/MediaContentService
+    container_name: ie-media
+    ports: ["${MEDIA_PORT:-5301}:80"]
+
+  # ═══════════════════════════════════════════════════════════════════
+  # PRODUCTIVITY & TOOLS (5310-5329)
+  # ═══════════════════════════════════════════════════════════════════
+
+  spike-office:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/SpikeOffice
+    container_name: ie-office
+    ports: ["${OFFICE_PORT:-5310}:80"]
+
+  meeting-hub:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/MeetingHub
+    container_name: ie-meetings
+    ports: ["${MEETINGS_PORT:-5311}:80"]
+
+  form-builder:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/FormBuilder
+    container_name: ie-forms
+    ports: ["${FORMS_PORT:-5312}:80"]
+
+  report-engine:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/ReportEngine
+    container_name: ie-reports
+    ports: ["${REPORTS_PORT:-5313}:80"]
+
+  document-flow:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/DocumentFlow
+    container_name: ie-docflow
+    ports: ["${DOCFLOW_PORT:-5314}:80"]
+
+  project-hub:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/ProjectHub
+    container_name: ie-projects
+    ports: ["${PROJECTS_PORT:-5315}:80"]
+
+  data-hub:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/DataHub
+    container_name: ie-datahub
+    ports: ["${DATAHUB_PORT:-5316}:80"]
+
+  app-builder:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/AppBuilder
+    container_name: ie-appbuilder
+    ports: ["${APPBUILDER_PORT:-5317}:80"]
+
+  lowcode-design:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/LowCodeDesignService
+    container_name: ie-lowcode
+    ports: ["${LOWCODE_PORT:-5318}:80"]
+
+  asset-tracker:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/AssetTracker
+    container_name: ie-assets
+    ports: ["${ASSETS_PORT:-5319}:80"]
+
+  rnbcal:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/RnBCal
+    container_name: ie-rnbcal
+    ports: ["${RNBCAL_PORT:-5320}:80"]
+
+  productivity-service:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/ProductivityService
+    container_name: ie-productivity
+    ports: ["${PRODUCTIVITY_PORT:-5321}:80"]
+
+  outlook-extractor:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/OutlookExtractor
+    container_name: ie-outlook
+    ports: ["${OUTLOOK_PORT:-5322}:80"]
+
+  hrm:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/HRM
+    container_name: ie-hrm
+    ports: ["${HRM_PORT:-5323}:80"]
+
+  # ═══════════════════════════════════════════════════════════════════
+  # BLOCKCHAIN & DEFI (5330-5349)
+  # ═══════════════════════════════════════════════════════════════════
+
+  defi-soberano:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/DeFiSoberano
+    container_name: ie-defi
+    ports: ["${DEFI_PORT:-5330}:80"]
+
+  multichain-bridge:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/MultichainBridge
+    container_name: ie-bridge
+    ports: ["${BRIDGE_PORT:-5331}:80"]
+
+  nft-certificates:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/NFTCertificates
+    container_name: ie-nft
+    ports: ["${NFT_PORT:-5332}:80"]
+
+  ido-factory:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/IDOFactory
+    container_name: ie-ido
+    ports: ["${IDO_PORT:-5333}:80"]
+
+  nexus-aggregation:
+    <<: *dotnet-defaults
+    build: ./08-dotnet/microservices/NexusAggregationService
+    container_name: ie-nexus
+    ports: ["${NEXUS_PORT:-5334}:80"]
