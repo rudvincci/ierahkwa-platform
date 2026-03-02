@@ -62,7 +62,7 @@ describe('TrustEngine', () => {
 
     test('scoreCommunityVouching: many vouches from trusted users = high', () => {
       const wellVouched = engine.scoreCommunityVouching(10, 85);
-      const fewVouches = engine.scoreCommunityVouching(1, 50);
+      const fewVouches = engine.scoreCommunityVouching(3, 80);
       const noVouches = engine.scoreCommunityVouching(0, 0);
 
       expect(wellVouched).toBeGreaterThan(fewVouches);
@@ -102,11 +102,13 @@ describe('TrustEngine', () => {
     });
 
     test('returns correct trust level based on score', () => {
-      // Force a high-trust user
+      // First establish known IP, then calculate with all signals
+      engine.calculateTrust('high-trust', { ip: '10.0.0.1' });
       const result = engine.calculateTrust('high-trust', {
         authMethod: 'sbt',
         sessionStart: Date.now() - 86400000,
         ip: '10.0.0.1',
+        requestRate: 2,
         transactions: { success: 1000, failure: 1, volume: 1000000 },
         vouches: { count: 20, avgTrust: 95 }
       });

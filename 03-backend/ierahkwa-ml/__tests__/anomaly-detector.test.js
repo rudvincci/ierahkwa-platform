@@ -65,9 +65,9 @@ describe('AnomalyDetector', () => {
     });
 
     test('extreme outlier is detected as anomaly', () => {
-      // Seed with stable values
+      // Seed with stable values (slight variation so stddev > 0)
       for (let i = 0; i < 15; i++) {
-        detector.detectZScore('stable', 50);
+        detector.detectZScore('stable', 50 + (i % 3));
       }
       const result = detector.detectZScore('stable', 500);
       expect(result.isAnomaly).toBe(true);

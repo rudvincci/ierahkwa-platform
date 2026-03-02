@@ -23,7 +23,9 @@ describe('PatternAnalyzer', () => {
         metadata: { page: '/dashboard' }
       });
 
-      expect(features.hourOfDay).toBe(14);
+      // getHours() returns local time, so we check against local hour
+      const expectedHour = new Date('2026-03-01T14:30:00Z').getHours();
+      expect(features.hourOfDay).toBe(expectedHour);
       expect(features.actionType).toBe('page_view');
       expect(features.platform).toBe('nexus-tesoro');
       expect(features.severity).toBe(0); // info = 0
