@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hive Monitor — Ierahkwa ML Engine</title>
+    <link rel="stylesheet" href="../../shared/ierahkwa.css">
+    <style>
+        :root {
+            --hive-cyan: #00bcd4;
+            --hive-green: #00e676;
+            --hive-amber: #ffd600;
+            --hive-red: #f44336;
+            --hive-purple: #7c4dff;
+        }
+        body { background: #0a0a0f; color: #e0e0e0; font-family: 'Courier New', monospace; margin: 0; }
+        .hive-header {
+            background: linear-gradient(135deg, #0d1117, #1a1a2e);
+            border-bottom: 2px solid var(--hive-cyan);
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .hive-header h1 { color: var(--hive-cyan); font-size: 1.4rem; margin: 0; }
+        .status-badge {
+            padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold;
+        }
+        .status-active { background: rgba(0,230,118,0.15); color: var(--hive-green); border: 1px solid var(--hive-green); }
+        .status-warning { background: rgba(255,214,0,0.15); color: var(--hive-amber); border: 1px solid var(--hive-amber); }
+        .status-critical { background: rgba(244,67,54,0.15); color: var(--hive-red); border: 1px solid var(--hive-red); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; padding: 1rem 2rem; }
+        .card {
+            background: #12121a; border: 1px solid #2a2a3a; border-radius: 12px;
+            padding: 1.2rem; position: relative; overflow: hidden;
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--hive-cyan), var(--hive-purple));
+        }
+        .card h3 { color: var(--hive-cyan); font-size: 0.9rem; margin: 0 0 1rem 0; text-transform: uppercase; letter-spacing: 1px; }
+
+        .metric { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #1a1a2a; }
+        .metric:last-child { border-bottom: none; }
+        .metric-label { color: #888; font-size: 0.8rem; }
+        .metric-value { font-size: 1.1rem; font-weight: bold; }
+        .value-green { color: var(--hive-green); }
+        .value-amber { color: var(--hive-amber); }
+        .value-red { color: var(--hive-red); }
+        .value-cyan { color: var(--hive-cyan); }
+        .value-purple { color: var(--hive-purple); }
+
+        .bar-chart { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.5rem; }
+        .bar-row { display: flex; align-items: center; gap: 0.5rem; }
+        .bar-label { width: 80px; font-size: 0.7rem; color: #888; text-align: right; }
+        .bar-track { flex: 1; height: 16px; background: #1a1a2a; border-radius: 3px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; display: flex; align-items: center; padding-left: 4px; font-size: 0.65rem; }
+        .bar-fill.critical { background: linear-gradient(90deg, #f44336, #d32f2f); }
+        .bar-fill.high { background: linear-gradient(90deg, #ff9800, #f57c00); }
+        .bar-fill.medium { background: linear-gradient(90deg, #ffd600, #fbc02d); color: #000; }
+        .bar-fill.low { background: linear-gradient(90deg, #00bcd4, #0097a7); }
+        .bar-fill.info { background: linear-gradient(90deg, #4caf50, #388e3c); }
+
+        .node-map {
+            width: 100%; height: 300px; background: #0d1117;
+            border: 1px solid #2a2a3a; border-radius: 8px;
+            position: relative; overflow: hidden;
+        }
+        .node-dot {
+            position: absolute; width: 6px; height: 6px; border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        .node-dot.active { background: var(--hive-green); box-shadow: 0 0 8px var(--hive-green); }
+        .node-dot.inactive { background: var(--hive-amber); box-shadow: 0 0 6px var(--hive-amber); }
+        .node-dot.dead { background: var(--hive-red); box-shadow: 0 0 4px var(--hive-red); }
+        .node-dot.nexus { width: 12px; height: 12px; background: var(--hive-cyan); box-shadow: 0 0 15px var(--hive-cyan); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .alert-list { max-height: 200px; overflow-y: auto; }
+        .alert-item {
+            padding: 0.5rem; margin: 0.3rem 0; border-radius: 6px; font-size: 0.75rem;
+            border-left: 3px solid;
+        }
+        .alert-critical { background: rgba(244,67,54,0.1); border-color: var(--hive-red); }
+        .alert-high { background: rgba(255,152,0,0.1); border-color: #ff9800; }
+        .alert-medium { background: rgba(255,214,0,0.1); border-color: var(--hive-amber); }
+
+        .trust-ring {
+            width: 120px; height: 120px; border-radius: 50%; margin: 0 auto;
+            background: conic-gradient(
+                var(--hive-green) 0% var(--trust-pct, 50%),
+                #1a1a2a var(--trust-pct, 50%) 100%
+            );
+            display: flex; align-items: center; justify-content: center;
+        }
+        .trust-ring-inner {
+            width: 90px; height: 90px; border-radius: 50%; background: #12121a;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column;
+        }
+        .trust-score { font-size: 1.8rem; font-weight: bold; color: var(--hive-green); }
+        .trust-label { font-size: 0.6rem; color: #888; }
+
+        .footer {
+            padding: 1rem 2rem; text-align: center; color: #555;
+            font-size: 0.7rem; border-top: 1px solid #1a1a2a;
+        }
+        .live-dot { display: inline-block; width: 8px; height: 8px; background: var(--hive-green); border-radius: 50%; animation: pulse 1s infinite; margin-right: 6px; }
+
+        #refresh-timer { color: #555; font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+    <div class="hive-header">
+        <h1>IERAHKWA HIVE MONITOR v1.0</h1>
+        <div style="display:flex;align-items:center;gap:1rem;">
+            <span id="refresh-timer">Refresh: 10s</span>
+            <span class="status-badge status-active" id="system-status">
+                <span class="live-dot"></span>OPERATIONAL
+            </span>
+        </div>
+    </div>
+
+    <div class="grid">
+        <!-- Network Overview -->
+        <div class="card">
+            <h3>Network Status</h3>
+            <div class="metric">
+                <span class="metric-label">Total Nodes</span>
+                <span class="metric-value value-cyan" id="total-nodes">—</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Active</span>
+                <span class="metric-value value-green" id="active-nodes">—</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Inactive</span>
+                <span class="metric-value value-amber" id="inactive-nodes">—</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Dead</span>
+                <span class="metric-value value-red" id="dead-nodes">—</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Consensus</span>
+                <span class="metric-value" id="consensus-status">—</span>
+            </div>
+        </div>
+
+        <!-- Anomaly Detection -->
+        <div class="card">
+            <h3>Anomaly Detection</h3>
+            <div class="metric">
+                <span class="metric-label">Metrics Tracked</span>
+                <span class="metric-value value-purple" id="metrics-tracked">—</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">EMA Streams</span>
+                <span class="metric-value value-cyan" id="ema-streams">—</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Detections</span>
+                <span class="metric-value value-red" id="detection-count">—</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Z-Threshold</span>
+                <span class="metric-value" id="z-threshold">2.5</span>
+            </div>
+        </div>
+
+        <!-- Trust Engine -->
+        <div class="card" style="text-align:center;">
+            <h3>Trust Engine</h3>
+            <div class="trust-ring" id="trust-ring" style="--trust-pct:50%">
+                <div class="trust-ring-inner">
+                    <span class="trust-score" id="avg-trust">—</span>
+                    <span class="trust-label">AVG SCORE</span>
+                </div>
+            </div>
+            <div style="margin-top:1rem;">
+                <div class="metric">
+                    <span class="metric-label">Users Tracked</span>
+                    <span class="metric-value value-cyan" id="trust-users">—</span>
+                </div>
+            </div>
+            <div class="bar-chart" id="trust-distribution"></div>
+        </div>
+
+        <!-- Pattern Analyzer -->
+        <div class="card">
+            <h3>Pattern Analyzer</h3>
+            <div class="metric">
+                <span class="metric-label">Users Tracked</span>
+                <span class="metric-value value-cyan" id="pattern-users">—</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">With Fingerprint</span>
+                <span class="metric-value value-green" id="pattern-fingerprints">—</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Similarity Threshold</span>
+                <span class="metric-value" id="similarity-threshold">0.6</span>
+            </div>
+        </div>
+
+        <!-- Node Map -->
+        <div class="card" style="grid-column: span 2;">
+            <h3>Swarm Map</h3>
+            <div class="node-map" id="node-map">
+                <div style="position:absolute;bottom:8px;right:8px;font-size:0.6rem;color:#555;">
+                    Americas — Ierahkwa Territory
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Alerts -->
+        <div class="card">
+            <h3>Recent Alerts</h3>
+            <div class="alert-list" id="alert-list">
+                <div style="color:#555;font-size:0.8rem;text-align:center;padding:2rem;">
+                    No alerts — system healthy
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Detections -->
+        <div class="card">
+            <h3>Anomaly Log</h3>
+            <div class="alert-list" id="detection-log">
+                <div style="color:#555;font-size:0.8rem;text-align:center;padding:2rem;">
+                    No anomalies detected
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Ierahkwa Ne Kanienke — Sovereign ML Engine — Powered by MameyNode
+    </div>
+
+    <script src="../../shared/ierahkwa.js"></script>
+    <script src="../../shared/ierahkwa-agents.js"></script>
+    <script>
+    (function() {
+        'use strict';
+
+        const ML_API = window.location.hostname === 'localhost'
+            ? 'http://localhost:3092'
+            : '/api/ml';
+
+        let refreshInterval = 10000;
+        let timer = null;
+
+        async function fetchDashboard() {
+            try {
+                const res = await fetch(`${ML_API}/api/dashboard`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (data.success) updateUI(data.dashboard);
+            } catch (err) {
+                // ML service not running — show demo data
+                updateUI(generateDemoData());
+            }
+        }
+
+        function updateUI(d) {
+            // Network
+            const sw = d.swarmMonitor || {};
+            const nh = sw.networkHealth || {};
+            setText('total-nodes', nh.total || sw.totalNodes || 0);
+            setText('active-nodes', nh.active || (sw.byStatus && sw.byStatus.active) || 0);
+            setText('inactive-nodes', nh.inactive || (sw.byStatus && sw.byStatus.inactive) || 0);
+            setText('dead-nodes', nh.dead || (sw.byStatus && sw.byStatus.dead) || 0);
+
+            const consensusEl = document.getElementById('consensus-status');
+            if (nh.consensusReachable !== undefined) {
+                consensusEl.textContent = nh.consensusReachable ? 'REACHABLE' : 'FRAGMENTED';
+                consensusEl.className = 'metric-value ' + (nh.consensusReachable ? 'value-green' : 'value-red');
+            }
+
+            // Anomaly
+            const ad = d.anomalyDetector || {};
+            setText('metrics-tracked', ad.metricsTracked || 0);
+            setText('ema-streams', ad.emaStreams || 0);
+            setText('detection-count', ad.detections || 0);
+            if (ad.config) setText('z-threshold', ad.config.zThreshold || 2.5);
+
+            // Detections log
+            if (ad.recentDetections && ad.recentDetections.length > 0) {
+                const logEl = document.getElementById('detection-log');
+                logEl.innerHTML = ad.recentDetections.map(det => `
+                    <div class="alert-item alert-${det.severity || 'medium'}">
+                        <strong>${det.metricKey}</strong>: ${det.value}
+                        <span style="float:right;color:#666;">${det.severity}</span>
+                    </div>
+                `).join('');
+            }
+
+            // Trust
+            const te = d.trustEngine || {};
+            const avgScore = te.averageScore || 0;
+            setText('avg-trust', avgScore);
+            setText('trust-users', te.totalUsers || 0);
+            document.getElementById('trust-ring').style.setProperty('--trust-pct', avgScore + '%');
+
+            const trustColor = avgScore >= 75 ? 'var(--hive-green)' : avgScore >= 50 ? 'var(--hive-amber)' : 'var(--hive-red)';
+            document.querySelector('.trust-score').style.color = trustColor;
+
+            // Trust distribution
+            if (te.distribution) {
+                const dist = te.distribution;
+                const total = Object.values(dist).reduce((s, v) => s + v, 0) || 1;
+                const distEl = document.getElementById('trust-distribution');
+                distEl.innerHTML = Object.entries(dist).map(([level, count]) => {
+                    const pct = Math.round((count / total) * 100);
+                    const colorMap = { sovereign: 'info', trusted: 'low', standard: 'medium', limited: 'high', untrusted: 'critical' };
+                    return `
+                        <div class="bar-row">
+                            <span class="bar-label">${level}</span>
+                            <div class="bar-track">
+                                <div class="bar-fill ${colorMap[level] || 'info'}" style="width:${Math.max(pct, 2)}%">${count}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Pattern
+            const pa = d.patternAnalyzer || {};
+            setText('pattern-users', pa.usersTracked || 0);
+            setText('pattern-fingerprints', pa.usersWithFingerprint || 0);
+            if (pa.config) setText('similarity-threshold', pa.config.similarityThreshold || 0.6);
+
+            // Alerts
+            const alerts = (sw.recentAlerts || []);
+            if (alerts.length > 0) {
+                const alertEl = document.getElementById('alert-list');
+                alertEl.innerHTML = alerts.map(a => `
+                    <div class="alert-item alert-${a.severity || 'medium'}">
+                        <strong>${a.type}</strong>: ${a.message}
+                        <div style="color:#555;font-size:0.65rem;margin-top:2px;">${a.timestamp}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Node map (demo)
+            renderNodeMap(sw);
+        }
+
+        function renderNodeMap(sw) {
+            const mapEl = document.getElementById('node-map');
+            // Keep only dot elements
+            mapEl.querySelectorAll('.node-dot').forEach(el => el.remove());
+
+            // Generate node positions from stats or demo
+            const byType = sw.byType || {};
+            const allNodes = [];
+
+            // NEXUS nodes (19 fixed positions across Americas)
+            const nexusPositions = [
+                { lat: 40.7, lng: -74.0 }, { lat: 19.4, lng: -99.1 }, { lat: -23.5, lng: -46.6 },
+                { lat: 4.6, lng: -74.1 }, { lat: -12.0, lng: -77.0 }, { lat: 14.6, lng: -90.5 },
+                { lat: -34.6, lng: -58.4 }, { lat: 18.5, lng: -69.9 }, { lat: 10.5, lng: -66.9 },
+                { lat: 23.1, lng: -82.4 }, { lat: -0.2, lng: -78.5 }, { lat: -16.5, lng: -68.1 },
+                { lat: 25.7, lng: -80.2 }, { lat: 34.0, lng: -118.2 }, { lat: 37.8, lng: -122.4 },
+                { lat: 45.5, lng: -73.6 }, { lat: 9.9, lng: -84.1 }, { lat: -33.4, lng: -70.7 },
+                { lat: 6.2, lng: -75.6 }
+            ];
+
+            nexusPositions.forEach((pos, i) => {
+                allNodes.push({ ...pos, type: 'nexus', status: 'active', id: `NEXUS-${i+1}` });
+            });
+
+            // Seed nodes (random around NEXUS positions)
+            const seedCount = (byType.seed && byType.seed.length) || 50;
+            for (let i = 0; i < seedCount; i++) {
+                const base = nexusPositions[i % nexusPositions.length];
+                allNodes.push({
+                    lat: base.lat + (Math.random() - 0.5) * 10,
+                    lng: base.lng + (Math.random() - 0.5) * 10,
+                    type: 'seed',
+                    status: Math.random() > 0.1 ? 'active' : (Math.random() > 0.5 ? 'inactive' : 'dead'),
+                    id: `SEED-${i}`
+                });
+            }
+
+            // Convert lat/lng to map coordinates (simple Mercator-like)
+            const mapWidth = mapEl.offsetWidth;
+            const mapHeight = mapEl.offsetHeight;
+
+            for (const node of allNodes) {
+                const x = ((node.lng + 130) / 100) * mapWidth;  // Americas: -130 to -30
+                const y = ((60 - node.lat) / 100) * mapHeight;  // Lat: -40 to 60
+
+                if (x < 0 || x > mapWidth || y < 0 || y > mapHeight) continue;
+
+                const dot = document.createElement('div');
+                dot.className = `node-dot ${node.type === 'nexus' ? 'nexus' : node.status}`;
+                dot.style.left = x + 'px';
+                dot.style.top = y + 'px';
+                dot.title = `${node.id} (${node.type}) — ${node.status}`;
+                mapEl.appendChild(dot);
+            }
+        }
+
+        function generateDemoData() {
+            return {
+                anomalyDetector: {
+                    metricsTracked: 47, emaStreams: 94, detections: 3,
+                    config: { windowSize: 200, zThreshold: 2.5, emaAlpha: 0.1, iqrMultiplier: 1.5 },
+                    recentDetections: [
+                        { metricKey: 'freq_rate:guardian', value: 42, severity: 'high', timestamp: new Date().toISOString() },
+                        { metricKey: 'severity:anomaly-agent', value: 4, severity: 'critical', timestamp: new Date().toISOString() }
+                    ]
+                },
+                trustEngine: {
+                    totalUsers: 1247, averageScore: 72,
+                    distribution: { sovereign: 89, trusted: 412, standard: 534, limited: 178, untrusted: 34 }
+                },
+                patternAnalyzer: {
+                    usersTracked: 1247, usersWithFingerprint: 891,
+                    config: { similarityThreshold: 0.6 }
+                },
+                swarmMonitor: {
+                    totalNodes: 247, byType: { nexus: 19, seed: 180, mesh: 48 },
+                    byStatus: { active: 231, inactive: 12, dead: 4 }, byRegion: {},
+                    networkHealth: {
+                        total: 247, active: 231, inactive: 12, dead: 4,
+                        activeRatio: 0.94, isFragmented: false, consensusReachable: true
+                    },
+                    recentAlerts: []
+                }
+            };
+        }
+
+        function setText(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val;
+        }
+
+        // Initial fetch and auto-refresh
+        fetchDashboard();
+        timer = setInterval(fetchDashboard, refreshInterval);
+
+        // Countdown timer display
+        let countdown = refreshInterval / 1000;
+        setInterval(() => {
+            countdown--;
+            if (countdown <= 0) countdown = refreshInterval / 1000;
+            document.getElementById('refresh-timer').textContent = `Refresh: ${countdown}s`;
+        }, 1000);
+    })();
+    </script>
+</body>
+</html>
