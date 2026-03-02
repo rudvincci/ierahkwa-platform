@@ -1,0 +1,170 @@
+## ============================================================
+## torrc — Tor Hidden Service Configuration
+## Ierahkwa Ne Kanienke — Gobierno Soberano Digital
+##
+## This file configures Tor to expose sovereign services as
+## .onion hidden services, providing censorship-resistant
+## access to the entire Ierahkwa platform.
+##
+## Installation:
+##   sudo cp torrc /etc/tor/torrc
+##   sudo chown root:root /etc/tor/torrc
+##   sudo chmod 644 /etc/tor/torrc
+##   sudo systemctl restart tor
+##
+## After restart, find the .onion address at:
+##   sudo cat /var/lib/tor/ierahkwa_onion/hostname
+## ============================================================
+
+
+## -----------------------------------------------------------
+## Hidden Service: Ierahkwa Sovereign Platform
+## -----------------------------------------------------------
+## All platform services are exposed through a single .onion
+## address. Tor will generate the keypair and hostname on first
+## start. The keys are stored in HiddenServiceDir.
+## PROTECT THIS DIRECTORY — it contains the .onion private key.
+
+HiddenServiceDir /var/lib/tor/ierahkwa_onion/
+
+## Version 3 onion services (256-bit ed25519 keys).
+## v2 is deprecated and insecure. Always use v3.
+HiddenServiceVersion 3
+
+## --- Port Mappings ---
+## Format: HiddenServicePort <virtual_port> <target_host>:<target_port>
+##
+## <virtual_port> is what external users connect to via .onion
+## <target_host>:<target_port> is the internal Docker service
+##
+## We use Docker service names as hostnames because Tor runs
+## inside the Docker network alongside all other services.
+
+## HTTP — nginx reverse proxy (serves all web interfaces)
+HiddenServicePort 80 nginx-proxy:80
+
+## HTTPS — nginx reverse proxy with TLS termination
+## Note: TLS over .onion is technically redundant (Tor provides
+## end-to-end encryption), but we enable it anyway for defense
+## in depth and to satisfy browser security indicators.
+HiddenServicePort 443 nginx-proxy:443
+
+## Sovereign Core API — direct access for API clients
+## Bypasses nginx for programmatic access from trusted tools.
+HiddenServicePort 3050 sovereign-core:3050
+
+## Matrix Synapse — federated messaging server
+## Enables Matrix federation and client access over Tor.
+## Users can add this .onion as their homeserver in Element.
+HiddenServicePort 8008 synapse:8008
+
+
+## -----------------------------------------------------------
+## SOCKS Proxy
+## -----------------------------------------------------------
+## The SOCKS port allows other services inside the Docker
+## network to route their outbound traffic through Tor.
+## This is used by services that need to access external
+## .onion addresses or anonymize their traffic.
+
+SocksPort 9050
+
+## Only allow connections from the Docker bridge network.
+## The 172.28.0.0/16 range matches the subnet defined in
+## docker-compose.yml for the sovereign network.
+## Reject everything else to prevent unauthorized use.
+
+SocksPolicy accept 172.28.0.0/16
+SocksPolicy reject *
+
+
+## -----------------------------------------------------------
+## Data & Logging
+## -----------------------------------------------------------
+
+## Data directory for Tor state, caches, and keys.
+## Must be owned by the tor user (debian-tor on Debian/Ubuntu).
+DataDirectory /var/lib/tor
+
+## Log level: debug, info, notice, warn, err
+## "notice" is recommended for production — enough detail
+## for troubleshooting without excessive disk usage.
+Log notice file /var/log/tor/notices.log
+
+
+## -----------------------------------------------------------
+## Exit Policy
+## -----------------------------------------------------------
+## This node is NOT a Tor exit relay. It only serves as a
+## hidden service endpoint. Reject all exit traffic to avoid
+## legal liability and resource consumption.
+
+ExitPolicy reject *:*
+
+
+## -----------------------------------------------------------
+## Relay Configuration (Disabled)
+## -----------------------------------------------------------
+## Uncomment these lines ONLY if you want this node to also
+## serve as a Tor relay (helps the network but uses bandwidth).
+##
+## ORPort 9001
+## Nickname IerahkwaRelay
+## ContactInfo admin@ierahkwa.org
+## RelayBandwidthRate 1 MB
+## RelayBandwidthBurst 2 MB
+## ExitRelay 0
+
+
+## -----------------------------------------------------------
+## Security Hardening
+## -----------------------------------------------------------
+
+## Sandbox mode (Linux only) — restricts Tor's system calls.
+## Uncomment on Linux systems for additional security.
+## Sandbox 1
+
+## Disable external DNS to prevent DNS leaks.
+## All resolution happens through Tor circuits.
+## ClientDNSRejectInternalAddresses 1
+
+## Prevent Tor from running as root.
+## The systemd unit should drop privileges to the tor user.
+## User debian-tor
+
+## Strict node selection — avoid compromised or surveilled nodes.
+## Uncomment and customize if you have specific country concerns.
+## ExcludeNodes {us},{gb},{au},{ca},{nz}
+## StrictNodes 1
+
+
+## -----------------------------------------------------------
+## Performance Tuning
+## -----------------------------------------------------------
+
+## Number of introduction points for the hidden service.
+## Default is 3. Increasing to 6 improves availability
+## but slightly increases exposure surface.
+## HiddenServiceNumIntroductionPoints 6
+
+## Circuit build timeout (seconds). Lower values make
+## connections snappier but may fail on slow networks.
+## LearnCircuitBuildTimeout 1
+## CircuitBuildTimeout 30
+
+## Connection padding to resist traffic analysis.
+## Enabled by default in modern Tor.
+## ConnectionPadding 1
+
+
+## -----------------------------------------------------------
+## Monitoring
+## -----------------------------------------------------------
+
+## Control port for monitoring tools (like Nyx).
+## Only enable if you need real-time Tor monitoring.
+## Protect with authentication.
+##
+## ControlPort 9051
+## HashedControlPassword <generate with: tor --hash-password "your_password">
+## CookieAuthentication 1

@@ -8,20 +8,35 @@ require("dotenv").config();
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "0x0000000000000000000000000000000000000000000000000000000000000001";
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
+const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "";
 const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID || "";
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY || "";
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: {
-    version: "0.8.20",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200
+    compilers: [
+      {
+        version: "0.8.26",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          },
+          viaIR: true
+        }
       },
-      viaIR: true
-    }
+      {
+        version: "0.8.20",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          },
+          viaIR: true
+        }
+      }
+    ]
   },
   networks: {
     hardhat: {
@@ -51,6 +66,11 @@ module.exports = {
       accounts: [PRIVATE_KEY],
       chainId: 80001
     },
+    polygonAmoy: {
+      url: "https://rpc-amoy.polygon.technology",
+      accounts: [PRIVATE_KEY],
+      chainId: 80002
+    },
     // Mainnets
     mainnet: {
       url: `https://mainnet.infura.io/v3/${INFURA_PROJECT_ID}`,
@@ -59,6 +79,11 @@ module.exports = {
     },
     polygon: {
       url: `https://polygon-mainnet.infura.io/v3/${INFURA_PROJECT_ID}`,
+      accounts: [PRIVATE_KEY],
+      chainId: 137
+    },
+    polygonMainnet: {
+      url: "https://polygon-rpc.com",
       accounts: [PRIVATE_KEY],
       chainId: 137
     },
@@ -77,6 +102,12 @@ module.exports = {
       accounts: [PRIVATE_KEY],
       chainId: 8453
     },
+    // MameyNode Local Development
+    mameynode: {
+      url: "http://127.0.0.1:8545",
+      accounts: [PRIVATE_KEY],
+      chainId: 777777
+    },
     // IERAHKWA Sovereign Chain (Custom)
     ierahkwa: {
       url: process.env.IERAHKWA_RPC_URL || "http://localhost:8545",
@@ -88,10 +119,22 @@ module.exports = {
     apiKey: {
       mainnet: ETHERSCAN_API_KEY,
       sepolia: ETHERSCAN_API_KEY,
-      polygon: process.env.POLYGONSCAN_API_KEY || "",
+      polygon: POLYGONSCAN_API_KEY,
+      polygonAmoy: POLYGONSCAN_API_KEY,
+      polygonMainnet: POLYGONSCAN_API_KEY,
       bsc: process.env.BSCSCAN_API_KEY || "",
       arbitrumOne: process.env.ARBISCAN_API_KEY || ""
-    }
+    },
+    customChains: [
+      {
+        network: "polygonAmoy",
+        chainId: 80002,
+        urls: {
+          apiURL: "https://api-amoy.polygonscan.com/api",
+          browserURL: "https://amoy.polygonscan.com"
+        }
+      }
+    ]
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS === "true",
