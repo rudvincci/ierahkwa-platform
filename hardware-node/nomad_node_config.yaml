@@ -1,0 +1,154 @@
+# ============================================================================
+# Ierahkwa Nodo Nómada — Configuración de servicios para hardware limitado
+# Uso: docker compose -f nomad_node_config.yaml up -d
+# Compatible con Raspberry Pi 5 (4-8 GB) o Intel NUC (16 GB)
+#
+# Prioridad de servicios:
+#   Tier 1 (siempre activos): Matrix, Tor, sovereign-core, postgres, redis
+#   Tier 2 (si hay energía):  Ollama AI, Grafana, Prometheus
+#   Tier 3 (opcional):        IPFS, Handshake DNS
+#
+# Ver hardware-node/mobile-node-guide.md para guía completa.
+# Integrado con scripts/protocols/energy_monitor.py para gestión automática.
+# ============================================================================
+
+version: "3.8"
+
+networks:
+  nomad-net:
+    driver: bridge
+
+volumes:
+  pg-nomad:
+  redis-nomad:
+  synapse-nomad:
+  tor-nomad:
+  tor-hs-nomad:
+
+services:
+  # ── Tier 1: Siempre activos ──────────────────────────────────────────
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: nomad-postgres
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-ierahkwa_sovereign}
+      - POSTGRES_USER=${POSTGRES_USER:?required}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?required}
+    volumes:
+      - pg-nomad:/var/lib/postgresql/data
+    networks: [nomad-net]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    container_name: nomad-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD:?required} --maxmemory 64mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-nomad:/data
+    networks: [nomad-net]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 96M
+          cpus: "0.25"
+
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: nomad-synapse
+    environment:
+      - SYNAPSE_SERVER_NAME=matrix.ierahkwa.org
+      - SYNAPSE_REPORT_STATS=no
+      - SYNAPSE_NO_TLS=yes
+    volumes:
+      - synapse-nomad:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [nomad-net]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+
+  tor-proxy:
+    image: osminogin/tor-simple:latest
+    container_name: nomad-tor
+    volumes:
+      - tor-nomad:/var/lib/tor
+      - tor-hs-nomad:/var/lib/tor/hidden_service
+    environment:
+      - TOR_HIDDEN_SERVICE_PORT_80=sovereign-core:3050
+    depends_on: [sovereign-core]
+    networks: [nomad-net]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.25"
+
+  sovereign-core:
+    image: node:22-alpine
+    container_name: nomad-core
+    working_dir: /app
+    volumes:
+      - ../03-backend/sovereign-core:/app:ro
+    command: ["node", "server.js"]
+    environment:
+      - PORT=3050
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@nomad-postgres:5432/${POSTGRES_DB:-ierahkwa_sovereign}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@nomad-redis:6379
+      - JWT_SECRET=${JWT_SECRET:?required}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [nomad-net]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+
+  # ── Tier 2: Solo con energía suficiente (energy_monitor.py los gestiona) ──
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: nomad-ollama
+    networks: [nomad-net]
+    restart: unless-stopped
+    profiles: ["full"]
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: "2.0"
+
+  # ── Tier 3: Opcional ─────────────────────────────────────────────────
+
+  ipfs-node:
+    image: ipfs/kubo:latest
+    container_name: nomad-ipfs
+    networks: [nomad-net]
+    restart: unless-stopped
+    profiles: ["full"]
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
