@@ -923,6 +923,138 @@
     initAgents();
   }
 
+  // ============================================================
+  // BACKEND ML SYNC — Connects agents to ierahkwa-ml service
+  // ============================================================
+  const MLSync = {
+    endpoint: null,
+    syncInterval: 30000, // 30 seconds
+    pendingEvents: [],
+    maxPending: 200,
+    userId: null,
+    timer: null,
+
+    init() {
+      // Auto-detect ML backend URL
+      const host = window.location.hostname;
+      if (host === 'localhost' || host === '127.0.0.1') {
+        this.endpoint = 'http://localhost:3092';
+      } else {
+        this.endpoint = window.IERAHKWA_ML_URL || null;
+      }
+
+      // Generate or retrieve persistent user ID
+      this.userId = localStorage.getItem('ierahkwa-uid');
+      if (!this.userId) {
+        this.userId = 'u-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+        localStorage.setItem('ierahkwa-uid', this.userId);
+      }
+
+      if (this.endpoint) {
+        this.timer = setInterval(() => this.sync(), this.syncInterval);
+        // Sync on page unload
+        window.addEventListener('beforeunload', () => this.sync());
+        console.log(`[MLSync] Backend conectado: ${this.endpoint}`);
+      }
+    },
+
+    /**
+     * Queue an event for batch sync to ML backend
+     * @param {string} source - Agent name
+     * @param {string} severity - info|low|medium|high|critical
+     * @param {string} message - Description
+     * @param {Object} [metadata] - Extra data
+     */
+    queueEvent(source, severity, message, metadata) {
+      this.pendingEvents.push({
+        source: source,
+        severity: severity,
+        message: message,
+        metadata: metadata || {},
+        timestamp: new Date().toISOString()
+      });
+      if (this.pendingEvents.length > this.maxPending) {
+        this.pendingEvents.shift();
+      }
+    },
+
+    /**
+     * Sync all pending data to ierahkwa-ml backend
+     */
+    async sync() {
+      if (!this.endpoint || this.pendingEvents.length === 0) return;
+
+      const payload = {
+        userId: this.userId,
+        agentId: 'ierahkwa-agents-' + AGENTS_VERSION,
+        events: this.pendingEvents.splice(0, 50),
+        trustSignals: {
+          sessionStart: PatternAgent.sessionData?.startTime || Date.now(),
+          authMethod: document.cookie.includes('auth') ? 'jwt' : 'anonymous',
+          ip: null, // Server will detect
+          requestRate: AnomalyAgent.counters.requests,
+          errorRate: 0
+        },
+        actions: [{
+          type: 'page_session',
+          platform: platform,
+          severity: 'info',
+          timestamp: new Date().toISOString(),
+          duration: Date.now() - (PatternAgent.sessionData?.startTime || Date.now())
+        }],
+        nodeHeartbeat: {
+          id: 'browser-' + this.userId.slice(0, 12),
+          type: 'agent',
+          region: Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown'
+        }
+      };
+
+      try {
+        const res = await fetch(this.endpoint + '/api/agent/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(5000)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          // Update local trust score from server
+          if (data.results?.trust?.score !== undefined) {
+            TrustAgent.score = data.results.trust.score;
+          }
+        }
+      } catch {
+        // ML backend offline — events stay queued for next sync
+      }
+    }
+  };
+
+  // Hook agents to queue events to MLSync
+  const _originalGuardianAlert = GuardianAgent.raiseAlert;
+  if (typeof _originalGuardianAlert === 'function') {
+    GuardianAgent.raiseAlert = function(type, details) {
+      _originalGuardianAlert.call(this, type, details);
+      MLSync.queueEvent('guardian', 'high', `Guardian alert: ${type}`, details);
+    };
+  }
+
+  const _originalAnomalyReport = AnomalyAgent.reportAnomaly;
+  if (typeof _originalAnomalyReport === 'function') {
+    AnomalyAgent.reportAnomaly = function(type, details) {
+      _originalAnomalyReport.call(this, type, details);
+      MLSync.queueEvent('anomaly', details?.severity || 'medium', `Anomaly: ${type}`, details);
+    };
+  }
+
+  const _originalForensicLog = ForensicAgent.log;
+  if (typeof _originalForensicLog === 'function') {
+    ForensicAgent.log = function(category, data) {
+      _originalForensicLog.call(this, category, data);
+      MLSync.queueEvent('forensic', 'info', `Forensic: ${category}`, data);
+    };
+  }
+
   // API Pública
   window.IerahkwaAgents = {
     version: AGENTS_VERSION,
@@ -933,6 +1065,7 @@
     shield: ShieldAgent,
     forensic: ForensicAgent,
     evolution: EvolutionAgent,
+    mlSync: MLSync,
     getStatus() {
       return {
         version: AGENTS_VERSION,
@@ -943,8 +1076,16 @@
         evolvedRules: EvolutionAgent.evolvedRules.length,
         forensicEvents: ForensicAgent.logCount,
         protectedMode: ShieldAgent.protectedMode,
-        sessions: PatternAgent.userProfile?.totalSessions || 0
+        sessions: PatternAgent.userProfile?.totalSessions || 0,
+        mlSyncEndpoint: MLSync.endpoint,
+        pendingEvents: MLSync.pendingEvents.length
       };
     }
   };
+
+  // Initialize ML sync after agents
+  function initAgentsWithML() {
+    initAgents();
+    MLSync.init();
+  }
 })();
