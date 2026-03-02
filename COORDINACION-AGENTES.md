@@ -30,6 +30,36 @@ Cada agente debe actualizar al **empezar** y al **terminar** su sesión:
 | 2026-03-02 | Claude | Fix 7 JWT/secretos hardcodeados (auditoría prioridad #1) | `03-backend/voto-soberano/server.js`, `03-backend/ierahkwa-shop/config/index.js`, `03-backend/ierahkwa-shop/src/routes/admin.js`, `03-backend/smart-school-node/src/config/config.js`, `03-backend/smart-school-node/src/server.js`, `03-backend/smart-school-node/src/seeders/seed.js` | completado |
 | 2026-03-02 | Cursor | Documentación: FALTANTE-GITHUB, COORDINACION-AGENTES, identificar archivos sin subir | `COORDINACION-AGENTES.md`, `FALTANTE-GITHUB-IERAHKWA-2026-02-27.md` | completado |
 | 2026-03-02 | Cursor | v11.0.0-PHANTOM: IerahkwaInheritance, IerahkwaPhantom, transferSovereignty, codec2_voice_bridge, ghost_bridge, snowflake, conciencia-captcha | `08-dotnet/.../DeFiSoberano/contracts/`, `scripts/protocols/`, `04-infraestructura/nginx/`, `docker-compose.sovereign.yml`, `03-backend/conciencia-captcha/` | completado |
+| 2026-03-02 | Claude | Tests: 6 archivos nuevos (~150 test cases) para shared modules y servicios críticos | `shared/__tests__/{security,error-handler,logger,audit}.test.js`, `voto-soberano/__tests__/voting-logic.test.js`, `ierahkwa-shop/__tests__/admin-auth.test.js` | completado |
+| 2026-03-02 | Cursor | v12.0.0: energy_monitor, airgap_transfer, nomad_node_config (solo lo que faltaba, sin duplicar) | `scripts/protocols/energy_monitor.py`, `scripts/security/airgap_transfer.sh`, `hardware-node/nomad_node_config.yaml` | completado |
+| 2026-03-02 | Claude | ierahkwa-ml: TrustEngine + AnomalyDetector (trust-engine.js, anomaly-detector.js, package.json) | `03-backend/ierahkwa-ml/lib/trust-engine.js`, `03-backend/ierahkwa-ml/lib/anomaly-detector.js`, `03-backend/ierahkwa-ml/package.json` | completado |
+| 2026-03-02 | Cursor | ierahkwa-ml server.js (entry point faltante) + subir todo pendiente a GitHub | `03-backend/ierahkwa-ml/server.js`, `COORDINACION-AGENTES.md` | completado |
+
+---
+
+## Estado del repo (actualizado 2026-03-02)
+
+### Versiones integradas
+- **v11.0.0-PHANTOM**: SBT Inheritance, Immortality Seal, Codec2 Voice Bridge, Snowflake/Tor Stealth, AI Empathy Captcha
+- **v12.0.0**: Energy Monitor (solar/batería), Air-Gap Transfer (bóveda fría GPG), Nomad Node Config (Docker Compose ligero)
+- **ML Engine**: TrustEngine (scoring multi-factor) + AnomalyDetector (Z-Score, EMA, IQR ensemble)
+- **Security fixes**: 7 JWT/secrets hardcodeados corregidos en 03-backend
+
+### Archivos verificados que YA EXISTEN (no duplicar)
+- `scripts/protocols/`: mediator, sentinel, codec2, lora, satellite_uplink, chaos_scheduler, peace_oracle, survival_sync, shamir, bio_ledger, dna_encoder, ipfs, js8call, welcome_bot, notify_guardians, energy_monitor
+- `scripts/security/`: harden-server.sh, tactical-wipe.sh, airgap_transfer.sh
+- `hardware-node/`: mobile-node-guide.md, raspberry-pi-setup.sh, mesh-antenna-specs.md, nomad_node_config.yaml
+- `sovereign-dns/`: setup_hns.sh, handshake-config.json
+- `08-dotnet/contracts/`: IerahkwaReputation, IerahkwaPulse, IerahkwaInheritance, IerahkwaPhantom, IerahkwaDestruct, IerahkwaTreasury, SovereignJustice
+- `03-backend/conciencia-captcha/`: conciencia_captcha.js, Dockerfile, package.json
+- `03-backend/ierahkwa-ml/`: server.js, lib/trust-engine.js, lib/anomaly-detector.js, package.json
+
+### Próximos pasos sugeridos
+- [ ] Compilar contratos Solidity: `cd 08-dotnet/microservices/DeFiSoberano && npx hardhat compile`
+- [ ] Tests de ierahkwa-ml: `cd 03-backend/ierahkwa-ml && npm test`
+- [ ] Verificar tests: `cd 03-backend/shared && npm test`
+- [ ] Integrar ierahkwa-ml en docker-compose.sovereign.yml
+- [ ] Añadir [Authorize] faltantes en páginas .NET (auditoría SEC-02)
 
 ---
 
