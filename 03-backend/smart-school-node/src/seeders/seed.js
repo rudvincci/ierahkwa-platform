@@ -35,7 +35,9 @@ const seedDatabase = async () => {
     console.log('Tenant created');
 
     // Create Admin User
-    const adminPassword = await bcrypt.hash(process.env.DEFAULT_ADMIN_PASSWORD || 'changeme-dev', 10);
+    const adminPassword = await bcrypt.hash(process.env.DEFAULT_ADMIN_PASSWORD || ((process.env.NODE_ENV || 'development') === 'production'
+      ? (() => { throw new Error('DEFAULT_ADMIN_PASSWORD is required in production'); })()
+      : 'changeme-dev-DO-NOT-USE-IN-PROD'), 10);
     const adminUser = await User.create({
       username: 'admin',
       email: 'admin@smartschool.com',

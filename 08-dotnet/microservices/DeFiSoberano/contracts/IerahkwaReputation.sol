@@ -45,6 +45,8 @@ contract IerahkwaReputation is
     bytes32 public constant AI_MEDIATOR_ROLE = keccak256("AI_MEDIATOR_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant GOVERNANCE_ROLE = keccak256("GOVERNANCE_ROLE");
+    /// @dev v11.0.0-PHANTOM: Solo IerahkwaInheritance puede ejecutar transferencia excepcional de legado.
+    bytes32 public constant LEGACY_ROLE = keccak256("LEGACY_ROLE");
 
     // =========================================================================
     // CONSTANTS
@@ -216,6 +218,19 @@ contract IerahkwaReputation is
      */
     function transfer(address, uint256) public pure override returns (bool) {
         revert("MATTR: Soulbound token — transfers are disabled");
+    }
+
+    /**
+     * @dev v11.0.0-PHANTOM: Transferencia excepcional de legado (Dead Man's Switch).
+     *      Solo IerahkwaInheritance puede llamar cuando un Guardián no pulsa en 180 días.
+     *      Burn + Mint para preservar supply.
+     */
+    function transferSovereignty(address from, address to) external onlyRole(LEGACY_ROLE) nonReentrant {
+        require(from != address(0) && to != address(0), "Invalid addresses");
+        uint256 amount = balanceOf(from);
+        require(amount > 0, "No MATTR to transfer");
+        _burn(from, amount);
+        _mint(to, amount);
     }
 
     // =========================================================================

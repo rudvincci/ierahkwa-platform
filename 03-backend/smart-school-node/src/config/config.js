@@ -1,7 +1,9 @@
 module.exports = {
   // JWT Configuration
   jwt: {
-    secret: process.env.JWT_SECRET || 'your-super-secret-key-change-in-production',
+    secret: process.env.JWT_SECRET || ((process.env.NODE_ENV || 'development') === 'production'
+      ? (() => { throw new Error('JWT_SECRET is required in production'); })()
+      : 'smart-school-dev-secret-DO-NOT-USE-IN-PROD'),
     expiresIn: process.env.JWT_EXPIRES_IN || '1h',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d'
   },
@@ -47,7 +49,9 @@ module.exports = {
   defaultAdmin: {
     username: 'admin',
     email: 'admin@smartschool.com',
-    password: process.env.DEFAULT_ADMIN_PASSWORD || 'changeme-dev',
+    password: process.env.DEFAULT_ADMIN_PASSWORD || ((process.env.NODE_ENV || 'development') === 'production'
+      ? (() => { throw new Error('DEFAULT_ADMIN_PASSWORD is required in production'); })()
+      : 'changeme-dev-DO-NOT-USE-IN-PROD'),
     firstName: 'System',
     lastName: 'Administrator'
   }

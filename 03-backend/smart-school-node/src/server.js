@@ -55,7 +55,9 @@ app.use(morgan('combined', { stream: { write: message => logger.info(message.tri
 
 // Session
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'secret',
+  secret: process.env.SESSION_SECRET || ((process.env.NODE_ENV || 'development') === 'production'
+    ? (() => { throw new Error('SESSION_SECRET is required in production'); })()
+    : 'smart-school-session-dev-DO-NOT-USE-IN-PROD'),
   resave: false,
   saveUninitialized: false,
   cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 3600000 }

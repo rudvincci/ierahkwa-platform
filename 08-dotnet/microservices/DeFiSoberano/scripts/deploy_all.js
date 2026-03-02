@@ -222,9 +222,44 @@ async function main() {
   ]);
 
   // =========================================================================
-  // 13. SovereignVault
+  // 13. IerahkwaInheritance (v11.0.0-PHANTOM — Dead Man's Switch)
   // =========================================================================
-  console.log("\n13/13 Deploying SovereignVault...");
+  console.log("\n13/15 Deploying IerahkwaInheritance...");
+  const IerahkwaInheritance = await ethers.getContractFactory("IerahkwaInheritance");
+  const inheritance = await IerahkwaInheritance.deploy(
+    addresses.IerahkwaReputation,
+    addresses.IerahkwaPulse
+  );
+  await inheritance.waitForDeployment();
+  addresses.IerahkwaInheritance = await inheritance.getAddress();
+  console.log(`      Address: ${addresses.IerahkwaInheritance}`);
+  await verifyContract(addresses.IerahkwaInheritance, [
+    addresses.IerahkwaReputation,
+    addresses.IerahkwaPulse,
+  ]);
+
+  // Grant LEGACY_ROLE to IerahkwaInheritance on Reputation
+  const reputationContract = await ethers.getContractAt("IerahkwaReputation", addresses.IerahkwaReputation);
+  const LEGACY_ROLE = ethers.keccak256(ethers.toUtf8Bytes("LEGACY_ROLE"));
+  await reputationContract.grantRole(LEGACY_ROLE, addresses.IerahkwaInheritance);
+  console.log("      Granted LEGACY_ROLE to IerahkwaInheritance");
+
+  // =========================================================================
+  // 14. IerahkwaPhantom (v11.0.0-PHANTOM — Sello de Inmortalidad)
+  // =========================================================================
+  console.log("\n14/15 Deploying IerahkwaPhantom...");
+  const phantomRootHash = ethers.keccak256(ethers.toUtf8Bytes("IERAHKWA_PHANTOM_v11.0.0"));
+  const IerahkwaPhantom = await ethers.getContractFactory("IerahkwaPhantom");
+  const phantom = await IerahkwaPhantom.deploy(phantomRootHash);
+  await phantom.waitForDeployment();
+  addresses.IerahkwaPhantom = await phantom.getAddress();
+  console.log(`      Address: ${addresses.IerahkwaPhantom}`);
+  await verifyContract(addresses.IerahkwaPhantom, [phantomRootHash]);
+
+  // =========================================================================
+  // 15. SovereignVault
+  // =========================================================================
+  console.log("\n15/15 Deploying SovereignVault...");
   const SovereignVault = await ethers.getContractFactory("SovereignVault");
   const vault = await SovereignVault.deploy(
     addresses.IerahkwaToken,

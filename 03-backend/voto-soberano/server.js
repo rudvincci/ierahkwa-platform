@@ -24,7 +24,10 @@ const db = require('./db');
 // Configuration
 // ============================================================
 const PORT = process.env.PORT || 3006;
-const JWT_SECRET = process.env.JWT_SECRET || 'voto-soberano-dev-secret-change-in-prod';
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const JWT_SECRET = process.env.JWT_SECRET || (NODE_ENV === 'production'
+  ? (() => { throw new Error('JWT_SECRET environment variable is required in production'); })()
+  : 'voto-soberano-dev-secret-DO-NOT-USE-IN-PROD');
 const SERVICE_NAME = 'voto-soberano';
 
 const log = createLogger(SERVICE_NAME);

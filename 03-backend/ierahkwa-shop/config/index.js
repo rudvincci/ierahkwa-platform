@@ -14,7 +14,11 @@ export default {
     sqlite: isSqlite,
     sqlitePath: isSqlite ? dbUrl.replace(/^file:/, '').trim() : null,
   },
-  jwt: { secret: process.env.JWT_SECRET || 'ierahkwa-shop-dev-secret' },
+  jwt: {
+    secret: process.env.JWT_SECRET || ((process.env.NODE_ENV || 'development') === 'production'
+      ? (() => { throw new Error('JWT_SECRET is required in production'); })()
+      : 'ierahkwa-shop-dev-secret-DO-NOT-USE-IN-PROD'),
+  },
   stripe: {
     secret: process.env.STRIPE_SECRET_KEY || '',
     publishable: process.env.STRIPE_PUBLISHABLE_KEY || '',

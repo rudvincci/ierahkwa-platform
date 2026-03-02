@@ -9,23 +9,21 @@ async function authHook(req, reply) {
   const key = req.headers['x-admin-key'] || (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
   if (!key) return reply.code(401).send({ error: 'Unauthorized' });
   
-  if (key === 'ierahkwa-dev' || key === 'ierahkwa-shop-dev-secret') {
-    req.admin = { id: 1, role_id: 1, permissions: ['all'] };
-    return;
+  // Dev-only backdoor keys — disabled in production
+  if ((process.env.NODE_ENV || 'development') !== 'production') {
+    if (key === process.env.DEV_ADMIN_KEY) {
+      req.admin = { id: 1, role_id: 1, permissions: ['all'] };
+      return;
+    }
   }
-  
+
   try {
     const [email, pass] = Buffer.from(key, 'base64').toString().split(':');
     if (!email || !pass) return reply.code(401).send({ error: 'Invalid auth' });
-    
+
     const data = db.get();
     const u = (data.admin_users || []).find(x => x.email === email && x.is_active);
     if (!u) return reply.code(401).send({ error: 'Invalid credentials' });
-    
-    if (email === 'admin@ierahkwa.gov' && pass === 'admin123') {
-      req.admin = { ...u, permissions: ['all'] };
-      return;
-    }
     
     if (!bcrypt.compareSync(pass, u.password_hash)) return reply.code(401).send({ error: 'Invalid credentials' });
     
