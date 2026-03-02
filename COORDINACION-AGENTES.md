@@ -34,6 +34,9 @@ Cada agente debe actualizar al **empezar** y al **terminar** su sesión:
 | 2026-03-02 | Cursor | v12.0.0: energy_monitor, airgap_transfer, nomad_node_config (solo lo que faltaba, sin duplicar) | `scripts/protocols/energy_monitor.py`, `scripts/security/airgap_transfer.sh`, `hardware-node/nomad_node_config.yaml` | completado |
 | 2026-03-02 | Claude | ierahkwa-ml: TrustEngine + AnomalyDetector (trust-engine.js, anomaly-detector.js, package.json) | `03-backend/ierahkwa-ml/lib/trust-engine.js`, `03-backend/ierahkwa-ml/lib/anomaly-detector.js`, `03-backend/ierahkwa-ml/package.json` | completado |
 | 2026-03-02 | Cursor | ierahkwa-ml server.js (entry point faltante) + subir todo pendiente a GitHub | `03-backend/ierahkwa-ml/server.js`, `COORDINACION-AGENTES.md` | completado |
+| 2026-03-02 | Cursor | Fix server.js: puerto 3092, rutas PatternAnalyzer + SwarmMonitor + AgentSync + Dashboard | `03-backend/ierahkwa-ml/server.js` | completado |
+| 2026-03-02 | Cursor | v13.0: radio_triangulation.py (PoL real: multilateration, ToF, RTT, Haversine, CLI) | `scripts/protocols/radio_triangulation.py` | completado |
+| 2026-03-02 | Cursor | v13.0: seed-node-firmware ESP32 real (PlatformIO, AES-256, LoRa mesh, deep sleep, vote, PoL pong) | `hardware-node/seed-node-firmware/` (platformio.ini, config.h, main.cpp) | completado |
 
 ---
 

@@ -918,9 +918,10 @@
 
   // Esperar a que el DOM esté listo
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAgents);
+    document.addEventListener('DOMContentLoaded', () => { initAgents(); MLSync.init(); });
   } else {
     initAgents();
+    MLSync.init();
   }
 
   // ============================================================
@@ -1083,9 +1084,4 @@
     }
   };
 
-  // Initialize ML sync after agents
-  function initAgentsWithML() {
-    initAgents();
-    MLSync.init();
-  }
 })();
