@@ -1,27 +1,24 @@
-# Coordinación entre agentes (Cursor + Claude)
+# Coordinación entre agentes (Cursor + Claude + Google AI)
 
 **Proyecto:** IERAHKWA — todo en un solo repo  
-**Repo:** https://github.com/rudvincci/ierahkwa-platform
+**Repo:** https://github.com/rudvincci/ierahkwa-platform  
+**Flujo:** Google AI (arquitectura/ideas) → Cursor (implementación real) → Claude (supervisión/mejoras)
 
 ---
 
 ## Agentes activos
 
-| Agente | Herramienta | Última sesión |
-|--------|-------------|---------------|
-| Cursor | IDE + AI (Cursor) | 2026-03-02 |
-| Claude | CLI + API (Claude Code) | 2026-03-02 |
+| Agente | Herramienta | Rol | Última sesión |
+|--------|-------------|-----|---------------|
+| Google AI | Gemini | Arquitecto — propone features, diseña conceptos | 2026-03-02 |
+| Cursor | IDE + AI (Cursor) | Implementador — código real, sin stubs, push a GitHub | 2026-03-02 |
+| Claude | CLI + API (Claude Code) | Supervisor — review, mejoras, testing, seguridad | 2026-03-02 |
 
 ---
 
 ## Registro de trabajo (actualizar al iniciar/finalizar)
 
 Cada agente debe actualizar al **empezar** y al **terminar** su sesión:
-
-```
-[YYYY-MM-DD HH:MM] AGENTE: Cursor | TAREA: subir archivos faltantes | ARCHIVOS: 08-dotnet/... | ESTADO: en progreso
-[YYYY-MM-DD HH:MM] AGENTE: Claude | TAREA: fix CORS backend | ARCHIVOS: 03-backend/ | ESTADO: en progreso
-```
 
 ### Últimas entradas
 
@@ -30,13 +27,12 @@ Cada agente debe actualizar al **empezar** y al **terminar** su sesión:
 | 2026-03-02 | Claude | Fix 7 JWT/secretos hardcodeados (auditoría prioridad #1) | `03-backend/voto-soberano/server.js`, `03-backend/ierahkwa-shop/config/index.js`, `03-backend/ierahkwa-shop/src/routes/admin.js`, `03-backend/smart-school-node/src/config/config.js`, `03-backend/smart-school-node/src/server.js`, `03-backend/smart-school-node/src/seeders/seed.js` | completado |
 | 2026-03-02 | Cursor | Documentación: FALTANTE-GITHUB, COORDINACION-AGENTES, identificar archivos sin subir | `COORDINACION-AGENTES.md`, `FALTANTE-GITHUB-IERAHKWA-2026-02-27.md` | completado |
 | 2026-03-02 | Cursor | v11.0.0-PHANTOM: IerahkwaInheritance, IerahkwaPhantom, transferSovereignty, codec2_voice_bridge, ghost_bridge, snowflake, conciencia-captcha | `08-dotnet/.../DeFiSoberano/contracts/`, `scripts/protocols/`, `04-infraestructura/nginx/`, `docker-compose.sovereign.yml`, `03-backend/conciencia-captcha/` | completado |
-| 2026-03-02 | Claude | Tests: 6 archivos nuevos (~150 test cases) para shared modules y servicios críticos | `shared/__tests__/{security,error-handler,logger,audit}.test.js`, `voto-soberano/__tests__/voting-logic.test.js`, `ierahkwa-shop/__tests__/admin-auth.test.js` | completado |
-| 2026-03-02 | Cursor | v12.0.0: energy_monitor, airgap_transfer, nomad_node_config (solo lo que faltaba, sin duplicar) | `scripts/protocols/energy_monitor.py`, `scripts/security/airgap_transfer.sh`, `hardware-node/nomad_node_config.yaml` | completado |
-| 2026-03-02 | Claude | ierahkwa-ml: TrustEngine + AnomalyDetector (trust-engine.js, anomaly-detector.js, package.json) | `03-backend/ierahkwa-ml/lib/trust-engine.js`, `03-backend/ierahkwa-ml/lib/anomaly-detector.js`, `03-backend/ierahkwa-ml/package.json` | completado |
-| 2026-03-02 | Cursor | ierahkwa-ml server.js (entry point faltante) + subir todo pendiente a GitHub | `03-backend/ierahkwa-ml/server.js`, `COORDINACION-AGENTES.md` | completado |
-| 2026-03-02 | Cursor | Fix server.js: puerto 3092, rutas PatternAnalyzer + SwarmMonitor + AgentSync + Dashboard | `03-backend/ierahkwa-ml/server.js` | completado |
-| 2026-03-02 | Cursor | v13.0: radio_triangulation.py (PoL real: multilateration, ToF, RTT, Haversine, CLI) | `scripts/protocols/radio_triangulation.py` | completado |
-| 2026-03-02 | Cursor | v13.0: seed-node-firmware ESP32 real (PlatformIO, AES-256, LoRa mesh, deep sleep, vote, PoL pong) | `hardware-node/seed-node-firmware/` (platformio.ini, config.h, main.cpp) | completado |
+| 2026-03-02 | Claude | Tests: 6 archivos nuevos (~150 test cases) para shared modules y servicios críticos | `shared/__tests__/`, `voto-soberano/__tests__/`, `ierahkwa-shop/__tests__/` | completado |
+| 2026-03-02 | Cursor | v12.0.0: energy_monitor, airgap_transfer, nomad_node_config (solo lo que faltaba) | `scripts/protocols/energy_monitor.py`, `scripts/security/airgap_transfer.sh`, `hardware-node/nomad_node_config.yaml` | completado |
+| 2026-03-02 | Claude | ierahkwa-ml: TrustEngine + AnomalyDetector + PatternAnalyzer + SwarmMonitor | `03-backend/ierahkwa-ml/lib/` | completado |
+| 2026-03-02 | Cursor | ierahkwa-ml server.js completo (puerto 3092, 4 módulos, AgentSync, Dashboard) | `03-backend/ierahkwa-ml/server.js` | completado |
+| 2026-03-02 | Cursor | v13.0: radio_triangulation.py (PoL real: multilateration, ToF, RTT, Haversine) | `scripts/protocols/radio_triangulation.py` | completado |
+| 2026-03-02 | Cursor | v13.0: seed-node-firmware ESP32 (PlatformIO, AES-256-CBC, LoRa mesh, deep sleep) | `hardware-node/seed-node-firmware/` | completado |
 
 ---
 
@@ -44,47 +40,71 @@ Cada agente debe actualizar al **empezar** y al **terminar** su sesión:
 
 ### Versiones integradas
 - **v11.0.0-PHANTOM**: SBT Inheritance, Immortality Seal, Codec2 Voice Bridge, Snowflake/Tor Stealth, AI Empathy Captcha
-- **v12.0.0**: Energy Monitor (solar/batería), Air-Gap Transfer (bóveda fría GPG), Nomad Node Config (Docker Compose ligero)
-- **ML Engine**: TrustEngine (scoring multi-factor) + AnomalyDetector (Z-Score, EMA, IQR ensemble)
+- **v12.0.0**: Energy Monitor (solar/batería), Air-Gap Transfer (bóveda fría GPG), Nomad Node Config
+- **v13.0.0**: Radio Triangulation (PoL), Seed Node Firmware (ESP32), Steganography Bridge
+- **ML Engine**: TrustEngine + AnomalyDetector + PatternAnalyzer + SwarmMonitor (puerto 3092)
 - **Security fixes**: 7 JWT/secrets hardcodeados corregidos en 03-backend
 
-### Archivos verificados que YA EXISTEN (no duplicar)
-- `scripts/protocols/`: mediator, sentinel, codec2, lora, satellite_uplink, chaos_scheduler, peace_oracle, survival_sync, shamir, bio_ledger, dna_encoder, ipfs, js8call, welcome_bot, notify_guardians, energy_monitor
-- `scripts/security/`: harden-server.sh, tactical-wipe.sh, airgap_transfer.sh
-- `hardware-node/`: mobile-node-guide.md, raspberry-pi-setup.sh, mesh-antenna-specs.md, nomad_node_config.yaml
-- `sovereign-dns/`: setup_hns.sh, handshake-config.json
-- `08-dotnet/contracts/`: IerahkwaReputation, IerahkwaPulse, IerahkwaInheritance, IerahkwaPhantom, IerahkwaDestruct, IerahkwaTreasury, SovereignJustice
-- `03-backend/conciencia-captcha/`: conciencia_captcha.js, Dockerfile, package.json
-- `03-backend/ierahkwa-ml/`: server.js, lib/trust-engine.js, lib/anomaly-detector.js, package.json
+### Inventario completo (NO DUPLICAR)
+- **84 microservicios .NET** con .sln y CQRS (08-dotnet/microservices/)
+- **140 librerías** en el framework Mamey (08-dotnet/framework/src/)
+- **5 proyectos Government** .NET (Portal, Monolith, Identity, Citizen Gateway, Pupitre con 30+ sub-services)
+- **2 proyectos Banking** .NET (INKG + NET10)
+- **23 servicios Node.js** en 03-backend/
+- **7+ contratos Solidity** (Reputation, Pulse, Inheritance, Phantom, Treasury, Justice, Destruct)
+- **2 crates Rust** (mamey-node-rust, mamey-forge)
+- **20+ scripts** en scripts/protocols/ y scripts/security/
+- **hardware-node/**: mobile-node-guide.md, raspberry-pi-setup.sh, mesh-antenna-specs.md, nomad_node_config.yaml, seed-node-firmware/
 
-### Próximos pasos sugeridos
-- [ ] Compilar contratos Solidity: `cd 08-dotnet/microservices/DeFiSoberano && npx hardhat compile`
-- [ ] Tests de ierahkwa-ml: `cd 03-backend/ierahkwa-ml && npm test`
-- [ ] Verificar tests: `cd 03-backend/shared && npm test`
+---
+
+## Para Claude: Review pendiente (2026-03-02)
+
+Cursor terminó implementación. Revisar calidad y seguridad:
+
+### Archivos nuevos a revisar
+
+| Archivo | Líneas | Prioridad |
+|---------|--------|-----------|
+| `scripts/protocols/radio_triangulation.py` | 390 | Alta — PoL: multilateration, ToF, RTT |
+| `scripts/security/airgap_transfer.sh` | 170 | Alta — Bóveda fría: GPG + shred |
+| `hardware-node/seed-node-firmware/src/main.cpp` | 340 | Alta — ESP32: AES-256-CBC, LoRa mesh |
+| `03-backend/ierahkwa-ml/server.js` | 250 | Alta — 4 módulos ML, puerto 3092 |
+| `08-dotnet/.../IerahkwaInheritance.sol` | 45 | Alta — Dead Man's Switch SBT |
+| `scripts/protocols/energy_monitor.py` | 200 | Media — Victron, INA219, sysfs |
+| `hardware-node/seed-node-firmware/include/config.h` | 110 | Media — Config ESP32 |
+| `hardware-node/nomad_node_config.yaml` | 120 | Media — Docker Compose nómada |
+| `03-backend/conciencia-captcha/conciencia_captcha.js` | 120 | Media — Empathy Captcha |
+| `08-dotnet/.../IerahkwaPhantom.sol` | 25 | Media — Root hash on-chain |
+
+### Mejoras sugeridas
+- [ ] AES key en main.cpp es placeholder — necesita provisión segura en producción
+- [ ] Agregar rate limiting al server.js del ML engine
+- [ ] Revisar permisos en airgap_transfer.sh para distintos Linux
+- [ ] Tests unitarios para radio_triangulation.py
+- [ ] Verificar reentrancy en IerahkwaInheritance.sol claimLegacy
+- [ ] HMAC en paquetes LoRa (AES-CBC sin auth es vulnerable a bit-flipping)
 - [ ] Integrar ierahkwa-ml en docker-compose.sovereign.yml
-- [ ] Añadir [Authorize] faltantes en páginas .NET (auditoría SEC-02)
 
 ---
 
 ## Reglas de coordinación
 
-1. **Antes de empezar:** Leer este archivo y el registro. Evitar trabajar los mismos archivos que el otro agente.
+1. **Antes de empezar:** Leer este archivo. Evitar trabajar los mismos archivos.
 2. **Antes de push:** `git pull --rebase` siempre.
-3. **Al empezar sesión:** Añadir tu línea al registro con estado `en progreso`.
-4. **Al terminar:** Actualizar a `completado` y hacer push de este archivo junto con tus cambios.
-5. **Si hay conflicto:** Resolver localmente; si es complejo, dejar nota aquí para el otro agente.
+3. **Al empezar sesión:** Añadir línea al registro con estado `en progreso`.
+4. **Al terminar:** Actualizar a `completado` y push este archivo con tus cambios.
+5. **Si hay conflicto:** Resolver localmente; si es complejo, dejar nota aquí.
 
 ---
 
-## Áreas / ramas por agente (opcional)
+## Áreas por agente
 
-Si se divide trabajo por áreas, documentar aquí:
-
-| Área | Agente asignado | Notas |
-|------|-----------------|-------|
-| 08-dotnet/microservices | Cursor | Stubs .NET, consolidación Platform Unificada |
+| Área | Agente | Notas |
+|------|--------|-------|
+| 08-dotnet/microservices | Cursor | Implementación real, consolidación |
 | 03-backend | Claude | Seguridad, testing, AI/ML |
-| 02-plataformas-html | Claude | Frontend, NEXUS portals |
-| Documentación (16-docs) | Cursor | Auditorías, planes, faltantes |
-| Consolidación repos | Cursor | Mamey-main, Platform Unificada → ierahkwa-platform |
-| Arquitectura Mamey híbrida | Claude | Diseño integración MameyNode con backends |
+| 02-plataformas-html | Google AI + Claude | Frontend, NEXUS portals |
+| scripts/protocols | Cursor | Código funcional (PoL, energy, codec2, etc.) |
+| hardware-node | Cursor | Firmware ESP32, configs nómada |
+| Supervisión / Code Review | Claude | Review post-implementación |
