@@ -17,7 +17,7 @@ jobs:
   build-gateway:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
@@ -103,7 +103,7 @@ jobs:
           - NexusAggregationService
           - LicensingService
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
@@ -130,7 +130,7 @@ jobs:
   validate-blockchain:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Validate Mamey Blockchain
         run: |
           echo "⛓️ Validating MameyNode Sovereign Blockchain..."
@@ -166,7 +166,7 @@ jobs:
     needs: [build-gateway, build-microservices, validate-blockchain]
     if: always()
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Deploy Summary
         run: |
           echo "══════════════════════════════════════════"
