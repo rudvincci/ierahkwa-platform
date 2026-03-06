@@ -1,0 +1,345 @@
+# NEXUS Comercio — Technical Blueprint
+
+**Sovereign Commerce Architecture**
+**Ierahkwa Ne Kanienke | v5.5.0**
+
+---
+
+## 1. System Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                   NEXUS COMERCIO PORTAL                         │
+│                (nexus-comercio/index.html)                      │
+│                     Theme: #FF6D00                              │
+├─────────────────────────────────────────────────────────────────┤
+│  E-COMMERCE                                                    │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐          │
+│  │  Tienda  │ │Marketplac│ │   POS    │ │Inventario│          │
+│  │ Soberana │ │ Soberano │ │ Soberano │ │ Soberano │          │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘          │
+│  OPERATIONS                                                    │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐          │
+│  │Logistica │ │  Pagos   │ │Facturac- │ │ Catalogo │          │
+│  │ Soberana │ │ Soberano │ │   ion    │ │ Soberano │          │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘          │
+│  DISTRIBUTION                                                  │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐          │
+│  │ Pedidos  │ │Dropshipp │ │Afiliados │ │Publicidad│          │
+│  │ Soberano │ │ Soberano │ │ Soberano │ │ Soberana │          │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘          │
+│  SPECIALIZED                                                   │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐          │
+│  │ Analisis │ │ Subastas │ │ Reservas │ │Cooperati-│          │
+│  │Comercial │ │ Soberana │ │ Soberana │ │   va     │          │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘          │
+│  ┌──────────┐                                                  │
+│  │Exportac- │                                                  │
+│  │   ion    │                                                  │
+│  └──────────┘                                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                    SHARED LAYER                                 │
+│  ierahkwa.css │ ierahkwa.js │ ierahkwa-agents.js │ sw.js       │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                     ┌─────▼─────┐
+                     │  API GW   │
+                     │  :9299    │
+                     └─────┬─────┘
+          ┌────────────────┼────────────────┐
+    ┌─────▼─────┐   ┌─────▼─────┐   ┌─────▼─────┐
+    │Storefront │   │   Order   │   │ Inventory │
+    │  :9300    │   │  :9301    │   │  :9302    │
+    └───────────┘   └───────────┘   └───────────┘
+    ┌─────▼─────┐   ┌─────▼─────┐
+    │  Payment  │   │ Logistics │
+    │  :9303    │   │  :9304    │
+    └───────────┘   └───────────┘
+                           │
+          ┌────────────────┼────────────────┐
+    ┌─────▼─────┐   ┌─────▼─────┐   ┌─────▼─────┐
+    │  WAMPUM   │   │ MameyNode │   │ Provenance│
+    │  Wallet   │   │ Blockchain│   │  Chain    │
+    └───────────┘   └───────────┘   └───────────┘
+```
+
+## 2. Payment Processing Pipeline
+
+```
+Customer Checkout
+       │
+       ▼
+┌──────────────┐
+│ Payment Gate │
+│  (Choose)    │
+└──┬───┬───┬───┘
+   │   │   │
+   ▼   ▼   ▼
+┌────┐┌────┐┌────────┐
+│WAMP││Fiat││Multi-  │
+│UM  ││Card││Currency│
+└─┬──┘└─┬──┘└───┬────┘
+  │     │       │
+  ▼     ▼       ▼
+┌──────────────────┐
+│  PaymentService  │
+│     (:9303)      │
+└────────┬─────────┘
+         │
+    ┌────▼────┐
+    │  Escrow │ (Marketplace txns)
+    │  Smart  │
+    │Contract │
+    └────┬────┘
+         │
+    ┌────▼────┐
+    │MameyNode│ ──> Immutable Tx Record
+    │  Ledger │
+    └────┬────┘
+         │
+    ┌────▼────┐
+    │ Settle  │
+    │  Funds  │
+    └─────────┘
+         │
+    ┌────┴────────────┐
+    ▼                 ▼
+┌────────┐      ┌────────┐
+│ Seller │      │ Tribal │
+│ (92.5%)│      │Nation  │
+│ Wallet │      │ (5%)   │
+└────────┘      └────────┘
+```
+
+## 3. Component Interaction
+
+```
+┌──────────┐     ┌──────────┐     ┌──────────┐
+│  Buyer   │────>│  Portal  │<────│  Seller  │
+│   App    │     │  (PWA)   │     │  Studio  │
+└────┬─────┘     └────┬─────┘     └────┬─────┘
+     │                │                │
+     │         ┌──────▼──────┐        │
+     └────────>│  AI Agents  │<───────┘
+               │  (Browser)  │
+               └──────┬──────┘
+                      │
+        ┌─────────────┼─────────────┐
+   ┌────▼────┐   ┌────▼────┐  ┌────▼────┐
+   │ Product │   │  Order  │  │ Payment │
+   │ Catalog │   │  Queue  │  │ Ledger  │
+   └─────────┘   └─────────┘  └─────────┘
+```
+
+## 4. Data Flow
+
+### 4.1 Order Lifecycle
+
+```
+Browse ──> Add to Cart ──> Checkout ──> Payment
+                                          │
+                                 ┌────────▼────────┐
+                                 │  Order Created   │
+                                 │  (OrderService)  │
+                                 └────────┬────────┘
+                                          │
+                              ┌───────────┼───────────┐
+                         ┌────▼────┐ ┌────▼────┐ ┌───▼────┐
+                         │Inventory│ │Logistics│ │ Notify │
+                         │ Deduct  │ │ Assign  │ │ Email  │
+                         └─────────┘ └────┬────┘ └────────┘
+                                          │
+                                 ┌────────▼────────┐
+                                 │    Ship & Track  │
+                                 └────────┬────────┘
+                                          │
+                                 ┌────────▼────────┐
+                                 │   Delivered      │
+                                 │  (Release Escrow)│
+                                 └─────────────────┘
+```
+
+### 4.2 Supply Chain Provenance
+
+```
+Artisan Creates ──> Register on Blockchain
+                          │
+                   ┌──────▼──────┐
+                   │  NFT Cert   │
+                   │ of Origin   │
+                   └──────┬──────┘
+                          │
+                   ┌──────▼──────┐
+                   │  Ship to    │
+                   │  Warehouse  │
+                   │ (GPS Track) │
+                   └──────┬──────┘
+                          │
+                   ┌──────▼──────┐
+                   │  QR Code    │
+                   │  on Product │
+                   └──────┬──────┘
+                          │
+                   ┌──────▼──────┐
+                   │  Customer   │
+                   │ Scans QR    │
+                   │(Verify Auth)│
+                   └─────────────┘
+```
+
+## 5. API Endpoints
+
+### 5.1 StorefrontService (:9300)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/store/create` | Create new storefront |
+| GET | `/api/store/{id}/products` | List store products |
+| POST | `/api/store/{id}/product/add` | Add product listing |
+| GET | `/api/marketplace/search` | Search all marketplace products |
+| GET | `/api/product/{id}/provenance` | Get blockchain provenance |
+
+### 5.2 OrderService (:9301)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/order/create` | Create new order |
+| GET | `/api/order/{id}` | Get order details |
+| PUT | `/api/order/{id}/status` | Update order status |
+| POST | `/api/order/{id}/return` | Initiate return |
+| GET | `/api/seller/{id}/orders` | Get seller order dashboard |
+
+### 5.3 InventoryService (:9302)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/inventory/{storeId}` | Get store inventory |
+| PUT | `/api/inventory/product/{id}/stock` | Update stock level |
+| POST | `/api/inventory/alert/create` | Set stock alert threshold |
+| GET | `/api/inventory/report` | Get inventory analytics |
+
+### 5.4 PaymentService (:9303)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/payment/charge` | Process payment (WAMPUM or fiat) |
+| POST | `/api/payment/refund` | Process refund |
+| GET | `/api/payment/seller/{id}/balance` | Get seller balance |
+| POST | `/api/payment/withdraw` | Withdraw to external account |
+| GET | `/api/payment/tx/{hash}` | Get blockchain transaction |
+
+### 5.5 LogisticsService (:9304)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/logistics/ship` | Create shipment |
+| GET | `/api/logistics/track/{id}` | Track shipment |
+| GET | `/api/logistics/rates` | Get shipping rates |
+| POST | `/api/logistics/label` | Generate shipping label |
+
+## 6. Deployment Topology
+
+```
+┌─────────────────────────────────────────────┐
+│        SOVEREIGN CLOUD (MameyNode)          │
+│  ┌──────────────────────────────────────┐   │
+│  │       COMMERCE CLUSTER               │   │
+│  │  ┌──────────┐  ┌──────────┐         │   │
+│  │  │Storefront│  │  Order   │         │   │
+│  │  │ Workers  │  │ Workers  │         │   │
+│  │  └──────────┘  └──────────┘         │   │
+│  │  ┌──────────┐  ┌──────────┐         │   │
+│  │  │ Payment  │  │Logistics │         │   │
+│  │  │ Workers  │  │ Workers  │         │   │
+│  │  └──────────┘  └──────────┘         │   │
+│  └──────────────────┬───────────────────┘   │
+│              ┌──────▼──────┐               │
+│              │  Blockchain │               │
+│              │   Layer     │               │
+│              └──────┬──────┘               │
+└─────────────────────┼──────────────────────┘
+                      │
+        ┌─────────────┼─────────────┐
+   ┌────▼────┐   ┌────▼────┐  ┌────▼────┐
+   │  Web    │   │  POS    │  │  Mobile │
+   │ Store   │   │ Tablet  │  │   App   │
+   │ (PWA)   │   │ (PWA)   │  │  (PWA)  │
+   └─────────┘   └─────────┘  └─────────┘
+```
+
+## 7. Database Schema (Core)
+
+```
+products
+├── id (UUID)
+├── store_id (FK)
+├── name / description (JSONB, multi-lang)
+├── price_wampum / price_fiat
+├── category
+├── provenance_nft_hash
+├── tribal_nation_origin
+├── stock_quantity
+├── images (ARRAY)
+└── created_at
+
+orders
+├── id (UUID)
+├── buyer_id (FK)
+├── store_id (FK)
+├── items (JSONB)
+├── total_wampum / total_fiat
+├── status (pending|paid|shipped|delivered|returned)
+├── escrow_tx_hash
+├── shipping_tracking_id
+└── created_at
+
+stores
+├── id (UUID)
+├── owner_id (FK)
+├── tribal_nation_id (FK)
+├── name / description
+├── type (dtc|marketplace|cooperative)
+├── trust_score (0-100)
+├── total_sales_wampum
+└── verified (boolean)
+```
+
+## 8. Security Boundaries
+
+```
+┌─────────────────────────────────────────┐
+│  PUBLIC ZONE                            │
+│  - Product browsing and search          │
+│  - Store listings                       │
+│  - Provenance verification (QR scan)    │
+└──────────────┬──────────────────────────┘
+               │ Auth (FIDO2/TOTP)
+┌──────────────▼──────────────────────────┐
+│  BUYER ZONE (Trust > 30)                │
+│  - Purchase products                    │
+│  - Order tracking                       │
+│  - Review and rate sellers              │
+│  - WAMPUM wallet                        │
+└──────────────┬──────────────────────────┘
+               │ Seller Verification
+┌──────────────▼──────────────────────────┐
+│  SELLER ZONE (Trust > 60)               │
+│  - Store management                     │
+│  - Product listings                     │
+│  - Order fulfillment                    │
+│  - Revenue dashboard                    │
+│  - Inventory management                │
+└──────────────┬──────────────────────────┘
+               │ Admin Auth
+┌──────────────▼──────────────────────────┐
+│  ADMIN ZONE (Trust > 90)                │
+│  - Marketplace moderation               │
+│  - Dispute resolution                   │
+│  - Financial reporting                  │
+│  - Counterfeiting enforcement           │
+└─────────────────────────────────────────┘
+```
+
+---
+
+*NEXUS Comercio Blueprint -- Ierahkwa Ne Kanienke Sovereign Digital Nation*
