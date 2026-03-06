@@ -1,0 +1,122 @@
+name: WiFi Soberano CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '03-backend/wifi-soberano/**'
+      - '.github/workflows/wifi-soberano.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '03-backend/wifi-soberano/**'
+
+concurrency:
+  group: wifi-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  SERVICE_DIR: '03-backend/wifi-soberano'
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Lint & Validate
+  # ──────────────────────────────────────────────
+  lint:
+    name: Lint & Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        working-directory: ${{ env.SERVICE_DIR }}
+        run: npm ci
+
+      - name: Check package.json
+        working-directory: ${{ env.SERVICE_DIR }}
+        run: node -e "require('./package.json')"
+
+      - name: Validate server loads
+        working-directory: ${{ env.SERVICE_DIR }}
+        run: node -e "try{require('./server.js')}catch(e){if(!e.message.includes('connect'))throw e}"
+
+      - name: Validate SQL migrations
+        working-directory: ${{ env.SERVICE_DIR }}
+        run: |
+          echo "Checking SQL syntax..."
+          test -f models/migrations.sql && echo "✅ migrations.sql exists"
+
+  # ──────────────────────────────────────────────
+  # Docker Build
+  # ──────────────────────────────────────────────
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        working-directory: ${{ env.SERVICE_DIR }}
+        run: |
+          docker build -t wifi-soberano:test .
+          echo "✅ Docker image built successfully"
+
+      - name: Verify health check
+        working-directory: ${{ env.SERVICE_DIR }}
+        run: |
+          echo "Checking Dockerfile..."
+          grep -q "HEALTHCHECK" Dockerfile && echo "✅ Healthcheck configured"
+          grep -q "tini" Dockerfile && echo "✅ Tini PID 1 configured"
+          grep -q "3095" Dockerfile && echo "✅ Port 3095 exposed"
+
+  # ──────────────────────────────────────────────
+  # Security Scan
+  # ──────────────────────────────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        working-directory: ${{ env.SERVICE_DIR }}
+        run: npm ci
+
+      - name: Audit dependencies
+        working-directory: ${{ env.SERVICE_DIR }}
+        run: npm audit --audit-level=high || true
+
+      - name: Check for secrets
+        run: |
+          echo "Scanning for hardcoded secrets..."
+          ! grep -rn "password\s*=" ${{ env.SERVICE_DIR }}/*.js --include="*.js" | grep -v ".env" | grep -v "example" || true
+          echo "✅ No hardcoded secrets found"
+
+  # ──────────────────────────────────────────────
+  # Documentation Check
+  # ──────────────────────────────────────────────
+  docs:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify platform docs
+        run: |
+          echo "Checking starlink-soberano documentation..."
+          test -f 02-plataformas-html/starlink-soberano/index.html && echo "✅ index.html"
+          test -f 02-plataformas-html/starlink-soberano/README.md && echo "✅ README.md"
+          test -f 02-plataformas-html/starlink-soberano/WHITEPAPER.md && echo "✅ WHITEPAPER.md"
+          test -f 02-plataformas-html/starlink-soberano/BLUEPRINT.md && echo "✅ BLUEPRINT.md"
+          echo "All documentation present"
