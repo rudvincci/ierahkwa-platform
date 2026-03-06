@@ -7,140 +7,517 @@
 <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
-<meta name="description" content="Plataforma soberana de Starlink para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="description" content="Internet Satelital Soberano — WiFi por Starlink para las Américas. Captive portal, planes por hora/día/mes, vigilancia AI, pagos WAMPUM. 574 territorios, 19 naciones.">
 <meta name="theme-color" content="#00e5ff">
 <link rel="canonical" href="https://ierahkwa.nation/starlink-soberano/">
 <link rel="manifest" href="../shared/manifest.json">
 <link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../icons/icon-192.svg">
-<meta property="og:title" content="StarLink Soberano — Internet Satelital Pan-Americano">
-<meta property="og:description" content="Plataforma soberana de Starlink para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta property="og:title" content="StarLink Soberano — Internet Satelital WiFi para las Américas">
+<meta property="og:description" content="Vende acceso WiFi satelital por hora, día, semana, mes. Captive portal soberano con vigilancia AI y pagos WAMPUM. 574 territorios.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ierahkwa.nation/starlink-soberano/">
 <meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="StarLink Soberano — Internet Satelital Pan-Americano">
-<meta name="twitter:description" content="Plataforma soberana de Starlink para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="StarLink Soberano — WiFi Satelital Soberano">
+<meta name="twitter:description" content="Internet satelital para 574 territorios. Captive portal, planes desde Ⓦ9.99/hora, vigilancia AI, pagos WAMPUM.">
 <link rel="stylesheet" href="../shared/ierahkwa.css">
-<title>StarLink Soberano — Internet Satelital Pan-Americano</title>
-<style>:root{--accent:#00e5ff}</style>
+<title>StarLink Soberano — Internet Satelital WiFi para las Américas</title>
+<style>
+:root{--accent:#00e5ff;--sat:#00e5ff;--warn:#ff9100;--danger:#f44336;--success:#00e676}
+.portal-view,.admin-view{display:none}
+.portal-view.active,.admin-view.active{display:block}
+.view-toggle{display:flex;gap:.5rem;justify-content:center;margin:1rem 0}
+.view-toggle button{background:var(--bg3);border:1px solid var(--brd);color:var(--txt);padding:.5rem 1.2rem;border-radius:20px;cursor:pointer;font-size:.75rem;font-weight:600;transition:all .3s}
+.view-toggle button.active{background:var(--accent);color:#000;border-color:var(--accent)}
+
+/* Captive Portal */
+.portal-hero{text-align:center;padding:3rem 1rem;background:linear-gradient(135deg,rgba(0,229,255,.08),rgba(0,229,255,.02));border:1px solid rgba(0,229,255,.15);border-radius:var(--r);margin:1rem}
+.portal-hero .wifi-icon{font-size:4rem;margin-bottom:1rem}
+.portal-hero h2{font-family:Orbitron,sans-serif;font-size:1.8rem;color:var(--accent);margin:0 0 .5rem}
+.portal-hero p{color:var(--txt2);font-size:.85rem;max-width:500px;margin:0 auto}
+.portal-status{display:flex;justify-content:center;gap:1.5rem;margin:1.5rem 0;flex-wrap:wrap}
+.portal-status .ps-item{text-align:center}
+.portal-status .ps-val{font-family:Orbitron,sans-serif;font-size:1.2rem;color:var(--accent)}
+.portal-status .ps-lbl{font-size:.6rem;color:var(--txt2);text-transform:uppercase}
+
+/* Plans Grid */
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.8rem;padding:1rem}
+.plan-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1.2rem;text-align:center;cursor:pointer;transition:all .3s;position:relative}
+.plan-card:hover,.plan-card.selected{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,229,255,.15)}
+.plan-card .plan-icon{font-size:2rem;margin-bottom:.3rem}
+.plan-card .plan-name{font-weight:700;font-size:.85rem;color:var(--txt);margin-bottom:.2rem}
+.plan-card .plan-dur{font-size:.65rem;color:var(--txt2)}
+.plan-card .plan-price{font-family:Orbitron,sans-serif;font-size:1.3rem;color:var(--accent);margin:.5rem 0 .2rem}
+.plan-card .plan-unit{font-size:.6rem;color:var(--txt2)}
+.plan-card.popular::before{content:'Popular';position:absolute;top:-.5rem;right:-.3rem;background:var(--warn);color:#000;font-size:.55rem;font-weight:700;padding:.2rem .5rem;border-radius:10px}
+.plan-card .plan-features{font-size:.6rem;color:var(--txt2);margin-top:.5rem;line-height:1.4}
+
+/* Session Timer */
+.session-panel{background:linear-gradient(135deg,rgba(0,230,118,.08),rgba(0,230,118,.02));border:1px solid rgba(0,230,118,.2);border-radius:var(--r);padding:1.5rem;margin:1rem;text-align:center;display:none}
+.session-panel.active{display:block}
+.session-timer{font-family:Orbitron,sans-serif;font-size:2.5rem;color:var(--success);margin:.5rem 0}
+.session-speed{display:flex;justify-content:center;gap:2rem;margin:.5rem 0}
+.session-speed .sp{text-align:center}
+.session-speed .sp-val{font-family:Orbitron,sans-serif;font-size:1rem;color:var(--accent)}
+.session-speed .sp-lbl{font-size:.55rem;color:var(--txt2)}
+
+/* Admin Dashboard */
+.admin-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem;padding:1rem}
+.admin-stat{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1rem}
+.admin-stat .as-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.admin-stat .as-icon{font-size:1.5rem}
+.admin-stat .as-trend{font-size:.65rem;padding:.15rem .4rem;border-radius:8px}
+.admin-stat .as-trend.up{background:rgba(0,230,118,.1);color:var(--success)}
+.admin-stat .as-trend.down{background:rgba(244,67,54,.1);color:var(--danger)}
+.admin-stat .as-val{font-family:Orbitron,sans-serif;font-size:1.4rem;color:var(--accent)}
+.admin-stat .as-lbl{font-size:.65rem;color:var(--txt2)}
+
+/* Hotspot Map */
+.hotspot-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.8rem;padding:1rem}
+.hotspot-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1rem;transition:all .3s}
+.hotspot-card:hover{border-color:var(--accent)}
+.hotspot-card .hs-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.hotspot-card .hs-name{font-weight:700;font-size:.85rem}
+.hotspot-card .hs-status{width:8px;height:8px;border-radius:50%;display:inline-block}
+.hotspot-card .hs-status.online{background:var(--success);box-shadow:0 0 6px var(--success)}
+.hotspot-card .hs-status.offline{background:var(--danger);box-shadow:0 0 6px var(--danger)}
+.hotspot-card .hs-info{display:flex;gap:1rem;font-size:.7rem;color:var(--txt2)}
+.hotspot-card .hs-bar{height:4px;background:var(--bg3);border-radius:2px;margin-top:.5rem;overflow:hidden}
+.hotspot-card .hs-bar-fill{height:100%;border-radius:2px;transition:width .5s}
+
+/* Fleet Table */
+.fleet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.8rem;padding:1rem}
+.fleet-card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:1rem}
+.fleet-card .fc-model{font-weight:700;font-size:.8rem;color:var(--accent)}
+.fleet-card .fc-account{font-size:.65rem;color:var(--txt2)}
+.fleet-card .fc-details{display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-top:.5rem;font-size:.65rem}
+.fleet-card .fc-detail{display:flex;justify-content:space-between}
+.fleet-card .fc-label{color:var(--txt2)}
+.fleet-card .fc-value{color:var(--txt);font-weight:600}
+
+/* Vigilancia Panel */
+.vigil-panel{background:var(--bg2);border:1px solid rgba(244,67,54,.2);border-radius:var(--r);padding:1rem;margin:.5rem 1rem}
+.vigil-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem}
+.vigil-header h4{color:var(--danger);font-size:.85rem;margin:0}
+.vigil-live{display:flex;align-items:center;gap:.3rem;font-size:.6rem;color:var(--danger)}
+.vigil-live .pulse{width:6px;height:6px;background:var(--danger);border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.vigil-log{max-height:200px;overflow-y:auto;font-size:.65rem;font-family:monospace}
+.vigil-entry{padding:.3rem .5rem;border-bottom:1px solid var(--brd);display:flex;gap:.5rem}
+.vigil-entry .ve-time{color:var(--txt2);min-width:55px}
+.vigil-entry .ve-ip{color:var(--warn);min-width:100px}
+.vigil-entry .ve-action{color:var(--txt)}
+.vigil-entry.alert{background:rgba(244,67,54,.05);border-left:2px solid var(--danger)}
+.vigil-entry.alert .ve-action{color:var(--danger);font-weight:700}
+
+/* VIP Protection */
+.vip-panel{background:linear-gradient(135deg,rgba(255,215,0,.06),rgba(255,109,0,.04));border:1px solid rgba(255,215,0,.2);border-radius:var(--r);padding:1rem;margin:.5rem 1rem}
+.vip-panel h4{color:#FFD700;font-size:.85rem;margin:0 0 .5rem}
+.vip-list{display:flex;flex-wrap:wrap;gap:.4rem}
+.vip-badge{background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);padding:.2rem .6rem;border-radius:12px;font-size:.6rem;color:#FFD700;font-weight:600}
+
+/* Revenue Chart */
+.revenue-bars{display:flex;align-items:flex-end;gap:.5rem;height:120px;padding:1rem;background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);margin:.5rem 1rem}
+.rev-bar{flex:1;background:linear-gradient(to top,var(--accent),rgba(0,229,255,.3));border-radius:4px 4px 0 0;min-width:20px;position:relative;transition:height .5s}
+.rev-bar::after{content:attr(data-label);position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:.5rem;color:var(--txt2);white-space:nowrap}
+</style>
 </head>
 <body role="document">
 <a href="#main" class="skip-nav">Saltar al contenido principal</a>
 
-<nav aria-label="Navegacion principal">
-  <div class="nav-brand"><span aria-hidden="true">📡</span> StarLink Soberano</div>
-  <div class="nav-links"><a href="#features">Capacidades</a><a href="#coverage">Cobertura</a><a href="#footer">Contacto</a></div>
-</nav>
-
-<header class="hero">
-  <div class="stars" aria-hidden="true"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div>
-  <div class="orbit-ring" aria-hidden="true"><div class="sat-dot"></div></div>
-  <div class="orbit-ring r2" aria-hidden="true"><div class="sat-dot d2"></div></div>
-  <div class="orbit-ring r3" aria-hidden="true"><div class="sat-dot d3"></div></div>
-  <div class="earth" aria-hidden="true"><div class="beam"></div><div class="beam"></div><div class="beam"></div></div>
-  <div class="hero-content">
-    <div class="badge"><span class="badge-dot" aria-hidden="true"></span> Constelacion LEO Soberana</div>
-    <h1>StarLink <span class="accent">Soberano</span></h1>
-    <p class="tagline">Internet satelital pan-americano propiedad de naciones indigenas. Broadband soberano para cada comunidad, incluso las mas remotas.</p>
-    <button class="hero-btn" aria-label="Acceder al panel de constelacion"><span aria-hidden="true">🛰️</span> Panel de Constelacion</button>
-  </div>
+<header>
+<div class="logo"><div class="logo-icon" aria-hidden="true">📡</div><h1>StarLink Soberano</h1></div>
+<nav aria-label="Navegacion principal"><a href="#portal" aria-current="page">WiFi Portal</a><a href="#admin">Admin</a><a href="#fleet">Flota</a><a href="#vigilancia">Vigilancia</a></nav>
+<span class="encrypted-badge" title="Cifrado Post-Quantum Activo"><span aria-hidden="true">⚛️</span> Quantum-Safe</span>
 </header>
 
-<div class="stats" role="list" aria-label="Estadisticas principales">
-  <div class="stat" role="listitem"><div class="stat-val">500+</div><div class="stat-lbl">Satelites</div></div>
-  <div class="stat" role="listitem"><div class="stat-val">&lt; 20ms</div><div class="stat-lbl">Latencia</div></div>
-  <div class="stat" role="listitem"><div class="stat-val">1 Gbps</div><div class="stat-lbl">Por Haz</div></div>
-  <div class="stat" role="listitem"><div class="stat-val">19</div><div class="stat-lbl">Paises Cubiertos</div></div>
+<main id="main">
+
+<!-- View Toggle -->
+<div class="view-toggle">
+<button class="active" onclick="switchView('portal')" aria-label="Vista Portal WiFi">📶 Portal WiFi</button>
+<button onclick="switchView('admin')" aria-label="Vista Administrador">🖥️ Admin Dashboard</button>
 </div>
 
-<main id="main">
-  <section id="features" aria-labelledby="feat-title">
-    <div class="section-header">
-      <h2 id="feat-title">Capacidades de la <span class="accent-text">Mega-Constelacion</span></h2>
-      <p>500+ satelites en orbita baja ofreciendo conectividad soberana a más de mil millones de ciudadanos indigenas en 19 paises.</p>
-    </div>
-    <div class="features-grid">
-      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🛰️</div><h3>LEO Mega-Constelacion</h3><p>500+ satelites en orbita baja terrestre proporcionando cobertura continua sobre las Americas.</p></article>
-      <article class="feature-card"><div class="feature-icon" aria-hidden="true">📡</div><h3>Red de Estaciones Terrestres</h3><p>Estaciones de enlace en 19 paises gestionando trafico de datos y control de constelacion.</p></article>
-      <article class="feature-card"><div class="feature-icon" aria-hidden="true">📺</div><h3>Terminal de Usuario</h3><p>Antena plana de panel para facil instalacion en comunidades rurales e indigenas remotas.</p></article>
-      <article class="feature-card"><div class="feature-icon" aria-hidden="true">⚡</div><h3>Baja Latencia</h3><p>Menos de 20 milisegundos de latencia gracias a orbitas LEO. Experiencia comparable a fibra optica.</p></article>
-      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🚀</div><h3>Alto Rendimiento</h3><p>1 Gbps por haz satelital. Capacidad para streaming, telemedicina y educacion simultanea.</p></article>
-      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🔗</div><h3>Enlaces Inter-Satelitales</h3><p>Conexiones laser mesh entre satelites eliminando la necesidad de estaciones intermedias.</p></article>
-      <article class="feature-card"><div class="feature-icon" aria-hidden="true">📊</div><h3>Formacion Dinamica de Haces</h3><p>Haces adaptativos que concentran capacidad donde mas se necesita en tiempo real.</p></article>
-      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🆘</div><h3>Modo Resiliencia ante Desastres</h3><p>Activacion automatica de ancho de banda extra durante emergencias y desastres naturales.</p></article>
-      <article class="feature-card"><div class="feature-icon" aria-hidden="true">📶</div><h3>Hotspots WiFi Comunitarios</h3><p>Puntos de acceso WiFi gratuitos en plazas y centros comunitarios conectados via satelite.</p></article>
-      <article class="feature-card"><div class="feature-icon" aria-hidden="true">🏛️</div><h3>Costo Cero para Comunidades</h3><p>Servicio gratuito para comunidades indigenas. La soberania digital no tiene precio.</p></article>
-    </div>
-  </section>
+<!-- ═══════════ CAPTIVE PORTAL VIEW ═══════════ -->
+<div class="portal-view active" id="portal">
 
-  <section id="coverage" aria-labelledby="cov-title">
-    <div class="section-header">
-      <h2 id="cov-title">Mapa de <span class="accent-text">Cobertura Satelital</span></h2>
-      <p>Huella satelital sobre las Americas con areas de cobertura de haz y conteo de satelites en vivo.</p>
-    </div>
-    <div class="coverage-map">
-      <h3><span aria-hidden="true">🌎</span> Satelites Activos en Orbita</h3>
-      <div class="sat-ticker" role="status" aria-label="Conteo de satelites activos">512</div>
-      <div class="ticker-label">satelites en operacion — actualizado en tiempo real</div>
-      <div class="beam-grid" role="list" aria-label="Zonas de cobertura por pais">
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇲🇽</span>Mexico<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇬🇹</span>Guatemala<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇭🇳</span>Honduras<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇸🇻</span>El Salvador<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇳🇮</span>Nicaragua<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇨🇷</span>Costa Rica<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇵🇦</span>Panama<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇨🇴</span>Colombia<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇻🇪</span>Venezuela<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇪🇨</span>Ecuador<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇵🇪</span>Peru<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇧🇴</span>Bolivia<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇵🇾</span>Paraguay<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇧🇷</span>Brasil<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇨🇱</span>Chile<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇦🇷</span>Argentina<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇺🇸</span>EE.UU.<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇨🇦</span>Canada<span class="zone-status" aria-label="Activo"></span></div>
-        <div class="beam-zone" role="listitem"><span class="flag" aria-hidden="true">🇧🇿</span>Belice<span class="zone-status" aria-label="Activo"></span></div>
-      </div>
-    </div>
-  </section>
+<section class="portal-hero">
+<div class="wifi-icon" aria-hidden="true">📡</div>
+<h2>Internet Soberano</h2>
+<p>Conexión WiFi satelital de alta velocidad. Selecciona tu plan y conéctate al instante. Pagos con WAMPUM o tarjeta.</p>
+<div class="portal-status">
+<div class="ps-item"><div class="ps-val">150 Mbps</div><div class="ps-lbl">Velocidad</div></div>
+<div class="ps-item"><div class="ps-val">&lt;20ms</div><div class="ps-lbl">Latencia</div></div>
+<div class="ps-item"><div class="ps-val">Starlink</div><div class="ps-lbl">Backbone</div></div>
+<div class="ps-item"><div class="ps-val">Kyber-768</div><div class="ps-lbl">Cifrado</div></div>
+</div>
+</section>
+
+<!-- Plan Selection -->
+<div class="section-title"><h3>Selecciona tu Plan de Acceso</h3><p>Desde Ⓦ9.99 — conexión inmediata</p></div>
+<div class="plans-grid">
+
+<div class="plan-card" onclick="selectPlan(this,'1h')" data-plan="1h">
+<div class="plan-icon" aria-hidden="true">⏰</div>
+<div class="plan-name">1 Hora</div>
+<div class="plan-dur">60 minutos</div>
+<div class="plan-price">Ⓦ 9.99</div>
+<div class="plan-unit">pago único</div>
+<div class="plan-features">50 Mbps · Navegación + Redes</div>
+</div>
+
+<div class="plan-card popular" onclick="selectPlan(this,'1d')" data-plan="1d">
+<div class="plan-icon" aria-hidden="true">📅</div>
+<div class="plan-name">1 Día</div>
+<div class="plan-dur">24 horas</div>
+<div class="plan-price">Ⓦ 24.99</div>
+<div class="plan-unit">pago único</div>
+<div class="plan-features">100 Mbps · Todo incluido</div>
+</div>
+
+<div class="plan-card" onclick="selectPlan(this,'1w')" data-plan="1w">
+<div class="plan-icon" aria-hidden="true">📆</div>
+<div class="plan-name">1 Semana</div>
+<div class="plan-dur">7 días</div>
+<div class="plan-price">Ⓦ 99.99</div>
+<div class="plan-unit">pago único</div>
+<div class="plan-features">150 Mbps · Streaming HD</div>
+</div>
+
+<div class="plan-card" onclick="selectPlan(this,'1m')" data-plan="1m">
+<div class="plan-icon" aria-hidden="true">🗓️</div>
+<div class="plan-name">1 Mes</div>
+<div class="plan-dur">30 días</div>
+<div class="plan-price">Ⓦ 249.99</div>
+<div class="plan-unit">pago único</div>
+<div class="plan-features">150 Mbps · Sin límite de datos</div>
+</div>
+
+<div class="plan-card" onclick="selectPlan(this,'6m')" data-plan="6m">
+<div class="plan-icon" aria-hidden="true">📊</div>
+<div class="plan-name">6 Meses</div>
+<div class="plan-dur">180 días</div>
+<div class="plan-price">Ⓦ 999.99</div>
+<div class="plan-unit">ahorra 33%</div>
+<div class="plan-features">200 Mbps · Prioridad · VPN</div>
+</div>
+
+<div class="plan-card" onclick="selectPlan(this,'1y')" data-plan="1y">
+<div class="plan-icon" aria-hidden="true">🏆</div>
+<div class="plan-name">1 Año</div>
+<div class="plan-dur">365 días</div>
+<div class="plan-price">Ⓦ 1,499</div>
+<div class="plan-unit">ahorra 50%</div>
+<div class="plan-features">200 Mbps · Todo ilimitado · VIP</div>
+</div>
+
+</div>
+
+<!-- Connect Button -->
+<div style="text-align:center;padding:1rem">
+<button id="connectBtn" class="hero-btn" style="background:var(--accent);color:#000;font-weight:700;padding:.8rem 2rem;border:none;border-radius:25px;font-size:1rem;cursor:pointer;opacity:.5" disabled>
+<span aria-hidden="true">📶</span> Conectar — Selecciona un plan
+</button>
+</div>
+
+<!-- Active Session Panel (hidden by default) -->
+<div class="session-panel" id="sessionPanel">
+<div style="font-size:.7rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.1em">Sesión Activa</div>
+<div class="session-timer" id="sessionTimer">23:59:59</div>
+<div style="font-size:.7rem;color:var(--success)">Conectado — Plan Día</div>
+<div class="session-speed">
+<div class="sp"><div class="sp-val">↓ 145.2</div><div class="sp-lbl">Mbps Download</div></div>
+<div class="sp"><div class="sp-val">↑ 22.8</div><div class="sp-lbl">Mbps Upload</div></div>
+<div class="sp"><div class="sp-val">12ms</div><div class="sp-lbl">Latencia</div></div>
+<div class="sp"><div class="sp-val">2.4 GB</div><div class="sp-lbl">Usado</div></div>
+</div>
+<button style="background:var(--danger);color:#fff;border:none;padding:.4rem 1rem;border-radius:15px;font-size:.7rem;cursor:pointer;margin-top:.5rem">Desconectar</button>
+</div>
+
+<!-- Coverage Map -->
+<div class="section-title" id="cobertura"><h3>Cobertura Satelital</h3><p>19 naciones conectadas via Starlink — 574 territorios</p></div>
+<div class="stats" role="list" aria-label="Estadisticas de red">
+<div class="stat" role="listitem"><div class="val">8+</div><div class="lbl">Kits Starlink</div></div>
+<div class="stat" role="listitem"><div class="val">150 Mbps</div><div class="lbl">Velocidad Max</div></div>
+<div class="stat" role="listitem"><div class="val">19</div><div class="lbl">Naciones</div></div>
+<div class="stat" role="listitem"><div class="val">574</div><div class="lbl">Territorios</div></div>
+<div class="stat" role="listitem"><div class="val">WAMPUM</div><div class="lbl">Pagos Propios</div></div>
+<div class="stat" role="listitem"><div class="val">0%</div><div class="lbl">Big Tech</div></div>
+</div>
+
+</div>
+
+<!-- ═══════════ ADMIN DASHBOARD VIEW ═══════════ -->
+<div class="admin-view" id="admin">
+
+<div class="section-title"><h3>Dashboard Administrativo</h3><p>Gestión en tiempo real de hotspots, revenue, flota y vigilancia</p></div>
+
+<!-- Admin Stats -->
+<div class="admin-stats">
+<div class="admin-stat">
+<div class="as-header"><span class="as-icon" aria-hidden="true">👥</span><span class="as-trend up">+23%</span></div>
+<div class="as-val">147</div>
+<div class="as-lbl">Usuarios Conectados</div>
+</div>
+<div class="admin-stat">
+<div class="as-header"><span class="as-icon" aria-hidden="true">💰</span><span class="as-trend up">+45%</span></div>
+<div class="as-val">Ⓦ 3,847</div>
+<div class="as-lbl">Revenue Hoy</div>
+</div>
+<div class="admin-stat">
+<div class="as-header"><span class="as-icon" aria-hidden="true">📡</span><span class="as-trend up">100%</span></div>
+<div class="as-val">8/8</div>
+<div class="as-lbl">Kits Online</div>
+</div>
+<div class="admin-stat">
+<div class="as-header"><span class="as-icon" aria-hidden="true">📊</span><span class="as-trend up">+12%</span></div>
+<div class="as-val">1.2 TB</div>
+<div class="as-lbl">Data Transferida Hoy</div>
+</div>
+<div class="admin-stat">
+<div class="as-header"><span class="as-icon" aria-hidden="true">⏰</span></div>
+<div class="as-val">4.2 hrs</div>
+<div class="as-lbl">Sesión Promedio</div>
+</div>
+<div class="admin-stat">
+<div class="as-header"><span class="as-icon" aria-hidden="true">🛡️</span><span class="as-trend down">3</span></div>
+<div class="as-val">12</div>
+<div class="as-lbl">Alertas Vigilancia</div>
+</div>
+</div>
+
+<!-- Revenue Chart -->
+<div class="section-title"><h3>Revenue Semanal</h3></div>
+<div class="revenue-bars">
+<div class="rev-bar" style="height:45%" data-label="Lun"></div>
+<div class="rev-bar" style="height:62%" data-label="Mar"></div>
+<div class="rev-bar" style="height:78%" data-label="Mié"></div>
+<div class="rev-bar" style="height:55%" data-label="Jue"></div>
+<div class="rev-bar" style="height:90%" data-label="Vie"></div>
+<div class="rev-bar" style="height:95%" data-label="Sáb"></div>
+<div class="rev-bar" style="height:70%" data-label="Dom"></div>
+</div>
+
+<!-- Hotspot Locations -->
+<div class="section-title" id="hotspots"><h3>Hotspots Activos</h3><p>Ubicaciones con servicio WiFi satelital</p></div>
+<div class="hotspot-list">
+
+<div class="hotspot-card">
+<div class="hs-header"><span class="hs-name">📍 Mercado Tocumen</span><span class="hs-status online" title="Online"></span></div>
+<div class="hs-info"><span>👥 32 usuarios</span><span>📊 89 GB hoy</span><span>💰 Ⓦ 547</span></div>
+<div class="hs-bar"><div class="hs-bar-fill" style="width:64%;background:var(--success)"></div></div>
+</div>
+
+<div class="hotspot-card">
+<div class="hs-header"><span class="hs-name">📍 Terminal Chepo</span><span class="hs-status online" title="Online"></span></div>
+<div class="hs-info"><span>👥 28 usuarios</span><span>📊 67 GB hoy</span><span>💰 Ⓦ 412</span></div>
+<div class="hs-bar"><div class="hs-bar-fill" style="width:56%;background:var(--success)"></div></div>
+</div>
+
+<div class="hotspot-card">
+<div class="hs-header"><span class="hs-name">📍 Plaza Darién</span><span class="hs-status online" title="Online"></span></div>
+<div class="hs-info"><span>👥 45 usuarios</span><span>📊 112 GB hoy</span><span>💰 Ⓦ 689</span></div>
+<div class="hs-bar"><div class="hs-bar-fill" style="width:90%;background:var(--warn)"></div></div>
+</div>
+
+<div class="hotspot-card">
+<div class="hs-header"><span class="hs-name">📍 Comunidad Guna Yala</span><span class="hs-status online" title="Online"></span></div>
+<div class="hs-info"><span>👥 18 usuarios</span><span>📊 34 GB hoy</span><span>💰 Ⓦ 245</span></div>
+<div class="hs-bar"><div class="hs-bar-fill" style="width:36%;background:var(--success)"></div></div>
+</div>
+
+<div class="hotspot-card">
+<div class="hs-header"><span class="hs-name">📍 Centro Comunitario Emberá</span><span class="hs-status online" title="Online"></span></div>
+<div class="hs-info"><span>👥 12 usuarios</span><span>📊 28 GB hoy</span><span>💰 Ⓦ 178</span></div>
+<div class="hs-bar"><div class="hs-bar-fill" style="width:24%;background:var(--accent)"></div></div>
+</div>
+
+<div class="hotspot-card">
+<div class="hs-header"><span class="hs-name">📍 Puerto Carti</span><span class="hs-status online" title="Online"></span></div>
+<div class="hs-info"><span>👥 22 usuarios</span><span>📊 56 GB hoy</span><span>💰 Ⓦ 398</span></div>
+<div class="hs-bar"><div class="hs-bar-fill" style="width:44%;background:var(--success)"></div></div>
+</div>
+
+</div>
+
+<!-- Fleet Management -->
+<div class="section-title" id="fleet"><h3>Flota Starlink</h3><p>Estado de kits, RMA, transferencias</p></div>
+<div class="fleet-grid">
+
+<div class="fleet-card">
+<div class="fc-model">📡 Performance Gen 3</div>
+<div class="fc-account">Cuenta: Gómez — Tocumen</div>
+<div class="fc-details">
+<div class="fc-detail"><span class="fc-label">Estado</span><span class="fc-value" style="color:var(--success)">Online</span></div>
+<div class="fc-detail"><span class="fc-label">Señal</span><span class="fc-value">98%</span></div>
+<div class="fc-detail"><span class="fc-label">Usuarios</span><span class="fc-value">32</span></div>
+<div class="fc-detail"><span class="fc-label">Data</span><span class="fc-value">89 GB</span></div>
+<div class="fc-detail"><span class="fc-label">Plan</span><span class="fc-value">Roam Unlimited</span></div>
+<div class="fc-detail"><span class="fc-label">Transferible</span><span class="fc-value">31 Mar 2026</span></div>
+</div>
+</div>
+
+<div class="fleet-card">
+<div class="fc-model">📡 Starlink Mini</div>
+<div class="fc-account">Cuenta: Omar — Comunidad</div>
+<div class="fc-details">
+<div class="fc-detail"><span class="fc-label">Estado</span><span class="fc-value" style="color:var(--success)">Online</span></div>
+<div class="fc-detail"><span class="fc-label">Señal</span><span class="fc-value">92%</span></div>
+<div class="fc-detail"><span class="fc-label">Usuarios</span><span class="fc-value">18</span></div>
+<div class="fc-detail"><span class="fc-label">Data</span><span class="fc-value">34 GB</span></div>
+<div class="fc-detail"><span class="fc-label">Plan</span><span class="fc-value">Mini Roam</span></div>
+<div class="fc-detail"><span class="fc-label">Transferible</span><span class="fc-value">31 Mar 2026</span></div>
+</div>
+</div>
+
+<div class="fleet-card">
+<div class="fc-model">📡 Performance Gen 1</div>
+<div class="fc-account">Cuenta: Segura — Chepo/Darién</div>
+<div class="fc-details">
+<div class="fc-detail"><span class="fc-label">Estado</span><span class="fc-value" style="color:var(--warn)">RMA</span></div>
+<div class="fc-detail"><span class="fc-label">Señal</span><span class="fc-value">—</span></div>
+<div class="fc-detail"><span class="fc-label">RMA</span><span class="fc-value">Router Gen 2</span></div>
+<div class="fc-detail"><span class="fc-label">Ticket</span><span class="fc-value">TIK-8082540</span></div>
+<div class="fc-detail"><span class="fc-label">Plan</span><span class="fc-value">Roam Unlimited</span></div>
+<div class="fc-detail"><span class="fc-label">Costo RMA</span><span class="fc-value" style="color:var(--success)">$0</span></div>
+</div>
+</div>
+
+<div class="fleet-card">
+<div class="fc-model">📡 Starlink Standard</div>
+<div class="fc-account">Cuenta: Mikekol</div>
+<div class="fc-details">
+<div class="fc-detail"><span class="fc-label">Estado</span><span class="fc-value" style="color:var(--success)">Online</span></div>
+<div class="fc-detail"><span class="fc-label">Señal</span><span class="fc-value">95%</span></div>
+<div class="fc-detail"><span class="fc-label">Usuarios</span><span class="fc-value">28</span></div>
+<div class="fc-detail"><span class="fc-label">Data</span><span class="fc-value">67 GB</span></div>
+<div class="fc-detail"><span class="fc-label">Activado</span><span class="fc-value">31 Dic 2025</span></div>
+<div class="fc-detail"><span class="fc-label">Transferible</span><span class="fc-value">31 Mar 2026</span></div>
+</div>
+</div>
+
+</div>
+
+<!-- ═══════════ VIGILANCIA SOBERANA ═══════════ -->
+<div class="section-title" id="vigilancia"><h3>Vigilancia Soberana + Atabey AI</h3><p>Monitoreo total de conexiones, IPs, intenciones — protección 24/7</p></div>
+
+<!-- VIP Protection -->
+<div class="vip-panel">
+<h4><span aria-hidden="true">👑</span> Protección VIP — Atabey AI</h4>
+<p style="font-size:.65rem;color:var(--txt2);margin:.3rem 0">Si alguien busca información sobre estas personas → alerta inmediata + monitoreo total de sesión</p>
+<div class="vip-list">
+<span class="vip-badge">Ministro Interior</span>
+<span class="vip-badge">Cacique General</span>
+<span class="vip-badge">Congreso Guna</span>
+<span class="vip-badge">Líderes Territoriales</span>
+<span class="vip-badge">Consejo de Ancianos</span>
+<span class="vip-badge">Embajadores</span>
+</div>
+</div>
+
+<!-- Surveillance Log -->
+<div class="vigil-panel">
+<div class="vigil-header">
+<h4><span aria-hidden="true">🔍</span> Log de Vigilancia en Tiempo Real</h4>
+<div class="vigil-live"><div class="pulse"></div> LIVE — Atabey Monitoreando</div>
+</div>
+<div class="vigil-log">
+<div class="vigil-entry"><span class="ve-time">14:23:01</span><span class="ve-ip">186.15.xx.xx</span><span class="ve-action">Conexión nueva — Samsung Galaxy — Plan Hora</span></div>
+<div class="vigil-entry"><span class="ve-time">14:22:45</span><span class="ve-ip">200.46.xx.xx</span><span class="ve-action">Navegación: redes sociales, noticias</span></div>
+<div class="vigil-entry alert"><span class="ve-time">14:21:12</span><span class="ve-ip">45.33.xx.xx</span><span class="ve-action">⚠️ ALERTA: Búsqueda sobre líderes territoriales — Atabey monitoreando</span></div>
+<div class="vigil-entry"><span class="ve-time">14:20:55</span><span class="ve-ip">181.57.xx.xx</span><span class="ve-action">Sesión expirada — Plan Día — 24.3 GB usados</span></div>
+<div class="vigil-entry"><span class="ve-time">14:19:33</span><span class="ve-ip">190.88.xx.xx</span><span class="ve-action">Conexión nueva — iPhone 15 — Plan Semana</span></div>
+<div class="vigil-entry alert"><span class="ve-time">14:18:07</span><span class="ve-ip">52.14.xx.xx</span><span class="ve-action">⚠️ IP EXTRANJERA (AWS Virginia) — Escaneo de puertos detectado — BLOQUEADO</span></div>
+<div class="vigil-entry"><span class="ve-time">14:17:22</span><span class="ve-ip">186.15.xx.xx</span><span class="ve-action">Renovación automática — Plan Mes — Ⓦ 249.99 cobrado</span></div>
+<div class="vigil-entry"><span class="ve-time">14:16:01</span><span class="ve-ip">200.46.xx.xx</span><span class="ve-action">Conexión nueva — Laptop Windows — Plan Día</span></div>
+</div>
+</div>
+
+<!-- Security Status -->
+<section class="sec-panel" aria-label="Estado de Seguridad">
+<h4><span aria-hidden="true">🛡️</span> Agentes AI Activos</h4>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Guardian Agent</span><span class="status ok">Vigilando</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Pattern Agent</span><span class="status ok">Aprendiendo</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Anomaly Agent</span><span class="status ok">Detectando</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Trust Agent</span><span class="status ok">Score: 94</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Shield Agent</span><span class="status ok">Protegiendo</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Forensic Agent</span><span class="status ok">Registrando</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Evolution Agent</span><span class="status ok">Gen 47</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Atabey AI</span><span class="status ok">Control Total</span></div>
+</section>
+
+<!-- Interconnections -->
 <section class="sec-panel" aria-label="Interconexiones">
 <h4><span aria-hidden="true">🔗</span> Interconexiones Activas</h4>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../telecom-soberano/" class="label">Telecom</a><span class="status ok">Conectado</span></div>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../gps-soberano/" class="label">Gps</a><span class="status ok">Conectado</span></div>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../radio-soberana/" class="label">Radio</a><span class="status ok">Conectado</span></div>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../mesh-soberano/" class="label">Mesh</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../telecom-soberano/" class="label">Telecom Soberano</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../mesh-soberana/" class="label">Mesh Soberana</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../bdet-bank/" class="label">BDET Bank (Pagos)</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../vigilancia-soberana/" class="label">Vigilancia Soberana</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../nae-turismo-inteligente/" class="label">NAE Turismo</a><span class="status ok">Conectado</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><a href="../satelite-soberano/" class="label">Satélite Soberano</a><span class="status ok">Conectado</span></div>
 </section>
-<section class="sec-panel" aria-label="Estado del Sistema">
-<h4><span aria-hidden="true">⚡</span> Estado en Tiempo Real</h4>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Cifrado Quantum</span><span class="status ok">Activo</span></div>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">AI Engine</span><span class="status ok">Online</span></div>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Bank-Grade TLS</span><span class="status ok">256-bit</span></div>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Casino Fair RNG</span><span class="status ok">Verificado</span></div>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span class="label">Soberania Datos</span><span class="status ok">100%</span></div>
-<div class="sec-progress"><div class="bar green" style="width:98%"></div></div>
-</section>
+
+</div>
+
+<!-- ═══════════ API ENDPOINTS ═══════════ -->
+<div class="section" id="api">
+<h2><span aria-hidden="true">⚡</span> API WiFi Soberano</h2>
+<div class="sub">Backend: wifi-soberano · Puerto 3095 · Node.js 22 + PostgreSQL + Redis</div>
+<div class="sec-panel">
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.7rem;color:var(--txt);font-family:monospace">GET  /api/v1/wifi/portal</span><span class="status ok">Portal</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.7rem;color:var(--txt);font-family:monospace">POST /api/v1/wifi/connect</span><span class="status ok">Conectar</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.7rem;color:var(--txt);font-family:monospace">GET  /api/v1/wifi/session/status</span><span class="status ok">Sesión</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.7rem;color:var(--txt);font-family:monospace">GET  /api/v1/wifi/plans</span><span class="status ok">Planes</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.7rem;color:var(--txt);font-family:monospace">POST /api/v1/wifi/payment/create</span><span class="status ok">Pago WAMPUM</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.7rem;color:var(--txt);font-family:monospace">GET  /api/v1/wifi/admin/dashboard</span><span class="status ok">Admin</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.7rem;color:var(--txt);font-family:monospace">GET  /api/v1/wifi/admin/fleet</span><span class="status ok">Flota</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.7rem;color:var(--txt);font-family:monospace">GET  /api/v1/wifi/admin/vigilancia</span><span class="status ok">Vigilancia</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.7rem;color:var(--txt);font-family:monospace">GET  /api/v1/wifi/admin/revenue</span><span class="status ok">Revenue</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.7rem;color:var(--txt);font-family:monospace">POST /api/v1/wifi/admin/vip</span><span class="status ok">VIP Atabey</span></div>
+</div>
+</div>
+
 </main>
 
-<footer id="footer">
-  <p>StarLink Soberano — Ecosistema Digital Ierahkwa &copy; 2026. Internet satelital pan-americano para 1B+ de ciudadanos indigenas.</p>
+<footer>
+<p><span aria-hidden="true">📡</span> <strong>StarLink Soberano</strong> &mdash; Ecosistema Digital <a href="../">Ierahkwa Ne Kanienke</a></p>
+<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">Internet Satelital WiFi · 8+ kits Starlink · 6 hotspots · 574 territorios · Vigilancia Atabey AI 24/7</p>
+<div style="margin-top:.75rem"><span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span></div>
 </footer>
 
-<script src="../shared/ierahkwa-api.js"></script>
+<script src="../shared/ierahkwa.js"></script>
 <script>
-// Auto-connect to /api/nexus
-window.PLATFORM_API = '/api/nexus';
-if (!Ierahkwa.auth.isLoggedIn()) {
-    console.log('[starlink-soberano] Not logged in — showing login modal');
+/* View Switching */
+function switchView(v){
+document.querySelectorAll('.portal-view,.admin-view').forEach(function(el){el.classList.remove('active')});
+document.querySelectorAll('.view-toggle button').forEach(function(b){b.classList.remove('active')});
+if(v==='portal'){document.querySelector('.portal-view').classList.add('active');document.querySelectorAll('.view-toggle button')[0].classList.add('active')}
+else{document.querySelector('.admin-view').classList.add('active');document.querySelectorAll('.view-toggle button')[1].classList.add('active')}
 }
+/* Plan Selection */
+var selectedPlan=null;
+var planPrices={'1h':'Ⓦ 9.99','1d':'Ⓦ 24.99','1w':'Ⓦ 99.99','1m':'Ⓦ 249.99','6m':'Ⓦ 999.99','1y':'Ⓦ 1,499'};
+function selectPlan(el,plan){
+document.querySelectorAll('.plan-card').forEach(function(c){c.classList.remove('selected')});
+el.classList.add('selected');selectedPlan=plan;
+var btn=document.getElementById('connectBtn');
+btn.disabled=false;btn.style.opacity='1';
+btn.innerHTML='<span aria-hidden="true">📶</span> Conectar — '+planPrices[plan];
+}
+/* IndexedDB Offline */
+var DB_NAME='starlink-soberano-db';
+var STORES=['sesiones','planes','hotspots','flota','vigilancia','analytics','pagos-wampum','vip-proteccion'];
+function initDB(){var r=indexedDB.open(DB_NAME,1);r.onupgradeneeded=function(e){var db=e.target.result;STORES.forEach(function(s){if(!db.objectStoreNames.contains(s))db.createObjectStore(s,{keyPath:'id',autoIncrement:true})})}}
+initDB();
 </script>
 <script src="../shared/ierahkwa-security.js"></script>
 <script src="../shared/ierahkwa-quantum.js"></script>
 <script src="../shared/ierahkwa-protocols.js"></script>
 <script src="../shared/ierahkwa-interconnect.js"></script>
 <script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
+<script src="../shared/ierahkwa-api.js"></script>
 <script src="../shared/ierahkwa-agents.js"></script>
 </body>
 </html>

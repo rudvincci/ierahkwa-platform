@@ -1,256 +1,306 @@
-# WHITEPAPER: StarLink Soberano — Internet Satelital Pan-Americano
+# WHITEPAPER: StarLink Soberano — Internet Satelital Soberano
 
-**Versión**: 1.0.0
-**Fecha**: 2026-02-28
-**NEXUS**: NEXUS Forja (Desarrollo & DevOps)
-**Ecosistema**: Ierahkwa Ne Kanienke — Nación Digital Soberana
+**Version**: 2.0.0
+**Fecha**: 2026-03-06
+**NEXUS**: NEXUS Cosmos (Espacio & Satelital)
+**Ecosistema**: Ierahkwa Ne Kanienke — Nacion Digital Soberana
 
 ---
 
 ## Resumen Ejecutivo
 
-**StarLink Soberano — Internet Satelital Pan-Americano** es una plataforma soberana diseñada para proveer Plataforma soberana de Starlink para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+**StarLink Soberano** es una plataforma completa de negocio WiFi satelital que opera un modelo de captive portal similar al de aeropuertos y aviones. Utiliza kits Starlink comerciales como fuente de senal, multiplica la conexion con routers mesh, y vende acceso por tiempo a traves de pagos en WAMPUM (criptomoneda soberana). Incluye dashboard administrativo, fleet management, vigilancia soberana y proteccion VIP via Atabey AI.
 
 ## 1. Problema
 
-Las comunidades indígenas enfrentan:
+Las comunidades indigenas en las Americas enfrentan:
 
-- **Dependencia tecnológica**: Servicios controlados por corporaciones extranjeras
-- **Falta de soberanía digital**: Datos almacenados en servidores fuera de jurisdicción soberana
-- **Vulnerabilidad**: Sin protección contra fraude, robo de identidad y vigilancia
-- **Exclusión digital**: Interfaces diseñadas sin considerar diversidad cultural y lingüística
-- **Centralización**: Puntos únicos de falla que afectan a millones de personas
+- **Sin acceso a internet**: Zonas rurales sin fibra ni cobertura movil
+- **Costos prohibitivos**: ISPs tradicionales no cubren areas remotas
+- **Dependencia tecnologica**: Servicios controlados por corporaciones extranjeras
+- **Sin soberania de datos**: Toda la informacion pasa por servidores de terceros
+- **Sin modelo economico**: Las comunidades pagan por internet pero no generan ingresos
 
-## 2. Solución: StarLink Soberano — Internet Satelital Pan-Americano
+## 2. Solucion: WiFi Satelital Soberano
 
-### Principios de Diseño
+### Modelo de Negocio
 
-1. **Soberanía Total**: Zero dependencias de servicios externos (Google, AWS, Microsoft)
-2. **Offline-First**: Funciona sin conexión a internet mediante Service Workers
-3. **Post-Quantum**: Encriptación resistente a computación cuántica (Kyber-768)
-4. **AI Nativa**: 7 agentes autónomos de protección integrados
-5. **Accesible**: WCAG 2.1 AA, multi-idioma (200+ lenguas indígenas)
-6. **Descentralizada**: Arquitectura P2P sin servidor central
+```
+INVERSION:          1 Starlink = $50-100/mes
+MULTIPLICACION:     Routers Mesh → 50-100 usuarios simultaneos
+VENTA:              Captive Portal → $9.99/hora a $1,499.99/ano
+ROI ESTIMADO:       10x por ubicacion (mes 1)
+ESCALABILIDAD:      574 territorios × 19 naciones
+```
 
-### Stack Tecnológico
+### Flujo Operativo
 
-| Capa | Tecnología |
+```
+Kit Starlink → Router Mesh → Captive Portal → Pago WAMPUM → Sesion WiFi
+     ↓              ↓              ↓                ↓              ↓
+  Hardware      Cobertura       Login          Blockchain       Acceso
+  ($50-100)    (100-500m)    (Selec Plan)    (MameyNode)    (Tiempo)
+```
+
+### Planes de Servicio
+
+| Plan | Horas | Precio (W) | Bandwidth | Data Limit |
+|------|-------|------------|-----------|------------|
+| 1 Hora | 1 | 9.99 | 25 Mbps | 1 GB |
+| 1 Dia | 24 | 24.99 | 50 Mbps | 5 GB |
+| 1 Semana | 168 | 99.99 | 75 Mbps | 25 GB |
+| 1 Mes | 720 | 249.99 | 100 Mbps | 100 GB |
+| 6 Meses | 4,320 | 999.99 | 150 Mbps | Ilimitado |
+| 1 Ano | 8,760 | 1,499.99 | 200 Mbps | Ilimitado |
+
+## 3. Arquitectura Tecnica
+
+### Frontend — Captive Portal + Admin Dashboard
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   STARLINK SOBERANO                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────────────┐  ┌─────────────────────────┐   │
+│  │   CAPTIVE PORTAL    │  │   ADMIN DASHBOARD       │   │
+│  │   (Vista Publica)   │  │   (Vista Privada)       │   │
+│  │                     │  │                         │   │
+│  │  ● Seleccion Plan   │  │  ● Metricas Real-time   │   │
+│  │  ● Pago WAMPUM      │  │  ● Revenue Analytics    │   │
+│  │  ● Timer Sesion     │  │  ● Fleet Management     │   │
+│  │  ● Estado Conexion  │  │  ● Hotspot Map          │   │
+│  └─────────────────────┘  │  ● Vigilancia Soberana  │   │
+│                           │  ● VIP Protection       │   │
+│                           └─────────────────────────┘   │
+│                                                         │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │              8 IndexedDB Stores                   │   │
+│  │  sesiones · planes · hotspots · flota            │   │
+│  │  vigilancia · analytics · pagos · vip            │   │
+│  └──────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Backend — wifi-soberano Service (Puerto 3095)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              WIFI-SOBERANO BACKEND                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Express 4.21 + Node.js 22                              │
+│                                                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
+│  │   Routes     │  │  Middleware  │  │   Models     │  │
+│  │              │  │              │  │              │  │
+│  │  auth.js     │  │  captive.js  │  │  PostgreSQL  │  │
+│  │  plans.js    │  │  bandwidth.js│  │  9 tablas    │  │
+│  │  sessions.js │  │              │  │  3 views     │  │
+│  │  payments.js │  └──────────────┘  │  5 triggers  │  │
+│  │  analytics.js│                    └──────────────┘  │
+│  │  fleet.js    │  ┌──────────────┐                    │
+│  │  admin.js    │  │   Redis      │                    │
+│  └──────────────┘  │  Sessions    │                    │
+│                     │  Real-time   │                    │
+│  ┌──────────────┐  │  Vigilancia  │                    │
+│  │  WebSocket   │  └──────────────┘                    │
+│  │  /ws/wifi    │                                      │
+│  │  Real-time   │  ┌──────────────┐                    │
+│  │  Dashboard   │  │  WAMPUM      │                    │
+│  └──────────────┘  │  MameyNode   │                    │
+│                     │  Chain 777777│                    │
+│                     └──────────────┘                    │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Infraestructura
+
+```
+┌────────────────────────────────────────────────────┐
+│                 PRODUCCION                          │
+│                                                    │
+│  Nginx ─────→ wifi-soberano:3095 (2 replicas)     │
+│    │                    │                          │
+│    │              ┌─────┴─────┐                    │
+│    │              │           │                    │
+│    │         PostgreSQL    Redis 7                 │
+│    │           16-alpine    Sessions               │
+│    │              │                                │
+│    │         MameyNode                             │
+│    │         Chain 574                             │
+│    │                                               │
+│  Docker Compose / Kubernetes (HPA 2-10)            │
+└────────────────────────────────────────────────────┘
+```
+
+## 4. Base de Datos
+
+### Tablas (9)
+
+| Tabla | Proposito | Registros Est. |
+|-------|-----------|----------------|
+| wifi_plans | Planes de precios | 6 |
+| starlink_fleet | Inventario hardware Starlink | 8+ |
+| hotspots | Ubicaciones fisicas | 6+ |
+| wifi_sessions | Sesiones de usuarios activos | Miles/dia |
+| wifi_payments | Transacciones WAMPUM | Miles/dia |
+| wifi_analytics | Datos de uso (bytes, device, OS) | Millones |
+| vip_protected | Lista VIP protegida (Atabey) | Decenas |
+| vigilancia_alerts | Alertas de seguridad | Miles |
+| vigilancia_connections | Log de TODA conexion | Millones |
+
+### Views (3)
+
+- `v_active_sessions` — Sesiones activas con plan y hotspot
+- `v_revenue_summary` — Revenue diario ultimos 90 dias
+- `v_fleet_health` — Estado de flota con sesiones activas
+
+## 5. API Endpoints
+
+### Publicos (Captive Portal)
+```
+GET  /api/v1/wifi/portal           → Datos del portal
+GET  /api/v1/wifi/plans            → Planes disponibles
+POST /api/v1/wifi/connect          → Crear sesion WiFi
+GET  /api/v1/wifi/session/status   → Estado de sesion
+POST /api/v1/wifi/session/extend   → Extender tiempo
+POST /api/v1/wifi/payment/create   → Crear pago WAMPUM
+POST /api/v1/wifi/payment/verify   → Verificar pago
+```
+
+### Privados (Admin Dashboard)
+```
+GET  /api/v1/wifi/admin/dashboard  → Metricas en tiempo real
+GET  /api/v1/wifi/admin/sessions   → Lista de sesiones activas
+GET  /api/v1/wifi/admin/revenue    → Analytics de revenue
+GET  /api/v1/wifi/admin/fleet      → Estado flota Starlink
+GET  /api/v1/wifi/admin/analytics  → User analytics
+GET  /api/v1/wifi/admin/vigilancia → Log de vigilancia
+POST /api/v1/wifi/admin/hotspot    → Crear/editar hotspot
+POST /api/v1/wifi/admin/plan       → Crear/editar plan
+POST /api/v1/wifi/admin/vip        → Agregar persona VIP
+POST /api/v1/wifi/admin/fleet      → Agregar/actualizar kit
+```
+
+## 6. Vigilancia Soberana
+
+### Datos Recolectados por Conexion
+
+- IP Address + Geolocalizacion
+- MAC Address
+- Device Fingerprint
+- User Agent (OS, Browser, Device)
+- Request Path + Query String
+- Timestamp + Duracion
+- Bytes Up/Down
+- Hotspot ID
+
+### Atabey AI — Proteccion VIP
+
+```
+Busqueda detectada → Comparar con lista VIP
+                          ↓
+                    ¿Match encontrado?
+                     ↓ SI           ↓ NO
+              Alert CRITICAL     Log normal
+              Atabey activa      Continuar
+              monitoreo 24/7
+              de esa sesion
+```
+
+Personas protegidas: ministros, caciques, lideres comunitarios, personas especiales.
+Nivel de proteccion: standard, high, critical, maximum.
+
+## 7. Flota Starlink
+
+### Inventario Actual (8 kits)
+
+| UTID | Modelo | Cuenta | Activacion | Transfer | Ubicacion | Estado |
+|------|--------|--------|------------|----------|-----------|--------|
+| UT-GOMEZ-001 | Perf Gen 3 | Gomez | 2025-11-15 | 2026-02-13 | Tocumen | Online |
+| UT-OMAR-001 | Mini | Omar | 2025-12-01 | 2026-03-01 | Chepo | Online |
+| UT-SEGURA-001 | Perf Gen 1 | Segura | 2025-10-20 | 2026-01-18 | Darien | RMA |
+| UT-MIKEKOL-001 | Standard | Mikekol | 2025-09-15 | 2025-12-14 | Ft Lauderdale | Online |
+| UT-WILSON-001 | Perf Gen 1 | Wilson | 2025-11-01 | 2026-01-30 | Guna Yala | Online |
+| UT-ERICK-001 | Mesh Node | Erick | 2025-12-10 | 2026-03-10 | Embera | Online |
+| UT-FELIX-001 | Perf Gen 3 | Felix | 2026-01-05 | 2026-04-05 | Carti | Online |
+| UT-GARY-001 | Standard | Gary/Appel | 2025-08-20 | 2025-11-18 | Ft Lauderdale | Offline |
+
+### Regla de 90 Dias
+
+Los kits Starlink son transferibles 90 dias despues de la activacion. El sistema calcula automaticamente la fecha de elegibilidad de transferencia.
+
+## 8. Hotspots Desplegados
+
+| Nombre | Ubicacion | Territorio | Max Usuarios | Estado |
+|--------|-----------|-----------|--------------|--------|
+| Mercado Tocumen | 9.08, -79.38 | Panama Este | 100 | Activo |
+| Terminal Chepo | 9.17, -79.10 | Chepo/Darien | 75 | Activo |
+| Centro Darien | 8.41, -78.15 | Darien | 50 | Activo |
+| Puerto Guna Yala | 9.55, -78.95 | Guna Yala | 60 | Activo |
+| Comunidad Embera | 9.02, -79.58 | Embera-Wounaan | 40 | Planificado |
+| Isla Carti | 9.46, -78.96 | Guna Yala | 80 | Planificado |
+
+## 9. Sistema de Agentes AI
+
+| Agente | Funcion | Rol WiFi |
+|--------|---------|----------|
+| Guardian | Anti-fraude | Detectar sesiones fraudulentas |
+| Pattern | Patrones | Aprender comportamiento por usuario |
+| Anomaly | Anomalias | Detectar uso inusual de bandwidth |
+| Trust | Confianza | Score por sesion/IP |
+| Shield | Proteccion | Bloquear pagos sospechosos |
+| Forensic | Forense | Log completo de cada sesion |
+| Evolution | Evolucion | Mejorar reglas por generacion |
+
+## 10. Seguridad
+
+| Capa | Tecnologia |
 |------|-----------|
-| Frontend | HTML5 + CSS3 + JavaScript (vanilla, zero frameworks) |
-| Design System | ierahkwa.css (24KB, dark theme, responsive) |
-| Seguridad | ierahkwa-security.js (33KB, post-quantum) |
-| AI/ML | ierahkwa-ai.js (28KB) + ierahkwa-agents.js (35KB) |
-| Quantum | ierahkwa-quantum.js (28KB) |
-| Protocolos | ierahkwa-protocols.js (24KB, P2P soberano) |
-| Interconexión | ierahkwa-interconnect.js (16KB) |
-| Offline | Service Worker + IndexedDB |
-| PWA | manifest.json + icons + splash screens |
+| Transport | TLS 1.2/1.3 + HSTS |
+| Encryption | CRYSTALS-Kyber-768 |
+| Auth | JWT + Redis sessions |
+| Rate Limit | 200 req/15min global, 30 req/min portal |
+| Headers | Helmet (CSP, X-Frame, X-Content-Type) |
+| AI | 7 agentes autonomos |
+| VIP | Atabey AI proteccion 24/7 |
 
-## 3. Arquitectura Técnica
+## 11. Proyeccion de Revenue
 
-```
-┌──────────────────────────────────────────────────┐
-│                   USUARIO                        │
-├──────────────────────────────────────────────────┤
-│  ┌────────────────────────────────────────────┐  │
-│  │         Capa de Presentación               │  │
-│  │   HTML5 Semántico + ierahkwa.css           │  │
-│  │   Responsive · Dark Theme · WCAG 2.1 AA   │  │
-│  └─────────────────┬──────────────────────────┘  │
-│                    │                             │
-│  ┌─────────────────▼──────────────────────────┐  │
-│  │         Capa de Aplicación                 │  │
-│  │   ierahkwa.js · ierahkwa-api.js            │  │
-│  │   Lógica de negocio client-side            │  │
-│  └─────────────────┬──────────────────────────┘  │
-│                    │                             │
-│  ┌─────────────────▼──────────────────────────┐  │
-│  │         Capa de Seguridad                  │  │
-│  │   ierahkwa-security.js (Kyber-768)         │  │
-│  │   ierahkwa-agents.js (7 AI Agents)         │  │
-│  │   Guardian · Pattern · Anomaly · Trust     │  │
-│  │   Shield · Forensic · Evolution            │  │
-│  └─────────────────┬──────────────────────────┘  │
-│                    │                             │
-│  ┌─────────────────▼──────────────────────────┐  │
-│  │         Capa de Datos                      │  │
-│  │   IndexedDB · localStorage · Cache API     │  │
-│  │   Offline-first · Sync automático          │  │
-│  └─────────────────┬──────────────────────────┘  │
-│                    │                             │
-│  ┌─────────────────▼──────────────────────────┐  │
-│  │         Capa de Red                        │  │
-│  │   Service Worker · P2P Soberano            │  │
-│  │   ierahkwa-protocols.js · WebRTC           │  │
-│  │   ierahkwa-interconnect.js                 │  │
-│  └────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────┘
-```
-
-## 4. Módulos Funcionales
-
-### 1. Enlaces Inter-Satelitales
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 2. Terminal de Usuario
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 3. ⚡
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 4. Red de Estaciones Terrestres
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 5. 🛰️
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 6. Alto Rendimiento
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 7. 🔗
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 8. 🚀
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 9. 📶
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 10. Formacion Dinamica de Haces
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-
-## 5. Sistema de Agentes AI
-
-La plataforma integra 7 agentes autónomos de inteligencia artificial:
-
-| Agente | Función | Capacidad |
-|--------|---------|-----------|
-| 🛡️ Guardian | Anti-fraude y anti-robo | Monitoreo DOM, red, formularios, clipboard |
-| 🧠 Pattern | Aprendizaje de patrones | Perfiles de comportamiento por usuario |
-| 🔍 Anomaly | Detección de anomalías | Clicks rápidos, requests masivos, horarios inusuales |
-| ⭐ Trust | Score de confianza | Escala 0-100 con histórico y ajuste dinámico |
-| 🔒 Shield | Protección transacciones | Bloqueo de pagos sospechosos, protección storage |
-| 🔬 Forensic | Análisis forense | Trazabilidad completa de eventos de seguridad |
-| 🧬 Evolution | Auto-mejora | Evolución de reglas por generación, aprendizaje continuo |
-
-### Ciclo de Aprendizaje
+### Por Ubicacion (estimado conservador)
 
 ```
-Observar → Aprender → Detectar → Evolucionar
-    ↑                                    │
-    └────────────────────────────────────┘
+50 usuarios/dia × W24.99 promedio = W1,249.50/dia
+W1,249.50 × 30 dias = W37,485/mes
+Costo Starlink = W100/mes
+GANANCIA NETA = W37,385/mes por ubicacion
 ```
 
-Los agentes mejoran con cada interacción. Datos almacenados localmente en IndexedDB.
-
-## 6. Seguridad Post-Quantum
-
-### Modelo de Amenazas
-
-| Amenaza | Mitigación |
-|---------|-----------|
-| Intercepción | CRYSTALS-Kyber-768 (resistente a quantum) |
-| Phishing | Guardian Agent + detección de formularios ocultos |
-| XSS | CSP strict + sanitización DOM |
-| MITM | Certificate pinning + HSTS |
-| Data exfiltration | Guardian Agent bloqueo de destinos sospechosos |
-| Brute force | Rate limiting + Trust Score |
-| Supply chain | Zero dependencias externas |
-
-### Criptografía
-
-- **Key Exchange**: CRYSTALS-Kyber-768 (NIST PQC Standard)
-- **Signatures**: CRYSTALS-Dilithium (NIST PQC Standard)
-- **Hash**: SHA3-256 + BLAKE3
-- **Symmetric**: AES-256-GCM
-- **Key Rotation**: Automática por sesión
-
-## 7. Interoperabilidad
-
-### Protocolo Soberano Ierahkwa (PSI)
+### Escalamiento
 
 ```
-Platform A ←→ ierahkwa-protocols.js ←→ Platform B
-                      ↕
-              ierahkwa-interconnect.js
-                      ↕
-              NEXUS forja Hub
+6 hotspots activos = W224,310/mes
+20 hotspots (Panama) = W747,700/mes
+100 hotspots (Americas) = W3,738,500/mes
+574 territorios = W21,458,690/mes
 ```
 
-Todas las plataformas se comunican mediante el Protocolo Soberano Ierahkwa (PSI), un protocolo P2P que opera sin servidores centrales. La interconexión está gestionada por `ierahkwa-interconnect.js`.
+## 12. Roadmap
 
-## 8. Accesibilidad e Inclusión
-
-- **WCAG 2.1 AA** compliant
-- **200+ idiomas** soportados (37 indígenas + 6 globales)
-- **RTL** support (árabe, hebreo)
-- **Screen readers** compatible (ARIA landmarks)
-- **Keyboard navigation** completa
-- **High contrast** mode
-- **Reduced motion** respetado
-
-## 9. Modelo de Despliegue
-
-```
-Producción:
-├── CDN Soberano (Cloudflare Business)
-├── DNS: ierahkwa.org (Cloudflare)
-├── SSL: Full Strict TLS 1.2+
-├── WAF: Bot challenge activo
-├── Cache: Static 7d, HTML 1h
-└── Rate Limit: 100 req/min API
-```
-
-## 10. Roadmap
-
-| Fase | Descripción | Estado |
+| Fase | Descripcion | Estado |
 |------|-------------|--------|
-| v1.0 | Plataforma base | ✅ Completado |
-| v2.0 | Shared design system | ✅ Completado |
-| v3.0 | Producción (Docker, K8s, CI/CD) | ✅ Completado |
-| v4.0 | Seguridad + AI + Quantum | ✅ Completado |
-| v5.0 | 18 NEXUS + 7 AI Agents | ✅ Completado |
-| v6.0 | Smart contracts testnet | 🔄 En progreso |
-| v7.0 | App móvil producción | 📋 Planificado |
-
-## 11. Conclusión
-
-**StarLink Soberano — Internet Satelital Pan-Americano** representa un componente crítico de la infraestructura digital soberana de Ierahkwa Ne Kanienke. Construida sin dependencias externas, con protección post-quantum y 7 agentes AI autónomos, esta plataforma demuestra que la soberanía digital total es alcanzable.
+| v1.0 | Plataforma base satelital | Completado |
+| v2.0 | WiFi Captive Portal + Admin | Completado |
+| v2.1 | Backend wifi-soberano | Completado |
+| v2.2 | Docker + K8s + Nginx | Completado |
+| v3.0 | Deploy produccion Panama | En progreso |
+| v4.0 | Expansion 20 hotspots | Planificado |
+| v5.0 | Expansion Americas (574) | Planificado |
 
 ---
 
-**Ierahkwa Ne Kanienke** — *La infraestructura digital más completa jamás construida para la soberanía indígena.*
+**Ierahkwa Ne Kanienke** — *Internet soberano para todas las Americas. Sin terceros. Sin limites.*
 
-**NEXUS**: NEXUS Forja (Desarrollo & DevOps)
+**NEXUS**: NEXUS Cosmos (Espacio & Satelital)
 **Repositorio**: [github.com/rudvincci/ierahkwa-platform](https://github.com/rudvincci/ierahkwa-platform)

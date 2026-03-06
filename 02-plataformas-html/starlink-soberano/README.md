@@ -1,79 +1,138 @@
-# StarLink Soberano — Internet Satelital Pan-Americano
+# StarLink Soberano — Internet Satelital Soberano
 
-> Plataforma soberana de Starlink para la infraestructura digital de 574 naciones tribales - Ierahkwa Ne Kanienke
+> Plataforma WiFi satelital para venta de acceso a internet via captive portal + dashboard administrativo — Ierahkwa Ne Kanienke
 
 ## Resumen
 
-**StarLinkSoberano** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
+**StarLink Soberano** es la plataforma de negocio WiFi satelital del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Cosmos (Espacio & Satelital)**. Modelo de negocio: pagar 1 Starlink por ubicacion, multiplicar la senal con routers mesh, vender acceso WiFi por tiempo como en aeropuertos.
 
-## Características Principales
-
-1. **Enlaces Inter-Satelitales**
-2. **Terminal de Usuario**
-3. **⚡**
-4. **Red de Estaciones Terrestres**
-5. **🛰️**
-6. **Alto Rendimiento**
-7. **🔗**
-8. **🚀**
-9. **📶**
-10. **Formacion Dinamica de Haces**
-
-## Arquitectura
+## Modelo de Negocio
 
 ```
-┌─────────────────────────────────────┐
-│          starlink-soberano              │
-├─────────────────────────────────────┤
-│  Frontend    │  HTML5 + CSS3 + JS   │
-│  Design      │  ierahkwa.css        │
-│  Security    │  Post-Quantum        │
-│  AI Agents   │  7 Agentes Activos   │
-│  Network     │  PWA + Offline-First │
-│  NEXUS       │  forja                │
-└─────────────────────────────────────┘
+1 Starlink ($50-100/mes) → Multiplicador de senal → Captive Portal → Venta por tiempo
+                                                                        ↓
+                                                              ROI 10x+ por ubicacion
 ```
 
-## Tecnologías
+## Planes de Acceso (WAMPUM)
 
-- **Frontend**: HTML5 semántico, CSS3, JavaScript vanilla
-- **Design System**: `ierahkwa.css` (shared)
-- **Seguridad**: `ierahkwa-security.js` — encriptación post-quantum Kyber-768
-- **AI**: `ierahkwa-agents.js` — 7 agentes autónomos anti-fraude
-- **Protocolos**: `ierahkwa-protocols.js` — comunicación soberana
-- **Red**: `ierahkwa-interconnect.js` — interconexión entre plataformas
-- **PWA**: Service Worker + manifest.json — funciona offline
+| Plan | Duracion | Precio | Bandwidth |
+|------|----------|--------|-----------|
+| 1 Hora | 1h | 9.99 | 25 Mbps |
+| 1 Dia | 24h | 24.99 | 50 Mbps |
+| 1 Semana | 7d | 99.99 | 75 Mbps |
+| 1 Mes | 30d | 249.99 | 100 Mbps |
+| 6 Meses | 180d | 999.99 | 150 Mbps |
+| 1 Ano | 365d | 1,499.99 | 200 Mbps |
 
-## Instalación
+## Componentes
+
+### A) Captive Portal (Vista Publica)
+- Pantalla de bienvenida "Internet Soberano"
+- Seleccion de plan + pago WAMPUM
+- Contador de tiempo restante
+- Estado de conexion y velocidad
+
+### B) Dashboard Administrador (Vista Privada)
+- Metricas en tiempo real (usuarios, revenue, data)
+- Gestion de hotspots (6 ubicaciones activas)
+- Fleet Management (8+ kits Starlink)
+- Revenue analytics (diario/semanal/mensual)
+- Gestion de planes y precios
+
+### C) Vigilancia Soberana
+- Log de TODA conexion (IP, MAC, device, geo)
+- Deteccion de busquedas sobre personas VIP
+- Atabey AI: monitoreo 24/7 de personas protegidas
+- 7 Agentes AI + alertas en tiempo real
+
+## Backend Service
+
+```
+wifi-soberano (Puerto 3095)
+├── POST /api/v1/wifi/connect       → Conectar sesion WiFi
+├── GET  /api/v1/wifi/plans         → Planes disponibles
+├── GET  /api/v1/wifi/session/status → Estado de sesion
+├── POST /api/v1/wifi/payment/create → Pago WAMPUM
+├── GET  /api/v1/wifi/admin/dashboard → Metricas admin
+├── GET  /api/v1/wifi/admin/fleet    → Estado flota Starlink
+├── GET  /api/v1/wifi/admin/revenue  → Analytics de revenue
+└── GET  /api/v1/wifi/admin/vigilancia → Log vigilancia
+```
+
+## Flota Starlink Activa
+
+| Kit | Modelo | Cuenta | Ubicacion | Estado |
+|-----|--------|--------|-----------|--------|
+| UT-GOMEZ-001 | Performance Gen 3 | Gomez | Tocumen, Panama | Online |
+| UT-OMAR-001 | Starlink Mini | Omar | Chepo, Darien | Online |
+| UT-SEGURA-001 | Performance Gen 1 | Segura | Darien | RMA |
+| UT-MIKEKOL-001 | Standard | Mikekol | Fort Lauderdale | Online |
+| UT-WILSON-001 | Performance Gen 1 | Wilson | Guna Yala | Online |
+| UT-ERICK-001 | Mesh Node | Erick | Embera | Online |
+| UT-FELIX-001 | Performance Gen 3 | Felix | Carti, San Blas | Online |
+| UT-GARY-001 | Standard | Gary/Appel | Fort Lauderdale | Offline |
+
+## Stack Tecnologico
+
+### Frontend
+- HTML5 + CSS3 + JavaScript vanilla
+- Design System: `ierahkwa.css`
+- 8 stores IndexedDB para offline
+- PWA + Service Worker
+
+### Backend
+- Node.js 22 + Express 4.21
+- PostgreSQL 16 + Redis 7
+- WebSocket (dashboard real-time)
+- JWT authentication
+
+### Infraestructura
+- Docker (Node 22 Alpine, tini PID 1)
+- Kubernetes (2-10 replicas, HPA)
+- Nginx reverse proxy + rate limiting
+- Puerto: 3095
+
+## Instalacion
 
 ```bash
-# Clonar el repositorio
+# Clonar
 git clone https://github.com/rudvincci/ierahkwa-platform.git
-
-# Navegar a la plataforma
 cd 02-plataformas-html/starlink-soberano
 
-# Abrir en navegador (no requiere servidor)
+# Frontend (no requiere servidor)
 open index.html
+
+# Backend
+cd ../../03-backend/wifi-soberano
+npm install
+cp .env.example .env
+node server.js
+
+# Docker
+docker build -t wifi-soberano .
+docker run -p 3095:3095 wifi-soberano
 ```
-
-## NEXUS
-
-Esta plataforma pertenece a **NEXUS Forja (Desarrollo & DevOps)** del ecosistema Ierahkwa.
 
 ## Seguridad
 
-- Encriptación post-quantum (CRYSTALS-Kyber-768)
+- Encriptacion post-quantum (CRYSTALS-Kyber-768)
 - 7 Agentes AI de vigilancia continua
-- Zero dependencias externas
-- Sin tracking ni cookies de terceros
-- Datos almacenados localmente (IndexedDB)
+- Atabey AI: proteccion VIP 24/7
+- Rate limiting: 200 req/15min global
+- Helmet + CORS + CSP headers
+- JWT para sesiones autenticadas
+- Zero dependencias externas en frontend
+
+## NEXUS
+
+Esta plataforma pertenece a **NEXUS Cosmos (Espacio & Satelital)** del ecosistema Ierahkwa.
 
 ## Licencia
 
-Propiedad de Ierahkwa Ne Kanienke — Nación Digital Soberana.
+Propiedad de Ierahkwa Ne Kanienke — Nacion Digital Soberana.
 
 ## Contacto
 
 - **Proyecto**: [Ierahkwa Platform](https://github.com/rudvincci/ierahkwa-platform)
-- **NEXUS**: NEXUS Forja (Desarrollo & DevOps)
+- **NEXUS**: NEXUS Cosmos (Espacio & Satelital)

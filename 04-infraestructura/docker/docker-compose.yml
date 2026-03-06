@@ -153,6 +153,46 @@ services:
       - soberana
     restart: unless-stopped
 
+  # ==================== WIFI SOBERANO ====================
+
+  wifi-soberano:
+    build:
+      context: ../../03-backend/wifi-soberano
+      dockerfile: Dockerfile
+    container_name: wifi-soberano
+    ports:
+      - "3095:3095"
+    environment:
+      - NODE_ENV=production
+      - PORT=3095
+      - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - MAMEYNODE_RPC_URL=http://mameynode:8545
+      - WAMPUM_CONTRACT_ADDRESS=${BDET_CONTRACT_ADDRESS}
+      - BDET_BANK_API=http://api:3000/api/banking
+      - VIGILANCIA_ENABLED=true
+      - VIP_ALERT_WEBHOOK=${VIP_ALERT_WEBHOOK}
+      - ATABEY_AI_ENDPOINT=http://atabey:8081
+      - CORS_ORIGINS=https://ierahkwa.gov,https://wifi.ierahkwa.gov
+    depends_on:
+      - postgres
+      - redis
+      - mameynode
+    networks:
+      - soberana
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+    labels:
+      - "com.soberano.service=wifi"
+      - "com.soberano.tier=backend"
+      - "com.soberano.port=3095"
+
   # ==================== MONITORING ====================
 
   prometheus:
