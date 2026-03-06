@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
+<meta name="description" content="NAE Turismo Inteligente — Plataforma de gestión turística inteligente para Guna Yala. Control de flujo, dashboards por rol, calendario de disponibilidad, QR soberano, pagos WAMPUM y AI cuántico.">
+<meta name="theme-color" content="#FF6D00">
+<link rel="canonical" href="https://ierahkwa.nation/nae-turismo-inteligente/">
+<link rel="manifest" href="../shared/manifest.json">
+<link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/icon-192.svg">
+<meta property="og:title" content="NAE Turismo Inteligente — Guna Yala Smart Tourism">
+<meta property="og:description" content="Plataforma soberana de turismo inteligente para Guna Yala. Dashboards por rol, calendario, QR de flujo, control de capacidad, pagos WAMPUM. Modelo pionero para 574 territorios.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ierahkwa.nation/nae-turismo-inteligente/">
+<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NAE — Turismo Inteligente Guna Yala">
+<meta name="twitter:description" content="49 comunidades, 365 islas, 1 plataforma soberana. Control turístico digital para Guna Yala. El modelo que inspira a las Américas.">
+<link rel="stylesheet" href="../shared/ierahkwa.css">
+<title>NAE Turismo Inteligente — Guna Yala Smart Tourism</title>
+<style>
+:root{--accent:#FF6D00;--guna:#00BFA5}
+.nae-hero-badge{background:linear-gradient(135deg,var(--guna),#00897B);color:#fff;font-weight:700;font-size:.7rem;padding:.35rem .8rem;border-radius:20px;display:inline-flex;align-items:center;gap:.3rem}
+.island-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;padding:1rem 0}
+.island-card{background:linear-gradient(135deg,rgba(0,191,165,.08),rgba(0,191,165,.02));border:1px solid rgba(0,191,165,.25);border-radius:var(--r);padding:1.2rem;transition:all .3s}
+.island-card:hover{border-color:var(--guna);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,191,165,.15)}
+.island-card h4{color:var(--guna);margin:0 0 .3rem;font-size:.88rem}
+.island-card .cap-bar{height:8px;background:var(--bg4);border-radius:4px;margin:.5rem 0;overflow:hidden}
+.island-card .cap-fill{height:100%;border-radius:4px;transition:width .5s}
+.island-card .cap-label{font-size:.62rem;color:var(--txt2);display:flex;justify-content:space-between}
+.role-panel{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.8rem;padding:1rem 0}
+.role-item{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:1rem;text-align:center;transition:all .3s}
+.role-item:hover{border-color:var(--guna);box-shadow:0 4px 20px rgba(0,191,165,.1)}
+.role-item .role-icon{font-size:2.2rem;margin-bottom:.4rem}
+.role-item h5{color:var(--guna);margin:0;font-size:.82rem}
+.role-item p{font-size:.68rem;color:var(--txt2);margin:.3rem 0 0}
+.role-item .role-count{background:rgba(0,191,165,.15);color:var(--guna);font-size:.6rem;font-weight:700;padding:.15rem .5rem;border-radius:10px;display:inline-block;margin-top:.3rem}
+.flow-timeline{position:relative;padding-left:2rem}
+.flow-timeline::before{content:'';position:absolute;left:14px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--guna),var(--accent))}
+.flow-node{position:relative;padding:.8rem 0 .8rem 1.5rem;font-size:.78rem;color:var(--txt)}
+.flow-node::before{content:'';position:absolute;left:6px;top:1rem;width:18px;height:18px;border-radius:50%;background:var(--guna);border:3px solid var(--bg2)}
+.flow-node strong{color:var(--guna)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;max-width:350px}
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:.65rem;border-radius:4px;font-weight:600}
+.cal-avail{background:rgba(67,160,71,.2);color:#43a047}
+.cal-mid{background:rgba(255,193,7,.2);color:#ffc107}
+.cal-full{background:rgba(244,67,54,.2);color:#f44336}
+.cal-empty{background:var(--bg3);color:var(--txt2)}
+.metric-row{display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0}
+.metric-pill{background:rgba(255,109,0,.1);border:1px solid rgba(255,109,0,.2);padding:.2rem .6rem;border-radius:20px;font-size:.65rem;color:var(--accent);font-weight:600}
+</style>
+</head>
+<body role="document">
+<a href="#main" class="skip-nav">Saltar al contenido principal</a>
+<header>
+<div class="logo"><div class="logo-icon" aria-hidden="true">🏝️</div><h1>NAE Turismo Inteligente</h1></div>
+<nav aria-label="Navegacion principal"><a href="#dashboard" aria-current="page">Dashboard</a><a href="#zones">Zonas</a><a href="#roles">Roles</a><a href="#calendar">Calendario</a><a href="#flow">Flujo</a><a href="#features">Módulos</a><a href="#api">API</a></nav>
+<span class="encrypted-badge" title="Cifrado Post-Quantum Activo"><span aria-hidden="true">⚛️</span> Quantum-Safe</span>
+</header>
+<main id="main">
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero" id="dashboard">
+<div class="badge"><span aria-hidden="true">🏝️</span> NEXUS Comercio · Guna Yala Smart Tourism</div>
+<h2><span>NAE — Turismo Inteligente</span></h2>
+<p>Plataforma de gestión turística inteligente para <strong>Guna Yala</strong> — 49 comunidades, 365 islas, el territorio indígena más visitado de Panamá. NAE controla el flujo turístico completo: desde la reserva hasta la salida, con <strong>dashboards por rol</strong> (transportista, lanchero, dueño de cabaña, tour operador, administrador), <strong>calendario de disponibilidad</strong> en tiempo real, <strong>QR de rastreo</strong>, <strong>control de capacidad</strong> por isla y <strong>pagos soberanos en WAMPUM</strong>. Modelo pionero que inspira a los 574 territorios de las Américas.</p>
+<div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
+<span class="nae-hero-badge">🇵🇦 Guna Yala · Panamá</span>
+<span class="nae-hero-badge" style="background:linear-gradient(135deg,var(--accent),#E65100)">🏝️ 365 Islas</span>
+<span class="nae-hero-badge" style="background:linear-gradient(135deg,#7c4dff,#00bcd4)">⚛️ AI Cuántico</span>
+</div>
+<div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:.75rem">
+<a href="#zones" class="btn" style="background:var(--guna)">🗺️ Zonas Turísticas</a>
+<a href="#roles" class="btn" style="background:transparent;border:2px solid var(--guna);color:var(--guna)">👥 Dashboards por Rol</a>
+<a href="#flow" class="btn" style="background:transparent;border:2px solid var(--accent);color:var(--accent)">🔄 Flujo Turístico</a>
+</div>
+</section>
+
+<!-- ═══════════ STATS ═══════════ -->
+<div class="stats" role="list" aria-label="Metricas del sistema">
+<div class="stat" role="listitem"><div class="val" data-count="49">49</div><div class="lbl">Comunidades</div></div>
+<div class="stat" role="listitem"><div class="val" data-count="365">365</div><div class="lbl">Islas</div></div>
+<div class="stat" role="listitem"><div class="val">85K+</div><div class="lbl">Turistas/Año</div></div>
+<div class="stat" role="listitem"><div class="val">5</div><div class="lbl">Roles Dashboard</div></div>
+<div class="stat" role="listitem"><div class="val">QR</div><div class="lbl">Rastreo Soberano</div></div>
+<div class="stat" role="listitem"><div class="val">WAMPUM</div><div class="lbl">Pagos Propios</div></div>
+</div>
+
+<!-- ═══════════ ZONAS TURÍSTICAS ═══════════ -->
+<div class="section" id="zones">
+<h2><span aria-hidden="true">🗺️</span> Zonas Turísticas de Guna Yala</h2>
+<div class="sub">365 islas organizadas por zona — cada comunidad controla la capacidad de su territorio</div>
+<div class="island-grid">
+
+<div class="island-card">
+<h4>🏝️ Zona 1 — Carti / El Porvenir</h4>
+<p style="font-size:.73rem;color:var(--txt)">Puerta de entrada principal. Aeropuerto El Porvenir, embarcadero Carti. Islas: Carti Sugtupu, Nalunega, Wichub-Wala, Isla Aguja, Isla Perro.</p>
+<div class="cap-bar"><div class="cap-fill" style="width:72%;background:linear-gradient(90deg,#43a047,#ffc107)"></div></div>
+<div class="cap-label"><span>72% ocupación</span><span>Max: 300/día</span></div>
+<div class="metric-row"><span class="metric-pill">🚤 12 lanchas</span><span class="metric-pill">🏠 45 cabañas</span><span class="metric-pill">🧭 8 guías</span></div>
+</div>
+
+<div class="island-card">
+<h4>🏝️ Zona 2 — Río Sidra / Nusagandi</h4>
+<p style="font-size:.73rem;color:var(--txt)">Zona de snorkel y buceo. Arrecifes protegidos, aguas cristalinas, biodiversidad marina. Islas: Naranjo Chico, Kuanidup, Senidup, Isla Pelícano.</p>
+<div class="cap-bar"><div class="cap-fill" style="width:45%;background:#43a047"></div></div>
+<div class="cap-label"><span>45% ocupación</span><span>Max: 200/día</span></div>
+<div class="metric-row"><span class="metric-pill">🐠 Snorkel</span><span class="metric-pill">🏠 28 cabañas</span><span class="metric-pill">🧭 5 guías</span></div>
+</div>
+
+<div class="island-card">
+<h4>🏝️ Zona 3 — Playón Chico</h4>
+<p style="font-size:.73rem;color:var(--txt)">Centro cultural Guna. Talleres de molas, ceremonias tradicionales, comunidad viva. Aeropuerto local. Conexión directa a comunidades del interior.</p>
+<div class="cap-bar"><div class="cap-fill" style="width:58%;background:linear-gradient(90deg,#43a047,#ffc107)"></div></div>
+<div class="cap-label"><span>58% ocupación</span><span>Max: 150/día</span></div>
+<div class="metric-row"><span class="metric-pill">🎨 Molas</span><span class="metric-pill">🏠 20 cabañas</span><span class="metric-pill">✈️ Aeropuerto</span></div>
+</div>
+
+<div class="island-card">
+<h4>🏝️ Zona 4 — Achutupu / Mamitupu</h4>
+<p style="font-size:.73rem;color:var(--txt)">Zona remota y prístina. Islas vírgenes, pocas cabañas, experiencia auténtica. Kayak, camping en isla desierta, observación de estrellas.</p>
+<div class="cap-bar"><div class="cap-fill" style="width:22%;background:#43a047"></div></div>
+<div class="cap-label"><span>22% ocupación</span><span>Max: 80/día</span></div>
+<div class="metric-row"><span class="metric-pill">🏕️ Camping</span><span class="metric-pill">🌌 Astroturismo</span><span class="metric-pill">🛶 Kayak</span></div>
+</div>
+
+<div class="island-card">
+<h4>🏝️ Zona 5 — Ailitupu / Isla Tigre</h4>
+<p style="font-size:.73rem;color:var(--txt)">Zona de aventura. Senderos en tierra firme, río, manglar, selva tropical. Observación de fauna, medicina tradicional Guna, arqueología.</p>
+<div class="cap-bar"><div class="cap-fill" style="width:35%;background:#43a047"></div></div>
+<div class="cap-label"><span>35% ocupación</span><span>Max: 100/día</span></div>
+<div class="metric-row"><span class="metric-pill">🌳 Selva</span><span class="metric-pill">🏥 Medicina</span><span class="metric-pill">🏹 Arqueología</span></div>
+</div>
+
+<div class="island-card">
+<h4>🏝️ Zona 6 — Ustupu / Ogobsucun</h4>
+<p style="font-size:.73rem;color:var(--txt)">Capital administrativa de Guna Yala. Congreso General Guna, museo, hospital, escuelas. Turismo cultural y gubernamental. La isla más poblada.</p>
+<div class="cap-bar"><div class="cap-fill" style="width:88%;background:linear-gradient(90deg,#ffc107,#f44336)"></div></div>
+<div class="cap-label"><span>88% ocupación</span><span>Max: 500/día</span></div>
+<div class="metric-row"><span class="metric-pill">🏛️ Congreso Guna</span><span class="metric-pill">🏥 Hospital</span><span class="metric-pill">📚 Museo</span></div>
+</div>
+
+</div>
+</div>
+
+<!-- ═══════════ DASHBOARDS POR ROL ═══════════ -->
+<div class="section" id="roles">
+<h2><span aria-hidden="true">👥</span> Dashboards por Rol</h2>
+<div class="sub">Cada actor del ecosistema turístico de Guna Yala tiene su panel con datos en tiempo real</div>
+<div class="role-panel">
+
+<div class="role-item">
+<div class="role-icon" aria-hidden="true">🚐</div>
+<h5>Transportista</h5>
+<p>4x4 desde Ciudad de Panamá a embarcadero Carti. Horarios, reservas, pasajeros, GPS, ingresos.</p>
+<div class="role-count">18 activos</div>
+</div>
+
+<div class="role-item">
+<div class="role-icon" aria-hidden="true">🚤</div>
+<h5>Lanchero</h5>
+<p>Lanchas entre embarcadero e islas. Calendario, capacidad, clima marino, manifiestos, combustible.</p>
+<div class="role-count">45 activos</div>
+</div>
+
+<div class="role-item">
+<div class="role-icon" aria-hidden="true">🏠</div>
+<h5>Dueño de Cabaña</h5>
+<p>Cabañas sobre el mar. Ocupación, calendario, precios por temporada, limpieza, reseñas, fotos.</p>
+<div class="role-count">120 cabañas</div>
+</div>
+
+<div class="role-item">
+<div class="role-icon" aria-hidden="true">🎒</div>
+<h5>Tour Operador</h5>
+<p>Paquetes completos: transporte + lancha + cabaña + excursiones. Coordinación, facturación WAMPUM.</p>
+<div class="role-count">15 operadores</div>
+</div>
+
+<div class="role-item">
+<div class="role-icon" aria-hidden="true">🛡️</div>
+<h5>Administrador</h5>
+<p>Congreso General Guna + administradores zonales. Control total: capacidad, permisos, ingresos, reportes.</p>
+<div class="role-count">6 + zonales</div>
+</div>
+
+</div>
+
+<!-- ═══════ DASHBOARD ADMIN PREVIEW ═══════ -->
+<div class="sec-panel" style="margin-top:1rem">
+<h4 style="color:var(--guna);margin:0 0 .8rem;font-size:.85rem">📊 Vista Admin — Panel de Control en Tiempo Real</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.5rem">
+<div style="background:rgba(0,191,165,.1);border-radius:8px;padding:.6rem;text-align:center"><div style="font-family:Orbitron,sans-serif;font-size:1.1rem;font-weight:700;color:var(--guna)">247</div><div style="font-size:.65rem;color:var(--txt2)">Turistas Hoy</div></div>
+<div style="background:rgba(255,109,0,.1);border-radius:8px;padding:.6rem;text-align:center"><div style="font-family:Orbitron,sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent)">68%</div><div style="font-size:.65rem;color:var(--txt2)">Ocupación</div></div>
+<div style="background:rgba(255,214,0,.1);border-radius:8px;padding:.6rem;text-align:center"><div style="font-family:Orbitron,sans-serif;font-size:1.1rem;font-weight:700;color:#ffd600">$12.4K</div><div style="font-size:.65rem;color:var(--txt2)">Ingresos Hoy</div></div>
+<div style="background:rgba(124,77,255,.1);border-radius:8px;padding:.6rem;text-align:center"><div style="font-family:Orbitron,sans-serif;font-size:1.1rem;font-weight:700;color:#7c4dff">72/28</div><div style="font-size:.65rem;color:var(--txt2)">Extranjero/Local</div></div>
+<div style="background:rgba(67,160,71,.1);border-radius:8px;padding:.6rem;text-align:center"><div style="font-family:Orbitron,sans-serif;font-size:1.1rem;font-weight:700;color:#43a047">4.7★</div><div style="font-size:.65rem;color:var(--txt2)">Satisfacción</div></div>
+<div style="background:rgba(0,191,165,.1);border-radius:8px;padding:.6rem;text-align:center"><div style="font-family:Orbitron,sans-serif;font-size:1.1rem;font-weight:700;color:var(--guna)">23</div><div style="font-size:.65rem;color:var(--txt2)">Lanchas Activas</div></div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════ CALENDARIO DE DISPONIBILIDAD ═══════════ -->
+<div class="section" id="calendar">
+<h2><span aria-hidden="true">📅</span> Calendario de Disponibilidad</h2>
+<div class="sub">Ocupación en tiempo real por zona — verde (disponible), amarillo (casi lleno), rojo (lleno)</div>
+<div class="sec-panel">
+<h4 style="color:var(--guna);margin:0 0 .5rem;font-size:.82rem">Marzo 2026 — Zona 1 (Carti / El Porvenir)</h4>
+<div style="display:flex;gap:.3rem;margin-bottom:.3rem">
+<span style="font-size:.6rem;color:var(--txt2);width:calc(100%/7);text-align:center">Lun</span>
+<span style="font-size:.6rem;color:var(--txt2);width:calc(100%/7);text-align:center">Mar</span>
+<span style="font-size:.6rem;color:var(--txt2);width:calc(100%/7);text-align:center">Mié</span>
+<span style="font-size:.6rem;color:var(--txt2);width:calc(100%/7);text-align:center">Jue</span>
+<span style="font-size:.6rem;color:var(--txt2);width:calc(100%/7);text-align:center">Vie</span>
+<span style="font-size:.6rem;color:var(--txt2);width:calc(100%/7);text-align:center">Sáb</span>
+<span style="font-size:.6rem;color:var(--txt2);width:calc(100%/7);text-align:center">Dom</span>
+</div>
+<div class="cal-grid">
+<div class="cal-empty"></div><div class="cal-empty"></div><div class="cal-empty"></div><div class="cal-empty"></div><div class="cal-empty"></div><div class="cal-empty"></div><div class="cal-avail">1</div>
+<div class="cal-avail">2</div><div class="cal-avail">3</div><div class="cal-mid">4</div><div class="cal-mid">5</div><div class="cal-full">6</div><div class="cal-full">7</div><div class="cal-full">8</div>
+<div class="cal-mid">9</div><div class="cal-avail">10</div><div class="cal-avail">11</div><div class="cal-avail">12</div><div class="cal-mid">13</div><div class="cal-full">14</div><div class="cal-full">15</div>
+<div class="cal-avail">16</div><div class="cal-avail">17</div><div class="cal-avail">18</div><div class="cal-mid">19</div><div class="cal-mid">20</div><div class="cal-full">21</div><div class="cal-full">22</div>
+<div class="cal-mid">23</div><div class="cal-avail">24</div><div class="cal-avail">25</div><div class="cal-avail">26</div><div class="cal-mid">27</div><div class="cal-full">28</div><div class="cal-full">29</div>
+<div class="cal-avail">30</div><div class="cal-avail">31</div><div class="cal-empty"></div><div class="cal-empty"></div><div class="cal-empty"></div><div class="cal-empty"></div><div class="cal-empty"></div>
+</div>
+<div style="display:flex;gap:1rem;margin-top:.5rem;font-size:.62rem">
+<span style="display:flex;align-items:center;gap:.3rem"><span style="width:12px;height:12px;border-radius:3px;background:rgba(67,160,71,.3)"></span> Disponible (&lt;60%)</span>
+<span style="display:flex;align-items:center;gap:.3rem"><span style="width:12px;height:12px;border-radius:3px;background:rgba(255,193,7,.3)"></span> Casi lleno (60-85%)</span>
+<span style="display:flex;align-items:center;gap:.3rem"><span style="width:12px;height:12px;border-radius:3px;background:rgba(244,67,54,.3)"></span> Lleno (&gt;85%)</span>
+</div>
+</div>
+</div>
+
+<!-- ═══════════ FLUJO TURÍSTICO ═══════════ -->
+<div class="section" id="flow">
+<h2><span aria-hidden="true">🔄</span> Flujo Turístico NAE</h2>
+<div class="sub">Control completo del viajero — cada paso rastreado con QR soberano</div>
+<div class="flow-timeline">
+<div class="flow-node"><strong>1. Reserva Online →</strong> Turista reserva paquete: transporte Panamá→Carti + lancha + cabaña + excursiones. Calendario muestra disponibilidad real por zona. Pago en WAMPUM o fiat→WAMPUM.</div>
+<div class="flow-node"><strong>2. QR de Viaje →</strong> Al confirmar, recibe QR único con toda la info: nombre, fechas, cabaña, lancha asignada, excursiones. El transportista ve la reserva en su dashboard.</div>
+<div class="flow-node"><strong>3. Transporte 4x4 →</strong> Transportista escanea QR al abordar en Ciudad de Panamá. Dashboard marca pasajero a bordo. GPS trackea el viaje 4x4 hasta embarcadero Carti (2.5 hrs).</div>
+<div class="flow-node"><strong>4. Embarque Lancha →</strong> Lanchero escanea QR en embarcadero Carti. Manifiesto marítimo digital generado automáticamente. Capacidad de lancha validada. Clima marino verificado.</div>
+<div class="flow-node"><strong>5. Check-in Cabaña →</strong> Dueño de cabaña escanea QR al llegar. Ocupación actualizada en tiempo real. Admin de zona ve turista registrado. Capacidad de isla actualizada.</div>
+<div class="flow-node"><strong>6. Excursiones →</strong> Snorkel, molas, islas vírgenes, pesca, kayak — cada actividad registrada por QR. Tour operador coordina desde su dashboard. Guía confirma grupo.</div>
+<div class="flow-node"><strong>7. Monitoreo Continuo →</strong> Admin ve en tiempo real: turistas por isla, ocupación %, origen (extranjero/doméstico), gasto promedio, satisfacción, lanchas en movimiento.</div>
+<div class="flow-node"><strong>8. Check-out + Salida →</strong> Al partir, QR de salida. Capacidad liberada. Factura blockchain generada. Ingresos distribuidos automáticamente. Encuesta de satisfacción enviada.</div>
+</div>
+</div>
+
+<!-- ═══════════ ARQUITECTURA ═══════════ -->
+<div class="section" id="architecture">
+<h2><span aria-hidden="true">🏗️</span> Arquitectura NAE</h2>
+<div class="sub">Sistema diseñado para Guna Yala — funciona offline en islas sin señal</div>
+<div class="sec-panel" style="font-family:monospace;font-size:.72rem;line-height:1.8;overflow-x:auto">
+<span style="color:var(--guna)">┌─ INTERFACES ────────────────────────────────────┐</span>
+│  Turista App · Transportista · Lanchero · Cabaña │
+│  Tour Operador · Admin Zonal · Congreso Guna      │
+│  QR Scanner · Calendario · Pagos · Offline Mode   │
+<span style="color:var(--guna)">└──────────────────┬──────────────────────────────┘</span>
+                   │ <span style="color:#ffd600">REST + WebSocket + P2P Mesh</span>
+<span style="color:#00bcd4">┌─ API GATEWAY ────┴──────────────────────────────┐</span>
+│  Rate Limit · JWT · Kyber-768 · Geofence Guna     │
+│  Role-Based Access · Island Capacity Engine        │
+<span style="color:#00bcd4">└──────────────────┬──────────────────────────────┘</span>
+                   │
+<span style="color:#7c4dff">┌─ SERVICIOS ──────┴──────────────────────────────┐</span>
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────┐  │
+│  │Booking   │ │Capacity  │ │Payment WAMPUM    │  │
+│  │Engine    │ │Per Island│ │+ Fiat Gateway    │  │
+│  └──────────┘ └──────────┘ └──────────────────┘  │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────┐  │
+│  │QR Flow   │ │Transport │ │Role Dashboard    │  │
+│  │Tracker   │ │Coordinator│ │Engine (5 roles) │  │
+│  └──────────┘ └──────────┘ └──────────────────┘  │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────┐  │
+│  │Calendar  │ │Weather   │ │Revenue           │  │
+│  │Occupancy │ │Maritime  │ │Distribution      │  │
+│  └──────────┘ └──────────┘ └──────────────────┘  │
+<span style="color:#7c4dff">└──────────────────┬──────────────────────────────┘</span>
+                   │
+<span style="color:var(--guna)">┌─ DATA LAYER ─────┴──────────────────────────────┐</span>
+│  PostgreSQL+PostGIS · Redis · TimescaleDB          │
+│  MameyNode Blockchain · IndexedDB (offline)        │
+│  P2P Mesh Sync (for islands without signal)        │
+<span style="color:var(--guna)">└──────────────────────────────────────────────────┘</span>
+</div>
+</div>
+
+<!-- ═══════════ MÓDULOS ═══════════ -->
+<div class="section-title" id="features"><h3>Módulos NAE</h3><p>10 sistemas diseñados específicamente para la realidad de Guna Yala</p></div>
+<div class="grid">
+<article class="card"><div class="card-icon" aria-hidden="true">📅</div><h4>Calendario de Ocupación</h4><p>Disponibilidad en tiempo real por zona e isla. Color-coded: verde/amarillo/rojo. Sincronización entre cabañas, lanchas y transportistas. Temporadas alta/baja automáticas.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📊</div><h4>Control de Capacidad por Isla</h4><p>Cada isla tiene un límite máximo de turistas definido por el Congreso Guna. Monitor en tiempo real. Cierre automático de reservas al alcanzar tope. Protección contra sobre-turismo.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📱</div><h4>QR Soberano de Flujo</h4><p>QR único por turista. Escaneado en 4x4, lancha, cabaña, excursiones y salida. Manifiesto marítimo digital. Rastreo anónimo del flujo. Tiempo real.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🚤</div><h4>Coordinación Marítima</h4><p>Dashboard de lancheros con calendario de viajes, capacidad por lancha, condiciones climáticas marinas, manifiestos digitales, consumo de combustible, ingresos.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">💰</div><h4>Pagos WAMPUM</h4><p>Sistema de pagos soberano. Conversión fiat→WAMPUM automática. Distribución: cabaña (40%), lancha (20%), transporte (15%), tour operador (10%), Congreso Guna (10%), plataforma (5%).</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🤖</div><h4>AI Predictivo</h4><p>Predicción de demanda por zona y temporada. Optimización de precios dinámicos (aprobados por Congreso). Alertas de sobre-turismo. Recomendación de zonas menos visitadas.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🌊</div><h4>Clima Marítimo</h4><p>Integración con datos meteorológicos para seguridad de navegación. Alertas de oleaje alto, tormentas, mareas. Suspensión automática de viajes en lancha por mal clima.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🎨</div><h4>Marketplace de Molas</h4><p>Venta directa artesana→turista de molas auténticas Guna. Certificado de autenticidad blockchain. Catálogo con fotos, artesana, precio. Envío internacional desde Guna Yala.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📈</div><h4>Analytics del Congreso</h4><p>Dashboard para el Congreso General Guna: ingresos totales, turistas por origen, ocupación por zona, satisfacción, tendencias, comparativa mensual/anual.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📶</div><h4>Modo Isla Offline</h4><p>PWA funciona sin señal. Datos sincronizados por mesh P2P cuando hay conexión. QR funciona offline. Reservas cached localmente. Sync automático al reconectar.</p></article>
+</div>
+
+<!-- ═══════════ API ═══════════ -->
+<div class="section" id="api">
+<h2><span aria-hidden="true">🔌</span> API Endpoints</h2>
+<div class="sub">REST + WebSocket — API soberana de gestión turística Guna Yala</div>
+<div class="sec-panel">
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:var(--guna);font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/nae/zones</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Lista de 6 zonas turísticas con ocupación en tiempo real.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:var(--guna);font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/nae/zone/{id}/availability</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Calendario de disponibilidad por zona: cabañas, lanchas, excursiones.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/nae/booking/create</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Crear reserva: zona, cabaña, transporte, lancha, excursiones, fechas.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/nae/qr/scan</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Escanear QR: registrar transporte, embarque, check-in, excursión, check-out.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/nae/payment/wampum</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Pago WAMPUM con distribución automática (40/20/15/10/10/5).</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:var(--guna);font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/nae/dashboard/{role}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Dashboard por rol: transportista, lanchero, cabaña, tour_operador, admin.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:var(--guna);font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/nae/capacity/{zone_id}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Capacidad en tiempo real: turistas actuales vs límite por zona/isla.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:var(--guna);font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/nae/analytics/congreso</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Analytics para el Congreso General Guna: ingresos, turistas, tendencias.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:var(--guna);font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/nae/weather/maritime</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Condiciones meteorológicas marítimas para seguridad de navegación.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:var(--guna);font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/nae/molas/catalog</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Catálogo de molas artesanales con autenticidad blockchain.</p>
+</div>
+</div>
+
+<!-- ═══════════ PRECIOS ═══════════ -->
+<div class="section-title" id="pricing"><h3>Planes NAE</h3><p>Para comunidades y operadores de Guna Yala</p></div>
+<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+<div class="card">
+<h4 style="color:var(--guna);font-size:.9rem">Comunidad</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 W/mes</div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Dashboard por rol</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ QR básico</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Calendario</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Pagos WAMPUM</li>
+</ul>
+</div>
+<div class="card" style="border-color:var(--guna);box-shadow:0 0 20px rgba(0,191,165,.15)">
+<h4 style="color:var(--guna);font-size:.9rem">Zona Turística</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">29 W/mes</div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ 5 dashboards por rol</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ AI predictivo</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Clima marítimo</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Analytics zonales</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Marketplace molas</li>
+</ul>
+</div>
+<div class="card">
+<h4 style="color:var(--guna);font-size:.9rem">Congreso Guna</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">99 W/mes</div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Multi-zona</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API completa</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ AI cuántico completo</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Revenue distribution</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ SLA 99.99%</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Soporte 24/7</li>
+</ul>
+</div>
+</div>
+</main>
+
+<footer>
+<p><span aria-hidden="true">🏝️</span> <strong>NAE Turismo Inteligente</strong> &mdash; Ecosistema Digital <a href="../">Ierahkwa Ne Kanienke</a></p>
+<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">Guna Yala · 49 comunidades · 365 islas · Modelo pionero para 574 territorios</p>
+<div style="margin-top:.75rem">
+<span style="display:inline-flex;align-items:center;gap:.3rem;background:linear-gradient(135deg,var(--guna),#00897B);color:#fff;font-weight:700;font-size:.7rem;padding:.3rem .7rem;border-radius:20px;margin:.2rem">🇵🇦 Guna Yala</span>
+<span style="display:inline-flex;align-items:center;gap:.3rem;background:linear-gradient(135deg,#FFD700,#FF6D00);color:#000;font-weight:700;font-size:.7rem;padding:.3rem .7rem;border-radius:20px;margin:.2rem">💰 WAMPUM</span>
+<span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span>
+</div>
+</footer>
+<script src="../shared/ierahkwa.js"></script>
+<script src="../shared/ierahkwa-security.js"></script>
+<script src="../shared/ierahkwa-quantum.js"></script>
+<script src="../shared/ierahkwa-protocols.js"></script>
+<script src="../shared/ierahkwa-interconnect.js"></script>
+<script>
+(function(){var DB_NAME='ierahkwa-nae-turismo';var DB_VER=1;var STORES=["reservas","zonas","cabanas","lanchas","transportes","qr-scans","pagos-wampum","analytics","calendario","manifiestos"];var db=null;function openDB(){return new Promise(function(resolve,reject){var req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=function(){var d=req.result;STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});};req.onsuccess=function(){db=req.result;resolve(db)};req.onerror=function(){reject(req.error)}})}function showOfflineBanner(show){var b=document.getElementById('offline-banner');if(!b){b=document.createElement('div');b.id='offline-banner';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--guna);color:#000;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';b.textContent='Modo Isla Offline — Reservas, QR y calendario disponibles sin conexión.';document.body.appendChild(b)}b.style.transform=show?'translateY(0)':'translateY(100%)'}function init(){openDB().then(function(){window.addEventListener('online',function(){showOfflineBanner(false)});window.addEventListener('offline',function(){showOfflineBanner(true)});if(!navigator.onLine)showOfflineBanner(true);console.log('[nae-turismo] v1.0 — Guna Yala Smart Tourism ready')})}init()})();
+</script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
+<script src="../shared/ierahkwa-api.js"></script>
+<script src="../shared/ierahkwa-agents.js"></script>
+</body>
+</html>
