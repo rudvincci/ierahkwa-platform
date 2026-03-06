@@ -1,79 +1,58 @@
-# Eco Tourism — Sovereign Eco-Tourism Portal
+# Eco-Turismo Soberano — Turismo Regenerativo de las Américas
 
-> Eco Tourism — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sovereign Eco-Tourism Portal con cifrado post-c
+> Turismo ecológico en los territorios indígenas más biodiversos del planeta
 
-## Resumen
+## Overview
 
-**Eco Tourism** es una plataforma del ecosistema **Ierahkwa Ne Kanienke**, parte de **NEXUS Forja (Desarrollo & DevOps)**. Diseñada para la soberanía digital de más de mil millones de personas en las Américas en 35+ países y 574 tribus.
+Eco-Turismo Soberano es la plataforma de turismo ecológico y regenerativo que conecta los ecosistemas más biodiversos del planeta — custodiados por pueblos indígenas. 3,200+ senderos ancestrales, 8 biomas, observación de fauna con AI, voluntariado ecológico, campamentos soberanos, ciencia ciudadana y pagos WAMPUM. Cada visita deja el territorio mejor de lo que estaba.
 
-## Características Principales
+## Concepto: El Bosque Gana, La Comunidad Gana, El Turista Gana
 
-1. **🛰️**
-2. **🌍**
-3. **🌳**
-4. **⚠️**
-5. **Ciudadano 0 W/mes**
-6. **Municipio 29 W/mes**
-7. **🤖**
-8. **Módulos de la Plataforma**
-9. **Planes Soberanos**
-10. **♻️**
+- **El bosque gana**: Cada turista planta un árbol, limpia un sendero, contribuye a ciencia ciudadana
+- **La comunidad gana**: 85% de ingresos a la comunidad y guías, 10% a conservación
+- **El turista gana**: Experiencia auténtica de naturaleza con guías indígenas expertos
 
-## Arquitectura
+## 8 Biomas Cubiertos
 
-```
-┌─────────────────────────────────────┐
-│          eco-tourism                    │
-├─────────────────────────────────────┤
-│  Frontend    │  HTML5 + CSS3 + JS   │
-│  Design      │  ierahkwa.css        │
-│  Security    │  Post-Quantum        │
-│  AI Agents   │  7 Agentes Activos   │
-│  Network     │  PWA + Offline-First │
-│  NEXUS       │  forja                │
-└─────────────────────────────────────┘
-```
+| Bioma | Pueblos Custodios | Experiencias |
+|-------|------------------|-------------|
+| Amazonía | Yanomami, Kayapó, Asháninka, Shipibo | Selva profunda, biodiversidad |
+| Andes Tropicales | Quechua, Kichwa, Embera | Bosques de niebla, orquídeas |
+| Caribe Indígena | Guna, Kalinago, Garifuna | Arrecifes, snorkel, kayak |
+| Desiertos Sagrados | Navajo, Wayuu, Atacameño | Astroturismo, cañones |
+| Costa Noroeste | Haida, Tlingit, Coast Salish | Bosques milenarios, fauna |
+| Ártico Inuit | Inuit, Yupik, Inupiat | Auroras, glaciares, trineo |
+| Selva Mesoamericana | Maya, Lacandón, Itzá | Cenotes, jaguar, cacao |
+| Patagonia & Pampas | Mapuche, Tehuelche, Qom | Estepas, glaciares, cóndor |
 
-## Tecnologías
+## 12 Módulos
 
-- **Frontend**: HTML5 semántico, CSS3, JavaScript vanilla
-- **Design System**: `ierahkwa.css` (shared)
-- **Seguridad**: `ierahkwa-security.js` — encriptación post-quantum Kyber-768
-- **AI**: `ierahkwa-agents.js` — 7 agentes autónomos anti-fraude
-- **Protocolos**: `ierahkwa-protocols.js` — comunicación soberana
-- **Red**: `ierahkwa-interconnect.js` — interconexión entre plataformas
-- **PWA**: Service Worker + manifest.json — funciona offline
+1. 🥾 Motor de Senderos (3,200+)
+2. 📊 Capacidad Ambiental AI
+3. 🌱 Turismo Regenerativo (plantar, limpiar, censar)
+4. 🐦 Observación de Fauna (AI identification)
+5. 💰 Pago WAMPUM Eco (85/10/5)
+6. 🔒 Seguridad Kyber-768
+7. 🏕️ Campamentos Soberanos (zero impacto)
+8. 🧪 Ciencia Ciudadana
+9. 🧭 Guías Indígenas Certificados
+10. 📱 App Eco-Turista (PWA offline)
+11. ♻️ Huella Carbono Zero
+12. 🎓 Voluntariado Ecológico
 
-## Instalación
+## Senderos Destacados
 
-```bash
-# Clonar el repositorio
-git clone https://github.com/rudvincci/ierahkwa-platform.git
+- 🏔️ Camino Inca Vivo (4 días, Quechua, Perú)
+- 🌳 Sendero Xingu (7 días, Kayapó, Brasil)
+- 🏜️ Canyon Navajo (3 días, Diné, USA)
+- 🌲 Wallmapu Trail (5 días, Mapuche, Chile)
+- 🏝️ Archipiélago Guna (3 días, Guna, Panamá)
+- 🌌 Aurora Inuit (4 días, Inuit, Canadá)
+- 🐆 Jaguar Maya (5 días, Maya, Guatemala)
+- 🍫 Cacao Bribri (2 días, Bribri, Costa Rica)
 
-# Navegar a la plataforma
-cd 02-plataformas-html/eco-tourism
+## Color: `#FF6D00` | NEXUS: Comercio | Senderos: 3,200+
 
-# Abrir en navegador (no requiere servidor)
-open index.html
-```
+## License
 
-## NEXUS
-
-Esta plataforma pertenece a **NEXUS Forja (Desarrollo & DevOps)** del ecosistema Ierahkwa.
-
-## Seguridad
-
-- Encriptación post-quantum (CRYSTALS-Kyber-768)
-- 7 Agentes AI de vigilancia continua
-- Zero dependencias externas
-- Sin tracking ni cookies de terceros
-- Datos almacenados localmente (IndexedDB)
-
-## Licencia
-
-Propiedad de Ierahkwa Ne Kanienke — Nación Digital Soberana.
-
-## Contacto
-
-- **Proyecto**: [Ierahkwa Platform](https://github.com/rudvincci/ierahkwa-platform)
-- **NEXUS**: NEXUS Forja (Desarrollo & DevOps)
+Sovereign License — Ierahkwa Ne Kanienke Digital Nation

@@ -1,256 +1,73 @@
-# WHITEPAPER: Eco Tourism — Sovereign Eco-Tourism Portal
+# Eco-Turismo Soberano — Technical Whitepaper
 
-**Versión**: 1.0.0
-**Fecha**: 2026-02-28
-**NEXUS**: NEXUS Forja (Desarrollo & DevOps)
-**Ecosistema**: Ierahkwa Ne Kanienke — Nación Digital Soberana
+**Version**: 2.0.0 | **Date**: March 2026 | **Status**: Production
 
----
+## Executive Summary
 
-## Resumen Ejecutivo
+Eco-Turismo Soberano provides regenerative ecological tourism infrastructure across 574 indigenous territories in the Americas. The platform connects the most biodiverse ecosystems on Earth — custodied by indigenous peoples — with responsible tourists through 3,200+ ancestral trails, AI-powered ecological capacity control, citizen science programs, sovereign WAMPUM payments, and carbon offset via community reforestation. Every visit leaves the territory better than it was found.
 
-**Eco Tourism — Sovereign Eco-Tourism Portal** es una plataforma soberana diseñada para proveer Eco Tourism — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sovereign Eco-Tourism Portal con cifrado post-c a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+## Problem Statement
 
-## 1. Problema
+- **Over-tourism** destroys fragile ecosystems (trails eroded, fauna displaced)
+- **No ecological capacity control** — popular sites exceed sustainable limits
+- **Western platforms** profit while indigenous communities receive minimal income
+- **Carbon footprint** of tourism rarely offset at destination
+- **Bio-piracy** — outsiders extract genetic resources without consent
+- **Sacred areas** and fauna reproduction zones lack digital protection
+- **Indigenous ecological knowledge** not recognized or compensated
 
-Las comunidades indígenas enfrentan:
+## Solution Architecture
 
-- **Dependencia tecnológica**: Servicios controlados por corporaciones extranjeras
-- **Falta de soberanía digital**: Datos almacenados en servidores fuera de jurisdicción soberana
-- **Vulnerabilidad**: Sin protección contra fraude, robo de identidad y vigilancia
-- **Exclusión digital**: Interfaces diseñadas sin considerar diversidad cultural y lingüística
-- **Centralización**: Puntos únicos de falla que afectan a millones de personas
+### Ecological Capacity AI Engine
 
-## 2. Solución: Eco Tourism — Sovereign Eco-Tourism Portal
+AI quantum system calculates carrying capacity based on: soil erosion risk, vegetation density, fauna sensitivity, water capacity, weather patterns, and historical usage. Automatic trail closure when limits reached.
 
-### Principios de Diseño
+### Regenerative Tourism Model
 
-1. **Soberanía Total**: Zero dependencias de servicios externos (Google, AWS, Microsoft)
-2. **Offline-First**: Funciona sin conexión a internet mediante Service Workers
-3. **Post-Quantum**: Encriptación resistente a computación cuántica (Kyber-768)
-4. **AI Nativa**: 7 agentes autónomos de protección integrados
-5. **Accesible**: WCAG 2.1 AA, multi-idioma (200+ lenguas indígenas)
-6. **Descentralizada**: Arquitectura P2P sin servidor central
+Every tourist contributes: plant a native tree (GPS-tracked), clean trail section (verified), contribute to biodiversity census (photo/audio AI). Blockchain certificate of positive impact.
 
-### Stack Tecnológico
+### 8 Biomes
 
-| Capa | Tecnología |
-|------|-----------|
-| Frontend | HTML5 + CSS3 + JavaScript (vanilla, zero frameworks) |
-| Design System | ierahkwa.css (24KB, dark theme, responsive) |
-| Seguridad | ierahkwa-security.js (33KB, post-quantum) |
-| AI/ML | ierahkwa-ai.js (28KB) + ierahkwa-agents.js (35KB) |
-| Quantum | ierahkwa-quantum.js (28KB) |
-| Protocolos | ierahkwa-protocols.js (24KB, P2P soberano) |
-| Interconexión | ierahkwa-interconnect.js (16KB) |
-| Offline | Service Worker + IndexedDB |
-| PWA | manifest.json + icons + splash screens |
+1. **Tropical Rainforest** (Amazonía): 40K species, 400 indigenous peoples
+2. **Cloud Forest** (Andes): 30K orchids, 1,800 bird species
+3. **Coral Reef** (Caribbean): 500+ marine species, zero-plastic
+4. **Sacred Desert** (Navajo, Wayuu, Atacama): Dark sky, astro-tourism
+5. **Temperate Rainforest** (Pacific NW, Mapuche): Millennial trees
+6. **Arctic Tundra** (Inuit): Aurora borealis, glaciers
+7. **Mesoamerican Jungle** (Maya): Jaguars, cenotes, wild cacao
+8. **Steppe & Pampa** (Patagonia): Condors, glaciers
 
-## 3. Arquitectura Técnica
+### Payment Distribution
 
-```
-┌──────────────────────────────────────────────────┐
-│                   USUARIO                        │
-├──────────────────────────────────────────────────┤
-│  ┌────────────────────────────────────────────┐  │
-│  │         Capa de Presentación               │  │
-│  │   HTML5 Semántico + ierahkwa.css           │  │
-│  │   Responsive · Dark Theme · WCAG 2.1 AA   │  │
-│  └─────────────────┬──────────────────────────┘  │
-│                    │                             │
-│  ┌─────────────────▼──────────────────────────┐  │
-│  │         Capa de Aplicación                 │  │
-│  │   ierahkwa.js · ierahkwa-api.js            │  │
-│  │   Lógica de negocio client-side            │  │
-│  └─────────────────┬──────────────────────────┘  │
-│                    │                             │
-│  ┌─────────────────▼──────────────────────────┐  │
-│  │         Capa de Seguridad                  │  │
-│  │   ierahkwa-security.js (Kyber-768)         │  │
-│  │   ierahkwa-agents.js (7 AI Agents)         │  │
-│  │   Guardian · Pattern · Anomaly · Trust     │  │
-│  │   Shield · Forensic · Evolution            │  │
-│  └─────────────────┬──────────────────────────┘  │
-│                    │                             │
-│  ┌─────────────────▼──────────────────────────┐  │
-│  │         Capa de Datos                      │  │
-│  │   IndexedDB · localStorage · Cache API     │  │
-│  │   Offline-first · Sync automático          │  │
-│  └─────────────────┬──────────────────────────┘  │
-│                    │                             │
-│  ┌─────────────────▼──────────────────────────┐  │
-│  │         Capa de Red                        │  │
-│  │   Service Worker · P2P Soberano            │  │
-│  │   ierahkwa-protocols.js · WebRTC           │  │
-│  │   ierahkwa-interconnect.js                 │  │
-│  └────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────┘
-```
+- 85% to community and guides
+- 10% to conservation fund (reforestation, trail maintenance, fauna protection)
+- 5% to platform operations
+- Zero Big Tech intermediaries
 
-## 4. Módulos Funcionales
+### Citizen Science
 
-### 1. 🛰️
+Tourists contribute to: sovereign eBird equivalent, water quality monitoring, butterfly/pollinator counts, flora photography. All data under community sovereignty.
 
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
+## Security Model
 
-### 2. 🌍
+- Kyber-768 post-quantum encryption
+- Geofencing of sacred sites and fauna reproduction zones
+- Anti-biopiracy digital protection
+- Tourist location data under community control
+- 7 AI agents for threat detection
 
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
+## Environmental Impact Targets
 
-### 3. 🌳
+- Carbon-neutral trips via community reforestation
+- 1M trees planted by tourists by 2028
+- AI-monitored no-go zones during breeding seasons
+- Zero waste at all campsite facilities
 
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
+## Roadmap
 
-### 4. ⚠️
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 5. Ciudadano 0 W/mes
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 6. Municipio 29 W/mes
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 7. 🤖
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 8. Módulos de la Plataforma
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 9. Planes Soberanos
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 10. ♻️
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-
-## 5. Sistema de Agentes AI
-
-La plataforma integra 7 agentes autónomos de inteligencia artificial:
-
-| Agente | Función | Capacidad |
-|--------|---------|-----------|
-| 🛡️ Guardian | Anti-fraude y anti-robo | Monitoreo DOM, red, formularios, clipboard |
-| 🧠 Pattern | Aprendizaje de patrones | Perfiles de comportamiento por usuario |
-| 🔍 Anomaly | Detección de anomalías | Clicks rápidos, requests masivos, horarios inusuales |
-| ⭐ Trust | Score de confianza | Escala 0-100 con histórico y ajuste dinámico |
-| 🔒 Shield | Protección transacciones | Bloqueo de pagos sospechosos, protección storage |
-| 🔬 Forensic | Análisis forense | Trazabilidad completa de eventos de seguridad |
-| 🧬 Evolution | Auto-mejora | Evolución de reglas por generación, aprendizaje continuo |
-
-### Ciclo de Aprendizaje
-
-```
-Observar → Aprender → Detectar → Evolucionar
-    ↑                                    │
-    └────────────────────────────────────┘
-```
-
-Los agentes mejoran con cada interacción. Datos almacenados localmente en IndexedDB.
-
-## 6. Seguridad Post-Quantum
-
-### Modelo de Amenazas
-
-| Amenaza | Mitigación |
-|---------|-----------|
-| Intercepción | CRYSTALS-Kyber-768 (resistente a quantum) |
-| Phishing | Guardian Agent + detección de formularios ocultos |
-| XSS | CSP strict + sanitización DOM |
-| MITM | Certificate pinning + HSTS |
-| Data exfiltration | Guardian Agent bloqueo de destinos sospechosos |
-| Brute force | Rate limiting + Trust Score |
-| Supply chain | Zero dependencias externas |
-
-### Criptografía
-
-- **Key Exchange**: CRYSTALS-Kyber-768 (NIST PQC Standard)
-- **Signatures**: CRYSTALS-Dilithium (NIST PQC Standard)
-- **Hash**: SHA3-256 + BLAKE3
-- **Symmetric**: AES-256-GCM
-- **Key Rotation**: Automática por sesión
-
-## 7. Interoperabilidad
-
-### Protocolo Soberano Ierahkwa (PSI)
-
-```
-Platform A ←→ ierahkwa-protocols.js ←→ Platform B
-                      ↕
-              ierahkwa-interconnect.js
-                      ↕
-              NEXUS forja Hub
-```
-
-Todas las plataformas se comunican mediante el Protocolo Soberano Ierahkwa (PSI), un protocolo P2P que opera sin servidores centrales. La interconexión está gestionada por `ierahkwa-interconnect.js`.
-
-## 8. Accesibilidad e Inclusión
-
-- **WCAG 2.1 AA** compliant
-- **200+ idiomas** soportados (37 indígenas + 6 globales)
-- **RTL** support (árabe, hebreo)
-- **Screen readers** compatible (ARIA landmarks)
-- **Keyboard navigation** completa
-- **High contrast** mode
-- **Reduced motion** respetado
-
-## 9. Modelo de Despliegue
-
-```
-Producción:
-├── CDN Soberano (Cloudflare Business)
-├── DNS: ierahkwa.org (Cloudflare)
-├── SSL: Full Strict TLS 1.2+
-├── WAF: Bot challenge activo
-├── Cache: Static 7d, HTML 1h
-└── Rate Limit: 100 req/min API
-```
-
-## 10. Roadmap
-
-| Fase | Descripción | Estado |
-|------|-------------|--------|
-| v1.0 | Plataforma base | ✅ Completado |
-| v2.0 | Shared design system | ✅ Completado |
-| v3.0 | Producción (Docker, K8s, CI/CD) | ✅ Completado |
-| v4.0 | Seguridad + AI + Quantum | ✅ Completado |
-| v5.0 | 18 NEXUS + 7 AI Agents | ✅ Completado |
-| v6.0 | Smart contracts testnet | 🔄 En progreso |
-| v7.0 | App móvil producción | 📋 Planificado |
-
-## 11. Conclusión
-
-**Eco Tourism — Sovereign Eco-Tourism Portal** representa un componente crítico de la infraestructura digital soberana de Ierahkwa Ne Kanienke. Construida sin dependencias externas, con protección post-quantum y 7 agentes AI autónomos, esta plataforma demuestra que la soberanía digital total es alcanzable.
-
----
-
-**Ierahkwa Ne Kanienke** — *La infraestructura digital más completa jamás construida para la soberanía indígena.*
-
-**NEXUS**: NEXUS Forja (Desarrollo & DevOps)
-**Repositorio**: [github.com/rudvincci/ierahkwa-platform](https://github.com/rudvincci/ierahkwa-platform)
+- Q1 2026: Core platform with trails, booking, payments (DONE)
+- Q2 2026: AI ecological capacity engine
+- Q3 2026: Citizen science, fauna AI identification
+- Q4 2026: Volunteer programs, carbon offset blockchain
+- Q1 2027: Continental expansion to all 8 biomes
+- Q2 2027: Regenerative certification system

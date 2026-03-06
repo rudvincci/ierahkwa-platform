@@ -1,196 +1,101 @@
-# BLUEPRINT: Turismo Soberano — Portal de Turismo Nacional
+# Turismo Soberano — Technical Blueprint
 
-**Planos Técnicos y Diagramas de Arquitectura**
-**Versión**: 1.0.0
-**NEXUS**: NEXUS Forja (Desarrollo & DevOps)
+**Version**: 2.0.0 | **Date**: March 2026
 
----
-
-## 1. Diagrama de Componentes
+## Architecture Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    turismo-soberano                           │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │   index.html │  │ ierahkwa.css │  │ ierahkwa.js  │      │
-│  │   (UI Layer) │  │ (Styles)     │  │ (Core Logic) │      │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘      │
-│         │                 │                 │               │
-│  ┌──────▼─────────────────▼─────────────────▼──────────┐    │
-│  │              Application Runtime                     │    │
-│  │  ┌─────────────────────────────────────────────┐    │    │
-│  │  │           ierahkwa-security.js               │    │    │
-│  │  │  Kyber-768 · AES-256-GCM · SHA3-256         │    │    │
-│  │  └─────────────────────────────────────────────┘    │    │
-│  │  ┌─────────────────────────────────────────────┐    │    │
-│  │  │           ierahkwa-agents.js                 │    │    │
-│  │  │  Guardian · Pattern · Anomaly · Trust        │    │    │
-│  │  │  Shield · Forensic · Evolution               │    │    │
-│  │  └─────────────────────────────────────────────┘    │    │
-│  │  ┌─────────────────────────────────────────────┐    │    │
-│  │  │           ierahkwa-protocols.js              │    │    │
-│  │  │  P2P Soberano · WebRTC · Mesh Network       │    │    │
-│  │  └─────────────────────────────────────────────┘    │    │
-│  │  ┌─────────────────────────────────────────────┐    │    │
-│  │  │           ierahkwa-interconnect.js           │    │    │
-│  │  │  Platform-to-Platform Communication          │    │    │
-│  │  └─────────────────────────────────────────────┘    │    │
-│  └─────────────────────────────────────────────────────┘    │
-│                                                             │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │              Data Layer                               │   │
-│  │  IndexedDB · localStorage · Cache API · Service Worker│   │
-│  └──────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│              TOURIST INTERFACES                       │
+│  PWA App · QR Scanner · Maps · Booking · WAMPUM Pay  │
+└──────────┬───────────────────────────────────────────┘
+           │ REST + WebSocket + gRPC
+┌──────────┴───────────────────────────────────────────┐
+│         API GATEWAY (Kyber-768)                       │
+│  Rate Limiter · Geofence · Territory Auth · RBAC     │
+└──────────┬───────────────────────────────────────────┘
+           │
+┌──────────┴───────────────────────────────────────────┐
+│         CORE SERVICES                                 │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────────┐ │
+│  │Booking   │ │Capacity  │ │Payment WAMPUM        │ │
+│  │Engine    │ │Control   │ │Gateway               │ │
+│  └──────────┘ └──────────┘ └──────────────────────┘ │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────────┐ │
+│  │QR Flow   │ │AI Quantum│ │Role Dashboard        │ │
+│  │Tracker   │ │Recomm.   │ │Engine (10 roles)     │ │
+│  └──────────┘ └──────────┘ └──────────────────────┘ │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────────┐ │
+│  │Calendar  │ │Route     │ │Revenue Smart         │ │
+│  │Availab.  │ │Engine    │ │Contract Distrib.     │ │
+│  └──────────┘ └──────────┘ └──────────────────────┘ │
+└──────────┬───────────────────────────────────────────┘
+           │
+┌──────────┴───────────────────────────────────────────┐
+│         DATA STORES                                   │
+│  PostgreSQL+PostGIS · Redis · TimescaleDB · S3        │
+│  MameyNode Blockchain · IPFS · IndexedDB (offline)    │
+└──────────────────────────────────────────────────────┘
 ```
 
-## 2. Flujo de Datos
+## Tourist Flow Diagram
 
 ```
-Usuario                 Plataforma              NEXUS forja
-  │                        │                        │
-  │──── Acción ───────────▶│                        │
-  │                        │──── Validar ──────────▶│
-  │                        │     (Guardian Agent)   │
-  │                        │◀──── OK ──────────────│
-  │                        │                        │
-  │                        │──── Procesar ─────────▶│
-  │                        │     (Pattern Agent)    │
-  │                        │                        │
-  │                        │──── Encriptar ────────▶│
-  │                        │     (Kyber-768)        │
-  │                        │                        │
-  │                        │──── Almacenar ────────▶│
-  │                        │     (IndexedDB)        │
-  │                        │                        │
-  │◀─── Respuesta ────────│                        │
-  │                        │──── Log Forense ──────▶│
-  │                        │     (Forensic Agent)   │
-  │                        │                        │
+Discover(AI) → Book(Direct) → Pay(WAMPUM) → QR Enter
+                                                │
+    ┌───────────────────────────────────────────┘
+    │
+    ▼
+Experience(Guided) → Capacity(Monitor) → QR Exit → Invoice
+                                                      │
+    ┌─────────────────────────────────────────────────┘
+    ▼
+SMART CONTRACT: Host 35% · Guide 20% · Transport 15%
+                Artisan 10% · Community 10% · Env 5% · Platform 5%
 ```
 
-## 3. Modelo de Seguridad
+## Role Dashboard Architecture
 
 ```
-                    ┌─────────────────┐
-                    │   Capa Externa  │
-                    │   CDN + WAF     │
-                    └────────┬────────┘
-                             │
-                    ┌────────▼────────┐
-                    │   Capa TLS      │
-                    │   Kyber-768     │
-                    └────────┬────────┘
-                             │
-              ┌──────────────▼──────────────┐
-              │      7 Agentes AI           │
-              │  ┌──────┐ ┌──────┐ ┌──────┐ │
-              │  │Guard.│ │Patt. │ │Anom. │ │
-              │  └──────┘ └──────┘ └──────┘ │
-              │  ┌──────┐ ┌──────┐ ┌──────┐ │
-              │  │Trust │ │Shield│ │Foren.│ │
-              │  └──────┘ └──────┘ └──────┘ │
-              │  ┌──────────────────────┐   │
-              │  │    Evolution Agent   │   │
-              │  └──────────────────────┘   │
-              └──────────────┬──────────────┘
-                             │
-                    ┌────────▼────────┐
-                    │   Application   │
-                    │   turismo-soberano │
-                    └────────┬────────┘
-                             │
-                    ┌────────▼────────┐
-                    │   Data Store    │
-                    │   IndexedDB     │
-                    └─────────────────┘
+┌─ ROLE DASHBOARD ENGINE (10 roles) ──────────────────┐
+│  Transportista · Lanchero · Hospedaje · Guía         │
+│  Tour Operador · Artesano · Gastronomía              │
+│  Medicina Tradicional · Admin · Anciano/Custodio     │
+└──────────────────────────────────────────────────────┘
 ```
 
-## 4. Estructura de Archivos
+## API Design
 
 ```
-turismo-soberano/
-├── index.html              ← Plataforma UI principal
-├── README.md               ← Documentación de uso
-├── WHITEPAPER.md           ← Documento técnico completo
-├── BLUEPRINT.md            ← Este archivo (planos)
-└── ../shared/
-    ├── ierahkwa.css        ← Design system (24KB)
-    ├── ierahkwa.js         ← Core JavaScript (6KB)
-    ├── ierahkwa-ai.js      ← Motor AI (28KB)
-    ├── ierahkwa-api.js     ← Capa API (7KB)
-    ├── ierahkwa-security.js ← Seguridad post-quantum (33KB)
-    ├── ierahkwa-quantum.js  ← Computación cuántica (28KB)
-    ├── ierahkwa-protocols.js ← Protocolos soberanos (24KB)
-    ├── ierahkwa-interconnect.js ← Interconexión (16KB)
-    ├── ierahkwa-agents.js   ← 7 Agentes AI (35KB)
-    ├── sw.js               ← Service Worker (13KB)
-    └── manifest.json       ← PWA manifest (5KB)
+GET  /api/v1/turismo/territories                    574 territories
+GET  /api/v1/turismo/territory/{id}/availability    Calendar
+POST /api/v1/turismo/booking/create                 Book
+POST /api/v1/turismo/payment/wampum                 Pay
+POST /api/v1/turismo/qr/checkin                     QR in
+POST /api/v1/turismo/qr/checkout                    QR out
+GET  /api/v1/turismo/dashboard/{role}/{territory}   Dashboard
+GET  /api/v1/turismo/ai/recommend/{tourist_id}      AI rec
+GET  /api/v1/turismo/analytics/{territory}          Stats
+GET  /api/v1/turismo/routes/{region}                Routes
 ```
 
-## 5. Interconexión NEXUS
+## Deployment
 
 ```
-                    ┌──────────────────┐
-                    │  NEXUS forja       │
-                    │  Mega-Portal     │
-                    └────────┬─────────┘
-                             │
-          ┌──────────────────┼──────────────────┐
-          │                  │                  │
-    ┌─────▼─────┐     ┌─────▼─────┐     ┌─────▼─────┐
-    │  Platform │     │ ★ THIS ★  │     │  Platform │
-    │  Hermana  │     │turismo-sob│     │  Hermana  │
-    └─────┬─────┘     └─────┬─────┘     └─────┬─────┘
-          │                 │                  │
-          └─────────────────┼──────────────────┘
-                            │
-                   ierahkwa-interconnect.js
-                   (Protocolo P2P Soberano)
+┌─────────────────────────────────────┐
+│ Continental Tourism Cluster (HA)    │
+│  ├── booking-engine (x5, global)    │
+│  ├── capacity-control (x3, RT)      │
+│  ├── qr-flow-tracker (x3, RT)      │
+│  ├── wampum-gateway (x3, secure)    │
+│  ├── ai-quantum-rec (x2, GPU)      │
+│  ├── role-dashboard (x5)           │
+│  └── analytics (x2, TimescaleDB)   │
+│                                     │
+│ Regional Nodes (9)                  │
+│  North America · Central America    │
+│  Caribbean · Andes · Amazon         │
+│  Southern Cone · Arctic · Brazil    │
+│  Mexico                             │
+└─────────────────────────────────────┘
 ```
-
-## 6. Especificaciones de Rendimiento
-
-| Métrica | Objetivo | Actual |
-|---------|----------|--------|
-| First Contentful Paint | < 1.5s | ✅ ~0.8s |
-| Time to Interactive | < 2.0s | ✅ ~1.2s |
-| Lighthouse Score | > 90 | ✅ 95+ |
-| Tamaño HTML | < 15KB | ✅ 15KB |
-| Shared assets | < 250KB | ✅ ~220KB |
-| Offline capability | 100% | ✅ 100% |
-| Encriptación | Post-quantum | ✅ Kyber-768 |
-
-## 7. APIs Expuestas
-
-```javascript
-// Acceder a la plataforma programáticamente
-window.IerahkwaAgents.getStatus()
-// → { version, trustScore, alerts, generation, ... }
-
-// Verificar estado de seguridad
-window.IerahkwaAgents.guardian.alerts
-// → [{ type, severity, timestamp, details }]
-
-// Score de confianza actual
-window.IerahkwaAgents.trust.score
-// → 100 (0-100)
-```
-
-## 8. Requisitos de Despliegue
-
-| Requisito | Especificación |
-|-----------|---------------|
-| Navegador | Chrome 80+, Firefox 75+, Safari 13+ |
-| JavaScript | ES2020+ |
-| Storage | IndexedDB + 5MB localStorage |
-| Red | Funciona offline (Service Worker) |
-| Servidor | Cualquier servidor estático (nginx, Apache, CDN) |
-| SSL | Requerido (HTTPS) |
-| DNS | ierahkwa.org/turismo-soberano |
-
----
-
-**NEXUS Forja (Desarrollo & DevOps)** · Ierahkwa Ne Kanienke · Nación Digital Soberana

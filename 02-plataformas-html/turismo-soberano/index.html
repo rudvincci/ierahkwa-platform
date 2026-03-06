@@ -7,112 +7,319 @@
 <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
-<meta name="description" content="Turismo Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Portal de Turismo Nacional con cifrado pos">
-<meta name="theme-color" content="#00FF41">
+<meta name="description" content="Turismo Soberano — Plataforma continental de turismo indígena para las 19 naciones y 574 territorios tribales de las Américas. Reservas, rutas, pagos en WAMPUM, AI cuántico y dashboards por rol.">
+<meta name="theme-color" content="#FF6D00">
 <link rel="canonical" href="https://ierahkwa.nation/turismo-soberano/">
 <link rel="manifest" href="../shared/manifest.json">
 <link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../icons/icon-192.svg">
-<meta property="og:title" content="Turismo Soberano — Portal de Turismo Nacional">
-<meta property="og:description" content="Turismo Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Portal de Turismo Nacional con cifrado post-cuántico Kyber-768, blockchain MameyNo">
+<meta property="og:title" content="Turismo Soberano — Turismo Indígena de las Américas">
+<meta property="og:description" content="Plataforma soberana de turismo para 574 territorios indígenas. Reservas directas, pagos WAMPUM, AI cuántico, dashboards por rol, control de capacidad y flujo turístico con QR soberano.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ierahkwa.nation/turismo-soberano/">
 <meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Turismo Soberano — Portal de Turismo Nacional">
-<meta name="twitter:description" content="Turismo Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Portal de Turismo Nacional con cifrado post-cuántico Kyber-768, blockchain MameyNo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Turismo Soberano — Turismo Indígena de las Américas">
+<meta name="twitter:description" content="574 territorios, 19 naciones, 1 plataforma soberana. Reserva, viaja, paga en WAMPUM. Sin intermediarios. Sin Big Tech.">
 <link rel="stylesheet" href="../shared/ierahkwa.css">
-<title>Turismo Soberano — Portal de Turismo Nacional</title>
-<style>:root{--accent:#00FF41}</style>
+<title>Turismo Soberano — Turismo Indígena de las Américas</title>
+<style>
+:root{--accent:#FF6D00}
+.region-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;padding:1rem 0}
+.region-card{background:linear-gradient(135deg,rgba(255,109,0,.08),rgba(255,109,0,.02));border:1px solid rgba(255,109,0,.25);border-radius:var(--r);padding:1.2rem;transition:all .3s}
+.region-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,109,0,.15)}
+.region-card h4{color:var(--accent);margin:0 0 .3rem;font-size:.88rem}
+.region-card .territories{font-size:.72rem;color:var(--txt2);margin:.3rem 0}
+.region-card .routes{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem}
+.region-card .route-tag{background:rgba(255,109,0,.12);border:1px solid rgba(255,109,0,.2);padding:.15rem .5rem;border-radius:20px;font-size:.65rem;color:var(--accent)}
+.role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.8rem;padding:1rem 0}
+.role-card{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:1rem;text-align:center;transition:all .3s}
+.role-card:hover{border-color:var(--accent);box-shadow:0 4px 20px rgba(255,109,0,.1)}
+.role-card .role-icon{font-size:2rem;margin-bottom:.4rem}
+.role-card h5{color:var(--accent);margin:0;font-size:.8rem}
+.role-card p{font-size:.68rem;color:var(--txt2);margin:.3rem 0 0}
+.flow-step{display:flex;align-items:center;gap:1rem;padding:.8rem 1rem;border-left:3px solid var(--accent);margin:.5rem 0;background:rgba(255,109,0,.04);border-radius:0 var(--r) var(--r) 0}
+.flow-step .step-num{background:var(--accent);color:#000;font-weight:700;font-size:.75rem;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.flow-step .step-text{font-size:.78rem;color:var(--txt)}
+.flow-step .step-text strong{color:var(--accent)}
+.payment-badge{display:inline-flex;align-items:center;gap:.3rem;background:linear-gradient(135deg,#FFD700,#FF6D00);color:#000;font-weight:700;font-size:.7rem;padding:.3rem .7rem;border-radius:20px;margin:.2rem}
+</style>
 </head>
 <body role="document">
 <a href="#main" class="skip-nav">Saltar al contenido principal</a>
 <header>
-<div class="logo"><div class="logo-icon" aria-hidden="true">🏖️</div><h1>Turismo Soberano</h1></div>
-<nav aria-label="Navegacion principal"><a href="#dashboard" aria-current="page">Dashboard</a><a href="#features">Modulos</a><a href="#api">API</a><a href="#pricing">Precios</a></nav>
+<div class="logo"><div class="logo-icon" aria-hidden="true">🌎</div><h1>Turismo Soberano</h1></div>
+<nav aria-label="Navegacion principal"><a href="#dashboard" aria-current="page">Dashboard</a><a href="#regions">Regiones</a><a href="#roles">Roles</a><a href="#features">Módulos</a><a href="#flow">Flujo</a><a href="#api">API</a></nav>
 <span class="encrypted-badge" title="Cifrado Post-Quantum Activo"><span aria-hidden="true">⚛️</span> Quantum-Safe</span>
 </header>
 <main id="main">
+
+<!-- ═══════════ HERO ═══════════ -->
 <section class="hero" id="dashboard">
-<div class="badge"><span aria-hidden="true">🏖️</span> Portal de Turismo Nacional</div>
+<div class="badge"><span aria-hidden="true">🌎</span> NEXUS Comercio · Turismo Continental</div>
 <h2><span>Turismo Soberano</span></h2>
-<p>Turismo Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Portal de Turismo Nacional con cifrado post-cuántico Kyber-768, blockchain MameyNode, modo offline y soporte para 14 idiomas indígenas. Reemplazo soberano 100% libre de Big Tech.</p>
+<p>La primera plataforma continental de turismo indígena que conecta <strong>574 territorios tribales</strong> en <strong>19 naciones</strong> de las Américas. Inspirado en el modelo NAE de Guna Yala, escalado a todo el continente. Reservas directas, pagos en WAMPUM, dashboards por rol, control de capacidad, AI cuántico predictivo y flujo turístico con QR soberano. <strong>Sin Booking. Sin Airbnb. Sin intermediarios.</strong> El turismo viene a nosotros — en nuestros términos.</p>
 <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
-<a href="#features" class="btn">Explorar Módulos</a>
-<a href="#api" class="btn" style="background:transparent;border:2px solid var(--accent);color:var(--accent)">API Docs</a>
+<a href="#regions" class="btn">🗺️ Explorar Rutas</a>
+<a href="#roles" class="btn" style="background:transparent;border:2px solid var(--accent);color:var(--accent)">👥 Dashboards por Rol</a>
+<a href="#api" class="btn" style="background:transparent;border:2px solid var(--gold,#FFD700);color:var(--gold,#FFD700)">💰 Pago WAMPUM</a>
 </div>
 </section>
-<div class="stats" role="list" aria-label="Metricas del sistema"><div class="stat" role="listitem"><div class="val">574</div><div class="lbl">Naciones</div></div>
-<div class="stat" role="listitem"><div class="val">3,000+</div><div class="lbl">Años</div></div>
-<div class="stat" role="listitem"><div class="val">14</div><div class="lbl">Idiomas</div></div>
-<div class="stat" role="listitem"><div class="val">50K+</div><div class="lbl">Artefactos</div></div>
-<div class="stat" role="listitem"><div class="val">AR/VR</div><div class="lbl">Inmersión</div></div>
-<div class="stat" role="listitem"><div class="val">blockchain</div><div class="lbl">Autenticidad</div></div></div>
+
+<!-- ═══════════ STATS ═══════════ -->
+<div class="stats" role="list" aria-label="Metricas del sistema">
+<div class="stat" role="listitem"><div class="val" data-count="574">574</div><div class="lbl">Territorios</div></div>
+<div class="stat" role="listitem"><div class="val" data-count="19">19</div><div class="lbl">Naciones</div></div>
+<div class="stat" role="listitem"><div class="val">72M+</div><div class="lbl">Indígenas</div></div>
+<div class="stat" role="listitem"><div class="val" data-count="2500">2,500+</div><div class="lbl">Rutas Activas</div></div>
+<div class="stat" role="listitem"><div class="val">WAMPUM</div><div class="lbl">Pagos Propios</div></div>
+<div class="stat" role="listitem"><div class="val">0%</div><div class="lbl">Comisión Big Tech</div></div>
+</div>
+
+<!-- ═══════════ REGIONES DE LAS AMÉRICAS ═══════════ -->
+<div class="section" id="regions">
+<h2><span aria-hidden="true">🗺️</span> Rutas Turísticas de las Américas</h2>
+<div class="sub">574 territorios organizados por región — cada comunidad controla su turismo</div>
+<div class="region-grid">
+
+<div class="region-card">
+<h4>🇵🇦 Guna Yala · Panamá</h4>
+<div class="territories">49 comunidades · 365 islas · Modelo NAE pionero</div>
+<p style="font-size:.73rem;color:var(--txt)">Islas vírgenes del Caribe, cultura Guna viva, molas artesanales, arrecifes de coral. Primer territorio con control turístico digital soberano.</p>
+<div class="routes"><span class="route-tag">🏝️ San Blas Islands</span><span class="route-tag">🎨 Mola Workshops</span><span class="route-tag">🐠 Coral Diving</span><span class="route-tag">🛶 Cayuco Tours</span></div>
+</div>
+
+<div class="region-card">
+<h4>🇺🇸 Naciones Nativas · Norte América</h4>
+<div class="territories">574 naciones tribales · Navajo, Cherokee, Lakota, Haudenosaunee, Apache...</div>
+<p style="font-size:.73rem;color:var(--txt)">Desde Monument Valley hasta las Grandes Llanuras, ceremonias pow-wow, arte nativo, cañones sagrados, y cultura viva de las Primeras Naciones.</p>
+<div class="routes"><span class="route-tag">🏜️ Navajo Nation</span><span class="route-tag">🦅 Lakota Lands</span><span class="route-tag">🌲 Pacific NW</span><span class="route-tag">🎭 Pow-Wow Circuit</span></div>
+</div>
+
+<div class="region-card">
+<h4>🇲🇽 Pueblos Originarios · México</h4>
+<div class="territories">68 pueblos · Maya, Zapoteca, Mixteca, Rarámuri, Nahua, Totonaca...</div>
+<p style="font-size:.73rem;color:var(--txt)">Zonas arqueológicas mayas, selvas lacandona, barrancas del cobre Rarámuri, gastronomía ancestral, medicina tradicional, textiles oaxaqueños.</p>
+<div class="routes"><span class="route-tag">🏛️ Ruta Maya</span><span class="route-tag">🏔️ Sierra Tarahumara</span><span class="route-tag">🌮 Gastronomía Ancestral</span><span class="route-tag">🧵 Textiles Oaxaca</span></div>
+</div>
+
+<div class="region-card">
+<h4>🇬🇹🇭🇳🇳🇮🇨🇷 Centroamérica Indígena</h4>
+<div class="territories">Maya Q'eqchi', Lenca, Miskito, Bribri, Ngäbe-Buglé, Kuna...</div>
+<p style="font-size:.73rem;color:var(--txt)">Selvas de Petén, islas de la Mosquitia, cacao ceremonial Bribri, volcanes y lagos sagrados, mercados indígenas, biodiversidad única.</p>
+<div class="routes"><span class="route-tag">🌋 Ruta de Volcanes</span><span class="route-tag">🍫 Cacao Bribri</span><span class="route-tag">🏝️ Mosquitia</span><span class="route-tag">🌿 Selva de Petén</span></div>
+</div>
+
+<div class="region-card">
+<h4>🇨🇴🇻🇪🇪🇨 Andes & Amazonía Norte</h4>
+<div class="territories">Wayuu, Embera, Quechua, Shuar, Kichwa, Yanomami, Warao...</div>
+<p style="font-size:.73rem;color:var(--txt)">Sierra Nevada de Santa Marta, Amazonía ecuatoriana, comunidades wayuu del desierto, chamanes de ayahuasca, cultura embera del Chocó.</p>
+<div class="routes"><span class="route-tag">🏔️ Sierra Nevada</span><span class="route-tag">🌳 Amazonía Ecuador</span><span class="route-tag">🏜️ La Guajira Wayuu</span><span class="route-tag">🎨 Embera Chocó</span></div>
+</div>
+
+<div class="region-card">
+<h4>🇵🇪🇧🇴 Mundo Quechua & Aymara</h4>
+<div class="territories">Quechua, Aymara, Asháninka, Shipibo, Uros, Taquile...</div>
+<p style="font-size:.73rem;color:var(--txt)">Machu Picchu viviente, islas flotantes del Titicaca, textiles de Taquile, Salar de Uyuni, medicina andina, ruinas sagradas, cultura inca viva.</p>
+<div class="routes"><span class="route-tag">🏔️ Camino Inca Vivo</span><span class="route-tag">🚣 Islas Uros</span><span class="route-tag">🧂 Salar Uyuni</span><span class="route-tag">🧶 Textiles Taquile</span></div>
+</div>
+
+<div class="region-card">
+<h4>🇧🇷 Povos Indígenas · Brasil</h4>
+<div class="territories">305 pueblos · Yanomami, Kayapó, Xingu, Guaraní, Tikuna...</div>
+<p style="font-size:.73rem;color:var(--txt)">Parque Xingu, territorio Yanomami, selva amazónica profunda, ceremonias Kayapó, artesanía Guaraní, observación de fauna y turismo regenerativo.</p>
+<div class="routes"><span class="route-tag">🌳 Parque Xingu</span><span class="route-tag">🦜 Kayapó Territory</span><span class="route-tag">🏹 Yanomami Experience</span><span class="route-tag">🎨 Arte Guaraní</span></div>
+</div>
+
+<div class="region-card">
+<h4>🇨🇱🇦🇷 Mapuche & Patagonia</h4>
+<div class="territories">Mapuche, Rapa Nui, Atacameño, Diaguita, Qom, Wichi...</div>
+<p style="font-size:.73rem;color:var(--txt)">Araucanía mapuche, lagos y volcanes, Rapa Nui (Isla de Pascua), Puna atacameña, estepas patagónicas, cosmovisión del Wallmapu.</p>
+<div class="routes"><span class="route-tag">🌲 Wallmapu Mapuche</span><span class="route-tag">🗿 Rapa Nui</span><span class="route-tag">🏔️ Puna Atacameña</span><span class="route-tag">❄️ Patagonia Ancestral</span></div>
+</div>
+
+<div class="region-card">
+<h4>🇨🇦 First Nations · Canadá</h4>
+<div class="territories">634 First Nations · Inuit, Métis, Haida, Cree, Mohawk...</div>
+<p style="font-size:.73rem;color:var(--txt)">Tótems Haida Gwaii, auroras boreales Inuit, canoas en lagos glaciares, arte de la Costa Noroeste, cultura Cree, ceremonias de purificación.</p>
+<div class="routes"><span class="route-tag">🌌 Inuit Aurora</span><span class="route-tag">🪶 Haida Gwaii</span><span class="route-tag">🛶 Cree Canoe</span><span class="route-tag">🎨 Northwest Coast Art</span></div>
+</div>
+
+<div class="region-card">
+<h4>🌴 Caribe Indígena</h4>
+<div class="territories">Taíno, Garifuna, Kalinago, Maroons, Maya Beliceño...</div>
+<p style="font-size:.73rem;color:var(--txt)">Herencia Taína en Puerto Rico y República Dominicana, cultura Garifuna de Honduras y Belice, pueblo Kalinago de Dominica, raíces africano-indígenas.</p>
+<div class="routes"><span class="route-tag">🏝️ Ruta Taína</span><span class="route-tag">🥁 Garifuna Coast</span><span class="route-tag">🌊 Kalinago Territory</span><span class="route-tag">🍫 Cacao Trail Belize</span></div>
+</div>
+
+</div>
+</div>
+
+<!-- ═══════════ DASHBOARDS POR ROL (NAE-INSPIRED) ═══════════ -->
+<div class="section" id="roles">
+<h2><span aria-hidden="true">👥</span> Dashboards por Rol</h2>
+<div class="sub">Cada actor del ecosistema turístico tiene su panel personalizado — modelo NAE escalado a 574 territorios</div>
+<div class="role-grid">
+<div class="role-card"><div class="role-icon" aria-hidden="true">🚐</div><h5>Transportista</h5><p>Rutas, horarios, reservas de vehículos, GPS, ingresos</p></div>
+<div class="role-card"><div class="role-icon" aria-hidden="true">🚤</div><h5>Lanchero</h5><p>Calendario de viajes, capacidad, clima, manifiestos marítimos</p></div>
+<div class="role-card"><div class="role-icon" aria-hidden="true">🏠</div><h5>Hospedaje</h5><p>Ocupación, calendario, precios, limpieza, reseñas</p></div>
+<div class="role-card"><div class="role-icon" aria-hidden="true">🧭</div><h5>Guía Turístico</h5><p>Itinerarios, idiomas, certificaciones, disponibilidad</p></div>
+<div class="role-card"><div class="role-icon" aria-hidden="true">🎒</div><h5>Tour Operador</h5><p>Paquetes, reservas, coordinación, facturación WAMPUM</p></div>
+<div class="role-card"><div class="role-icon" aria-hidden="true">🎨</div><h5>Artesano</h5><p>Inventario, ventas directas, talleres, envíos soberanos</p></div>
+<div class="role-card"><div class="role-icon" aria-hidden="true">🍽️</div><h5>Gastronomía</h5><p>Menú ancestral, reservas, ingredientes locales, catering</p></div>
+<div class="role-card"><div class="role-icon" aria-hidden="true">🏥</div><h5>Medicina Tradicional</h5><p>Consultas, ceremonias de sanación, plantas sagradas, ética</p></div>
+<div class="role-card"><div class="role-icon" aria-hidden="true">🛡️</div><h5>Administrador Territorial</h5><p>Control total, capacidad, ingresos, permisos, reportes</p></div>
+<div class="role-card"><div class="role-icon" aria-hidden="true">👨‍🏫</div><h5>Anciano/Custodio</h5><p>Aprobación cultural, protocolos sagrados, veto de acceso</p></div>
+</div>
+</div>
+
+<!-- ═══════════ FLUJO TURÍSTICO (NAE QR) ═══════════ -->
+<div class="section" id="flow">
+<h2><span aria-hidden="true">🔄</span> Flujo Turístico Soberano</h2>
+<div class="sub">Control total del viajero desde la reserva hasta la salida — cada paso rastreado con QR soberano</div>
+<div class="flow-step"><div class="step-num">1</div><div class="step-text"><strong>Descubrimiento AI →</strong> El turista explora rutas indígenas con recomendaciones de AI cuántico basadas en intereses, temporada, capacidad y nivel de experiencia cultural.</div></div>
+<div class="flow-step"><div class="step-num">2</div><div class="step-text"><strong>Reserva Directa →</strong> Selecciona territorio, hospedaje, guía, transporte y experiencias. Calendario de disponibilidad en tiempo real. Sin intermediarios. Pago 100% WAMPUM.</div></div>
+<div class="flow-step"><div class="step-num">3</div><div class="step-text"><strong>Pago Soberano →</strong> Turista paga en WAMPUM (cripto soberano) o fiat convertido a WAMPUM automáticamente. Zero comisiones a Visa/Mastercard/PayPal. 100% va a la comunidad.</div></div>
+<div class="flow-step"><div class="step-num">4</div><div class="step-text"><strong>QR de Entrada →</strong> Al llegar al territorio, escanea QR soberano. Se registra entrada, se activan permisos, el lanchero/transportista confirma llegada. Capacidad actualizada en tiempo real.</div></div>
+<div class="flow-step"><div class="step-num">5</div><div class="step-text"><strong>Experiencia Guiada →</strong> Guía turístico recibe itinerario en su dashboard. Artesanos ven reservas de taller. Gastronomía prepara menú. Cada actor coordinado por la plataforma.</div></div>
+<div class="flow-step"><div class="step-num">6</div><div class="step-text"><strong>Monitoreo de Capacidad →</strong> Administrador ve en tiempo real: turistas actuales, ocupación %, origen (doméstico/extranjero), gasto promedio, impacto ambiental. AI predice picos.</div></div>
+<div class="flow-step"><div class="step-num">7</div><div class="step-text"><strong>QR de Salida →</strong> Al partir, escanea QR de salida. Se libera capacidad, se genera factura en blockchain, el turista recibe encuesta de satisfacción y NFT de recuerdo cultural.</div></div>
+<div class="flow-step"><div class="step-num">8</div><div class="step-text"><strong>Distribución Justa →</strong> Ingresos distribuidos automáticamente por smart contract: hospedaje, guía, transporte, artesano, fondo comunitario (10%), fondo ambiental (5%).</div></div>
+</div>
+
+<!-- ═══════════ ARQUITECTURA ═══════════ -->
 <div class="section" id="architecture">
 <h2><span aria-hidden="true">🏗️</span> Arquitectura del Sistema</h2>
-<div class="sub">Infraestructura soberana de Turismo Soberano</div>
+<div class="sub">Infraestructura soberana — zero dependencia Big Tech</div>
 <div class="sec-panel" style="font-family:monospace;font-size:.72rem;line-height:1.8;overflow-x:auto">
-<span style="color:var(--accent)">┌─ FRONTEND ─────────────────────────────────┐</span>
-│  PWA + WebAssembly + Service Worker          │
-│  Offline-first · 14 idiomas · WCAG 2.1 AA   │
-<span style="color:var(--accent)">└──────────────────┬────────────────────────────┘</span>
-                   │ <span style="color:#ffd600">REST + gRPC + WebSocket</span>
-<span style="color:#00bcd4">┌─ API GATEWAY ────┴────────────────────────────┐</span>
-│  Rate limiting · JWT · CSRF · mTLS · CORS     │
-│  Load balancer · Circuit breaker · Cache       │
-<span style="color:#00bcd4">└──────────────────┬────────────────────────────┘</span>
+<span style="color:var(--accent)">┌─ TURISTA ───────────────────────────────────────┐</span>
+│  PWA Offline · 14 idiomas · QR Scanner · Maps    │
+│  AI Recomendador · Calendario · Pago WAMPUM       │
+<span style="color:var(--accent)">└──────────────────┬──────────────────────────────┘</span>
+                   │ <span style="color:#ffd600">REST + WebSocket + gRPC</span>
+<span style="color:#00bcd4">┌─ API GATEWAY ────┴──────────────────────────────┐</span>
+│  Rate Limit · JWT · mTLS · Kyber-768 Encryption   │
+│  Geofencing · Territory Auth · Role-Based Access   │
+<span style="color:#00bcd4">└──────────────────┬──────────────────────────────┘</span>
                    │
-<span style="color:#7c4dff">┌─ MICROSERVICIOS ─┴────────────────────────────┐</span>
-│  Rust + Go · 12-factor · Event-driven          │
-│  CQRS · Saga pattern · Domain-driven design    │
-<span style="color:#7c4dff">└──────────────────┬────────────────────────────┘</span>
+<span style="color:#7c4dff">┌─ SERVICIOS ──────┴──────────────────────────────┐</span>
+│  ┌─────────┐ ┌──────────┐ ┌──────────────────┐   │
+│  │Booking  │ │Capacity  │ │Payment           │   │
+│  │Engine   │ │Control   │ │WAMPUM Gateway    │   │
+│  └─────────┘ └──────────┘ └──────────────────┘   │
+│  ┌─────────┐ ┌──────────┐ ┌──────────────────┐   │
+│  │QR Flow  │ │AI Quantum│ │Role Dashboard    │   │
+│  │Tracker  │ │Recomm.   │ │Engine            │   │
+│  └─────────┘ └──────────┘ └──────────────────┘   │
+│  ┌─────────┐ ┌──────────┐ ┌──────────────────┐   │
+│  │Calendar │ │Territory │ │Revenue           │   │
+│  │Avail.   │ │Geofence  │ │Distribution      │   │
+│  └─────────┘ └──────────┘ └──────────────────┘   │
+<span style="color:#7c4dff">└──────────────────┬──────────────────────────────┘</span>
                    │
-<span style="color:var(--accent)">┌─ DATA LAYER ─────┴────────────────────────────┐</span>
-│  PostgreSQL · Redis · TimescaleDB · S3          │
-│  MameyNode Blockchain · IndexedDB (offline)     │
-<span style="color:var(--accent)">└─────────────────────────────────────────────────┘</span>
+<span style="color:var(--accent)">┌─ DATA LAYER ─────┴──────────────────────────────┐</span>
+│  PostgreSQL+PostGIS · Redis · TimescaleDB · S3    │
+│  MameyNode Blockchain · IPFS · IndexedDB(offline) │
+<span style="color:var(--accent)">└──────────────────────────────────────────────────┘</span>
 </div>
 </div>
-<div class="section-title" id="features"><h3>Módulos de la Plataforma</h3><p>10 herramientas soberanas de grado empresarial</p></div>
-<div class="grid"><article class="card"><div class="card-icon" aria-hidden="true">🏛️</div><h4>Archivo Digital Ancestral</h4><p>Digitalización de alta resolución de artefactos, documentos, arte y objetos ceremoniales. Cada pieza catalogada con metadata cultural.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🌐</div><h4>Experiencias Inmersivas AR/VR</h4><p>Recorridos virtuales por sitios sagrados, recreaciones históricas y experiencias culturales inmersivas accesibles desde cualquier dispositivo.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🗣️</div><h4>Preservación de Lenguas</h4><p>Grabaciones, diccionarios, gramáticas y cursos interactivos de 14 idiomas indígenas. AI de reconocimiento de voz para lenguas en riesgo.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🎨</div><h4>Galería de Arte Indígena</h4><p>Exhibición virtual de arte contemporáneo e histórico de las 574 naciones. Ventas directas artista-comprador en WAMPUM.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📚</div><h4>Biblioteca de Tradición Oral</h4><p>Miles de horas de relatos, cantos, ceremonias y conocimiento ancestral grabados con consentimiento de ancianos y comunidades.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🔒</div><h4>Protección de Patrimonio</h4><p>Registro blockchain de propiedad cultural que previene apropiación. Licencias soberanas para uso de símbolos, diseños y conocimiento.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">👥</div><h4>Red de Custodios Culturales</h4><p>Plataforma para ancianos, artistas, historiadores y educadores que mantienen viva la cultura. Mentoría intergeneracional digital.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📅</div><h4>Calendario Ceremonial</h4><p>Calendario unificado de ceremonias, festivales y eventos culturales de las 574 naciones con fases lunares y fechas solares.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🎵</div><h4>Archivo Musical Ancestral</h4><p>Grabaciones de música tradicional: tambores, flautas, cantos ceremoniales. Contexto cultural de cada pieza preservado digitalmente.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📱</div><h4>App Cultural Comunitaria</h4><p>App offline con contenido cultural descargable. Ancianos pueden contribuir con voz. Jóvenes aprenden tradiciones interactivamente.</p></article></div>
+
+<!-- ═══════════ MÓDULOS ═══════════ -->
+<div class="section-title" id="features"><h3>Módulos de la Plataforma</h3><p>12 sistemas soberanos de grado empresarial — inspirados en NAE, escalados a las Américas</p></div>
+<div class="grid">
+<article class="card"><div class="card-icon" aria-hidden="true">📅</div><h4>Calendario de Disponibilidad</h4><p>Disponibilidad en tiempo real de hospedaje, guías, transporte por territorio. Colores: verde (disponible), amarillo (casi lleno), rojo (lleno). Sincronización entre todos los actores.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📊</div><h4>Control de Capacidad</h4><p>Cada territorio define su límite máximo de turistas. Monitor en tiempo real: turistas actuales vs capacidad. Cierre automático de reservas al alcanzar tope. Protección contra sobre-turismo.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📱</div><h4>QR Soberano de Flujo</h4><p>QR de entrada y salida en cada territorio. Rastreo anónimo del flujo turístico. Manifiestos de transporte, confirmación de llegada, tiempo de estancia, control migratorio indígena.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">💰</div><h4>Pago WAMPUM Soberano</h4><p>Sistema de pagos propio basado en blockchain MameyNode. Conversión fiat→WAMPUM automática. Zero comisiones a intermediarios. Smart contracts para distribución justa de ingresos a la comunidad.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🤖</div><h4>AI Cuántico Predictivo</h4><p>Predicción de demanda por territorio y temporada. Recomendaciones personalizadas al turista. Optimización de precios dinámicos. Detección de patrones de sobre-turismo. Alertas tempranas.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🔒</div><h4>Seguridad Kyber-768</h4><p>Cifrado post-cuántico para toda transacción. Datos de turistas protegidos. Verificación de identidad sin Big Tech. Geofencing de territorios sagrados. Protección contra drones y vigilancia.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🗺️</div><h4>Motor de Rutas Indígenas</h4><p>2,500+ rutas turísticas catalogadas por territorio, dificultad, duración, tipo (cultural, naturaleza, aventura, gastronómica, medicinal). Mapas offline con PostGIS soberano.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🎨</div><h4>Marketplace Artesanal</h4><p>Venta directa artesano→turista. Catálogo con autenticidad blockchain. Certificado de origen cultural. Talleres reservables. Envío internacional desde territorio indígena.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📈</div><h4>Analytics por Territorio</h4><p>Dashboard para administradores: ingresos diarios/mensuales, turistas por origen, gasto promedio, ocupación, satisfacción, impacto ambiental, comparativa entre territorios.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🌐</div><h4>Multi-idioma Indígena</h4><p>Interfaz en 14 idiomas indígenas + español/inglés/portugués/francés. Audio-guías en lenguas nativas. Traductor en tiempo real para comunicación turista-comunidad.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">⚖️</div><h4>Protocolo de Consentimiento</h4><p>Ancianos y custodios culturales aprueban qué experiencias se ofrecen. Lugares sagrados restringidos. Código de conducta obligatorio. Turismo con respeto y dignidad.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🔄</div><h4>Distribución Automática</h4><p>Smart contracts distribuyen pagos: hospedaje (35%), guía (20%), transporte (15%), artesano (10%), fondo comunitario (10%), fondo ambiental (5%), plataforma (5%).</p></article>
+</div>
+
+<!-- ═══════════ SISTEMA DE PAGOS ═══════════ -->
+<div class="section" id="payments">
+<h2><span aria-hidden="true">💰</span> Sistema de Pagos WAMPUM</h2>
+<div class="sub">Economía turística 100% soberana — sin Visa, sin PayPal, sin comisiones extractivas</div>
+<div class="sec-panel">
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.78rem;color:var(--txt)">💱 <strong>Conversión automática</strong> — Turista paga en USD/EUR/fiat → se convierte a WAMPUM al tipo de cambio soberano en tiempo real</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.78rem;color:var(--txt)">⛓️ <strong>Blockchain MameyNode</strong> — Cada transacción registrada en la cadena soberana. Transparente, inmutable, auditable por la comunidad</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.78rem;color:var(--txt)">📜 <strong>Smart Contracts</strong> — Distribución automática de ingresos según porcentajes aprobados por cada comunidad. Sin intermediarios humanos</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.78rem;color:var(--txt)">🔐 <strong>Kyber-768 Payment</strong> — Cifrado post-cuántico en cada transacción. Ni gobiernos ni hackers pueden interceptar pagos</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.78rem;color:var(--txt)">📊 <strong>Tesorería Comunitaria</strong> — Dashboard de ingresos/gastos en tiempo real. Cada centavo rastreable. Auditoría abierta a la comunidad</span></div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><span style="font-size:.78rem;color:var(--txt)">🌎 <strong>Multi-moneda</strong> — Acepta 50+ monedas fiat y 10+ criptomonedas. Conversión instantánea a WAMPUM. Retiro a cuenta local opcional</span></div>
+</div>
+</div>
+
+<!-- ═══════════ API ═══════════ -->
 <div class="section" id="api">
 <h2><span aria-hidden="true">🔌</span> API Endpoints</h2>
-<div class="sub">REST + gRPC + WebSocket para integraciones</div>
-<div class="sec-panel"><div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo_soberano/collection/{nation}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Colección cultural de una nación con artefactos y metadata.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo_soberano/artifact/register</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Registrar artefacto cultural con procedencia y custodia.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo_soberano/languages/{code}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Recursos lingüísticos: diccionario, gramática, pronunciación.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo_soberano/calendar/ceremonies</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Ceremonias y eventos culturales programados por nación.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo_soberano/oral-history/submit</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Contribuir historia oral con grabación y metadata cultural.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo_soberano/art/gallery/{nation}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Galería de arte de una nación con info de artistas.</p></div>
+<div class="sub">REST + gRPC + WebSocket — API soberana para turismo de las Américas</div>
+<div class="sec-panel">
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#FF6D00;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo/territories</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Lista de 574 territorios con disponibilidad, capacidad y rutas activas.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#FF6D00;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo/territory/{id}/availability</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Calendario de disponibilidad: hospedaje, guías, transporte, experiencias.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo/booking/create</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Crear reserva: territorio, fechas, hospedaje, guía, transporte, experiencias.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo/payment/wampum</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Pago en WAMPUM con conversión fiat automática y distribución por smart contract.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo/qr/checkin</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Check-in QR: registrar entrada de turista, actualizar capacidad en tiempo real.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo/qr/checkout</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Check-out QR: registrar salida, liberar capacidad, generar factura blockchain.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#FF6D00;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo/dashboard/{role}/{territory}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Dashboard por rol: transportista, lanchero, hospedaje, guía, artesano, admin.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#FF6D00;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo/ai/recommend/{tourist_id}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Recomendaciones AI cuántico: rutas, experiencias, territorios por perfil del turista.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#FF6D00;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo/analytics/{territory}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Analytics: turistas/día, ingresos, ocupación, origen, satisfacción, impacto.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#FF6D00;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/turismo/routes/{region}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Rutas turísticas por región: cultural, naturaleza, aventura, gastronómica, medicinal.</p>
 </div>
-<div class="section-title" id="pricing"><h3>Planes Soberanos</h3><p>Empieza gratis. Escala soberanamente.</p></div>
-<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))"><div class="card">
+</div>
+
+<!-- ═══════════ PRECIOS ═══════════ -->
+<div class="section-title" id="pricing"><h3>Planes Soberanos</h3><p>Para comunidades y territorios — pagos en WAMPUM</p></div>
+<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+<div class="card">
 <h4 style="color:var(--accent);font-size:.9rem">Comunidad</h4>
 <div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 W/mes</div>
-<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Acceso completo</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ App offline</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Calendario</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Diccionarios</li></ul>
-</div><div class="card" style="border-color:var(--accent);box-shadow:0 0 20px rgba(0,255,65,.15)">
-<h4 style="color:var(--accent);font-size:.9rem">Educador</h4>
-<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">9 W/mes</div>
-<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Materiales educativos</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ AR/VR</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Cursos de lenguas</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API básica</li></ul>
-</div><div class="card">
-<h4 style="color:var(--accent);font-size:.9rem">Institución</h4>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Hasta 50 hospedajes</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Calendario básico</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ QR check-in/out</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Pagos WAMPUM</li>
+</ul>
+</div>
+<div class="card" style="border-color:var(--accent);box-shadow:0 0 20px rgba(255,109,0,.15)">
+<h4 style="color:var(--accent);font-size:.9rem">Territorio</h4>
 <div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">49 W/mes</div>
-<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Multi-sede</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API completa</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Investigación</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Custom exhibits</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Soporte dedicado</li></ul>
-</div></div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Hospedajes ilimitados</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ 10 dashboards por rol</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ AI recomendaciones</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Analytics avanzados</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Control de capacidad</li>
+</ul>
+</div>
+<div class="card">
+<h4 style="color:var(--accent);font-size:.9rem">Nación</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">299 W/mes</div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Multi-territorio</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API completa</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ AI cuántico completo</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Marketplace artesanal</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ SLA 99.99%</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Soporte 24/7</li>
+</ul>
+</div>
+</div>
 </main>
+
 <footer>
-<p><span aria-hidden="true">🏖️</span> <strong>Turismo Soberano</strong> &mdash; Ecosistema Digital <a href="../">Ierahkwa Ne Kanienke</a></p>
-<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">233+ plataformas soberanas &middot; 17 dominios NEXUS &middot; 1B+ personas &middot; 35+ países</p>
-<div style="margin-top:.75rem"><span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span></div>
+<p><span aria-hidden="true">🌎</span> <strong>Turismo Soberano</strong> &mdash; Ecosistema Digital <a href="../">Ierahkwa Ne Kanienke</a></p>
+<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">424+ plataformas soberanas &middot; 18 dominios NEXUS &middot; 72M+ personas &middot; 19 naciones</p>
+<div style="margin-top:.75rem">
+<span class="payment-badge">💰 WAMPUM Accepted</span>
+<span class="payment-badge" style="background:linear-gradient(135deg,#7c4dff,#00bcd4);color:#fff">⚛️ Quantum-Safe</span>
+<span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span>
+</div>
 </footer>
 <script src="../shared/ierahkwa.js"></script>
 <script src="../shared/ierahkwa-security.js"></script>
@@ -120,7 +327,7 @@
 <script src="../shared/ierahkwa-protocols.js"></script>
 <script src="../shared/ierahkwa-interconnect.js"></script>
 <script>
-(function(){var DB_NAME='ierahkwa-turismo-soberano';var DB_VER=1;var STORES=["colecciones-cache", "diccionarios", "calendario-ceremonial"];var db=null;function openDB(){return new Promise(function(resolve,reject){var req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=function(){var d=req.result;STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});};req.onsuccess=function(){db=req.result;resolve(db)};req.onerror=function(){reject(req.error)}})}function showOfflineBanner(show){var b=document.getElementById('offline-banner');if(!b){b=document.createElement('div');b.id='offline-banner';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--accent);color:#09090d;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';b.textContent='Modo Offline — Colecciones culturales y diccionarios disponibles offline.';document.body.appendChild(b)}b.style.transform=show?'translateY(0)':'translateY(100%)'}function init(){openDB().then(function(){window.addEventListener('online',function(){showOfflineBanner(false)});window.addEventListener('offline',function(){showOfflineBanner(true)});if(!navigator.onLine)showOfflineBanner(true);console.log('[turismo-soberano] Offline module ready')})}init()})();
+(function(){var DB_NAME='ierahkwa-turismo-soberano';var DB_VER=2;var STORES=["reservas","territorios","rutas","pagos-wampum","qr-checkins","dashboard-cache","calendario","analytics"];var db=null;function openDB(){return new Promise(function(resolve,reject){var req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=function(){var d=req.result;STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});};req.onsuccess=function(){db=req.result;resolve(db)};req.onerror=function(){reject(req.error)}})}function showOfflineBanner(show){var b=document.getElementById('offline-banner');if(!b){b=document.createElement('div');b.id='offline-banner';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--accent);color:#000;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';b.textContent='Modo Offline — Rutas, reservas y mapas disponibles sin conexión.';document.body.appendChild(b)}b.style.transform=show?'translateY(0)':'translateY(100%)'}function init(){openDB().then(function(){window.addEventListener('online',function(){showOfflineBanner(false)});window.addEventListener('offline',function(){showOfflineBanner(true)});if(!navigator.onLine)showOfflineBanner(true);console.log('[turismo-soberano] v2.0 — Continental Tourism Platform ready')})}init()})();
 </script>
 <script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 <script src="../shared/ierahkwa-api.js"></script>

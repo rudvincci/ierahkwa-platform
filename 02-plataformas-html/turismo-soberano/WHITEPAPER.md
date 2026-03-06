@@ -1,256 +1,98 @@
-# WHITEPAPER: Turismo Soberano — Portal de Turismo Nacional
+# Turismo Soberano — Technical Whitepaper
 
-**Versión**: 1.0.0
-**Fecha**: 2026-02-28
-**NEXUS**: NEXUS Forja (Desarrollo & DevOps)
-**Ecosistema**: Ierahkwa Ne Kanienke — Nación Digital Soberana
+**Version**: 2.0.0 | **Date**: March 2026 | **Status**: Production
 
----
+## Executive Summary
 
-## Resumen Ejecutivo
+Turismo Soberano is the first continental sovereign tourism platform connecting 574 indigenous territories across 19 nations of the Americas. Inspired by the NAE model from Guna Yala (Panama), it provides direct booking, sovereign payments in WAMPUM, role-based dashboards (10 roles), AI-powered capacity control, QR tourist flow tracking, and automatic revenue distribution via smart contracts. Zero intermediaries. Zero Big Tech dependency.
 
-**Turismo Soberano — Portal de Turismo Nacional** es una plataforma soberana diseñada para proveer Turismo Soberano — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Portal de Turismo Nacional con cifrado pos a más de mil millones de personas en las Américas en 35+ países y 574 tribus. Opera sin dependencias externas, con encriptación post-quantum y 7 agentes de inteligencia artificial autónomos.
+## Problem Statement
 
-## 1. Problema
+Indigenous tourism is controlled by extractive platforms:
+- **Booking.com/Airbnb** take 15-25% commissions from communities that earn little
+- **TripAdvisor** controls narrative and reviews without community consent
+- **Western tour operators** profit without fair distribution to communities
+- **Over-tourism** destroys sacred sites, ecosystems, and community life
+- **No capacity control** — communities cannot limit visitor numbers
+- **Payment systems** (Visa, PayPal) extract fees and require banking infrastructure
+- **Cultural exploitation** — experiences offered without elder consent
 
-Las comunidades indígenas enfrentan:
+## Solution Architecture
 
-- **Dependencia tecnológica**: Servicios controlados por corporaciones extranjeras
-- **Falta de soberanía digital**: Datos almacenados en servidores fuera de jurisdicción soberana
-- **Vulnerabilidad**: Sin protección contra fraude, robo de identidad y vigilancia
-- **Exclusión digital**: Interfaces diseñadas sin considerar diversidad cultural y lingüística
-- **Centralización**: Puntos únicos de falla que afectan a millones de personas
+### Continental Tourism Network
 
-## 2. Solución: Turismo Soberano — Portal de Turismo Nacional
+Unified platform connecting ALL indigenous territories of the Americas:
+- **North America**: 574 tribal nations (Navajo, Cherokee, Lakota, Haudenosaunee, Apache)
+- **Canada**: 634 First Nations (Inuit, Haida, Cree, Mohawk)
+- **Mexico**: 68 original peoples (Maya, Zapoteca, Mixteca, Rarámuri, Nahua)
+- **Central America**: Maya Q'eqchi', Lenca, Miskito, Bribri, Ngäbe-Buglé, Guna
+- **Caribbean**: Taíno, Garifuna, Kalinago, Maroons
+- **Andes**: Quechua, Aymara, Wayuu, Embera
+- **Amazonia**: Yanomami, Kayapó, Asháninka, Shipibo, Tikuna
+- **Southern Cone**: Mapuche, Rapa Nui, Atacameño, Guaraní
+- **Arctic**: Inuit, Yupik, Inupiat
 
-### Principios de Diseño
+### NAE-Inspired Role Dashboards (10 Roles)
 
-1. **Soberanía Total**: Zero dependencias de servicios externos (Google, AWS, Microsoft)
-2. **Offline-First**: Funciona sin conexión a internet mediante Service Workers
-3. **Post-Quantum**: Encriptación resistente a computación cuántica (Kyber-768)
-4. **AI Nativa**: 7 agentes autónomos de protección integrados
-5. **Accesible**: WCAG 2.1 AA, multi-idioma (200+ lenguas indígenas)
-6. **Descentralizada**: Arquitectura P2P sin servidor central
+1. **Transportista**: Routes, schedules, vehicle reservations, GPS, income
+2. **Lanchero/Botero**: Trip calendar, boat capacity, weather, manifests
+3. **Hospedaje**: Occupancy calendar, pricing, cleaning, reviews
+4. **Guía Turístico**: Itineraries, languages, certifications, availability
+5. **Tour Operador**: Package management, multi-booking coordination
+6. **Artesano**: Inventory, direct sales, workshop bookings, shipping
+7. **Gastronomía**: Ancestral menu, reservations, local ingredients
+8. **Medicina Tradicional**: Healing consultations, ceremony schedules
+9. **Administrador Territorial**: Full control, capacity, permits, reports
+10. **Anciano/Custodio**: Cultural approval, sacred protocols, veto power
 
-### Stack Tecnológico
+### QR Sovereign Flow (8 Steps)
 
-| Capa | Tecnología |
-|------|-----------|
-| Frontend | HTML5 + CSS3 + JavaScript (vanilla, zero frameworks) |
-| Design System | ierahkwa.css (24KB, dark theme, responsive) |
-| Seguridad | ierahkwa-security.js (33KB, post-quantum) |
-| AI/ML | ierahkwa-ai.js (28KB) + ierahkwa-agents.js (35KB) |
-| Quantum | ierahkwa-quantum.js (28KB) |
-| Protocolos | ierahkwa-protocols.js (24KB, P2P soberano) |
-| Interconexión | ierahkwa-interconnect.js (16KB) |
-| Offline | Service Worker + IndexedDB |
-| PWA | manifest.json + icons + splash screens |
+1. Tourist discovers routes via AI quantum recommendations
+2. Direct booking: territory, accommodation, guide, transport
+3. Payment in WAMPUM (automatic fiat→WAMPUM conversion)
+4. QR check-in at territory entrance → capacity updated real-time
+5. Guided experience with coordinated actors via dashboards
+6. Real-time capacity monitoring by territorial administrator
+7. QR check-out → capacity released, blockchain invoice generated
+8. Automatic revenue distribution via smart contracts
 
-## 3. Arquitectura Técnica
+### WAMPUM Payment System
 
-```
-┌──────────────────────────────────────────────────┐
-│                   USUARIO                        │
-├──────────────────────────────────────────────────┤
-│  ┌────────────────────────────────────────────┐  │
-│  │         Capa de Presentación               │  │
-│  │   HTML5 Semántico + ierahkwa.css           │  │
-│  │   Responsive · Dark Theme · WCAG 2.1 AA   │  │
-│  └─────────────────┬──────────────────────────┘  │
-│                    │                             │
-│  ┌─────────────────▼──────────────────────────┐  │
-│  │         Capa de Aplicación                 │  │
-│  │   ierahkwa.js · ierahkwa-api.js            │  │
-│  │   Lógica de negocio client-side            │  │
-│  └─────────────────┬──────────────────────────┘  │
-│                    │                             │
-│  ┌─────────────────▼──────────────────────────┐  │
-│  │         Capa de Seguridad                  │  │
-│  │   ierahkwa-security.js (Kyber-768)         │  │
-│  │   ierahkwa-agents.js (7 AI Agents)         │  │
-│  │   Guardian · Pattern · Anomaly · Trust     │  │
-│  │   Shield · Forensic · Evolution            │  │
-│  └─────────────────┬──────────────────────────┘  │
-│                    │                             │
-│  ┌─────────────────▼──────────────────────────┐  │
-│  │         Capa de Datos                      │  │
-│  │   IndexedDB · localStorage · Cache API     │  │
-│  │   Offline-first · Sync automático          │  │
-│  └─────────────────┬──────────────────────────┘  │
-│                    │                             │
-│  ┌─────────────────▼──────────────────────────┐  │
-│  │         Capa de Red                        │  │
-│  │   Service Worker · P2P Soberano            │  │
-│  │   ierahkwa-protocols.js · WebRTC           │  │
-│  │   ierahkwa-interconnect.js                 │  │
-│  └────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────┘
-```
+- MameyNode blockchain records every transaction
+- Smart contract distribution: Host (35%), Guide (20%), Transport (15%), Artisan (10%), Community Fund (10%), Environmental Fund (5%), Platform (5%)
+- 50+ fiat currencies and 10+ cryptocurrencies accepted
+- Zero commissions to Visa/Mastercard/PayPal
 
-## 4. Módulos Funcionales
+## AI Quantum Engine
 
-### 1. 🎵
+- Demand prediction per territory and season
+- Personalized recommendations based on tourist profile and capacity
+- Dynamic pricing optimization (community-approved ranges)
+- Over-tourism detection with early warning alerts
+- Tourist flow optimization across connected territories
 
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
+## Security Model
 
-### 2. Comunidad 0 W/mes
+- Kyber-768 post-quantum encryption for all transactions
+- Geofencing of sacred territories (automatic access denial)
+- Role-based access control per dashboard
+- Elder veto power for cultural experience offerings
+- 7 AI agents for real-time threat detection
+- Tourist data under community control (data sovereignty)
 
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
+## Economic Impact
 
-### 3. Institución 49 W/mes
+- 95% of tourist spend goes to community (vs 60-70% with traditional platforms)
+- 10 role types with digital dashboards creating employment
+- 10% community fund for cultural preservation
+- 5% environmental fund for conservation
+- Youth employment through guide certification program
 
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
+## Roadmap
 
-### 4. 🌐
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 5. Planes Soberanos
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 6. 🎨
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 7. Módulos de la Plataforma
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 8. 👥
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 9. 📚
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-### 10. 📅
-
-Módulo integrado que proporciona funcionalidad soberana sin dependencias externas.
-Implementado con arquitectura offline-first y protección post-quantum.
-Interconectado con el ecosistema Ierahkwa mediante protocolos P2P soberanos.
-
-
-## 5. Sistema de Agentes AI
-
-La plataforma integra 7 agentes autónomos de inteligencia artificial:
-
-| Agente | Función | Capacidad |
-|--------|---------|-----------|
-| 🛡️ Guardian | Anti-fraude y anti-robo | Monitoreo DOM, red, formularios, clipboard |
-| 🧠 Pattern | Aprendizaje de patrones | Perfiles de comportamiento por usuario |
-| 🔍 Anomaly | Detección de anomalías | Clicks rápidos, requests masivos, horarios inusuales |
-| ⭐ Trust | Score de confianza | Escala 0-100 con histórico y ajuste dinámico |
-| 🔒 Shield | Protección transacciones | Bloqueo de pagos sospechosos, protección storage |
-| 🔬 Forensic | Análisis forense | Trazabilidad completa de eventos de seguridad |
-| 🧬 Evolution | Auto-mejora | Evolución de reglas por generación, aprendizaje continuo |
-
-### Ciclo de Aprendizaje
-
-```
-Observar → Aprender → Detectar → Evolucionar
-    ↑                                    │
-    └────────────────────────────────────┘
-```
-
-Los agentes mejoran con cada interacción. Datos almacenados localmente en IndexedDB.
-
-## 6. Seguridad Post-Quantum
-
-### Modelo de Amenazas
-
-| Amenaza | Mitigación |
-|---------|-----------|
-| Intercepción | CRYSTALS-Kyber-768 (resistente a quantum) |
-| Phishing | Guardian Agent + detección de formularios ocultos |
-| XSS | CSP strict + sanitización DOM |
-| MITM | Certificate pinning + HSTS |
-| Data exfiltration | Guardian Agent bloqueo de destinos sospechosos |
-| Brute force | Rate limiting + Trust Score |
-| Supply chain | Zero dependencias externas |
-
-### Criptografía
-
-- **Key Exchange**: CRYSTALS-Kyber-768 (NIST PQC Standard)
-- **Signatures**: CRYSTALS-Dilithium (NIST PQC Standard)
-- **Hash**: SHA3-256 + BLAKE3
-- **Symmetric**: AES-256-GCM
-- **Key Rotation**: Automática por sesión
-
-## 7. Interoperabilidad
-
-### Protocolo Soberano Ierahkwa (PSI)
-
-```
-Platform A ←→ ierahkwa-protocols.js ←→ Platform B
-                      ↕
-              ierahkwa-interconnect.js
-                      ↕
-              NEXUS forja Hub
-```
-
-Todas las plataformas se comunican mediante el Protocolo Soberano Ierahkwa (PSI), un protocolo P2P que opera sin servidores centrales. La interconexión está gestionada por `ierahkwa-interconnect.js`.
-
-## 8. Accesibilidad e Inclusión
-
-- **WCAG 2.1 AA** compliant
-- **200+ idiomas** soportados (37 indígenas + 6 globales)
-- **RTL** support (árabe, hebreo)
-- **Screen readers** compatible (ARIA landmarks)
-- **Keyboard navigation** completa
-- **High contrast** mode
-- **Reduced motion** respetado
-
-## 9. Modelo de Despliegue
-
-```
-Producción:
-├── CDN Soberano (Cloudflare Business)
-├── DNS: ierahkwa.org (Cloudflare)
-├── SSL: Full Strict TLS 1.2+
-├── WAF: Bot challenge activo
-├── Cache: Static 7d, HTML 1h
-└── Rate Limit: 100 req/min API
-```
-
-## 10. Roadmap
-
-| Fase | Descripción | Estado |
-|------|-------------|--------|
-| v1.0 | Plataforma base | ✅ Completado |
-| v2.0 | Shared design system | ✅ Completado |
-| v3.0 | Producción (Docker, K8s, CI/CD) | ✅ Completado |
-| v4.0 | Seguridad + AI + Quantum | ✅ Completado |
-| v5.0 | 18 NEXUS + 7 AI Agents | ✅ Completado |
-| v6.0 | Smart contracts testnet | 🔄 En progreso |
-| v7.0 | App móvil producción | 📋 Planificado |
-
-## 11. Conclusión
-
-**Turismo Soberano — Portal de Turismo Nacional** representa un componente crítico de la infraestructura digital soberana de Ierahkwa Ne Kanienke. Construida sin dependencias externas, con protección post-quantum y 7 agentes AI autónomos, esta plataforma demuestra que la soberanía digital total es alcanzable.
-
----
-
-**Ierahkwa Ne Kanienke** — *La infraestructura digital más completa jamás construida para la soberanía indígena.*
-
-**NEXUS**: NEXUS Forja (Desarrollo & DevOps)
-**Repositorio**: [github.com/rudvincci/ierahkwa-platform](https://github.com/rudvincci/ierahkwa-platform)
+- Q1 2026: Core platform with booking, payments, QR flow (DONE)
+- Q2 2026: AI quantum recommendations, capacity control
+- Q3 2026: Continental expansion (all 10 regions)
+- Q4 2026: Marketplace artesanal, multi-language rollout
+- Q1 2027: Smart contract revenue distribution
+- Q2 2027: Mobile app production release
