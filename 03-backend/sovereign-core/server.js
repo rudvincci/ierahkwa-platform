@@ -133,7 +133,7 @@ app.get('/ready', async (_req, res) => {
     ready: dbReady,
     service: 'sovereign-core',
     platforms: 422,
-    modules: ['auth', 'users', 'payments', 'messages', 'votes', 'storage', 'analytics', 'content', 'exchange', 'bank', 'wifi-bridge'],
+    modules: ['auth', 'users', 'payments', 'messages', 'votes', 'storage', 'analytics', 'content', 'exchange', 'bank', 'atm', 'crypto', 'hosting', 'marketplace', 'loans', 'staking', 'notifications', 'wifi-bridge'],
     database: dbReady ? 'connected' : 'unavailable',
     timestamp: new Date().toISOString()
   });
@@ -190,6 +190,27 @@ app.use('/v1/exchange',   require('./src/modules/exchange/routes'));
 
 // Bank — BDET Bank accounts, transfers, VIP, international, statements
 app.use('/v1/bank',       require('./src/modules/bank/routes'));
+
+// ATM — Sovereign ATM Network, cash deposits/withdrawals, WPM purchase
+app.use('/v1/atm',        require('./src/modules/atm/routes'));
+
+// Crypto — Wallets, send/receive, swap, bridge (MameyNode + multi-chain)
+app.use('/v1/crypto',     require('./src/modules/crypto/routes'));
+
+// Hosting — Domains, VPS, web hosting, DNS, sovereign cloud
+app.use('/v1/hosting',    require('./src/modules/hosting/routes'));
+
+// Marketplace — Buy/sell goods & services with WPM, escrow, disputes
+app.use('/v1/marketplace', require('./src/modules/marketplace/routes'));
+
+// Loans — Microloans, credit scoring, amortization, collateral
+app.use('/v1/loans',      require('./src/modules/loans/routes'));
+
+// Staking — Stake WPM/IGT/BDET for rewards, liquidity pools, validators
+app.use('/v1/staking',    require('./src/modules/staking/routes'));
+
+// Notifications — Push, email, SMS, price alerts, preferences
+app.use('/v1/notifications', require('./src/modules/notifications/routes'));
 
 // Content — dynamic per-platform items (/:platform/items)
 app.use('/v1',            require('./src/modules/content/routes'));
@@ -341,7 +362,7 @@ async function startServer() {
       port: PORT,
       env: ENV,
       platforms: 422,
-      modules: 11,
+      modules: 18,
       websocket: '/ws/chat',
       node: 'MameyNode v4.2',
       pid: process.pid
