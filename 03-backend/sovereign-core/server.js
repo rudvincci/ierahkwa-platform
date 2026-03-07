@@ -182,6 +182,9 @@ app.use('/v1/storage',    require('./src/modules/storage/routes'));
 // Analytics — platform metrics, dashboards
 app.use('/v1/analytics',  require('./src/modules/analytics/routes'));
 
+// WiFi Bridge — sovereign-core ↔ wifi-soberano integration
+app.use('/v1/wifi',       require('./src/modules/wifi-bridge/routes'));
+
 // Content — dynamic per-platform items (/:platform/items)
 app.use('/v1',            require('./src/modules/content/routes'));
 
