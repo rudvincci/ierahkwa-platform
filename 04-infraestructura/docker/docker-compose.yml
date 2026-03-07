@@ -1,11 +1,14 @@
-# Red Soberana — Docker Compose v1.0
-# Deploy completo del ecosistema soberano
+# ═══════════════════════════════════════════════════════════════════════════════
+# Red Soberana — Docker Compose v2.0
+# Deploy completo del ecosistema soberano — 25+ servicios
+# Ierahkwa Ne Kanienke — 574 naciones, 18 módulos sovereign-core
+# ═══════════════════════════════════════════════════════════════════════════════
 
 version: '3.9'
 
 services:
-  # ==================== CORE ====================
-  
+  # ==================== FRONTEND ====================
+
   portal:
     image: nginx:alpine
     container_name: portal-soberano
@@ -13,12 +16,12 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ../portal-soberano.html:/usr/share/nginx/html/index.html:ro
-      - ../plataformas:/usr/share/nginx/html/plataformas:ro
-      - ../pitch:/usr/share/nginx/html/pitch:ro
-      - ../dashboards:/usr/share/nginx/html/dashboards:ro
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ../../02-plataformas-html:/usr/share/nginx/html/plataformas:ro
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - sovereign-core
+      - api-gateway
     networks:
       - soberana
     restart: unless-stopped
@@ -26,22 +29,26 @@ services:
       - "com.soberano.service=portal"
       - "com.soberano.tier=frontend"
 
-  api:
+  # ==================== SOVEREIGN CORE (18 modules) ====================
+
+  sovereign-core:
     build:
-      context: ../backend
-      dockerfile: ../infra/docker/Dockerfile.api
-    container_name: api-soberana
+      context: ../../03-backend/sovereign-core
+      dockerfile: Dockerfile
+    container_name: sovereign-core
     ports:
-      - "3000:3000"
+      - "3050:3050"
     environment:
       - NODE_ENV=production
+      - PORT=3050
       - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
-      - MAMEYNODE_RPC=http://mameynode:8545
-      - BDET_CONTRACT=${BDET_CONTRACT_ADDRESS}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
       - JWT_SECRET=${JWT_SECRET}
-      - ATABEY_API_KEY=${ATABEY_KEY}
-      - AI_FORTRESS_URL=http://ai-fortress:8080
-      - REDIS_URL=redis://redis:6379
+      - MAMEYNODE_RPC_URL=http://mameynode:8545
+      - BDET_CONTRACT_ADDRESS=${BDET_CONTRACT_ADDRESS}
+      - WALLET_ENCRYPTION_KEY=${WALLET_ENCRYPTION_KEY}
+      - PLATFORM_TREASURY_ID=${PLATFORM_TREASURY_ID:-system-treasury}
+      - CORS_ORIGINS=https://ierahkwa.gov,https://api.ierahkwa.gov
     depends_on:
       - postgres
       - redis
@@ -49,12 +56,94 @@ services:
     networks:
       - soberana
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3050/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     deploy:
-      replicas: 3
+      replicas: 2
       resources:
         limits:
           cpus: '2'
           memory: 2G
+    labels:
+      - "com.soberano.service=sovereign-core"
+      - "com.soberano.modules=auth,users,payments,messages,votes,storage,analytics,content,exchange,bank,atm,crypto,hosting,marketplace,loans,staking,notifications,wifi-bridge"
+
+  # ==================== API GATEWAY ====================
+
+  api-gateway:
+    build:
+      context: ../../03-backend/api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=production
+      - PORT=3004
+      - SOVEREIGN_CORE_URL=http://sovereign-core:3050
+      - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
+      - JWT_SECRET=${JWT_SECRET}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - MAMEYNODE_RPC=http://mameynode:8545
+    depends_on:
+      - sovereign-core
+      - postgres
+      - redis
+    networks:
+      - soberana
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  # ==================== BLOCKCHAIN ====================
+
+  mameynode:
+    image: mameynode/node:4.2.0
+    container_name: mameynode
+    ports:
+      - "8545:8545"
+      - "8546:8546"
+      - "30303:30303"
+    volumes:
+      - mameynode_data:/data
+    environment:
+      - NETWORK_ID=574
+      - CONSENSUS=proof-of-sovereignty
+      - GAS_LIMIT=30000000
+      - BLOCK_TIME=3
+    networks:
+      - soberana
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+
+  blockchain-api:
+    build:
+      context: ../../03-backend/blockchain-api
+      dockerfile: Dockerfile
+    container_name: blockchain-api
+    ports:
+      - "3010:3000"
+    environment:
+      - NODE_ENV=production
+      - MAMEYNODE_RPC=http://mameynode:8545
+      - MAMEYNODE_WS=ws://mameynode:8546
+      - CHAIN_ID=574
+    depends_on:
+      - mameynode
+    networks:
+      - soberana
+    restart: unless-stopped
 
   # ==================== DATABASE ====================
 
@@ -67,7 +156,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ../backend/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ../../03-backend/sovereign-core/migrations:/docker-entrypoint-initdb.d:ro
     ports:
       - "5432:5432"
     networks:
@@ -91,31 +180,241 @@ services:
     restart: unless-stopped
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
 
-  # ==================== BLOCKCHAIN ====================
+  # ==================== TRADING ====================
 
-  mameynode:
-    image: mameynode/node:4.2.0
-    container_name: mameynode
+  forex-trading:
+    build:
+      context: ../../03-backend/forex-trading-server
+      dockerfile: Dockerfile
+    container_name: forex-trading
     ports:
-      - "8545:8545"   # RPC
-      - "8546:8546"   # WebSocket
-      - "30303:30303"  # P2P
-    volumes:
-      - mameynode_data:/data
-      - ../backend/smart-contracts:/contracts:ro
+      - "3500:3500"
     environment:
-      - NETWORK_ID=574
-      - CONSENSUS=proof-of-sovereignty
-      - GAS_LIMIT=30000000
-      - BLOCK_TIME=3
+      - NODE_ENV=production
+      - PORT=3500
+      - SOVEREIGN_CORE_URL=http://sovereign-core:3050
+      - MAMEYNODE_RPC=http://mameynode:8545
+    depends_on:
+      - sovereign-core
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  # ==================== COMMERCE ====================
+
+  ierahkwa-shop:
+    build:
+      context: ../../03-backend/ierahkwa-shop
+      dockerfile: Dockerfile
+    container_name: ierahkwa-shop
+    ports:
+      - "3100:3100"
+    environment:
+      - NODE_ENV=production
+      - PORT=3100
+      - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
+      - JWT_SECRET=${JWT_SECRET}
+      - MAMEYNODE_RPC=http://mameynode:8545
+    depends_on:
+      - postgres
+      - mameynode
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  pos-system:
+    build:
+      context: ../../03-backend/pos-system
+      dockerfile: Dockerfile
+    container_name: pos-system
+    ports:
+      - "3030:3030"
+    environment:
+      - NODE_ENV=production
+      - PORT=3030
+      - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
+    depends_on:
+      - postgres
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  # ==================== COMMUNICATION ====================
+
+  conferencia-soberana:
+    build:
+      context: ../../03-backend/conferencia-soberana
+      dockerfile: Dockerfile
+    container_name: conferencia-soberana
+    ports:
+      - "3090:3090"
+    environment:
+      - NODE_ENV=production
+      - PORT=3090
+      - STUN_SERVER=stun:stun.l.google.com:19302
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  red-social:
+    build:
+      context: ../../03-backend/red-social
+      dockerfile: Dockerfile
+    container_name: red-social
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+      - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
+    depends_on:
+      - postgres
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  # ==================== GOVERNANCE ====================
+
+  voto-soberano:
+    build:
+      context: ../../03-backend/voto-soberano
+      dockerfile: Dockerfile
+    container_name: voto-soberano
+    ports:
+      - "3006:3006"
+    environment:
+      - NODE_ENV=production
+      - PORT=3006
+      - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - postgres
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  # ==================== SECURITY ====================
+
+  vigilancia-soberana:
+    build:
+      context: ../../03-backend/vigilancia-soberana
+      dockerfile: Dockerfile
+    container_name: vigilancia-soberana
+    ports:
+      - "3091:3091"
+    environment:
+      - NODE_ENV=production
+      - PORT=3091
+      - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - AI_FORTRESS_URL=http://ai-fortress:8080
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  conciencia-captcha:
+    build:
+      context: ../../03-backend/conciencia-captcha
+      dockerfile: Dockerfile
+    container_name: conciencia-captcha
+    ports:
+      - "3099:3099"
+    environment:
+      - NODE_ENV=production
+      - PORT=3099
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  # ==================== ENTERPRISE ====================
+
+  empresa-soberana:
+    build:
+      context: ../../03-backend/empresa-soberana
+      dockerfile: Dockerfile
+    container_name: empresa-soberana
+    ports:
+      - "3092:3092"
+    environment:
+      - NODE_ENV=production
+      - PORT=3092
+      - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - postgres
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  reservas:
+    build:
+      context: ../../03-backend/reservas
+      dockerfile: Dockerfile
+    container_name: reservas
+    ports:
+      - "3005:3005"
+    environment:
+      - NODE_ENV=production
+      - PORT=3005
+      - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
+    depends_on:
+      - postgres
+    networks:
+      - soberana
+    restart: unless-stopped
+
+  # ==================== WIFI SOBERANO ====================
+
+  wifi-soberano:
+    build:
+      context: ../../03-backend/wifi-soberano
+      dockerfile: Dockerfile
+    container_name: wifi-soberano
+    ports:
+      - "3095:3095"
+    environment:
+      - NODE_ENV=production
+      - PORT=3095
+      - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - MAMEYNODE_RPC_URL=http://mameynode:8545
+      - BDET_BANK_API=http://sovereign-core:3050/v1/bank
+      - VIGILANCIA_ENABLED=true
+      - ATABEY_AI_ENDPOINT=http://atabey:8081
+    depends_on:
+      - postgres
+      - redis
+      - sovereign-core
     networks:
       - soberana
     restart: unless-stopped
     deploy:
-      resources:
-        limits:
-          cpus: '4'
-          memory: 8G
+      replicas: 2
+
+  # ==================== MEDIA ====================
+
+  image-upload:
+    build:
+      context: ../../03-backend/image-upload
+      dockerfile: Dockerfile
+    container_name: image-upload
+    ports:
+      - "3300:3300"
+    environment:
+      - NODE_ENV=production
+      - PORT=3300
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=soberano
+      - MINIO_SECRET_KEY=${MINIO_PASSWORD}
+    depends_on:
+      - minio
+    networks:
+      - soberana
+    restart: unless-stopped
 
   # ==================== AI ====================
 
@@ -153,45 +452,20 @@ services:
       - soberana
     restart: unless-stopped
 
-  # ==================== WIFI SOBERANO ====================
-
-  wifi-soberano:
+  ierahkwa-ml:
     build:
-      context: ../../03-backend/wifi-soberano
+      context: ../../03-backend/ierahkwa-ml
       dockerfile: Dockerfile
-    container_name: wifi-soberano
+    container_name: ierahkwa-ml
     ports:
-      - "3095:3095"
+      - "3400:3400"
     environment:
       - NODE_ENV=production
-      - PORT=3095
-      - DATABASE_URL=postgresql://soberano:${DB_PASSWORD}@postgres:5432/soberana
-      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
-      - JWT_SECRET=${JWT_SECRET}
-      - MAMEYNODE_RPC_URL=http://mameynode:8545
-      - WAMPUM_CONTRACT_ADDRESS=${BDET_CONTRACT_ADDRESS}
-      - BDET_BANK_API=http://api:3000/api/banking
-      - VIGILANCIA_ENABLED=true
-      - VIP_ALERT_WEBHOOK=${VIP_ALERT_WEBHOOK}
-      - ATABEY_AI_ENDPOINT=http://atabey:8081
-      - CORS_ORIGINS=https://ierahkwa.gov,https://wifi.ierahkwa.gov
-    depends_on:
-      - postgres
-      - redis
-      - mameynode
+      - PORT=3400
+      - AI_FORTRESS_URL=http://ai-fortress:8080
     networks:
       - soberana
     restart: unless-stopped
-    deploy:
-      replicas: 2
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-    labels:
-      - "com.soberano.service=wifi"
-      - "com.soberano.tier=backend"
-      - "com.soberano.port=3095"
 
   # ==================== MONITORING ====================
 
@@ -201,7 +475,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     networks:
       - soberana
     restart: unless-stopped
@@ -237,6 +511,8 @@ services:
       - soberana
     restart: unless-stopped
 
+# ==================== VOLUMES ====================
+
 volumes:
   postgres_data:
   redis_data:
@@ -245,6 +521,8 @@ volumes:
   atabey_models:
   grafana_data:
   minio_data:
+
+# ==================== NETWORK ====================
 
 networks:
   soberana:
