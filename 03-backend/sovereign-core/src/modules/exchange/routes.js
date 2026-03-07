@@ -9,6 +9,8 @@
 
 const { Router } = require('express');
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 const { asyncHandler, AppError } = require('../../../../shared/error-handler');
 const { createLogger } = require('../../../../shared/logger');
 const { validate, t } = require('../../../../shared/validator');
@@ -77,6 +79,374 @@ router.get('/pairs', asyncHandler(async (_req, res) => {
   }));
 
   res.json({ status: 'ok', data: pairs });
+}));
+
+// ============================================================
+// GET /pairs/all — ALL 574 SNT + IGT + BDET + WPM pairs
+// Loads from MANIFEST.json — every nation/tribe connected
+// ============================================================
+router.get('/pairs/all', asyncHandler(async (req, res) => {
+  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const limit = Math.min(574, Math.max(10, parseInt(req.query.limit, 10) || 100));
+  const offset = (page - 1) * limit;
+  const region = req.query.region || null;
+  const country = req.query.country || null;
+  const search = req.query.search || null;
+
+  // Load MANIFEST.json with all 574 SNT tokens
+  let manifest = { tokens: [] };
+  const manifestPaths = [
+    path.resolve(__dirname, '../../../../../14-blockchain/tokens/nations/MANIFEST.json'),
+    path.resolve(__dirname, '../../../../../../14-blockchain/tokens/nations/MANIFEST.json'),
+    path.resolve(process.cwd(), '14-blockchain/tokens/nations/MANIFEST.json')
+  ];
+
+  for (const mp of manifestPaths) {
+    try {
+      if (fs.existsSync(mp)) {
+        manifest = JSON.parse(fs.readFileSync(mp, 'utf8'));
+        break;
+      }
+    } catch { /* try next */ }
+  }
+
+  // Core pairs (non-SNT)
+  const corePairs = [
+    { symbol: 'WPM/USD', base: 'WMP', quote: 'USD', type: 'core', name: 'WAMPUM / US Dollar', region: 'Global', country: 'IK', basePrice: 1.00, contract: null },
+    { symbol: 'WPM/BTC', base: 'WMP', quote: 'BTC', type: 'core', name: 'WAMPUM / Bitcoin', region: 'Global', country: 'IK', basePrice: 0.0000148, contract: null },
+    { symbol: 'WPM/ETH', base: 'WMP', quote: 'ETH', type: 'core', name: 'WAMPUM / Ethereum', region: 'Global', country: 'IK', basePrice: 0.000308, contract: null },
+    { symbol: 'WPM/EUR', base: 'WMP', quote: 'EUR', type: 'core', name: 'WAMPUM / Euro', region: 'Global', country: 'IK', basePrice: 0.92, contract: null },
+    { symbol: 'WPM/GBP', base: 'WMP', quote: 'GBP', type: 'core', name: 'WAMPUM / British Pound', region: 'Global', country: 'IK', basePrice: 0.79, contract: null },
+    { symbol: 'WPM/PAB', base: 'WMP', quote: 'PAB', type: 'core', name: 'WAMPUM / Balboa', region: 'Central America', country: 'PA', basePrice: 1.00, contract: null },
+    { symbol: 'IGT/WPM', base: 'IGT', quote: 'WMP', type: 'governance', name: 'Ierahkwa Governance Token / WAMPUM', region: 'Global', country: 'IK', basePrice: 0.50, contract: null },
+    { symbol: 'IGT/USD', base: 'IGT', quote: 'USD', type: 'governance', name: 'Ierahkwa Governance Token / US Dollar', region: 'Global', country: 'IK', basePrice: 0.50, contract: null },
+    { symbol: 'BDET/WPM', base: 'BDET', quote: 'WMP', type: 'bank', name: 'BDET Bank Token / WAMPUM', region: 'Global', country: 'IK', basePrice: 10.00, contract: null },
+    { symbol: 'BDET/USD', base: 'BDET', quote: 'USD', type: 'bank', name: 'BDET Bank Token / US Dollar', region: 'Global', country: 'IK', basePrice: 10.00, contract: null },
+    { symbol: 'BDET/BTC', base: 'BDET', quote: 'BTC', type: 'bank', name: 'BDET Bank Token / Bitcoin', region: 'Global', country: 'IK', basePrice: 0.000148, contract: null },
+    { symbol: 'BDET/ETH', base: 'BDET', quote: 'ETH', type: 'bank', name: 'BDET Bank Token / Ethereum', region: 'Global', country: 'IK', basePrice: 0.00308, contract: null }
+  ];
+
+  // Generate SNT pairs from MANIFEST — one pair per nation/tribe
+  const sntPairs = manifest.tokens.map((token, idx) => {
+    const basePrice = 0.005 + (Math.sin(idx * 0.1) * 0.003) + (idx * 0.00001);
+    return {
+      symbol: `${token.symbol}/WPM`,
+      base: token.symbol,
+      quote: 'WMP',
+      type: 'snt',
+      name: `${token.name} / WAMPUM`,
+      region: token.region || 'Unknown',
+      country: token.country || 'IK',
+      language: token.language || '',
+      contract: token.contract,
+      nationId: token.id,
+      basePrice: parseFloat(basePrice.toFixed(6)),
+      totalSupply: '1,000,000,000',
+      status: token.status || 'pre-minted',
+      activationCondition: 'Sovereign recognition signature by tribal council',
+      blockchain: { network: 'MameyNode', chainId: 574, standard: 'SNT-574' }
+    };
+  });
+
+  // Also create SNT/USD pairs for each nation
+  const sntUsdPairs = manifest.tokens.map((token, idx) => {
+    const basePrice = 0.005 + (Math.sin(idx * 0.1) * 0.003) + (idx * 0.00001);
+    return {
+      symbol: `${token.symbol}/USD`,
+      base: token.symbol,
+      quote: 'USD',
+      type: 'snt-usd',
+      name: `${token.name} / US Dollar`,
+      region: token.region || 'Unknown',
+      country: token.country || 'IK',
+      nationId: token.id,
+      basePrice: parseFloat(basePrice.toFixed(6)),
+      contract: token.contract
+    };
+  });
+
+  // SNT Index pair
+  const indexPair = {
+    symbol: 'SNTIDX/WPM',
+    base: 'SNTIDX',
+    quote: 'WMP',
+    type: 'index',
+    name: 'SNT Index (574 Nations) / WAMPUM',
+    region: 'Global',
+    country: 'IK',
+    basePrice: 0.574,
+    description: 'Basket index of all 574 Sovereign Nation Tokens',
+    components: manifest.tokens.length
+  };
+
+  // Combine all pairs
+  let allPairs = [...corePairs, indexPair, ...sntPairs, ...sntUsdPairs];
+
+  // Apply filters
+  if (region) {
+    allPairs = allPairs.filter(p => p.region && p.region.toLowerCase().includes(region.toLowerCase()));
+  }
+  if (country) {
+    allPairs = allPairs.filter(p => p.country && p.country.toLowerCase().includes(country.toLowerCase()));
+  }
+  if (search) {
+    const s = search.toLowerCase();
+    allPairs = allPairs.filter(p =>
+      p.symbol.toLowerCase().includes(s) ||
+      p.name.toLowerCase().includes(s) ||
+      (p.base && p.base.toLowerCase().includes(s)) ||
+      (p.language && p.language.toLowerCase().includes(s))
+    );
+  }
+
+  const total = allPairs.length;
+  const paginated = allPairs.slice(offset, offset + limit);
+
+  // Enrich with ticker data from DB where available
+  const symbols = paginated.map(p => p.symbol);
+  let tickerMap = {};
+  try {
+    const tickerResult = await db.query(
+      `SELECT pair_symbol, price, volume_24h, high_24h, low_24h, change_24h
+       FROM exchange_tickers WHERE pair_symbol = ANY($1)`,
+      [symbols]
+    );
+    for (const row of tickerResult.rows) {
+      tickerMap[row.pair_symbol] = row;
+    }
+  } catch { /* tickers table may not exist yet */ }
+
+  const enriched = paginated.map(p => ({
+    ...p,
+    lastPrice: tickerMap[p.symbol]?.price ? parseFloat(tickerMap[p.symbol].price) : p.basePrice,
+    volume24h: tickerMap[p.symbol]?.volume_24h ? parseFloat(tickerMap[p.symbol].volume_24h) : 0,
+    high24h: tickerMap[p.symbol]?.high_24h ? parseFloat(tickerMap[p.symbol].high_24h) : p.basePrice * 1.05,
+    low24h: tickerMap[p.symbol]?.low_24h ? parseFloat(tickerMap[p.symbol].low_24h) : p.basePrice * 0.95,
+    change24h: tickerMap[p.symbol]?.change_24h ? parseFloat(tickerMap[p.symbol].change_24h) : 0,
+    minQty: p.type === 'snt' || p.type === 'snt-usd' ? 10 : p.type === 'core' ? 0.001 : 0.1,
+    tickSize: p.basePrice < 0.01 ? 0.000001 : p.basePrice < 1 ? 0.0001 : 0.01,
+    tradeable: true
+  }));
+
+  // Get unique regions for filter menu
+  const regions = [...new Set(allPairs.map(p => p.region).filter(Boolean))].sort();
+  const countries = [...new Set(allPairs.map(p => p.country).filter(Boolean))].sort();
+
+  res.json({
+    status: 'ok',
+    data: {
+      pairs: enriched,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNext: page < Math.ceil(total / limit),
+        hasPrev: page > 1
+      },
+      summary: {
+        totalPairs: total,
+        corePairs: corePairs.length,
+        sntPairsWPM: sntPairs.length,
+        sntPairsUSD: sntUsdPairs.length,
+        indexPairs: 1,
+        totalNations: manifest.tokens.length,
+        regions,
+        countries
+      },
+      blockchain: {
+        network: 'MameyNode',
+        chainId: 574,
+        nativeCurrency: 'WAMPUM (WMP)',
+        bank: 'BDET Bank',
+        tokenStandard: 'SNT-574',
+        governanceToken: 'IGT',
+        bankToken: 'BDET'
+      },
+      revenueShare: {
+        creator: 70,
+        platform: 30,
+        makerFee: '0.05%',
+        takerFee: '0.10%'
+      }
+    }
+  });
+}));
+
+// ============================================================
+// GET /pairs/regions — All regions with pair counts
+// ============================================================
+router.get('/pairs/regions', asyncHandler(async (_req, res) => {
+  let manifest = { tokens: [] };
+  const manifestPaths = [
+    path.resolve(__dirname, '../../../../../14-blockchain/tokens/nations/MANIFEST.json'),
+    path.resolve(__dirname, '../../../../../../14-blockchain/tokens/nations/MANIFEST.json'),
+    path.resolve(process.cwd(), '14-blockchain/tokens/nations/MANIFEST.json')
+  ];
+  for (const mp of manifestPaths) {
+    try {
+      if (fs.existsSync(mp)) {
+        manifest = JSON.parse(fs.readFileSync(mp, 'utf8'));
+        break;
+      }
+    } catch { /* next */ }
+  }
+
+  // Count by region
+  const regionCounts = {};
+  const countryCounts = {};
+  for (const token of manifest.tokens) {
+    const r = token.region || 'Other';
+    const c = token.country || 'IK';
+    regionCounts[r] = (regionCounts[r] || 0) + 1;
+    countryCounts[c] = (countryCounts[c] || 0) + 1;
+  }
+
+  const regions = Object.entries(regionCounts)
+    .map(([name, count]) => ({ name, pairsWPM: count, pairsUSD: count, totalPairs: count * 2 }))
+    .sort((a, b) => b.totalPairs - a.totalPairs);
+
+  const countries = Object.entries(countryCounts)
+    .map(([code, count]) => ({ code, nations: count, pairsWPM: count, pairsUSD: count }))
+    .sort((a, b) => b.nations - a.nations);
+
+  res.json({
+    status: 'ok',
+    data: {
+      regions,
+      countries,
+      totalNations: manifest.tokens.length,
+      totalPairs: manifest.tokens.length * 2 + 12 + 1, // SNT*2 + core + index
+      corePairs: 12,
+      indexPairs: 1
+    }
+  });
+}));
+
+// ============================================================
+// GET /pairs/nation/:nationId — Single nation token details
+// ============================================================
+router.get('/pairs/nation/:nationId', asyncHandler(async (req, res) => {
+  const { nationId } = req.params;
+
+  let manifest = { tokens: [] };
+  const manifestPaths = [
+    path.resolve(__dirname, '../../../../../14-blockchain/tokens/nations/MANIFEST.json'),
+    path.resolve(__dirname, '../../../../../../14-blockchain/tokens/nations/MANIFEST.json'),
+    path.resolve(process.cwd(), '14-blockchain/tokens/nations/MANIFEST.json')
+  ];
+  for (const mp of manifestPaths) {
+    try {
+      if (fs.existsSync(mp)) {
+        manifest = JSON.parse(fs.readFileSync(mp, 'utf8'));
+        break;
+      }
+    } catch { /* next */ }
+  }
+
+  const token = manifest.tokens.find(t => t.id === nationId || t.symbol === nationId || t.symbol === `SNT-${nationId}`);
+  if (!token) throw new AppError('NOT_FOUND', `Nation token ${nationId} not found`);
+
+  const idx = manifest.tokens.indexOf(token);
+  const basePrice = 0.005 + (Math.sin(idx * 0.1) * 0.003) + (idx * 0.00001);
+
+  // Try to load individual token JSON for full details
+  let fullToken = null;
+  try {
+    const tokenFile = path.resolve(__dirname, `../../../../../14-blockchain/tokens/nations/${token.id}-${token.symbol}.json`);
+    if (fs.existsSync(tokenFile)) {
+      fullToken = JSON.parse(fs.readFileSync(tokenFile, 'utf8'));
+    }
+  } catch { /* ok */ }
+
+  // Get ticker data from DB
+  let ticker = null;
+  try {
+    const tickerResult = await db.query(
+      `SELECT * FROM exchange_tickers WHERE pair_symbol = $1`,
+      [`${token.symbol}/WPM`]
+    );
+    if (tickerResult.rows.length > 0) ticker = tickerResult.rows[0];
+  } catch { /* ok */ }
+
+  // Get recent trades for this pair
+  let recentTrades = [];
+  try {
+    const tradesResult = await db.query(
+      `SELECT trade_id, price, quantity, value, created_at
+       FROM exchange_trades WHERE pair_symbol = $1
+       ORDER BY created_at DESC LIMIT 20`,
+      [`${token.symbol}/WPM`]
+    );
+    recentTrades = tradesResult.rows;
+  } catch { /* ok */ }
+
+  // Get open orders count
+  let openOrders = 0;
+  try {
+    const ordersResult = await db.query(
+      `SELECT COUNT(*) AS count FROM exchange_orders WHERE pair_symbol = $1 AND status = 'open'`,
+      [`${token.symbol}/WPM`]
+    );
+    openOrders = parseInt(ordersResult.rows[0].count);
+  } catch { /* ok */ }
+
+  res.json({
+    status: 'ok',
+    data: {
+      token: {
+        id: token.id,
+        symbol: token.symbol,
+        name: token.name,
+        region: token.region,
+        country: token.country,
+        language: token.language,
+        contract: token.contract,
+        status: token.status
+      },
+      fullDetails: fullToken,
+      tradingPairs: [
+        {
+          symbol: `${token.symbol}/WPM`,
+          base: token.symbol,
+          quote: 'WMP',
+          lastPrice: ticker ? parseFloat(ticker.price) : parseFloat(basePrice.toFixed(6)),
+          volume24h: ticker ? parseFloat(ticker.volume_24h) : 0,
+          high24h: ticker ? parseFloat(ticker.high_24h) : parseFloat((basePrice * 1.05).toFixed(6)),
+          low24h: ticker ? parseFloat(ticker.low_24h) : parseFloat((basePrice * 0.95).toFixed(6)),
+          change24h: ticker ? parseFloat(ticker.change_24h) : 0,
+          minQty: 10,
+          tickSize: 0.000001,
+          tradeable: true
+        },
+        {
+          symbol: `${token.symbol}/USD`,
+          base: token.symbol,
+          quote: 'USD',
+          lastPrice: parseFloat(basePrice.toFixed(6)),
+          minQty: 10,
+          tickSize: 0.000001,
+          tradeable: true
+        }
+      ],
+      orderBook: { openOrders },
+      recentTrades,
+      blockchain: {
+        network: 'MameyNode',
+        chainId: 574,
+        contract: token.contract,
+        standard: 'SNT-574',
+        totalSupply: '1,000,000,000',
+        decimals: 18
+      },
+      governance: fullToken?.governance || {
+        type: 'Tribal Council DAO',
+        votingPeriod: '7 days',
+        quorum: '10%',
+        councilSeats: 21
+      }
+    }
+  });
 }));
 
 // ============================================================
