@@ -6,108 +6,288 @@
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
-<meta name="description" content="Universidad Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sistema Universitario Nacional con cif">
+<meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(self), geolocation=(self), payment=()">
+<meta name="description" content="Universidad Soberana — Sistema Universitario Digital para 574 Naciones. 47,000+ estudiantes, 2,100+ cursos en 14 idiomas indígenas. Títulos blockchain, educación offline, conocimiento ancestral.">
 <meta name="theme-color" content="#9C27B0">
 <link rel="canonical" href="https://ierahkwa.nation/universidad-soberana/">
 <link rel="manifest" href="../shared/manifest.json">
 <link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../icons/icon-192.svg">
-<meta property="og:title" content="Universidad Soberana — Sistema Universitario Nacional">
-<meta property="og:description" content="Universidad Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sistema Universitario Nacional con cifrado post-cuántico Kyber-768, blockchain">
+<meta property="og:title" content="Universidad Soberana — Educación Superior Digital">
+<meta property="og:description" content="Sistema universitario soberano con 47,000+ estudiantes, títulos en blockchain, educación en 14 idiomas indígenas, cursos offline y conocimiento ancestral integrado.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ierahkwa.nation/universidad-soberana/">
 <meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Universidad Soberana — Sistema Universitario Nacional">
-<meta name="twitter:description" content="Universidad Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sistema Universitario Nacional con cifrado post-cuántico Kyber-768, blockchain">
+<meta name="twitter:title" content="Universidad Soberana">
 <link rel="stylesheet" href="../shared/ierahkwa.css">
-<title>Universidad Soberana — Sistema Universitario Nacional</title>
-<style>:root{--accent:#9C27B0}</style>
+<title>Universidad Soberana — Educación Superior para 574 Naciones</title>
+<style>
+:root{--accent:#9C27B0}
+.faculty-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin:1.5rem 0}
+.faculty-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;position:relative;overflow:hidden}
+.faculty-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--f-color,var(--accent))}
+.faculty-card .f-icon{font-size:2rem;margin-bottom:.5rem}
+.faculty-card .f-name{font-size:.9rem;font-weight:700;color:var(--txt)}
+.faculty-card .f-desc{font-size:.75rem;color:var(--txt2);margin-top:.35rem;line-height:1.5}
+.faculty-card .f-stats{display:flex;gap:1rem;margin-top:.75rem}
+.faculty-card .f-stat{font-size:.65rem;color:var(--txt2)}
+.faculty-card .f-stat strong{color:var(--accent);font-family:Orbitron,sans-serif}
+.course-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.5rem;margin:1rem 0}
+.course-item{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.6rem .75rem;font-size:.72rem}
+.course-item .c-name{color:var(--txt);font-weight:600}
+.course-item .c-meta{color:var(--txt2);font-size:.65rem;margin-top:.15rem}
+.degree-levels{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin:1.5rem 0}
+.degree-badge{background:var(--bg2);border:2px solid var(--accent);border-radius:50%;width:100px;height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.degree-badge .db-icon{font-size:1.5rem}
+.degree-badge .db-name{font-size:.65rem;font-weight:700;color:var(--accent);margin-top:.25rem}
+.degree-badge .db-years{font-size:.55rem;color:var(--txt2)}
+.campus-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;gap:1rem;align-items:center;margin:.5rem 0}
+.campus-card .cc-icon{font-size:1.5rem;flex-shrink:0}
+.campus-card .cc-name{font-weight:700;font-size:.85rem;color:var(--txt)}
+.campus-card .cc-loc{font-size:.7rem;color:var(--txt2)}
+.campus-card .cc-mode{font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:3px;margin-left:auto}
+.cc-mode.online{background:rgba(0,255,65,.15);color:#00FF41}
+.cc-mode.hybrid{background:rgba(156,39,176,.15);color:#9C27B0}
+.cc-mode.presencial{background:rgba(255,214,0,.15);color:#ffd600}
+</style>
 </head>
 <body role="document">
 <a href="#main" class="skip-nav">Saltar al contenido principal</a>
 <header>
 <div class="logo"><div class="logo-icon" aria-hidden="true">🎓</div><h1>Universidad Soberana</h1></div>
-<nav aria-label="Navegacion principal"><a href="#dashboard" aria-current="page">Dashboard</a><a href="#features">Modulos</a><a href="#api">API</a><a href="#pricing">Precios</a></nav>
+<nav aria-label="Navegacion principal"><a href="#dashboard" aria-current="page">Dashboard</a><a href="#facultades">Facultades</a><a href="#campus">Campus</a><a href="#features">Módulos</a><a href="#api">API</a><a href="#pricing">Matrícula</a></nav>
 <span class="encrypted-badge" title="Cifrado Post-Quantum Activo"><span aria-hidden="true">⚛️</span> Quantum-Safe</span>
 </header>
 <main id="main">
+
+<!-- ═══ HERO ═══ -->
 <section class="hero" id="dashboard">
-<div class="badge"><span aria-hidden="true">🎓</span> Sistema Universitario Nacional</div>
+<div class="badge"><span aria-hidden="true">🎓</span> NEXUS Academia</div>
 <h2><span>Universidad Soberana</span></h2>
-<p>Universidad Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Sistema Universitario Nacional con cifrado post-cuántico Kyber-768, blockchain MameyNode, modo offline y soporte para 14 idiomas indígenas. Reemplazo soberano 100% libre de Big Tech.</p>
+<p>La primera universidad digital soberana de los pueblos originarios. Educación superior en 14 idiomas indígenas, títulos registrados en blockchain MameyNode, clases online/offline para zonas sin internet, e integración de conocimiento ancestral con tecnología moderna. Sin terceros. Sin deuda estudiantil. Sin barreras. Conocimiento libre para los 72M+ ciudadanos de las 574 naciones.</p>
 <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
-<a href="#features" class="btn">Explorar Módulos</a>
-<a href="#api" class="btn" style="background:transparent;border:2px solid var(--accent);color:var(--accent)">API Docs</a>
+<a href="#facultades" class="btn">Ver Facultades</a>
+<a href="#pricing" class="btn" style="background:transparent;border:2px solid var(--accent);color:var(--accent)">Matrícula</a>
 </div>
 </section>
-<div class="stats" role="list" aria-label="Metricas del sistema"><div class="stat" role="listitem"><div class="val">47,283</div><div class="lbl">Estudiantes</div></div>
-<div class="stat" role="listitem"><div class="val">2,100</div><div class="lbl">Cursos</div></div>
+
+<!-- ═══ STATS ═══ -->
+<div class="stats" role="list" aria-label="Estadísticas universitarias">
+<div class="stat" role="listitem"><div class="val">47,283</div><div class="lbl">Estudiantes</div></div>
+<div class="stat" role="listitem"><div class="val">2,100+</div><div class="lbl">Cursos</div></div>
 <div class="stat" role="listitem"><div class="val">14</div><div class="lbl">Idiomas</div></div>
-<div class="stat" role="listitem"><div class="val">99.9%</div><div class="lbl">Uptime</div></div>
+<div class="stat" role="listitem"><div class="val">8</div><div class="lbl">Facultades</div></div>
 <div class="stat" role="listitem"><div class="val">offline</div><div class="lbl">Disponible</div></div>
-<div class="stat" role="listitem"><div class="val">AI</div><div class="lbl">Adaptativo</div></div></div>
+<div class="stat" role="listitem"><div class="val">blockchain</div><div class="lbl">Títulos</div></div>
+</div>
+
+<!-- ═══ NIVELES ACADÉMICOS ═══ -->
+<div class="section">
+<h2><span aria-hidden="true">🏅</span> Niveles Académicos</h2>
+<div class="sub">Títulos verificados en blockchain MameyNode — reconocidos por las 574 naciones</div>
+<div class="degree-levels">
+<div class="degree-badge"><div class="db-icon">📚</div><div class="db-name">Técnico</div><div class="db-years">1-2 años</div></div>
+<div class="degree-badge"><div class="db-icon">🎓</div><div class="db-name">Licenciatura</div><div class="db-years">4 años</div></div>
+<div class="degree-badge"><div class="db-icon">📖</div><div class="db-name">Maestría</div><div class="db-years">2 años</div></div>
+<div class="degree-badge"><div class="db-icon">🔬</div><div class="db-name">Doctorado</div><div class="db-years">3-5 años</div></div>
+<div class="degree-badge"><div class="db-icon">🌿</div><div class="db-name">Sabio Ancestral</div><div class="db-years">Reconocimiento</div></div>
+</div>
+</div>
+
+<!-- ═══ FACULTADES ═══ -->
+<div class="section" id="facultades">
+<h2><span aria-hidden="true">🏛️</span> Facultades</h2>
+<div class="sub">8 facultades con currículos que integran conocimiento ancestral y tecnología moderna</div>
+<div class="faculty-grid">
+
+<div class="faculty-card" style="--f-color:#7c4dff">
+<div class="f-icon">💻</div>
+<div class="f-name">Tecnología Soberana</div>
+<div class="f-desc">Desarrollo de software, blockchain, AI, ciberseguridad, redes P2P y computación cuántica. Enfoque en herramientas soberanas libres de Big Tech.</div>
+<div class="f-stats"><div class="f-stat"><strong>412</strong> cursos</div><div class="f-stat"><strong>8,200</strong> estudiantes</div><div class="f-stat"><strong>14</strong> programas</div></div>
+</div>
+
+<div class="faculty-card" style="--f-color:#43a047">
+<div class="f-icon">🌿</div>
+<div class="f-name">Medicina Ancestral y Salud</div>
+<div class="f-desc">Medicina tradicional indígena, plantas medicinales, salud comunitaria, enfermería y salud pública. Fusión de conocimiento ancestral con medicina moderna.</div>
+<div class="f-stats"><div class="f-stat"><strong>280</strong> cursos</div><div class="f-stat"><strong>5,400</strong> estudiantes</div><div class="f-stat"><strong>8</strong> programas</div></div>
+</div>
+
+<div class="faculty-card" style="--f-color:#ffd600">
+<div class="f-icon">⚖️</div>
+<div class="f-name">Derecho y Gobernanza Soberana</div>
+<div class="f-desc">Derecho indígena, gobernanza tribal, relaciones inter-nación, derechos territoriales, jurisdicción soberana y derecho internacional de pueblos originarios.</div>
+<div class="f-stats"><div class="f-stat"><strong>195</strong> cursos</div><div class="f-stat"><strong>3,800</strong> estudiantes</div><div class="f-stat"><strong>6</strong> programas</div></div>
+</div>
+
+<div class="faculty-card" style="--f-color:#e040fb">
+<div class="f-icon">🎨</div>
+<div class="f-name">Artes y Cultura Indígena</div>
+<div class="f-desc">Artes visuales, música, danza, artesanía, cerámica, tejidos, literatura oral y escrita. Preservación y evolución de expresiones culturales de 574 naciones.</div>
+<div class="f-stats"><div class="f-stat"><strong>310</strong> cursos</div><div class="f-stat"><strong>6,100</strong> estudiantes</div><div class="f-stat"><strong>10</strong> programas</div></div>
+</div>
+
+<div class="faculty-card" style="--f-color:#ff9100">
+<div class="f-icon">🌾</div>
+<div class="f-name">Agricultura y Territorio</div>
+<div class="f-desc">Agroecología, soberanía alimentaria, gestión territorial, permacultura, técnicas ancestrales de cultivo y conservación de semillas nativas.</div>
+<div class="f-stats"><div class="f-stat"><strong>185</strong> cursos</div><div class="f-stat"><strong>4,200</strong> estudiantes</div><div class="f-stat"><strong>5</strong> programas</div></div>
+</div>
+
+<div class="faculty-card" style="--f-color:#00bcd4">
+<div class="f-icon">💰</div>
+<div class="f-name">Economía y Comercio Soberano</div>
+<div class="f-desc">Economía solidaria, comercio inter-nación, criptomonedas soberanas (WAMPUM), finanzas comunitarias, microempresa y cooperativismo.</div>
+<div class="f-stats"><div class="f-stat"><strong>220</strong> cursos</div><div class="f-stat"><strong>5,800</strong> estudiantes</div><div class="f-stat"><strong>7</strong> programas</div></div>
+</div>
+
+<div class="faculty-card" style="--f-color:#f44336">
+<div class="f-icon">🗣️</div>
+<div class="f-name">Lingüística y Revitalización</div>
+<div class="f-desc">Enseñanza de 127 idiomas indígenas, lingüística computacional, traducción, documentación de lenguas en peligro y creación de diccionarios digitales.</div>
+<div class="f-stats"><div class="f-stat"><strong>340</strong> cursos</div><div class="f-stat"><strong>7,300</strong> estudiantes</div><div class="f-stat"><strong>12</strong> programas</div></div>
+</div>
+
+<div class="faculty-card" style="--f-color:#1565c0">
+<div class="f-icon">🔬</div>
+<div class="f-name">Ciencias y Medio Ambiente</div>
+<div class="f-desc">Biología, ecología, conservación, cambio climático, energías renovables, ciencias del agua y gestión de recursos naturales en territorios soberanos.</div>
+<div class="f-stats"><div class="f-stat"><strong>158</strong> cursos</div><div class="f-stat"><strong>6,483</strong> estudiantes</div><div class="f-stat"><strong>6</strong> programas</div></div>
+</div>
+
+</div>
+</div>
+
+<!-- ═══ CAMPUS ═══ -->
+<div class="section" id="campus">
+<h2><span aria-hidden="true">🏫</span> Campus y Modalidades</h2>
+<div class="sub">Campus digitales y físicos — educación sin barreras geográficas</div>
+
+<div class="campus-card"><div class="cc-icon">🌐</div><div><div class="cc-name">Campus Digital Global</div><div class="cc-loc">Accesible desde cualquier lugar · WiFi Soberano · Starlink</div></div><span class="cc-mode online">ONLINE 24/7</span></div>
+<div class="campus-card"><div class="cc-icon">📡</div><div><div class="cc-name">Campus Offline</div><div class="cc-loc">Contenidos descargables para zonas sin internet · USB/SD</div></div><span class="cc-mode online">OFFLINE</span></div>
+<div class="campus-card"><div class="cc-icon">🏛️</div><div><div class="cc-name">Sede Panamá — Tocumen</div><div class="cc-loc">Centro de estudios presencial · Laboratorios · Biblioteca</div></div><span class="cc-mode hybrid">HÍBRIDO</span></div>
+<div class="campus-card"><div class="cc-icon">🌿</div><div><div class="cc-name">Campus Guna Yala</div><div class="cc-loc">Centro comunitario de aprendizaje · Medicina ancestral</div></div><span class="cc-mode presencial">PRESENCIAL</span></div>
+<div class="campus-card"><div class="cc-icon">🏔️</div><div><div class="cc-name">Campus Andes — Bolivia</div><div class="cc-loc">Agroecología · Soberanía alimentaria · Quechua/Aymara</div></div><span class="cc-mode hybrid">HÍBRIDO</span></div>
+<div class="campus-card"><div class="cc-icon">🌳</div><div><div class="cc-name">Campus Amazonia — Perú</div><div class="cc-loc">Biodiversidad · Lenguas amazónicas · Conservación</div></div><span class="cc-mode presencial">PLANIFICADO</span></div>
+</div>
+
+<!-- ═══ ARQUITECTURA ═══ -->
 <div class="section" id="architecture">
 <h2><span aria-hidden="true">🏗️</span> Arquitectura del Sistema</h2>
-<div class="sub">Infraestructura soberana de Universidad Soberana</div>
+<div class="sub">Plataforma educativa soberana distribuida</div>
 <div class="sec-panel" style="font-family:monospace;font-size:.72rem;line-height:1.8;overflow-x:auto">
-<span style="color:var(--accent)">┌─ FRONTEND ─────────────────────────────────┐</span>
-│  PWA + WebAssembly + Service Worker          │
-│  Offline-first · 14 idiomas · WCAG 2.1 AA   │
-<span style="color:var(--accent)">└──────────────────┬────────────────────────────┘</span>
-                   │ <span style="color:#ffd600">REST + gRPC + WebSocket</span>
-<span style="color:#00bcd4">┌─ API GATEWAY ────┴────────────────────────────┐</span>
-│  Rate limiting · JWT · CSRF · mTLS · CORS     │
-│  Load balancer · Circuit breaker · Cache       │
-<span style="color:#00bcd4">└──────────────────┬────────────────────────────┘</span>
+<span style="color:var(--accent)">┌─ ESTUDIANTE ────────────────────────────────────────┐</span>
+│  PWA · App Móvil · Desktop · Tablet · Kiosko          │
+│  Offline-first · 14 idiomas · WCAG 2.1 AA · USB mode │
+<span style="color:var(--accent)">└──────────────────┬─────────────────────────────────────┘</span>
+                   │ <span style="color:#ffd600">REST + WebSocket + P2P CDN</span>
+<span style="color:#00bcd4">┌─ LMS ENGINE ─────┴─────────────────────────────────────┐</span>
+│  Cursos · Evaluaciones · Foros · Video · Labs virtuales │
+│  AI tutor adaptativo · Gamificación · Certificados      │
+<span style="color:#00bcd4">└──────────────────┬─────────────────────────────────────┘</span>
                    │
-<span style="color:#7c4dff">┌─ MICROSERVICIOS ─┴────────────────────────────┐</span>
-│  Rust + Go · 12-factor · Event-driven          │
-│  CQRS · Saga pattern · Domain-driven design    │
-<span style="color:#7c4dff">└──────────────────┬────────────────────────────┘</span>
+<span style="color:#7c4dff">┌─ SERVICIOS ──────┴─────────────────────────────────────┐</span>
+│  <span style="color:#00FF41">course-engine</span>      → Gestión de cursos y contenido       │
+│  <span style="color:#00FF41">eval-engine</span>        → Evaluaciones adaptativas con AI       │
+│  <span style="color:#00FF41">cert-blockchain</span>    → Títulos y certificados en MameyNode   │
+│  <span style="color:#00FF41">tutor-ai</span>           → Tutor AI en 14 idiomas indígenas      │
+│  <span style="color:#00FF41">library-soberana</span>   → Biblioteca digital + ancestral         │
+│  <span style="color:#00FF41">video-p2p</span>          → Streaming P2P para bajo ancho de banda │
+│  <span style="color:#00FF41">forum-engine</span>       → Foros de discusión inter-nación        │
+│  <span style="color:#00FF41">offline-sync</span>       → Sync contenido para zonas sin internet │
+<span style="color:#7c4dff">└──────────────────┬─────────────────────────────────────┘</span>
                    │
-<span style="color:var(--accent)">┌─ DATA LAYER ─────┴────────────────────────────┐</span>
-│  PostgreSQL · Redis · TimescaleDB · S3          │
-│  MameyNode Blockchain · IndexedDB (offline)     │
-<span style="color:var(--accent)">└─────────────────────────────────────────────────┘</span>
+<span style="color:var(--accent)">┌─ DATA LAYER ─────┴─────────────────────────────────────┐</span>
+│  PostgreSQL (datos académicos) · Redis (sesiones)       │
+│  MameyNode (títulos/certs) · S3 (video/contenido)       │
+│  IndexedDB (cursos offline) · P2P CDN (distribución)    │
+<span style="color:var(--accent)">└──────────────────────────────────────────────────────────┘</span>
 </div>
 </div>
-<div class="section-title" id="features"><h3>Módulos de la Plataforma</h3><p>10 herramientas soberanas de grado empresarial</p></div>
+
+<!-- ═══ MÓDULOS ═══ -->
+<div class="section-title" id="features"><h3>Módulos del Sistema Universitario</h3><p>12 módulos de educación superior soberana</p></div>
 <div class="grid">
-<article class="card"><div class="card-icon" aria-hidden="true">🏛️</div><h4>Portal Gubernamental Unificado</h4><p>Interfaz centralizada para ciudadanos y funcionarios con acceso a todos los servicios digitales de las 35+ países soberanas.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📋</div><h4>Gestión de Trámites Digitales</h4><p>Sistema de trámites 100% digital con seguimiento en tiempo real, notificaciones automáticas y firma digital integrada.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🗳️</div><h4>Participación Ciudadana</h4><p>Mecanismos de consulta popular, votaciones y referéndums digitales con verificación blockchain y anonimato garantizado.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🔒</div><h4>Seguridad Grado Gubernamental</h4><p>Cifrado post-cuántico Kyber-768 para toda la información. Clasificación de documentos por nivel de seguridad.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📊</div><h4>Datos Abiertos y Transparencia</h4><p>Portal de datos abiertos con datasets gubernamentales accesibles para investigadores, periodistas y ciudadanos.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🤖</div><h4>AI para Atención Ciudadana</h4><p>Asistente virtual que responde consultas en 14 idiomas indígenas, guía trámites y escala a funcionarios humanos.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📅</div><h4>Agenda y Calendario Oficial</h4><p>Calendario de eventos gubernamentales, sesiones legislativas, audiencias públicas y fechas ceremoniales.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">👥</div><h4>Directorio de Funcionarios</h4><p>Base de datos de funcionarios públicos con contacto, responsabilidades y declaraciones patrimoniales.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📱</div><h4>App Ciudadana Móvil</h4><p>Aplicación con notificaciones de trámites, alertas gubernamentales, consultas y pagos de servicios públicos.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🔗</div><h4>Interoperabilidad Inter-Nación</h4><p>Protocolos de intercambio de datos entre las 35+ países soberanas manteniendo soberanía y jurisdicción local.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📚</div><h4>Motor de Cursos (LMS)</h4><p>Plataforma de aprendizaje con videos, documentos, quizzes, tareas y foros. Contenido en 14 idiomas indígenas. Progreso gamificado con recompensas WAMPUM.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🤖</div><h4>Tutor AI Indígena</h4><p>Asistente de estudio AI que habla 14 idiomas indígenas. Explica conceptos, ayuda con tareas, recomienda cursos y adapta el ritmo de aprendizaje a cada estudiante.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📜</div><h4>Títulos Blockchain</h4><p>Títulos y certificados registrados en MameyNode. Verificables instantáneamente. Imposibles de falsificar. Reconocidos por las 574 naciones soberanas.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📖</div><h4>Biblioteca Soberana</h4><p>Millones de textos digitales + colección de conocimiento ancestral oral transcrito. Acceso offline. Traducciones en 14 idiomas. Búsqueda AI semántica.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📡</div><h4>Modo Offline</h4><p>Descarga cursos completos para estudiar sin internet. Sync automático por WiFi Soberano/Starlink. Distribución por USB/SD para comunidades remotas.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🎥</div><h4>Video P2P</h4><p>Streaming peer-to-peer para minimizar uso de ancho de banda. Cuando más estudiantes ven un video en la misma comunidad, mejor funciona. Ideal para WiFi Soberano.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📊</div><h4>Evaluación Adaptativa</h4><p>AI ajusta dificultad de exámenes según nivel del estudiante. Evaluación continua, no solo exámenes finales. Competencias por módulo, no por nota global.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🌿</div><h4>Conocimiento Ancestral</h4><p>Módulo especial para documentar y enseñar conocimiento de ancianos y sabios. Historia oral, medicina tradicional, agricultura ancestral, astronomía indígena.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🤝</div><h4>Intercambio Inter-Nación</h4><p>Programa de intercambio entre facultades de diferentes naciones. Visa de investigación integrada con Inmigración Soberana. Créditos transferibles.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">💼</div><h4>Bolsa de Trabajo</h4><p>Portal de empleo soberano para graduados. Conexión con empresas comunitarias, cooperativas y proyectos de las 574 naciones. Pago en WAMPUM.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🔬</div><h4>Labs Virtuales</h4><p>Laboratorios de simulación para ciencias, programación, medicina y agricultura. WebAssembly para alto rendimiento. Funciona offline después de primera carga.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🏆</div><h4>Gamificación WAMPUM</h4><p>Sistema de recompensas por completar cursos, ayudar a otros estudiantes, contribuir contenido. Tokens WAMPUM ganados se pueden usar en toda la economía soberana.</p></article>
 </div>
+
+<!-- ═══ API ═══ -->
 <div class="section" id="api">
 <h2><span aria-hidden="true">🔌</span> API Endpoints</h2>
-<div class="sub">REST + gRPC + WebSocket para integraciones</div>
+<div class="sub">API REST para sistema de gestión universitaria</div>
 <div class="sec-panel">
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad_soberana/procedure/create</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Iniciar trámite con documentos adjuntos digitales.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad_soberana/procedure/status</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Estado del trámite en tiempo real con historial.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad_soberana/directory</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Directorio de servicios y funcionarios.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad_soberana/notification</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Enviar notificación oficial a ciudadano verificado.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad_soberana/open-data</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Catálogo de datos abiertos gubernamentales.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad_soberana/calendar</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Eventos y sesiones gubernamentales.</p>
+
+<div style="font-size:.7rem;color:var(--accent);font-weight:700;margin-bottom:.75rem;text-transform:uppercase;letter-spacing:1px">— Académico —</div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad/courses</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Catálogo de cursos con filtros por facultad, idioma y nivel.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad/enrollment/register</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Inscripción a curso o programa académico.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad/student/{id}/progress</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Progreso académico del estudiante con notas y competencias.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad/evaluation/submit</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Enviar evaluación o tarea completada.</p>
+
+<div style="font-size:.7rem;color:var(--accent);font-weight:700;margin:1rem 0 .75rem;text-transform:uppercase;letter-spacing:1px">— Certificación —</div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad/cert/{hash}/verify</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Verificar autenticidad de título en blockchain MameyNode.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad/cert/issue</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Emitir título o certificado al completar programa (admin).</p>
+
+<div style="font-size:.7rem;color:var(--accent);font-weight:700;margin:1rem 0 .75rem;text-transform:uppercase;letter-spacing:1px">— Contenido —</div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad/library/search</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Buscar en biblioteca soberana (textos + conocimiento ancestral).</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/universidad/offline/package/{course_id}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Descargar paquete offline de curso completo.</p>
+
 </div>
 </div>
-<div class="section-title" id="pricing"><h3>Planes Soberanos</h3><p>Empieza gratis. Escala soberanamente.</p></div>
+
+<!-- ═══ PRECIOS ═══ -->
+<div class="section-title" id="pricing"><h3>Matrícula Universitaria</h3><p>Educación accesible. Sin deuda estudiantil. Pago en WAMPUM.</p></div>
 <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
-<div class="card"><h4 style="color:var(--accent);font-size:.9rem">Ciudadano</h4><div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 W/mes</div><ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Trámites básicos</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Consultas</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Notificaciones</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ App móvil</li></ul></div>
-<div class="card" style="border-color:var(--accent);box-shadow:0 0 20px rgba(0,255,65,.15)"><h4 style="color:var(--accent);font-size:.9rem">Funcionario</h4><div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 W/mes</div><ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Gestión trámites</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Dashboard</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Reportes</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Firma digital</li></ul></div>
-<div class="card"><h4 style="color:var(--accent);font-size:.9rem">Nación</h4><div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">99 W/mes</div><ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Portal completo</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API ilimitada</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Interoperabilidad</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Soporte 24/7</li></ul></div>
+<div class="card">
+<h4 style="color:#00FF41;font-size:.9rem">Ciudadano Soberano</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 <span style="font-size:.8rem">Ⓦ/sem</span></div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Acceso total a cursos</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Tutor AI ilimitado</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Biblioteca completa</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Título blockchain</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Beca del 100%</li>
+</ul>
 </div>
+<div class="card" style="border-color:var(--accent);box-shadow:0 0 20px rgba(0,255,65,.15)">
+<h4 style="color:var(--accent);font-size:.9rem">Aliado Internacional</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">49 <span style="font-size:.8rem">Ⓦ/sem</span></div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Acceso total a cursos</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Tutor AI ilimitado</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Certificado blockchain</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Intercambio inter-nación</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Visa de investigación incl.</li>
+</ul>
+</div>
+<div class="card">
+<h4 style="color:var(--accent);font-size:.9rem">Institución</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">199 <span style="font-size:.8rem">Ⓦ/mes</span></div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API institucional</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Campus personalizado</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Contenido propio</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Analíticas avanzadas</li>
+</ul>
+</div>
+</div>
+
 </main>
 <footer>
-<p><span aria-hidden="true">🎓</span> <strong>Universidad Soberana</strong> &mdash; Ecosistema Digital <a href="../">Ierahkwa Ne Kanienke</a></p>
-<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">233+ plataformas soberanas &middot; 17 dominios NEXUS &middot; 1B+ personas &middot; 35+ países</p>
+<p><span aria-hidden="true">🎓</span> <strong>Universidad Soberana</strong> · Conectado con <a href="../pasaporte-soberano/">Pasaporte</a> · <a href="../registro-civil-soberano/">Registro Civil</a> · <a href="../inmigracion-soberana/">Inmigración</a></p>
+<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">425+ plataformas soberanas · 19 NEXUS · 574 naciones · 72M+ personas</p>
 <div style="margin-top:.75rem"><span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span></div>
 </footer>
 <script src="../shared/ierahkwa.js"></script>
@@ -116,7 +296,7 @@
 <script src="../shared/ierahkwa-protocols.js"></script>
 <script src="../shared/ierahkwa-interconnect.js"></script>
 <script>
-(function(){var DB_NAME="ierahkwa-universidad-soberana";var DB_VER=1;var STORES=["cursos-cache", "evaluaciones", "progreso"];var db=null;function openDB(){return new Promise(function(resolve,reject){var req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=function(){var d=req.result;STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:"id"})});};req.onsuccess=function(){db=req.result;resolve(db)};req.onerror=function(){reject(req.error)}})}function showOfflineBanner(show){var b=document.getElementById("offline-banner");if(!b){b=document.createElement("div");b.id="offline-banner";b.style.cssText="position:fixed;bottom:0;left:0;right:0;background:var(--accent);color:#09090d;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s";b.textContent="Modo Offline — Cursos y materiales disponibles offline.";document.body.appendChild(b)}b.style.transform=show?"translateY(0)":"translateY(100%)"}function init(){openDB().then(function(){window.addEventListener("online",function(){showOfflineBanner(false)});window.addEventListener("offline",function(){showOfflineBanner(true)});if(!navigator.onLine)showOfflineBanner(true);console.log("[universidad-soberana] Offline module ready")})}init()})();
+(function(){var DB_NAME='ierahkwa-universidad-soberana';var DB_VER=2;var STORES=["cursos-inscritos","progreso-academico","evaluaciones","certificados","biblioteca-offline","foros","tutor-historial","recompensas-wampum"];var db=null;function openDB(){return new Promise(function(resolve,reject){var req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=function(){var d=req.result;STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});};req.onsuccess=function(){db=req.result;resolve(db)};req.onerror=function(){reject(req.error)}})}function showOfflineBanner(show){var b=document.getElementById('offline-banner');if(!b){b=document.createElement('div');b.id='offline-banner';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--accent);color:#fff;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';b.textContent='Modo Offline — Cursos descargados disponibles offline. Progreso se sincroniza al reconectar.';document.body.appendChild(b)}b.style.transform=show?'translateY(0)':'translateY(100%)'}function init(){openDB().then(function(){window.addEventListener('online',function(){showOfflineBanner(false)});window.addEventListener('offline',function(){showOfflineBanner(true)});if(!navigator.onLine)showOfflineBanner(true);console.log('[universidad-soberana] 8 IndexedDB stores ready — offline learning enabled')})}init()})();
 </script>
 <script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 <script src="../shared/ierahkwa-api.js"></script>

@@ -6,112 +6,276 @@
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
-<meta name="description" content="Registro Civil — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Registro Civil Nacional con cifrado post-cuá">
+<meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(), geolocation=(self), payment=()">
+<meta name="description" content="Registro Civil Soberano — Nacimientos, Matrimonios, Defunciones y Ciudadanía digital para 574 naciones. Cada evento vital registrado en blockchain MameyNode.">
 <meta name="theme-color" content="#1565c0">
 <link rel="canonical" href="https://ierahkwa.nation/registro-civil-soberano/">
 <link rel="manifest" href="../shared/manifest.json">
 <link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../icons/icon-192.svg">
-<meta property="og:title" content="Registro Civil — Registro Civil Nacional">
-<meta property="og:description" content="Registro Civil — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Registro Civil Nacional con cifrado post-cuántico Kyber-768, blockchain MameyNode, m">
+<meta property="og:title" content="Registro Civil Soberano — Eventos Vitales Digitales">
+<meta property="og:description" content="Sistema de registro civil digital para 574 naciones soberanas. Nacimientos, matrimonios, defunciones y ciudadanía en blockchain. Certificados verificables instantáneamente.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ierahkwa.nation/registro-civil-soberano/">
 <meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Registro Civil — Registro Civil Nacional">
-<meta name="twitter:description" content="Registro Civil — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Registro Civil Nacional con cifrado post-cuántico Kyber-768, blockchain MameyNode, m">
+<meta name="twitter:title" content="Registro Civil Soberano">
 <link rel="stylesheet" href="../shared/ierahkwa.css">
-<title>Registro Civil — Registro Civil Nacional</title>
-<style>:root{--accent:#1565c0}</style>
+<title>Registro Civil Soberano — Eventos Vitales Digitales</title>
+<style>
+:root{--accent:#1565c0}
+.event-types{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;margin:1.5rem 0}
+.event-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;position:relative;overflow:hidden}
+.event-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.event-card.birth::before{background:#00FF41}
+.event-card.marriage::before{background:#e040fb}
+.event-card.death::before{background:#607d8b}
+.event-card.citizenship::before{background:#ffd600}
+.event-card.adoption::before{background:#ff9100}
+.event-card.divorce::before{background:#f44336}
+.event-card .e-icon{font-size:2rem;margin-bottom:.5rem}
+.event-card .e-title{font-size:.9rem;font-weight:700;color:var(--txt)}
+.event-card .e-desc{font-size:.75rem;color:var(--txt2);margin-top:.35rem;line-height:1.5}
+.event-card .e-count{font-family:Orbitron,sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent);margin-top:.5rem}
+.event-card .e-period{font-size:.6rem;color:var(--txt2)}
+.cert-preview{background:var(--bg2);border:2px solid var(--accent);border-radius:12px;padding:2rem;margin:1.5rem auto;max-width:500px;text-align:center;position:relative}
+.cert-preview::before{content:'CERTIFICADO SOBERANO';position:absolute;top:.75rem;left:50%;transform:translateX(-50%);font-size:.55rem;letter-spacing:3px;color:var(--accent);text-transform:uppercase;font-weight:700}
+.cert-preview .cert-type{font-size:1.1rem;font-weight:700;color:var(--txt);margin-top:1rem}
+.cert-preview .cert-detail{font-size:.75rem;color:var(--txt2);margin-top:.25rem}
+.cert-preview .cert-seal{margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--border);font-size:.65rem;color:var(--accent)}
+.flow-steps{display:flex;flex-direction:column;gap:.5rem;margin:1.5rem 0}
+.flow-step{display:flex;align-items:center;gap:1rem;padding:.75rem 1rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px}
+.flow-step .fs-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0}
+.flow-step .fs-text{font-size:.78rem;color:var(--txt2)}
+.flow-step .fs-text strong{color:var(--txt)}
+</style>
 </head>
 <body role="document">
 <a href="#main" class="skip-nav">Saltar al contenido principal</a>
 <header>
-<div class="logo"><div class="logo-icon" aria-hidden="true">📝</div><h1>Registro Civil</h1></div>
-<nav aria-label="Navegacion principal"><a href="#dashboard" aria-current="page">Dashboard</a><a href="#features">Modulos</a><a href="#api">API</a><a href="#pricing">Precios</a></nav>
+<div class="logo"><div class="logo-icon" aria-hidden="true">📜</div><h1>Registro Civil Soberano</h1></div>
+<nav aria-label="Navegacion principal"><a href="#dashboard" aria-current="page">Dashboard</a><a href="#eventos">Eventos</a><a href="#certificados">Certificados</a><a href="#features">Módulos</a><a href="#api">API</a></nav>
 <span class="encrypted-badge" title="Cifrado Post-Quantum Activo"><span aria-hidden="true">⚛️</span> Quantum-Safe</span>
 </header>
 <main id="main">
+
+<!-- ═══ HERO ═══ -->
 <section class="hero" id="dashboard">
-<div class="badge"><span aria-hidden="true">📝</span> Registro Civil Nacional</div>
-<h2><span>Registro Civil</span></h2>
-<p>Registro Civil — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Registro Civil Nacional con cifrado post-cuántico Kyber-768, blockchain MameyNode, modo offline y soporte para 14 idiomas indígenas. Reemplazo soberano 100% libre de Big Tech.</p>
+<div class="badge"><span aria-hidden="true">📜</span> Registro Civil Digital</div>
+<h2><span>Registro Civil Soberano</span></h2>
+<p>Cada vida, cada unión, cada transición — registrada de forma inmutable en blockchain MameyNode. Sistema de registro de eventos vitales para las 574 naciones soberanas: nacimientos, matrimonios, defunciones, ciudadanía, adopciones y divorcios. Certificados digitales verificables instantáneamente en cualquier checkpoint fronterizo. Sincronizado con Censo Soberano, Pasaporte Soberano e Inmigración.</p>
 <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
-<a href="#features" class="btn">Explorar Módulos</a>
-<a href="#api" class="btn" style="background:transparent;border:2px solid var(--accent);color:var(--accent)">API Docs</a>
+<a href="#eventos" class="btn">Eventos Vitales</a>
+<a href="#certificados" class="btn" style="background:transparent;border:2px solid var(--accent);color:var(--accent)">Certificados</a>
 </div>
 </section>
-<div class="stats" role="list" aria-label="Metricas del sistema"><div class="stat" role="listitem"><div class="val">574</div><div class="lbl">Naciones</div></div>
-<div class="stat" role="listitem"><div class="val">47K</div><div class="lbl">Funcionarios</div></div>
-<div class="stat" role="listitem"><div class="val">99.9%</div><div class="lbl">Disponibilidad</div></div>
-<div class="stat" role="listitem"><div class="val">E2E</div><div class="lbl">Cifrado</div></div>
-<div class="stat" role="listitem"><div class="val">real-time</div><div class="lbl">Actualización</div></div>
-<div class="stat" role="listitem"><div class="val">blockchain</div><div class="lbl">Transparencia</div></div></div>
+
+<!-- ═══ STATS ═══ -->
+<div class="stats" role="list" aria-label="Estadísticas de registro civil">
+<div class="stat" role="listitem"><div class="val">72M+</div><div class="lbl">Registrados</div></div>
+<div class="stat" role="listitem"><div class="val">574</div><div class="lbl">Naciones</div></div>
+<div class="stat" role="listitem"><div class="val">6</div><div class="lbl">Tipos Evento</div></div>
+<div class="stat" role="listitem"><div class="val">< 5min</div><div class="lbl">Emisión Cert.</div></div>
+<div class="stat" role="listitem"><div class="val">instant</div><div class="lbl">Verificación</div></div>
+<div class="stat" role="listitem"><div class="val">blockchain</div><div class="lbl">Inmutable</div></div>
+</div>
+
+<!-- ═══ EVENTOS VITALES ═══ -->
+<div class="section" id="eventos">
+<h2><span aria-hidden="true">📋</span> Tipos de Eventos Vitales</h2>
+<div class="sub">6 categorías de eventos registrados en blockchain — cada uno genera certificado verificable</div>
+<div class="event-types">
+
+<div class="event-card birth">
+<div class="e-icon">👶</div>
+<div class="e-title">Nacimiento</div>
+<div class="e-desc">Registro de nacimiento con datos del recién nacido, padres, nación soberana, idioma materno, comunidad y localización. Genera Pasaporte Soberano automáticamente + registro en Censo.</div>
+<div class="e-count">~1,456,000</div>
+<div class="e-period">nacimientos/año estimados</div>
+</div>
+
+<div class="event-card marriage">
+<div class="e-icon">💍</div>
+<div class="e-title">Matrimonio / Unión</div>
+<div class="e-desc">Registro de matrimonios civiles y uniones tradicionales reconocidas por las naciones. Incluye ceremonias ancestrales, inter-nación y misma-nación. Smart contract matrimonial en blockchain.</div>
+<div class="e-count">~364,000</div>
+<div class="e-period">uniones/año estimadas</div>
+</div>
+
+<div class="event-card death">
+<div class="e-icon">🕯️</div>
+<div class="e-title">Defunción</div>
+<div class="e-desc">Registro de defunción con causa, lugar, datos del difunto. Actualiza automáticamente Censo Soberano, desactiva Pasaporte, notifica sistemas de herencia y beneficios.</div>
+<div class="e-count">~728,000</div>
+<div class="e-period">defunciones/año estimadas</div>
+</div>
+
+<div class="event-card citizenship">
+<div class="e-icon">🏛️</div>
+<div class="e-title">Ciudadanía</div>
+<div class="e-desc">Otorgamiento, renuncia o cambio de ciudadanía soberana. Ciudadanía por nacimiento (jus soli/jus sanguinis), naturalización o resolución del Consejo de la Nación.</div>
+<div class="e-count">~182,000</div>
+<div class="e-period">solicitudes/año estimadas</div>
+</div>
+
+<div class="event-card adoption">
+<div class="e-icon">🤝</div>
+<div class="e-title">Adopción</div>
+<div class="e-desc">Registro de adopciones nacionales e inter-nación. Incluye adopciones tradicionales reconocidas por el Consejo. Actualiza vínculos familiares en Censo Soberano.</div>
+<div class="e-count">~12,000</div>
+<div class="e-period">adopciones/año estimadas</div>
+</div>
+
+<div class="event-card divorce">
+<div class="e-icon">📄</div>
+<div class="e-title">Divorcio / Separación</div>
+<div class="e-desc">Registro de disolución matrimonial o separación legal. Ejecuta smart contract de distribución de bienes si fue configurado en el matrimonio blockchain.</div>
+<div class="e-count">~91,000</div>
+<div class="e-period">separaciones/año estimadas</div>
+</div>
+
+</div>
+</div>
+
+<!-- ═══ CERTIFICADOS ═══ -->
+<div class="section" id="certificados">
+<h2><span aria-hidden="true">📃</span> Certificados Digitales Verificables</h2>
+<div class="sub">Certificados emitidos en blockchain — verificables instantáneamente en cualquier checkpoint</div>
+
+<div class="cert-preview">
+<div class="cert-type">ACTA DE NACIMIENTO SOBERANA</div>
+<div class="cert-detail">Nombre: [Nombre Completo] · Nombre Indígena: [Nombre Tradicional]</div>
+<div class="cert-detail">Nación: [Nación Soberana] · Clan: [Clan/Familia]</div>
+<div class="cert-detail">Fecha: [DD/MM/AAAA] · Lugar: [Comunidad, Territorio]</div>
+<div class="cert-detail">Padres: [Nombre Padre] · [Nombre Madre]</div>
+<div class="cert-detail">Idioma Materno: [Idioma] · Pasaporte: [Auto-generado]</div>
+<div class="cert-seal">🔗 Hash MameyNode: 0x7f3a...b2c1 · Bloque #574,291 · Verificable: verify.ierahkwa.nation/cert/[hash]<br>Firmado por: Oficial de Registro · Nación · Fecha · Cifrado Kyber-768</div>
+</div>
+
+<!-- Flujo de registro -->
+<h4 style="color:var(--accent);font-size:.85rem;margin:1.5rem 0 .75rem">Flujo de Registro de Evento Vital</h4>
+<div class="flow-steps">
+<div class="flow-step"><div class="fs-num">1</div><div class="fs-text"><strong>Solicitud</strong> — Ciudadano o funcionario inicia registro de evento vital desde app o checkpoint</div></div>
+<div class="flow-step"><div class="fs-num">2</div><div class="fs-text"><strong>Documentación</strong> — Subir documentos de soporte: testigos, acta médica, resolución del Consejo</div></div>
+<div class="flow-step"><div class="fs-num">3</div><div class="fs-text"><strong>Verificación</strong> — Sistema verifica identidad de involucrados contra Censo Soberano + Pasaporte</div></div>
+<div class="flow-step"><div class="fs-num">4</div><div class="fs-text"><strong>Aprobación</strong> — Oficial de registro civil aprueba y firma digitalmente (Kyber-768)</div></div>
+<div class="flow-step"><div class="fs-num">5</div><div class="fs-text"><strong>Blockchain</strong> — Evento registrado en MameyNode. Hash inmutable generado. Certificado emitido.</div></div>
+<div class="flow-step"><div class="fs-num">6</div><div class="fs-text"><strong>Propagación</strong> — Actualización automática en Censo + Pasaporte + Inmigración + Sistemas conectados</div></div>
+</div>
+</div>
+
+<!-- ═══ ARQUITECTURA ═══ -->
 <div class="section" id="architecture">
 <h2><span aria-hidden="true">🏗️</span> Arquitectura del Sistema</h2>
-<div class="sub">Infraestructura soberana de Registro Civil</div>
+<div class="sub">Infraestructura de registro civil digital soberano</div>
 <div class="sec-panel" style="font-family:monospace;font-size:.72rem;line-height:1.8;overflow-x:auto">
-<span style="color:var(--accent)">┌─ FRONTEND ─────────────────────────────────┐</span>
-│  PWA + WebAssembly + Service Worker          │
-│  Offline-first · 14 idiomas · WCAG 2.1 AA   │
-<span style="color:var(--accent)">└──────────────────┬────────────────────────────┘</span>
-                   │ <span style="color:#ffd600">REST + gRPC + WebSocket</span>
-<span style="color:#00bcd4">┌─ API GATEWAY ────┴────────────────────────────┐</span>
-│  Rate limiting · JWT · CSRF · mTLS · CORS     │
-│  Load balancer · Circuit breaker · Cache       │
-<span style="color:#00bcd4">└──────────────────┬────────────────────────────┘</span>
+<span style="color:var(--accent)">┌─ PUNTOS DE REGISTRO ─────────────────────────────────┐</span>
+│  Oficinas civiles · Hospitales · Comunidades · Online  │
+│  App offline para zonas remotas · Kioscos digitales     │
+<span style="color:var(--accent)">└──────────────────┬────────────────────────────────────┘</span>
+                   │ <span style="color:#ffd600">REST + P2P Mesh + Offline Sync</span>
+<span style="color:#00bcd4">┌─ MOTOR DE REGISTRO ┴─────────────────────────────────┐</span>
+│  Validación de datos · Verificación de identidad      │
+│  Firma digital Kyber-768 · Anti-fraude (AI Agents)    │
+<span style="color:#00bcd4">└──────────────────┬────────────────────────────────────┘</span>
                    │
-<span style="color:#7c4dff">┌─ MICROSERVICIOS ─┴────────────────────────────┐</span>
-│  Rust + Go · 12-factor · Event-driven          │
-│  CQRS · Saga pattern · Domain-driven design    │
-<span style="color:#7c4dff">└──────────────────┬────────────────────────────┘</span>
+<span style="color:#7c4dff">┌─ SERVICIOS ──────┴────────────────────────────────────┐</span>
+│  <span style="color:#00FF41">birth-registry</span>     → Registro de nacimientos + auto-passport│
+│  <span style="color:#00FF41">marriage-registry</span>  → Matrimonios + smart contracts       │
+│  <span style="color:#00FF41">death-registry</span>     → Defunciones + desactivación docs     │
+│  <span style="color:#00FF41">citizenship-mgr</span>    → Gestión de ciudadanía soberana       │
+│  <span style="color:#00FF41">cert-generator</span>     → Emisión de certificados verificables │
+│  <span style="color:#00FF41">census-sync</span>        → Sincronización con Censo Soberano    │
+│  <span style="color:#00FF41">passport-auto</span>      → Auto-emisión de pasaporte al nacer   │
+│  <span style="color:#00FF41">heritage-tracker</span>   → Árbol genealógico y herencia          │
+<span style="color:#7c4dff">└──────────────────┬────────────────────────────────────┘</span>
                    │
-<span style="color:var(--accent)">┌─ DATA LAYER ─────┴────────────────────────────┐</span>
-│  PostgreSQL · Redis · TimescaleDB · S3          │
-│  MameyNode Blockchain · IndexedDB (offline)     │
-<span style="color:var(--accent)">└─────────────────────────────────────────────────┘</span>
+<span style="color:var(--accent)">┌─ DATA LAYER ─────┴────────────────────────────────────┐</span>
+│  PostgreSQL (registros) · MameyNode (certificados)    │
+│  S3 (documentos soporte) · Redis (cache verificación) │
+│  IndexedDB (offline registration)                     │
+<span style="color:var(--accent)">└─────────────────────────────────────────────────────┘</span>
 </div>
 </div>
-<div class="section-title" id="features"><h3>Módulos de la Plataforma</h3><p>10 herramientas soberanas de grado empresarial</p></div>
-<div class="grid"><article class="card"><div class="card-icon" aria-hidden="true">🏛️</div><h4>Portal Gubernamental Unificado</h4><p>Interfaz centralizada para ciudadanos y funcionarios con acceso a todos los servicios gubernamentales digitales de las 35+ países soberanas.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📋</div><h4>Gestión de Trámites Digitales</h4><p>Sistema de trámites 100% digital con seguimiento en tiempo real, notificaciones automáticas y firma digital integrada. Zero papel.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🗳️</div><h4>Participación Ciudadana</h4><p>Mecanismos de consulta popular, votaciones y referéndums digitales con verificación blockchain y anonimato garantizado del votante.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🔒</div><h4>Seguridad Grado Gubernamental</h4><p>Cifrado post-cuántico Kyber-768 para toda la información gubernamental. Clasificación de documentos por nivel de seguridad.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📊</div><h4>Datos Abiertos y Transparencia</h4><p>Portal de datos abiertos con datasets gubernamentales accesibles para investigadores, periodistas y ciudadanos. Formato estándar DCAT.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🤖</div><h4>AI para Atención Ciudadana</h4><p>Asistente virtual que responde consultas en 14 idiomas indígenas, guía trámites y escala a funcionarios humanos cuando es necesario.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📅</div><h4>Agenda y Calendario Oficial</h4><p>Calendario de eventos gubernamentales, sesiones legislativas, audiencias públicas y fechas ceremoniales de las 574 naciones.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">👥</div><h4>Directorio de Funcionarios</h4><p>Base de datos completa de funcionarios públicos con información de contacto, responsabilidades y declaraciones patrimoniales.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📱</div><h4>App Ciudadana Móvil</h4><p>Aplicación para ciudadanos con notificaciones de trámites, alertas gubernamentales, consultas y pagos de servicios públicos.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🔗</div><h4>Interoperabilidad Inter-Nación</h4><p>Protocolos de intercambio de datos entre las 35+ países soberanas manteniendo soberanía de datos y jurisdicción local.</p></article></div>
+
+<!-- ═══ MÓDULOS ═══ -->
+<div class="section-title" id="features"><h3>Módulos del Registro Civil</h3><p>10 módulos especializados de registro y certificación</p></div>
+<div class="grid">
+<article class="card"><div class="card-icon" aria-hidden="true">👶</div><h4>Registro de Nacimientos</h4><p>Registro inmediato en hospital o comunidad. Auto-genera Pasaporte Soberano, registra en Censo, asigna ID blockchain único. Funciona offline en zonas remotas.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">💍</div><h4>Registro Matrimonial</h4><p>Matrimonios civiles y uniones tradicionales. Smart contract matrimonial en blockchain con términos de distribución de bienes consensuados.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📃</div><h4>Emisor de Certificados</h4><p>Certificados digitales con hash blockchain verificable. QR para verificación instantánea. Válido en los 574 territorios soberanos.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🏛️</div><h4>Gestión de Ciudadanía</h4><p>Solicitudes de ciudadanía, naturalización, doble ciudadanía inter-nación. Jus soli, jus sanguinis y resolución del Consejo.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🌳</div><h4>Árbol Genealógico</h4><p>Reconstrucción de árboles genealógicos con datos del registro civil. Conexión ancestral entre naciones. Historia familiar verificada en blockchain.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🔗</div><h4>Bridge Censo</h4><p>Cada evento vital actualiza automáticamente el Censo Soberano. Nacimientos suman, defunciones restan, migraciones actualizan territorios.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🛂</div><h4>Bridge Pasaporte</h4><p>Nacimiento auto-genera pasaporte. Defunción desactiva. Cambio de nombre/ciudadanía actualiza. Sincronización bidireccional en tiempo real.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🔍</div><h4>Verificación Anti-Fraude</h4><p>7 AI Agents verifican cada registro contra patrones de fraude. Detección de documentos falsos, identidades duplicadas, registros sospechosos.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📡</div><h4>Registro Offline</h4><p>App para registrar eventos vitales sin internet. Crucial para comunidades remotas. Sync automático cuando hay WiFi Soberano/Starlink.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📊</div><h4>Estadísticas Vitales</h4><p>Tasas de natalidad, mortalidad, nupcialidad por territorio. Datos para planificación de servicios de salud, educación e infraestructura.</p></article>
+</div>
+
+<!-- ═══ API ═══ -->
 <div class="section" id="api">
 <h2><span aria-hidden="true">🔌</span> API Endpoints</h2>
-<div class="sub">REST + gRPC + WebSocket para integraciones</div>
-<div class="sec-panel"><div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro_civil_soberano/procedure/create</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Iniciar trámite gubernamental con documentos adjuntos digitales.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro_civil_soberano/procedure/{id}/status</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Estado del trámite en tiempo real con historial de pasos.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro_civil_soberano/directory/officials</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Directorio de funcionarios con filtros por nación y departamento.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro_civil_soberano/citizen/notification</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Enviar notificación oficial a ciudadano verificado.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro_civil_soberano/open-data/datasets</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Catálogo de datos abiertos gubernamentales disponibles.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro_civil_soberano/calendar/events</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Eventos y sesiones gubernamentales programadas.</p></div>
+<div class="sub">API REST para registro y consulta de eventos vitales</div>
+<div class="sec-panel">
+
+<div style="font-size:.7rem;color:var(--accent);font-weight:700;margin-bottom:.75rem;text-transform:uppercase;letter-spacing:1px">— Registro —</div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro-civil/birth/register</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Registrar nacimiento con datos completos de recién nacido y padres.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro-civil/marriage/register</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Registrar matrimonio/unión con datos de contrayentes y testigos.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro-civil/death/register</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Registrar defunción con causa, lugar y datos del difunto.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro-civil/citizenship/apply</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Solicitar ciudadanía soberana (naturalización o resolución).</p>
+
+<div style="font-size:.7rem;color:var(--accent);font-weight:700;margin:1rem 0 .75rem;text-transform:uppercase;letter-spacing:1px">— Certificados —</div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro-civil/cert/{hash}/verify</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Verificar autenticidad de certificado por hash blockchain.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro-civil/cert/{id}/download</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Descargar certificado digital firmado en formato PDF soberano.</p>
+
+<div style="font-size:.7rem;color:var(--accent);font-weight:700;margin:1rem 0 .75rem;text-transform:uppercase;letter-spacing:1px">— Consultas —</div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro-civil/person/{id}/events</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Historial de eventos vitales de una persona (autenticado).</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro-civil/stats/vital-rates</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Tasas vitales por territorio (natalidad, mortalidad, nupcialidad).</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/registro-civil/genealogy/{person_id}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Árbol genealógico de persona registrada con conexiones familiares.</p>
+
 </div>
-<div class="section-title" id="pricing"><h3>Planes Soberanos</h3><p>Empieza gratis. Escala soberanamente.</p></div>
-<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))"><div class="card">
-<h4 style="color:var(--accent);font-size:.9rem">Ciudadano</h4>
-<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 W/mes</div>
-<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Trámites básicos</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Consultas</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Notificaciones</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ App móvil</li></ul>
-</div><div class="card" style="border-color:var(--accent);box-shadow:0 0 20px rgba(0,255,65,.15)">
-<h4 style="color:var(--accent);font-size:.9rem">Funcionario</h4>
-<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 W/mes</div>
-<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Gestión de trámites</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Dashboard</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Reportes</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Firma digital</li></ul>
-</div><div class="card">
-<h4 style="color:var(--accent);font-size:.9rem">Nación</h4>
-<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">99 W/mes</div>
-<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Portal completo</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API ilimitada</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Interoperabilidad</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Custom branding</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Soporte 24/7</li></ul>
-</div></div>
+</div>
+
+<!-- ═══ PRECIOS ═══ -->
+<div class="section-title" id="pricing"><h3>Tarifas de Registro Civil</h3><p>Servicio público soberano. Derecho fundamental.</p></div>
+<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+<div class="card">
+<h4 style="color:#00FF41;font-size:.9rem">Nacimiento</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 <span style="font-size:.8rem">Ⓦ</span></div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Registro gratuito</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Certificado digital</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Pasaporte auto-generado</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Registro en Censo</li>
+</ul>
+</div>
+<div class="card" style="border-color:var(--accent);box-shadow:0 0 20px rgba(0,255,65,.15)">
+<h4 style="color:var(--accent);font-size:.9rem">Matrimonio / Unión</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">25 <span style="font-size:.8rem">Ⓦ</span></div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Registro + certificado</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Smart contract opcional</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Reconocimiento inter-nación</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Ceremonia tradicional incl.</li>
+</ul>
+</div>
+<div class="card">
+<h4 style="color:var(--accent);font-size:.9rem">Certificados Extra</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">5 <span style="font-size:.8rem">Ⓦ</span></div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Copia adicional firmada</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Formato PDF soberano</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Verificación blockchain</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ QR de autenticidad</li>
+</ul>
+</div>
+</div>
+
 </main>
 <footer>
-<p><span aria-hidden="true">📝</span> <strong>Registro Civil</strong> &mdash; Ecosistema Digital <a href="../">Ierahkwa Ne Kanienke</a></p>
-<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">233+ plataformas soberanas &middot; 17 dominios NEXUS &middot; 1B+ personas &middot; 35+ países</p>
+<p><span aria-hidden="true">📜</span> <strong>Registro Civil Soberano</strong> · Conectado con <a href="../censo-soberano/">Censo</a> · <a href="../pasaporte-soberano/">Pasaporte</a> · <a href="../inmigracion-soberana/">Inmigración</a></p>
+<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">425+ plataformas soberanas · 19 NEXUS · 574 naciones · 72M+ personas</p>
 <div style="margin-top:.75rem"><span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span></div>
 </footer>
 <script src="../shared/ierahkwa.js"></script>
@@ -120,7 +284,7 @@
 <script src="../shared/ierahkwa-protocols.js"></script>
 <script src="../shared/ierahkwa-interconnect.js"></script>
 <script>
-(function(){var DB_NAME='ierahkwa-registro-civil-soberano';var DB_VER=1;var STORES=["tramites-pendientes", "directorio-cache", "notificaciones"];var db=null;function openDB(){return new Promise(function(resolve,reject){var req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=function(){var d=req.result;STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});};req.onsuccess=function(){db=req.result;resolve(db)};req.onerror=function(){reject(req.error)}})}function showOfflineBanner(show){var b=document.getElementById('offline-banner');if(!b){b=document.createElement('div');b.id='offline-banner';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--accent);color:#09090d;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';b.textContent='Modo Offline — Trámites y directorio disponibles offline para zonas remotas.';document.body.appendChild(b)}b.style.transform=show?'translateY(0)':'translateY(100%)'}function init(){openDB().then(function(){window.addEventListener('online',function(){showOfflineBanner(false)});window.addEventListener('offline',function(){showOfflineBanner(true)});if(!navigator.onLine)showOfflineBanner(true);console.log('[registro-civil-soberano] Offline module ready')})}init()})();
+(function(){var DB_NAME='ierahkwa-registro-civil-soberano';var DB_VER=2;var STORES=["nacimientos","matrimonios","defunciones","ciudadanias","certificados-emitidos","genealogia","sync-pendiente","verificaciones"];var db=null;function openDB(){return new Promise(function(resolve,reject){var req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=function(){var d=req.result;STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});};req.onsuccess=function(){db=req.result;resolve(db)};req.onerror=function(){reject(req.error)}})}function showOfflineBanner(show){var b=document.getElementById('offline-banner');if(!b){b=document.createElement('div');b.id='offline-banner';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--accent);color:#fff;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';b.textContent='Modo Offline — Registro de eventos vitales disponible offline. Sync al reconectar.';document.body.appendChild(b)}b.style.transform=show?'translateY(0)':'translateY(100%)'}function init(){openDB().then(function(){window.addEventListener('online',function(){showOfflineBanner(false)});window.addEventListener('offline',function(){showOfflineBanner(true)});if(!navigator.onLine)showOfflineBanner(true);console.log('[registro-civil-soberano] 8 IndexedDB stores ready — offline vital events enabled')})}init()})();
 </script>
 <script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 <script src="../shared/ierahkwa-api.js"></script>

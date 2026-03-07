@@ -6,112 +6,336 @@
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
-<meta name="description" content="Inmigración Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Control Migratorio Nacional con cifrad">
+<meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(), geolocation=(self), payment=()">
+<meta name="description" content="Inmigración Soberana — Control Migratorio Digital para 574 Naciones Soberanas. Procesamiento de visas, control fronterizo, verificación biométrica y seguimiento migratorio con blockchain MameyNode.">
 <meta name="theme-color" content="#1565c0">
 <link rel="canonical" href="https://ierahkwa.nation/inmigracion-soberana/">
 <link rel="manifest" href="../shared/manifest.json">
 <link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../icons/icon-192.svg">
-<meta property="og:title" content="Inmigración Soberana — Control Migratorio Nacional">
-<meta property="og:description" content="Inmigración Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Control Migratorio Nacional con cifrado post-cuántico Kyber-768, blockchain Ma">
+<meta property="og:title" content="Inmigración Soberana — Control Migratorio Digital">
+<meta property="og:description" content="Sistema completo de control migratorio soberano: procesamiento de visas, control fronterizo biométrico, seguimiento de estatus migratorio y alertas en tiempo real para 574 naciones.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ierahkwa.nation/inmigracion-soberana/">
 <meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Inmigración Soberana — Control Migratorio Nacional">
-<meta name="twitter:description" content="Inmigración Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Control Migratorio Nacional con cifrado post-cuántico Kyber-768, blockchain Ma">
+<meta name="twitter:title" content="Inmigración Soberana — Control Migratorio Digital">
 <link rel="stylesheet" href="../shared/ierahkwa.css">
-<title>Inmigración Soberana — Control Migratorio Nacional</title>
-<style>:root{--accent:#1565c0}</style>
+<title>Inmigración Soberana — Control Migratorio Digital</title>
+<style>
+:root{--accent:#1565c0}
+.visa-queue{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin:1.5rem 0}
+.visa-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;position:relative;overflow:hidden}
+.visa-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)}
+.visa-card .v-type{font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:700;margin-bottom:.5rem}
+.visa-card .v-name{font-size:.95rem;font-weight:700;color:var(--txt)}
+.visa-card .v-detail{font-size:.75rem;color:var(--txt2);margin-top:.35rem}
+.visa-card .v-status{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.65rem;font-weight:700;margin-top:.5rem}
+.v-status.approved{background:rgba(0,255,65,.15);color:#00FF41}
+.v-status.pending{background:rgba(255,214,0,.15);color:#ffd600}
+.v-status.review{background:rgba(21,101,192,.15);color:#1565c0}
+.v-status.denied{background:rgba(244,67,54,.15);color:#f44336}
+.checkpoint-flow{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;margin:1.5rem 0;padding:1rem;background:var(--bg2);border-radius:12px}
+.checkpoint-step{text-align:center;padding:.75rem;min-width:100px}
+.checkpoint-step .step-num{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;margin:0 auto .35rem}
+.checkpoint-step .step-label{font-size:.7rem;color:var(--txt2)}
+.checkpoint-arrow{color:var(--accent);font-size:1.2rem}
+.border-map{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin:1.5rem 0}
+.border-point{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1rem;text-align:center}
+.border-point .bp-name{font-weight:700;font-size:.85rem;color:var(--txt)}
+.border-point .bp-loc{font-size:.7rem;color:var(--txt2);margin-top:.25rem}
+.border-point .bp-status{font-size:.65rem;font-weight:700;margin-top:.5rem}
+.bp-status.active{color:#00FF41}
+.bp-status.planned{color:#ffd600}
+.alert-panel{background:rgba(244,67,54,.08);border:1px solid rgba(244,67,54,.2);border-radius:12px;padding:1.25rem;margin:1.5rem 0}
+.alert-panel h4{color:#f44336;font-size:.85rem;margin-bottom:.75rem}
+.alert-item{display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid rgba(244,67,54,.1)}
+.alert-item:last-child{border-bottom:none}
+.alert-item .a-severity{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.a-severity.critical{background:#f44336}
+.a-severity.high{background:#ff9100}
+.a-severity.medium{background:#ffd600}
+.alert-item .a-msg{font-size:.75rem;color:var(--txt2)}
+</style>
 </head>
 <body role="document">
 <a href="#main" class="skip-nav">Saltar al contenido principal</a>
 <header>
 <div class="logo"><div class="logo-icon" aria-hidden="true">🛂</div><h1>Inmigración Soberana</h1></div>
-<nav aria-label="Navegacion principal"><a href="#dashboard" aria-current="page">Dashboard</a><a href="#features">Modulos</a><a href="#api">API</a><a href="#pricing">Precios</a></nav>
+<nav aria-label="Navegacion principal"><a href="#dashboard" aria-current="page">Dashboard</a><a href="#visas">Visas</a><a href="#fronteras">Fronteras</a><a href="#features">Módulos</a><a href="#vigilancia">Vigilancia</a><a href="#api">API</a></nav>
 <span class="encrypted-badge" title="Cifrado Post-Quantum Activo"><span aria-hidden="true">⚛️</span> Quantum-Safe</span>
 </header>
 <main id="main">
+
+<!-- ═══ HERO ═══ -->
 <section class="hero" id="dashboard">
-<div class="badge"><span aria-hidden="true">🛂</span> Control Migratorio Nacional</div>
+<div class="badge"><span aria-hidden="true">🛂</span> Control Migratorio Soberano</div>
 <h2><span>Inmigración Soberana</span></h2>
-<p>Inmigración Soberana — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Control Migratorio Nacional con cifrado post-cuántico Kyber-768, blockchain MameyNode, modo offline y soporte para 14 idiomas indígenas. Reemplazo soberano 100% libre de Big Tech.</p>
+<p>Sistema completo de control migratorio digital para las 574 naciones soberanas. Procesamiento de visas en blockchain, verificación biométrica en puntos fronterizos, seguimiento de estatus migratorio en tiempo real y coordinación con Pasaporte Soberano + Turismo Soberano. Cada entrada y salida registrada en MameyNode — inmutable, verificable, soberano.</p>
 <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
-<a href="#features" class="btn">Explorar Módulos</a>
-<a href="#api" class="btn" style="background:transparent;border:2px solid var(--accent);color:var(--accent)">API Docs</a>
+<a href="#visas" class="btn">Cola de Visas</a>
+<a href="#fronteras" class="btn" style="background:transparent;border:2px solid var(--accent);color:var(--accent)">Puntos Fronterizos</a>
 </div>
 </section>
-<div class="stats" role="list" aria-label="Metricas del sistema"><div class="stat" role="listitem"><div class="val">574</div><div class="lbl">Naciones</div></div>
-<div class="stat" role="listitem"><div class="val">47K</div><div class="lbl">Funcionarios</div></div>
-<div class="stat" role="listitem"><div class="val">99.9%</div><div class="lbl">Disponibilidad</div></div>
-<div class="stat" role="listitem"><div class="val">E2E</div><div class="lbl">Cifrado</div></div>
-<div class="stat" role="listitem"><div class="val">real-time</div><div class="lbl">Actualización</div></div>
-<div class="stat" role="listitem"><div class="val">blockchain</div><div class="lbl">Transparencia</div></div></div>
+
+<!-- ═══ STATS ═══ -->
+<div class="stats" role="list" aria-label="Metricas migratorias">
+<div class="stat" role="listitem"><div class="val">574</div><div class="lbl">Naciones</div></div>
+<div class="stat" role="listitem"><div class="val">72M+</div><div class="lbl">Ciudadanos</div></div>
+<div class="stat" role="listitem"><div class="val">6</div><div class="lbl">Tipos Visa</div></div>
+<div class="stat" role="listitem"><div class="val">24/7</div><div class="lbl">Monitoreo</div></div>
+<div class="stat" role="listitem"><div class="val">< 30s</div><div class="lbl">Verificación</div></div>
+<div class="stat" role="listitem"><div class="val">blockchain</div><div class="lbl">Registro</div></div>
+</div>
+
+<!-- ═══ FLUJO CHECKPOINT ═══ -->
+<div class="section">
+<h2><span aria-hidden="true">🚦</span> Flujo de Control Fronterizo</h2>
+<div class="sub">Proceso completo desde llegada hasta entrada autorizada</div>
+<div class="checkpoint-flow">
+<div class="checkpoint-step"><div class="step-num">1</div><div class="step-label">Llegada a<br>Punto Fronterizo</div></div>
+<div class="checkpoint-arrow">→</div>
+<div class="checkpoint-step"><div class="step-num">2</div><div class="step-label">Escaneo<br>Pasaporte QR</div></div>
+<div class="checkpoint-arrow">→</div>
+<div class="checkpoint-step"><div class="step-num">3</div><div class="step-label">Verificación<br>Biométrica</div></div>
+<div class="checkpoint-arrow">→</div>
+<div class="checkpoint-step"><div class="step-num">4</div><div class="step-label">Consulta Visa<br>en Blockchain</div></div>
+<div class="checkpoint-arrow">→</div>
+<div class="checkpoint-step"><div class="step-num">5</div><div class="step-label">Vigilancia<br>Check (Atabey)</div></div>
+<div class="checkpoint-arrow">→</div>
+<div class="checkpoint-step"><div class="step-num">6</div><div class="step-label">Registro<br>de Entrada</div></div>
+<div class="checkpoint-arrow">→</div>
+<div class="checkpoint-step"><div class="step-num">7</div><div class="step-label">Acceso<br>Autorizado</div></div>
+</div>
+</div>
+
+<!-- ═══ COLA DE VISAS ═══ -->
+<div class="section" id="visas">
+<h2><span aria-hidden="true">📋</span> Cola de Procesamiento de Visas</h2>
+<div class="sub">6 tipos de visa soberana — conectado con Turismo Soberano y Pasaporte Soberano</div>
+<div class="visa-queue">
+
+<div class="visa-card" style="--accent:#00FF41">
+<div class="v-type">Visa Turística</div>
+<div class="v-name">Visa de Turismo Soberano</div>
+<div class="v-detail">Duración: 30-90 días · Extensible · Single/Multiple entry</div>
+<div class="v-detail">Precio: Ⓦ 49.99 — incluida en paquetes turísticos</div>
+<div class="v-detail">Requisitos: Pasaporte vigente, reserva de alojamiento, seguro</div>
+<span class="v-status approved">AUTOMÁTICA</span>
+</div>
+
+<div class="visa-card" style="--accent:#e040fb">
+<div class="v-type">Visa Cultural</div>
+<div class="v-name">Intercambio Cultural Inter-Nación</div>
+<div class="v-detail">Duración: 60-180 días · Para artistas, músicos, artesanos</div>
+<div class="v-detail">Precio: Ⓦ 29.99 — subsidio cultural del Consejo</div>
+<div class="v-detail">Requisitos: Carta de invitación de comunidad anfitriona</div>
+<span class="v-status approved">AUTOMÁTICA</span>
+</div>
+
+<div class="visa-card" style="--accent:#ffd600">
+<div class="v-type">Visa de Investigación</div>
+<div class="v-name">Investigación Académica Soberana</div>
+<div class="v-detail">Duración: 90-365 días · Para investigadores y académicos</div>
+<div class="v-detail">Precio: Ⓦ 99.99 — co-financiado con Universidad Soberana</div>
+<div class="v-detail">Requisitos: Proyecto aprobado, institución patrocinadora</div>
+<span class="v-status review">REVISIÓN MANUAL</span>
+</div>
+
+<div class="visa-card" style="--accent:#ff9100">
+<div class="v-type">Visa Comercial</div>
+<div class="v-name">Negocios y Comercio Inter-Nación</div>
+<div class="v-detail">Duración: 30-180 días · Multiple entry · Extensible</div>
+<div class="v-detail">Precio: Ⓦ 149.99 — incluye registro mercantil temporal</div>
+<div class="v-detail">Requisitos: Registro de empresa, carta comercial, garantía</div>
+<span class="v-status review">REVISIÓN MANUAL</span>
+</div>
+
+<div class="visa-card" style="--accent:#43a047">
+<div class="v-type">Visa Eco-Voluntario</div>
+<div class="v-name">Voluntariado Ecológico y Social</div>
+<div class="v-detail">Duración: 30-180 días · Para proyectos comunitarios</div>
+<div class="v-detail">Precio: Ⓦ 0.00 — gratuita para voluntarios aprobados</div>
+<div class="v-detail">Requisitos: Organización patrocinadora, seguro, antecedentes</div>
+<span class="v-status approved">AUTOMÁTICA</span>
+</div>
+
+<div class="visa-card" style="--accent:#f44336">
+<div class="v-type">Visa Humanitaria</div>
+<div class="v-name">Protección Humanitaria y Refugio</div>
+<div class="v-detail">Duración: 180-365 días · Renovable · Acceso a servicios</div>
+<div class="v-detail">Precio: Ⓦ 0.00 — gratuita, derecho humano fundamental</div>
+<div class="v-detail">Requisitos: Evaluación de caso, documentación de situación</div>
+<span class="v-status pending">CASO POR CASO</span>
+</div>
+
+</div>
+</div>
+
+<!-- ═══ PUNTOS FRONTERIZOS ═══ -->
+<div class="section" id="fronteras">
+<h2><span aria-hidden="true">🗺️</span> Puntos Fronterizos Soberanos</h2>
+<div class="sub">Checkpoints digitales en cada territorio — verificación en < 30 segundos</div>
+<div class="border-map">
+<div class="border-point"><div class="bp-name">Tocumen Principal</div><div class="bp-loc">Panamá Este · 9.08°N, 79.38°W</div><div class="bp-status active">● ACTIVO — 24/7</div></div>
+<div class="border-point"><div class="bp-name">Terminal Chepo</div><div class="bp-loc">Chepo-Darién · 9.17°N, 79.10°W</div><div class="bp-status active">● ACTIVO — 6am-10pm</div></div>
+<div class="border-point"><div class="bp-name">Frontera Darién</div><div class="bp-loc">Darién · 8.41°N, 78.15°W</div><div class="bp-status active">● ACTIVO — 24/7</div></div>
+<div class="border-point"><div class="bp-name">Puerto Guna Yala</div><div class="bp-loc">Guna Yala · 9.55°N, 78.95°W</div><div class="bp-status active">● ACTIVO — 6am-8pm</div></div>
+<div class="border-point"><div class="bp-name">Comunidad Emberá</div><div class="bp-loc">Emberá-Wounaan · 9.02°N, 79.58°W</div><div class="bp-status planned">● PLANIFICADO</div></div>
+<div class="border-point"><div class="bp-name">Isla Cartí</div><div class="bp-loc">Guna Yala · 9.46°N, 78.96°W</div><div class="bp-status planned">● PLANIFICADO</div></div>
+<div class="border-point"><div class="bp-name">Hub Ft. Lauderdale</div><div class="bp-loc">Florida, USA · 26.07°N, 80.15°W</div><div class="bp-status active">● ACTIVO — Digital</div></div>
+<div class="border-point"><div class="bp-name">Frontera Colombia</div><div class="bp-loc">Turbo-Capurganá · 8.10°N, 76.73°W</div><div class="bp-status planned">● PLANIFICADO — Fase 4</div></div>
+</div>
+</div>
+
+<!-- ═══ VIGILANCIA MIGRATORIA ═══ -->
+<div class="section" id="vigilancia">
+<h2><span aria-hidden="true">👁️</span> Vigilancia Migratoria — Atabey AI</h2>
+<div class="sub">Monitoreo 24/7 de todos los movimientos migratorios</div>
+
+<div class="alert-panel">
+<h4>Centro de Alertas en Tiempo Real</h4>
+<div class="alert-item"><div class="a-severity critical"></div><div class="a-msg"><strong>CRÍTICA</strong> — Persona en lista VIP detectada en checkpoint Darién. Atabey AI activó monitoreo completo de sesión.</div></div>
+<div class="alert-item"><div class="a-severity high"></div><div class="a-msg"><strong>ALTA</strong> — 3 intentos de entrada con documento no reconocido en Tocumen. Flagged para revisión manual.</div></div>
+<div class="alert-item"><div class="a-severity medium"></div><div class="a-msg"><strong>MEDIA</strong> — Visa comercial expirada detectada en checkpoint Chepo. Notificación enviada al titular.</div></div>
+<div class="alert-item"><div class="a-severity medium"></div><div class="a-msg"><strong>MEDIA</strong> — Patrón inusual: 5 entradas/salidas en 48 horas desde mismo pasaporte en Guna Yala.</div></div>
+</div>
+
+<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(250px,1fr));margin-top:1rem">
+<div class="card" style="border-left:3px solid #f44336">
+<div class="card-icon" aria-hidden="true">🔴</div>
+<h4>Lista de Vigilancia</h4>
+<p>Base de datos de personas con restricciones de entrada. Sincronizada entre todos los checkpoints. Verificación cruzada con Interpol soberano.</p>
+</div>
+<div class="card" style="border-left:3px solid #ff9100">
+<div class="card-icon" aria-hidden="true">🟡</div>
+<h4>Detección de Anomalías</h4>
+<p>AI detecta patrones sospechosos: viajes frecuentes inusuales, documentos alterados, comportamiento atípico en checkpoint.</p>
+</div>
+<div class="card" style="border-left:3px solid #00FF41">
+<div class="card-icon" aria-hidden="true">🟢</div>
+<h4>Protección VIP</h4>
+<p>Atabey AI protege a líderes, ministros y personas especiales. Alerta inmediata si alguien busca información sobre VIPs en la red.</p>
+</div>
+</div>
+</div>
+
+<!-- ═══ ARQUITECTURA ═══ -->
 <div class="section" id="architecture">
 <h2><span aria-hidden="true">🏗️</span> Arquitectura del Sistema</h2>
-<div class="sub">Infraestructura soberana de Inmigración Soberana</div>
+<div class="sub">Infraestructura de control migratorio soberano</div>
 <div class="sec-panel" style="font-family:monospace;font-size:.72rem;line-height:1.8;overflow-x:auto">
-<span style="color:var(--accent)">┌─ FRONTEND ─────────────────────────────────┐</span>
-│  PWA + WebAssembly + Service Worker          │
-│  Offline-first · 14 idiomas · WCAG 2.1 AA   │
-<span style="color:var(--accent)">└──────────────────┬────────────────────────────┘</span>
-                   │ <span style="color:#ffd600">REST + gRPC + WebSocket</span>
-<span style="color:#00bcd4">┌─ API GATEWAY ────┴────────────────────────────┐</span>
-│  Rate limiting · JWT · CSRF · mTLS · CORS     │
-│  Load balancer · Circuit breaker · Cache       │
-<span style="color:#00bcd4">└──────────────────┬────────────────────────────┘</span>
+<span style="color:var(--accent)">┌─ PUNTOS FRONTERIZOS ─────────────────────────────┐</span>
+│  Escáner QR · Biometría · Cámara · Offline-first   │
+│  Tablet/Kiosko en cada checkpoint · GPS tracking    │
+<span style="color:var(--accent)">└──────────────────┬──────────────────────────────────┘</span>
+                   │ <span style="color:#ffd600">REST + WebSocket + P2P Mesh</span>
+<span style="color:#00bcd4">┌─ GATEWAY MIGRATORIO ┴────────────────────────────────┐</span>
+│  JWT + Biométrico · Rate Limit · Geo-fence · mTLS    │
+│  Verificación de visa en < 30s · Cache Redis          │
+<span style="color:#00bcd4">└──────────────────┬──────────────────────────────────┘</span>
                    │
-<span style="color:#7c4dff">┌─ MICROSERVICIOS ─┴────────────────────────────┐</span>
-│  Rust + Go · 12-factor · Event-driven          │
-│  CQRS · Saga pattern · Domain-driven design    │
-<span style="color:#7c4dff">└──────────────────┬────────────────────────────┘</span>
+<span style="color:#7c4dff">┌─ SERVICIOS ──────┴──────────────────────────────────┐</span>
+│  <span style="color:#00FF41">visa-processor</span>    → Emisión y validación de visas     │
+│  <span style="color:#00FF41">border-control</span>    → Check-in/out fronterizo           │
+│  <span style="color:#00FF41">biometric-verify</span>  → Verificación facial + huella       │
+│  <span style="color:#00FF41">watchlist-engine</span>  → Lista de vigilancia + alertas      │
+│  <span style="color:#00FF41">analytics-migra</span>   → Estadísticas migratorias           │
+│  <span style="color:#00FF41">passport-bridge</span>   → Conexión con Pasaporte Soberano    │
+│  <span style="color:#00FF41">tourism-bridge</span>    → Conexión con Turismo Soberano      │
+│  <span style="color:#00FF41">atabey-sentinel</span>   → Vigilancia VIP + contra-intel       │
+│  <span style="color:#00FF41">census-sync</span>       → Sincronización con Censo Soberano  │
+<span style="color:#7c4dff">└──────────────────┬──────────────────────────────────┘</span>
                    │
-<span style="color:var(--accent)">┌─ DATA LAYER ─────┴────────────────────────────┐</span>
-│  PostgreSQL · Redis · TimescaleDB · S3          │
-│  MameyNode Blockchain · IndexedDB (offline)     │
-<span style="color:var(--accent)">└─────────────────────────────────────────────────┘</span>
+<span style="color:var(--accent)">┌─ DATA LAYER ─────┴──────────────────────────────────┐</span>
+│  PostgreSQL (registros migratorios) · Redis (cache)  │
+│  MameyNode (visas inmutables) · S3 (biometría)       │
+│  IndexedDB (offline checkpoints)                     │
+<span style="color:var(--accent)">└────────────────────────────────────────────────────┘</span>
 </div>
 </div>
-<div class="section-title" id="features"><h3>Módulos de la Plataforma</h3><p>10 herramientas soberanas de grado empresarial</p></div>
-<div class="grid"><article class="card"><div class="card-icon" aria-hidden="true">🏛️</div><h4>Portal Gubernamental Unificado</h4><p>Interfaz centralizada para ciudadanos y funcionarios con acceso a todos los servicios gubernamentales digitales de las 35+ países soberanas.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📋</div><h4>Gestión de Trámites Digitales</h4><p>Sistema de trámites 100% digital con seguimiento en tiempo real, notificaciones automáticas y firma digital integrada. Zero papel.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🗳️</div><h4>Participación Ciudadana</h4><p>Mecanismos de consulta popular, votaciones y referéndums digitales con verificación blockchain y anonimato garantizado del votante.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🔒</div><h4>Seguridad Grado Gubernamental</h4><p>Cifrado post-cuántico Kyber-768 para toda la información gubernamental. Clasificación de documentos por nivel de seguridad.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📊</div><h4>Datos Abiertos y Transparencia</h4><p>Portal de datos abiertos con datasets gubernamentales accesibles para investigadores, periodistas y ciudadanos. Formato estándar DCAT.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🤖</div><h4>AI para Atención Ciudadana</h4><p>Asistente virtual que responde consultas en 14 idiomas indígenas, guía trámites y escala a funcionarios humanos cuando es necesario.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📅</div><h4>Agenda y Calendario Oficial</h4><p>Calendario de eventos gubernamentales, sesiones legislativas, audiencias públicas y fechas ceremoniales de las 574 naciones.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">👥</div><h4>Directorio de Funcionarios</h4><p>Base de datos completa de funcionarios públicos con información de contacto, responsabilidades y declaraciones patrimoniales.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📱</div><h4>App Ciudadana Móvil</h4><p>Aplicación para ciudadanos con notificaciones de trámites, alertas gubernamentales, consultas y pagos de servicios públicos.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🔗</div><h4>Interoperabilidad Inter-Nación</h4><p>Protocolos de intercambio de datos entre las 35+ países soberanas manteniendo soberanía de datos y jurisdicción local.</p></article></div>
+
+<!-- ═══ MÓDULOS ═══ -->
+<div class="section-title" id="features"><h3>Módulos del Sistema Migratorio</h3><p>12 módulos especializados de control migratorio</p></div>
+<div class="grid">
+<article class="card"><div class="card-icon" aria-hidden="true">📋</div><h4>Procesador de Visas</h4><p>Emisión, renovación y revocación de 6 tipos de visa soberana. Verificación automática para turísticas/culturales, revisión manual para comerciales/investigación.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🚧</div><h4>Control Fronterizo</h4><p>Check-in/check-out digital en cada punto fronterizo. Escaneo QR de pasaporte, verificación biométrica, registro de entrada/salida en blockchain.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">👤</div><h4>Verificación Biométrica</h4><p>Reconocimiento facial y huella digital en checkpoints. Base de datos biométrica descentralizada con cifrado Kyber-768. Funciona offline.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🔍</div><h4>Motor de Vigilancia</h4><p>Lista de vigilancia sincronizada entre todos los checkpoints. Alerta inmediata cuando persona flagged intenta cruzar frontera soberana.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📊</div><h4>Analytics Migratorio</h4><p>Estadísticas de flujo migratorio por checkpoint, nacionalidad, tipo de visa, temporada. Predicción de demanda con AI.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🔗</div><h4>Bridge Pasaporte</h4><p>Conexión directa con sistema de Pasaporte Soberano. Verificación de autenticidad, vigencia y estatus del portador en tiempo real.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🌴</div><h4>Bridge Turismo</h4><p>Integración con paquetes turísticos de Turismo Soberano. Visa incluida en reservas, pre-aprobación automática para turistas verificados.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">👁️</div><h4>Atabey Sentinel</h4><p>Atabey AI supervisa todas las operaciones migratorias 24/7. Protección VIP, detección de amenazas, contra-inteligencia fronteriza.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📡</div><h4>Sync Offline</h4><p>Checkpoints funcionan sin internet. Datos se sincronizan automáticamente cuando hay conexión WiFi Soberano o Starlink disponible.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🗺️</div><h4>Geo-Fence Soberano</h4><p>Definición de perímetros territoriales por nación. Alertas cuando dispositivo registrado entra/sale de territorio soberano.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📱</div><h4>App de Viajero</h4><p>App para viajeros con estado de visa, próximos checkpoints, tiempo de espera estimado, documentos requeridos y mapa de territorios.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📈</div><h4>Censo Bridge</h4><p>Sincronización con Censo Soberano. Cada entrada migratoria actualiza la base poblacional y genera estadísticas demográficas en tiempo real.</p></article>
+</div>
+
+<!-- ═══ API ═══ -->
 <div class="section" id="api">
 <h2><span aria-hidden="true">🔌</span> API Endpoints</h2>
-<div class="sub">REST + gRPC + WebSocket para integraciones</div>
-<div class="sec-panel"><div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion_soberana/procedure/create</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Iniciar trámite gubernamental con documentos adjuntos digitales.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion_soberana/procedure/{id}/status</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Estado del trámite en tiempo real con historial de pasos.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion_soberana/directory/officials</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Directorio de funcionarios con filtros por nación y departamento.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion_soberana/citizen/notification</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Enviar notificación oficial a ciudadano verificado.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion_soberana/open-data/datasets</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Catálogo de datos abiertos gubernamentales disponibles.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion_soberana/calendar/events</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Eventos y sesiones gubernamentales programadas.</p></div>
+<div class="sub">API REST para integración con sistemas migratorios</div>
+<div class="sec-panel">
+
+<div style="font-size:.7rem;color:var(--accent);font-weight:700;margin-bottom:.75rem;text-transform:uppercase;letter-spacing:1px">— Visas —</div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion/visa/apply</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Solicitar visa soberana con documentación adjunta.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion/visa/{id}/status</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Estado de solicitud de visa en tiempo real.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion/visa/{id}/renew</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Renovar visa antes de expiración.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion/visa/verify/{blockchain_hash}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Verificar autenticidad de visa en blockchain MameyNode.</p>
+
+<div style="font-size:.7rem;color:var(--accent);font-weight:700;margin:1rem 0 .75rem;text-transform:uppercase;letter-spacing:1px">— Control Fronterizo —</div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion/border/checkin</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Registrar entrada en punto fronterizo con biometría.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion/border/checkout</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Registrar salida de territorio soberano.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion/border/checkpoints</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Lista de puntos fronterizos activos con estado y capacidad.</p>
+
+<div style="font-size:.7rem;color:var(--accent);font-weight:700;margin:1rem 0 .75rem;text-transform:uppercase;letter-spacing:1px">— Vigilancia —</div>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion/watchlist/check/{passport_id}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Verificar si pasaporte está en lista de vigilancia.</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion/alert/create</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Crear alerta migratoria (admin autenticado).</p>
+<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/inmigracion/analytics/flow</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Estadísticas de flujo migratorio por periodo y checkpoint.</p>
+
 </div>
-<div class="section-title" id="pricing"><h3>Planes Soberanos</h3><p>Empieza gratis. Escala soberanamente.</p></div>
-<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))"><div class="card">
-<h4 style="color:var(--accent);font-size:.9rem">Ciudadano</h4>
-<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 W/mes</div>
-<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Trámites básicos</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Consultas</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Notificaciones</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ App móvil</li></ul>
-</div><div class="card" style="border-color:var(--accent);box-shadow:0 0 20px rgba(0,255,65,.15)">
-<h4 style="color:var(--accent);font-size:.9rem">Funcionario</h4>
-<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 W/mes</div>
-<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Gestión de trámites</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Dashboard</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Reportes</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Firma digital</li></ul>
-</div><div class="card">
-<h4 style="color:var(--accent);font-size:.9rem">Nación</h4>
-<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">99 W/mes</div>
-<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Portal completo</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API ilimitada</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Interoperabilidad</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Custom branding</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Soporte 24/7</li></ul>
-</div></div>
+</div>
+
+<!-- ═══ PRECIOS ═══ -->
+<div class="section-title" id="pricing"><h3>Tarifas de Visa Soberana</h3><p>Transparente. Sin intermediarios. Pago en WAMPUM.</p></div>
+<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+<div class="card">
+<h4 style="color:#00FF41;font-size:.9rem">Turística / Cultural</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">29-49 <span style="font-size:.8rem">Ⓦ</span></div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ 30-180 días</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Aprobación automática</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Incluida en paquetes turísticos</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Extensible</li>
+</ul>
+</div>
+<div class="card" style="border-color:var(--accent);box-shadow:0 0 20px rgba(0,255,65,.15)">
+<h4 style="color:var(--accent);font-size:.9rem">Comercial / Investigación</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">99-149 <span style="font-size:.8rem">Ⓦ</span></div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ 90-365 días</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Multiple entry</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Registro mercantil temporal</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Acceso a redes soberanas</li>
+</ul>
+</div>
+<div class="card">
+<h4 style="color:#43a047;font-size:.9rem">Humanitaria / Eco-Vol</h4>
+<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 <span style="font-size:.8rem">Ⓦ</span></div>
+<ul style="list-style:none;padding:0">
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Gratuita</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Derecho humano fundamental</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Acceso a servicios sociales</li>
+<li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Renovable indefinidamente</li>
+</ul>
+</div>
+</div>
+
 </main>
 <footer>
-<p><span aria-hidden="true">🛂</span> <strong>Inmigración Soberana</strong> &mdash; Ecosistema Digital <a href="../">Ierahkwa Ne Kanienke</a></p>
-<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">233+ plataformas soberanas &middot; 17 dominios NEXUS &middot; 1B+ personas &middot; 35+ países</p>
+<p><span aria-hidden="true">🛂</span> <strong>Inmigración Soberana</strong> · Conectado con <a href="../pasaporte-soberano/">Pasaporte Soberano</a> · <a href="../turismo-soberano/">Turismo Soberano</a> · <a href="../censo-soberano/">Censo Soberano</a></p>
+<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">425+ plataformas soberanas · 19 NEXUS · 574 naciones · 72M+ personas</p>
 <div style="margin-top:.75rem"><span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span></div>
 </footer>
 <script src="../shared/ierahkwa.js"></script>
@@ -120,7 +344,7 @@
 <script src="../shared/ierahkwa-protocols.js"></script>
 <script src="../shared/ierahkwa-interconnect.js"></script>
 <script>
-(function(){var DB_NAME='ierahkwa-inmigracion-soberana';var DB_VER=1;var STORES=["tramites-pendientes", "directorio-cache", "notificaciones"];var db=null;function openDB(){return new Promise(function(resolve,reject){var req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=function(){var d=req.result;STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});};req.onsuccess=function(){db=req.result;resolve(db)};req.onerror=function(){reject(req.error)}})}function showOfflineBanner(show){var b=document.getElementById('offline-banner');if(!b){b=document.createElement('div');b.id='offline-banner';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--accent);color:#09090d;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';b.textContent='Modo Offline — Trámites y directorio disponibles offline para zonas remotas.';document.body.appendChild(b)}b.style.transform=show?'translateY(0)':'translateY(100%)'}function init(){openDB().then(function(){window.addEventListener('online',function(){showOfflineBanner(false)});window.addEventListener('offline',function(){showOfflineBanner(true)});if(!navigator.onLine)showOfflineBanner(true);console.log('[inmigracion-soberana] Offline module ready')})}init()})();
+(function(){var DB_NAME='ierahkwa-inmigracion-soberana';var DB_VER=2;var STORES=["visas-procesadas","registros-entrada","registros-salida","lista-vigilancia","checkpoints","alertas-migratorias","biometria-cache","analytics-flujo"];var db=null;function openDB(){return new Promise(function(resolve,reject){var req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=function(){var d=req.result;STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});};req.onsuccess=function(){db=req.result;resolve(db)};req.onerror=function(){reject(req.error)}})}function showOfflineBanner(show){var b=document.getElementById('offline-banner');if(!b){b=document.createElement('div');b.id='offline-banner';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--accent);color:#fff;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';b.textContent='Modo Offline — Control fronterizo disponible offline. Datos se sincronizan al reconectar.';document.body.appendChild(b)}b.style.transform=show?'translateY(0)':'translateY(100%)'}function init(){openDB().then(function(){window.addEventListener('online',function(){showOfflineBanner(false)});window.addEventListener('offline',function(){showOfflineBanner(true)});if(!navigator.onLine)showOfflineBanner(true);console.log('[inmigracion-soberana] 8 IndexedDB stores ready — offline border control enabled')})}init()})();
 </script>
 <script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 <script src="../shared/ierahkwa-api.js"></script>
