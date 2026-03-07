@@ -70,7 +70,45 @@ const COMMODITIES = [
     { symbol: 'NATGAS', basePrice: 2.15, pip: 0.001, spread: 0.005 }
 ];
 
-const ALL_INSTRUMENTS = [...FOREX_PAIRS, ...INDICES, ...COMMODITIES];
+// ============================================================================
+// SOVEREIGN ECONOMY — WAMPUM (WPM), IGT, BDET, SNT-574
+// MameyNode Blockchain (Chain ID 574)
+// ============================================================================
+const SOVEREIGN_TOKENS = [
+    // Core sovereign currencies
+    { symbol: 'WMPUSD', basePrice: 1.00, pip: 0.0001, spread: 0.2, category: 'sovereign' },
+    { symbol: 'WMPBTC', basePrice: 0.0000148, pip: 0.00000001, spread: 0.00000005, category: 'sovereign' },
+    { symbol: 'WMPETH', basePrice: 0.000308, pip: 0.0000001, spread: 0.000001, category: 'sovereign' },
+    { symbol: 'IGTWMP', basePrice: 0.50, pip: 0.0001, spread: 0.5, category: 'sovereign' },
+    { symbol: 'IGTUSD', basePrice: 0.50, pip: 0.0001, spread: 0.5, category: 'sovereign' },
+    { symbol: 'BDETWMP', basePrice: 10.00, pip: 0.01, spread: 1.0, category: 'sovereign' },
+    { symbol: 'BDETUSD', basePrice: 10.00, pip: 0.01, spread: 1.0, category: 'sovereign' },
+    // SNT top nations tradeable
+    { symbol: 'SNTNAVWMP', basePrice: 0.015, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Navajo Nation' },
+    { symbol: 'SNTCHEWMP', basePrice: 0.012, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Cherokee Nation' },
+    { symbol: 'SNTGUNWMP', basePrice: 0.011, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Guna Yala' },
+    { symbol: 'SNTEMBWMP', basePrice: 0.010, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Embera' },
+    { symbol: 'SNTMAYWMP', basePrice: 0.013, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Maya' },
+    { symbol: 'SNTNGEWMP', basePrice: 0.009, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Ngabe-Bugle' },
+    { symbol: 'SNTQUEWMP', basePrice: 0.014, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Quechua' },
+    { symbol: 'SNTMAPWMP', basePrice: 0.008, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Mapuche' },
+    { symbol: 'SNTYAQWMP', basePrice: 0.007, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Yaqui' },
+    { symbol: 'SNTGUAWMP', basePrice: 0.011, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Guarani' },
+    { symbol: 'SNTAYMWMP', basePrice: 0.010, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Aymara' },
+    { symbol: 'SNTLAKWMP', basePrice: 0.012, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Lakota' },
+    { symbol: 'SNTSEMWMP', basePrice: 0.009, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Seminole' },
+    { symbol: 'SNTAPAWMP', basePrice: 0.008, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Apache' },
+    { symbol: 'SNTCREWMP', basePrice: 0.011, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Cree' },
+    { symbol: 'SNTOJIWMP', basePrice: 0.010, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Ojibwe' },
+    { symbol: 'SNTIROQWMP', basePrice: 0.013, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Haudenosaunee (Iroquois)' },
+    { symbol: 'SNTINUWMP', basePrice: 0.009, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Inuit' },
+    { symbol: 'SNTMISQWMP', basePrice: 0.008, pip: 0.0001, spread: 0.001, category: 'snt', nation: 'Miskito' },
+];
+
+// SNT Index — basket of all 574 SNT tokens
+const SNT_INDEX = { symbol: 'SNTIDXWMP', basePrice: 0.574, pip: 0.001, spread: 0.05, category: 'index' };
+
+const ALL_INSTRUMENTS = [...FOREX_PAIRS, ...INDICES, ...COMMODITIES, ...SOVEREIGN_TOKENS, SNT_INDEX];
 
 // Store for prices
 const currentPrices = new Map();
@@ -410,12 +448,29 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Get all instruments
+// Get all instruments (including sovereign economy)
 app.get('/api/instruments', (req, res) => {
     res.json({
         forex: FOREX_PAIRS.map(p => ({ ...p, ...currentPrices.get(p.symbol) })),
         indices: INDICES.map(p => ({ ...p, ...currentPrices.get(p.symbol) })),
-        commodities: COMMODITIES.map(p => ({ ...p, ...currentPrices.get(p.symbol) }))
+        commodities: COMMODITIES.map(p => ({ ...p, ...currentPrices.get(p.symbol) })),
+        sovereign: SOVEREIGN_TOKENS.filter(t => t.category === 'sovereign').map(p => ({ ...p, ...currentPrices.get(p.symbol) })),
+        snt: SOVEREIGN_TOKENS.filter(t => t.category === 'snt').map(p => ({ ...p, ...currentPrices.get(p.symbol) })),
+        sntIndex: { ...SNT_INDEX, ...currentPrices.get(SNT_INDEX.symbol) }
+    });
+});
+
+// Get sovereign/SNT instruments only
+app.get('/api/instruments/sovereign', (req, res) => {
+    const sovereign = SOVEREIGN_TOKENS.filter(t => t.category === 'sovereign').map(p => ({ ...p, ...currentPrices.get(p.symbol) }));
+    const snt = SOVEREIGN_TOKENS.filter(t => t.category === 'snt').map(p => ({ ...p, ...currentPrices.get(p.symbol) }));
+    res.json({
+        sovereign,
+        snt,
+        sntIndex: { ...SNT_INDEX, ...currentPrices.get(SNT_INDEX.symbol) },
+        totalNations: 574,
+        tradeable: snt.length,
+        blockchain: { network: 'MameyNode', chainId: 574, nativeCurrency: 'WAMPUM (WMP)', bank: 'BDET Bank' }
     });
 });
 
@@ -507,6 +562,119 @@ app.post('/api/calculate', (req, res) => {
     });
 });
 
+// ============================================================================
+// SOVEREIGN TRADING — SNT/WPM pairs, BDET settlement, nation-level trading
+// ============================================================================
+
+// Trade on sovereign pairs (WPM, IGT, BDET, SNT)
+app.post('/api/sovereign/trade', (req, res) => {
+    const { symbol, side, type, quantity, price, userId } = req.body;
+    const instrument = ALL_INSTRUMENTS.find(i => i.symbol === symbol);
+    if (!instrument) return res.status(404).json({ error: 'Sovereign instrument not found' });
+
+    const currentPrice = currentPrices.get(symbol);
+    const executionPrice = type === 'market' ? (side === 'buy' ? currentPrice.ask : currentPrice.bid) : price;
+    const fee = quantity * executionPrice * 0.001; // 0.1% fee (30% goes to platform)
+    const platformFee = fee * 0.30;
+    const nationFee = fee * 0.70; // 70% to nation treasury
+
+    const trade = {
+        id: uuidv4(),
+        symbol,
+        side,
+        type: type || 'market',
+        quantity,
+        price: executionPrice,
+        value: quantity * executionPrice,
+        fee,
+        platformFee,
+        nationFee,
+        status: 'filled',
+        userId: userId || 'anonymous',
+        nation: instrument.nation || null,
+        settlement: {
+            blockchain: 'MameyNode',
+            chainId: 574,
+            bank: 'BDET Bank',
+            currency: 'WAMPUM (WMP)',
+            txHash: `0x574${Date.now().toString(16)}${'0'.repeat(24)}`
+        },
+        filledAt: new Date().toISOString()
+    };
+
+    // Emit to connected clients
+    io.to('market-updates').emit('sovereign:trade', trade);
+
+    res.status(201).json(trade);
+});
+
+// Get SNT nation token details with all 574 nations
+app.get('/api/sovereign/nations', (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = Math.min(100, parseInt(req.query.limit) || 50);
+    const region = req.query.region || null;
+    const offset = (page - 1) * limit;
+
+    // Generate all 574 nation entries with trading data
+    const regions = [
+        { name: 'North America', count: 300, basePrice: 0.01 },
+        { name: 'Central America', count: 45, basePrice: 0.009 },
+        { name: 'South America', count: 120, basePrice: 0.008 },
+        { name: 'Caribbean', count: 30, basePrice: 0.007 },
+        { name: 'Amazonia', count: 50, basePrice: 0.006 },
+        { name: 'Andes', count: 20, basePrice: 0.010 },
+        { name: 'Arctic', count: 9, basePrice: 0.005 }
+    ];
+
+    let allNations = [];
+    let id = 1;
+
+    for (const r of regions) {
+        for (let i = 0; i < r.count && id <= 574; i++) {
+            const priceVariation = r.basePrice + (Math.random() * 0.005 - 0.0025);
+            allNations.push({
+                id: String(id).padStart(4, '0'),
+                region: r.name,
+                sntSymbol: `SNT-${String(id).padStart(4, '0')}`,
+                tradingPair: `SNT${String(id).padStart(4,'0')}/WPM`,
+                price: parseFloat(priceVariation.toFixed(6)),
+                volume24h: Math.floor(Math.random() * 100000),
+                change24h: parseFloat((Math.random() * 10 - 5).toFixed(2)),
+                marketCap: parseFloat((priceVariation * 1000000000).toFixed(2)),
+                status: 'pre-minted',
+                blockchain: 'MameyNode (574)'
+            });
+            id++;
+        }
+    }
+
+    // Filter by region if specified
+    if (region) {
+        allNations = allNations.filter(n => n.region.toLowerCase().includes(region.toLowerCase()));
+    }
+
+    const total = allNations.length;
+    const paginated = allNations.slice(offset, offset + limit);
+
+    res.json({
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        nations: paginated,
+        summary: {
+            totalNations: 574,
+            totalSNTTokens: 574,
+            totalSupplyPerToken: '1,000,000,000',
+            blockchain: 'MameyNode',
+            chainId: 574,
+            nativeCurrency: 'WAMPUM (WMP)',
+            bank: 'BDET Bank',
+            standard: 'SNT-574'
+        }
+    });
+});
+
 // Analytics endpoint
 app.get('/api/analytics/platform', (req, res) => {
     res.json({
@@ -542,6 +710,8 @@ server.listen(PORT, () => {
     console.log(`  Server running on port ${PORT}`);
     console.log(`  WebSocket enabled for real-time trading`);
     console.log(`  Market data: ${ALL_INSTRUMENTS.length} instruments`);
+    console.log(`  Sovereign tokens: ${SOVEREIGN_TOKENS.length} (WPM, IGT, BDET, SNT)`);
+    console.log(`  SNT Nations: 574 tradeable on MameyNode (Chain ID 574)`);
     console.log(`  Investment plans: ${INVESTMENT_PLANS.length} available`);
     console.log(`  Signal providers: ${SIGNAL_PROVIDERS.length} active`);
     console.log('═══════════════════════════════════════════════════════════════');

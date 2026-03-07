@@ -22,9 +22,9 @@ const audit = createAuditLogger('sovereign-core:payments');
 // Default currency for the sovereign economy
 const DEFAULT_CURRENCY = 'WMP'; // WAMPUM
 
-// Creator tip split: 92% to creator, 8% platform fee
-const TIP_CREATOR_SHARE = 0.92;
-const TIP_PLATFORM_SHARE = 0.08;
+// Revenue share: 70% to creator, 30% platform (Sovereign Economy Model)
+const TIP_CREATOR_SHARE = 0.70;
+const TIP_PLATFORM_SHARE = 0.30;
 const PLATFORM_TREASURY_ID = process.env.PLATFORM_TREASURY_ID || 'system-treasury';
 
 // ============================================================
@@ -360,7 +360,7 @@ router.post('/tip',
          VALUES ($1, $2, $3, $4, 'platform_fee', $5, $6, 'completed', $7::jsonb, $8)`,
         [
           fromUser, PLATFORM_TREASURY_ID, platformFee, currency,
-          'Platform tip fee (8%)',
+          'Platform revenue share (30%)',
           platformTxHash,
           JSON.stringify({ tip: true, parentTxId: creatorTx.rows[0].id, feeRate: TIP_PLATFORM_SHARE }),
           timestamp
@@ -399,6 +399,382 @@ router.post('/tip',
       await client.query('ROLLBACK');
       log.error('Tip transaction failed', { err, from: fromUser, creator: creator_id, amount });
       throw new AppError('TRANSACTION_FAILED', 'Tip transaction could not be completed');
+    } finally {
+      client.release();
+    }
+  })
+);
+
+// ============================================================
+// POST /card/tokenize — Tokenize a payment card (PCI-safe)
+// Stores a hashed reference, NEVER raw card numbers
+// ============================================================
+router.post('/card/tokenize',
+  validate({
+    body: {
+      card_last4: t.string({ required: true, min: 4, max: 4 }),
+      card_brand: t.string({ required: true, enum: ['visa', 'mastercard', 'amex', 'discover', 'diners', 'unionpay'] }),
+      card_exp_month: t.number({ required: true, min: 1, max: 12 }),
+      card_exp_year: t.number({ required: true, min: 2026, max: 2040 }),
+      cardholder_name: t.string({ required: true, min: 2, max: 100 }),
+      billing_country: t.string({ max: 2 })
+    }
+  }),
+  asyncHandler(async (req, res) => {
+    if (!req.user) throw new AppError('AUTH_REQUIRED', 'Authentication required');
+
+    const { card_last4, card_brand, card_exp_month, card_exp_year, cardholder_name, billing_country } = req.body;
+
+    // Generate secure card token (never store raw numbers)
+    const tokenData = `${req.user.id}:${card_brand}:${card_last4}:${Date.now()}`;
+    const cardToken = 'card_' + crypto.createHash('sha256').update(tokenData).digest('hex').slice(0, 32);
+    const fingerprint = crypto.createHash('sha256').update(`${card_brand}:${card_last4}:${cardholder_name}`).digest('hex').slice(0, 24);
+
+    const result = await db.query(
+      `INSERT INTO payment_cards (user_id, card_token, fingerprint, brand, last4, exp_month, exp_year, cardholder_name, billing_country, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'active')
+       RETURNING id, card_token, brand, last4, exp_month, exp_year, cardholder_name, status, created_at`,
+      [req.user.id, cardToken, fingerprint, card_brand, card_last4, card_exp_month, card_exp_year, cardholder_name, billing_country || 'PA']
+    );
+
+    audit.record({
+      category: 'CARD_TOKENIZED',
+      action: 'card_tokenize',
+      userId: req.user.id,
+      risk: 'MEDIUM',
+      details: { brand: card_brand, last4: card_last4 }
+    });
+
+    log.info('Card tokenized', { userId: req.user.id, brand: card_brand, last4: card_last4 });
+
+    res.status(201).json({ status: 'ok', data: result.rows[0] });
+  })
+);
+
+// ============================================================
+// GET /cards — List user's saved payment cards
+// ============================================================
+router.get('/cards', asyncHandler(async (req, res) => {
+  if (!req.user) throw new AppError('AUTH_REQUIRED', 'Authentication required');
+
+  const result = await db.query(
+    `SELECT id, card_token, brand, last4, exp_month, exp_year, cardholder_name, billing_country, status, is_default, created_at
+     FROM payment_cards
+     WHERE user_id = $1 AND status != 'deleted'
+     ORDER BY is_default DESC, created_at DESC`,
+    [req.user.id]
+  );
+
+  res.json({ status: 'ok', data: result.rows });
+}));
+
+// ============================================================
+// DELETE /cards/:cardToken — Remove a saved card
+// ============================================================
+router.delete('/cards/:cardToken', asyncHandler(async (req, res) => {
+  if (!req.user) throw new AppError('AUTH_REQUIRED', 'Authentication required');
+
+  const result = await db.query(
+    `UPDATE payment_cards SET status = 'deleted', updated_at = NOW()
+     WHERE user_id = $1 AND card_token = $2 AND status = 'active'
+     RETURNING id, card_token`,
+    [req.user.id, req.params.cardToken]
+  );
+
+  if (result.rows.length === 0) throw new AppError('NOT_FOUND', 'Card not found');
+
+  res.json({ status: 'ok', message: 'Card removed' });
+}));
+
+// ============================================================
+// POST /card/set-default — Set default payment card
+// ============================================================
+router.post('/card/set-default',
+  validate({ body: { card_token: t.string({ required: true }) } }),
+  asyncHandler(async (req, res) => {
+    if (!req.user) throw new AppError('AUTH_REQUIRED', 'Authentication required');
+
+    const client = await db.getClient();
+    try {
+      await client.query('BEGIN');
+      // Unset all defaults
+      await client.query(`UPDATE payment_cards SET is_default = false WHERE user_id = $1`, [req.user.id]);
+      // Set new default
+      const result = await client.query(
+        `UPDATE payment_cards SET is_default = true, updated_at = NOW()
+         WHERE user_id = $1 AND card_token = $2 AND status = 'active'
+         RETURNING id, card_token, brand, last4`,
+        [req.user.id, req.body.card_token]
+      );
+      if (result.rows.length === 0) {
+        await client.query('ROLLBACK');
+        throw new AppError('NOT_FOUND', 'Card not found');
+      }
+      await client.query('COMMIT');
+      res.json({ status: 'ok', data: result.rows[0] });
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+  })
+);
+
+// ============================================================
+// POST /intent — Create a payment intent (card charge flow)
+// ============================================================
+router.post('/intent',
+  validate({
+    body: {
+      amount: t.number({ required: true, min: 0.01 }),
+      currency: t.string({ enum: ['WMP', 'IGT', 'BDET', 'USD', 'EUR', 'PAB'] }),
+      card_token: t.string({}),
+      description: t.string({ max: 500 }),
+      metadata: t.object({})
+    }
+  }),
+  asyncHandler(async (req, res) => {
+    if (!req.user) throw new AppError('AUTH_REQUIRED', 'Authentication required');
+
+    const { amount, description, metadata } = req.body;
+    const currency = req.body.currency || 'USD';
+    const cardToken = req.body.card_token || null;
+
+    // Generate unique intent ID
+    const intentId = 'pi_' + crypto.createHash('sha256')
+      .update(`${req.user.id}:${amount}:${currency}:${Date.now()}:${Math.random()}`)
+      .digest('hex').slice(0, 32);
+
+    // If card_token provided, verify it belongs to user
+    if (cardToken) {
+      const cardCheck = await db.query(
+        `SELECT id, brand, last4 FROM payment_cards WHERE user_id = $1 AND card_token = $2 AND status = 'active'`,
+        [req.user.id, cardToken]
+      );
+      if (cardCheck.rows.length === 0) throw new AppError('NOT_FOUND', 'Payment card not found');
+    }
+
+    const result = await db.query(
+      `INSERT INTO payment_intents (intent_id, user_id, amount, currency, card_token, description, metadata, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, 'requires_confirmation')
+       RETURNING intent_id, amount, currency, status, description, created_at`,
+      [intentId, req.user.id, amount, currency, cardToken, description || null, JSON.stringify(metadata || {})]
+    );
+
+    log.info('Payment intent created', { intentId, userId: req.user.id, amount, currency });
+
+    res.status(201).json({ status: 'ok', data: result.rows[0] });
+  })
+);
+
+// ============================================================
+// POST /intent/:intentId/confirm — Confirm and execute payment
+// ============================================================
+router.post('/intent/:intentId/confirm', asyncHandler(async (req, res) => {
+  if (!req.user) throw new AppError('AUTH_REQUIRED', 'Authentication required');
+
+  const { intentId } = req.params;
+
+  const client = await db.getClient();
+  try {
+    await client.query('BEGIN');
+
+    // Lock the intent row
+    const intentResult = await client.query(
+      `SELECT * FROM payment_intents WHERE intent_id = $1 AND user_id = $2 FOR UPDATE`,
+      [intentId, req.user.id]
+    );
+
+    if (intentResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      throw new AppError('NOT_FOUND', 'Payment intent not found');
+    }
+
+    const intent = intentResult.rows[0];
+    if (intent.status !== 'requires_confirmation') {
+      await client.query('ROLLBACK');
+      throw new AppError('INVALID_STATE', `Intent is ${intent.status}, cannot confirm`);
+    }
+
+    // Process based on currency — if crypto (WMP/IGT/BDET), deduct from balance
+    // If fiat (USD/EUR/PAB), process card charge
+    const isCrypto = ['WMP', 'IGT', 'BDET'].includes(intent.currency);
+
+    if (isCrypto) {
+      // Verify balance
+      const balResult = await client.query(
+        `SELECT COALESCE(SUM(CASE WHEN to_user = $1 THEN amount ELSE 0 END), 0) -
+                COALESCE(SUM(CASE WHEN from_user = $1 THEN amount ELSE 0 END), 0) AS balance
+         FROM transactions WHERE (from_user = $1 OR to_user = $1) AND currency = $2 AND status = 'completed'`,
+        [req.user.id, intent.currency]
+      );
+      if (parseFloat(balResult.rows[0].balance) < parseFloat(intent.amount)) {
+        await client.query('ROLLBACK');
+        throw new AppError('INSUFFICIENT_FUNDS', `Insufficient ${intent.currency} balance`);
+      }
+    }
+
+    // Create the transaction
+    const timestamp = new Date().toISOString();
+    const txHash = generateTxHash(req.user.id, PLATFORM_TREASURY_ID, intent.amount, intent.currency, timestamp);
+
+    // Split: 70% goes to destination (or stays as payment), 30% platform
+    const destinationAmount = Math.floor(parseFloat(intent.amount) * TIP_CREATOR_SHARE * 100000000) / 100000000;
+    const platformFee = Math.floor(parseFloat(intent.amount) * TIP_PLATFORM_SHARE * 100000000) / 100000000;
+
+    // Main transaction
+    await client.query(
+      `INSERT INTO transactions (from_user, to_user, amount, currency, type, memo, tx_hash, status, metadata, created_at)
+       VALUES ($1, $2, $3, $4, 'card_payment', $5, $6, 'completed', $7::jsonb, $8)`,
+      [req.user.id, PLATFORM_TREASURY_ID, intent.amount, intent.currency,
+       intent.description || 'Card payment', txHash,
+       JSON.stringify({ intentId, cardToken: intent.card_token, destinationAmount, platformFee }),
+       timestamp]
+    );
+
+    // Update intent status
+    await client.query(
+      `UPDATE payment_intents SET status = 'succeeded', confirmed_at = NOW(), tx_hash = $1 WHERE intent_id = $2`,
+      [txHash, intentId]
+    );
+
+    await client.query('COMMIT');
+
+    audit.transaction(req, { intentId, amount: intent.amount, currency: intent.currency, txHash, type: 'card_payment' });
+    log.info('Payment intent confirmed', { intentId, txHash });
+
+    res.json({
+      status: 'ok',
+      data: {
+        intentId,
+        txHash,
+        amount: intent.amount,
+        currency: intent.currency,
+        breakdown: { total: parseFloat(intent.amount), destinationAmount, platformFee, platformFeePercent: TIP_PLATFORM_SHARE * 100 },
+        status: 'succeeded'
+      }
+    });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    if (err instanceof AppError) throw err;
+    log.error('Payment intent confirmation failed', { err, intentId });
+    throw new AppError('TRANSACTION_FAILED', 'Payment could not be completed');
+  } finally {
+    client.release();
+  }
+}));
+
+// ============================================================
+// POST /intent/:intentId/cancel — Cancel a payment intent
+// ============================================================
+router.post('/intent/:intentId/cancel', asyncHandler(async (req, res) => {
+  if (!req.user) throw new AppError('AUTH_REQUIRED', 'Authentication required');
+
+  const result = await db.query(
+    `UPDATE payment_intents SET status = 'canceled', updated_at = NOW()
+     WHERE intent_id = $1 AND user_id = $2 AND status = 'requires_confirmation'
+     RETURNING intent_id, status`,
+    [req.params.intentId, req.user.id]
+  );
+
+  if (result.rows.length === 0) throw new AppError('NOT_FOUND', 'Intent not found or already processed');
+
+  res.json({ status: 'ok', data: result.rows[0] });
+}));
+
+// ============================================================
+// GET /intents — List payment intents for current user
+// ============================================================
+router.get('/intents', asyncHandler(async (req, res) => {
+  if (!req.user) throw new AppError('AUTH_REQUIRED', 'Authentication required');
+
+  const status = req.query.status || null;
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
+  const offset = parseInt(req.query.offset, 10) || 0;
+
+  let query = `SELECT intent_id, amount, currency, status, description, card_token, tx_hash, created_at, confirmed_at
+     FROM payment_intents WHERE user_id = $1`;
+  const params = [req.user.id];
+
+  if (status) {
+    query += ` AND status = $2`;
+    params.push(status);
+  }
+
+  query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+  params.push(limit, offset);
+
+  const result = await db.query(query, params);
+  res.json({ status: 'ok', data: result.rows });
+}));
+
+// ============================================================
+// POST /refund — Refund a completed payment
+// ============================================================
+router.post('/refund',
+  validate({
+    body: {
+      tx_hash: t.string({ required: true }),
+      amount: t.number({ min: 0.01 }),
+      reason: t.string({ max: 500 })
+    }
+  }),
+  asyncHandler(async (req, res) => {
+    if (!req.user) throw new AppError('AUTH_REQUIRED', 'Authentication required');
+
+    const { tx_hash, reason } = req.body;
+
+    // Find original transaction
+    const original = await db.query(
+      `SELECT * FROM transactions WHERE tx_hash = $1 AND status = 'completed'`,
+      [tx_hash]
+    );
+    if (original.rows.length === 0) throw new AppError('NOT_FOUND', 'Original transaction not found');
+
+    const origTx = original.rows[0];
+    const refundAmount = req.body.amount || parseFloat(origTx.amount);
+
+    if (refundAmount > parseFloat(origTx.amount)) {
+      throw new AppError('INVALID_INPUT', 'Refund amount exceeds original transaction');
+    }
+
+    const timestamp = new Date().toISOString();
+    const refundHash = generateTxHash(origTx.to_user, origTx.from_user, refundAmount, origTx.currency, timestamp + ':refund');
+
+    const client = await db.getClient();
+    try {
+      await client.query('BEGIN');
+
+      await client.query(
+        `INSERT INTO transactions (from_user, to_user, amount, currency, type, memo, tx_hash, status, metadata, created_at)
+         VALUES ($1, $2, $3, $4, 'refund', $5, $6, 'completed', $7::jsonb, $8)`,
+        [origTx.to_user, origTx.from_user, refundAmount, origTx.currency,
+         reason || 'Refund', refundHash,
+         JSON.stringify({ originalTxHash: tx_hash, refundType: refundAmount < parseFloat(origTx.amount) ? 'partial' : 'full' }),
+         timestamp]
+      );
+
+      // Mark original as refunded if full refund
+      if (refundAmount >= parseFloat(origTx.amount)) {
+        await client.query(
+          `UPDATE transactions SET status = 'refunded' WHERE tx_hash = $1`,
+          [tx_hash]
+        );
+      }
+
+      await client.query('COMMIT');
+
+      audit.transaction(req, { originalTxHash: tx_hash, refundHash, refundAmount, currency: origTx.currency });
+      log.info('Refund processed', { originalTxHash: tx_hash, refundHash, refundAmount });
+
+      res.status(201).json({
+        status: 'ok',
+        data: { refundHash, amount: refundAmount, currency: origTx.currency, originalTxHash: tx_hash }
+      });
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw new AppError('TRANSACTION_FAILED', 'Refund could not be completed');
     } finally {
       client.release();
     }

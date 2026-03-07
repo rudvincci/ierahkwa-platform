@@ -132,8 +132,8 @@ app.get('/ready', async (_req, res) => {
   res.status(status).json({
     ready: dbReady,
     service: 'sovereign-core',
-    platforms: 441,
-    modules: ['auth', 'users', 'payments', 'messages', 'votes', 'storage', 'analytics', 'content'],
+    platforms: 422,
+    modules: ['auth', 'users', 'payments', 'messages', 'votes', 'storage', 'analytics', 'content', 'exchange', 'bank', 'wifi-bridge'],
     database: dbReady ? 'connected' : 'unavailable',
     timestamp: new Date().toISOString()
   });
@@ -152,7 +152,7 @@ app.get('/metrics', (_req, res) => {
       external: Math.round(mem.external / 1024 / 1024) + 'MB'
     },
     pid: process.pid,
-    platforms: 441,
+    platforms: 422,
     timestamp: new Date().toISOString()
   });
 });
@@ -184,6 +184,12 @@ app.use('/v1/analytics',  require('./src/modules/analytics/routes'));
 
 // WiFi Bridge — sovereign-core ↔ wifi-soberano integration
 app.use('/v1/wifi',       require('./src/modules/wifi-bridge/routes'));
+
+// Exchange — REAL matching engine, order book, trade execution
+app.use('/v1/exchange',   require('./src/modules/exchange/routes'));
+
+// Bank — BDET Bank accounts, transfers, VIP, international, statements
+app.use('/v1/bank',       require('./src/modules/bank/routes'));
 
 // Content — dynamic per-platform items (/:platform/items)
 app.use('/v1',            require('./src/modules/content/routes'));
@@ -334,8 +340,8 @@ async function startServer() {
     log.info('Ierahkwa Sovereign Core v1.0.0 started', {
       port: PORT,
       env: ENV,
-      platforms: 441,
-      modules: 8,
+      platforms: 422,
+      modules: 11,
       websocket: '/ws/chat',
       node: 'MameyNode v4.2',
       pid: process.pid
@@ -345,7 +351,7 @@ async function startServer() {
       category: audit.CATEGORIES.SYSTEM_STARTUP,
       action: 'sovereign_core_started',
       risk: audit.RISK.LOW,
-      details: { port: PORT, env: ENV, version: '1.0.0', platforms: 441 }
+      details: { port: PORT, env: ENV, version: '1.0.0', platforms: 422 }
     });
   });
 
