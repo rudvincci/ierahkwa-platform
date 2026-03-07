@@ -5,114 +5,219 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=()">
-<meta name="description" content="Trading Dashboard — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Dashboard de Trading Soberano con cifrado">
+<meta name="description" content="WAMPUM Trading Deck — Dashboard profesional de trading sobre MameyNode blockchain. Portfolio tracker, PnL, alertas, 574 SNT + 103 IGT tokens.">
 <meta name="theme-color" content="#ffd600">
 <link rel="canonical" href="https://ierahkwa.nation/trading-dashboard/">
 <link rel="manifest" href="../shared/manifest.json">
 <link rel="icon" href="../icons/icon-96.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../icons/icon-192.svg">
-<meta property="og:title" content="Trading Dashboard — Dashboard de Trading Soberano">
-<meta property="og:description" content="Trading Dashboard — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Dashboard de Trading Soberano con cifrado post-cuántico Kyber-768, blockchain Mam">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://ierahkwa.nation/trading-dashboard/">
-<meta property="og:image" content="https://ierahkwa.nation/icons/icon-512.svg">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Trading Dashboard — Dashboard de Trading Soberano">
-<meta name="twitter:description" content="Trading Dashboard — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Dashboard de Trading Soberano con cifrado post-cuántico Kyber-768, blockchain Mam">
 <link rel="stylesheet" href="../shared/ierahkwa.css">
-<title>Trading Dashboard — Dashboard de Trading Soberano</title>
-<style>:root{--accent:#ffd600}</style>
+<title>WAMPUM Trading Deck — Sovereign Trading Dashboard</title>
+<style>
+:root{--accent:#ffd600;--buy:#00e676;--sell:#f44336}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1rem;padding:1rem;max-width:1400px;margin:0 auto}
+@media(max-width:1024px){.dash-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.dash-grid{grid-template-columns:1fr}}
+.metric-card{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:1rem}
+.metric-val{font-family:'Courier New',monospace;font-size:1.8rem;font-weight:700}
+.metric-lbl{font-size:.75rem;color:var(--txt2)}
+.metric-chg{font-size:.8rem;margin-top:.25rem}
+.metric-chg.up{color:var(--buy)}.metric-chg.down{color:var(--sell)}
+.portfolio-table{width:100%;border-collapse:collapse;font-size:.8rem}
+.portfolio-table th{text-align:left;padding:.5rem;color:var(--txt2);font-size:.7rem;text-transform:uppercase;border-bottom:1px solid var(--brd)}
+.portfolio-table td{padding:.5rem;border-bottom:1px solid rgba(255,255,255,.03);font-family:'Courier New',monospace}
+.portfolio-table tr:hover{background:rgba(255,214,0,.03)}
+.pnl-chart{height:200px;background:var(--card);border:1px solid var(--brd);border-radius:8px;display:flex;align-items:flex-end;padding:1rem;gap:3px;overflow:hidden}
+.pnl-bar{flex:1;border-radius:2px 2px 0 0;min-width:3px;transition:height .3s}
+.alert-row{display:flex;align-items:center;gap:.5rem;padding:.4rem .5rem;border-bottom:1px solid rgba(255,255,255,.03);font-size:.78rem}
+.alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.alert-dot.critical{background:var(--sell)}.alert-dot.info{background:var(--buy)}.alert-dot.warn{background:var(--accent)}
+.positions-panel{background:var(--card);border:1px solid var(--brd);border-radius:8px;overflow:hidden}
+.pos-header{padding:.5rem .75rem;font-weight:700;font-size:.85rem;border-bottom:1px solid var(--brd);display:flex;justify-content:space-between}
+.pos-row{display:grid;grid-template-columns:80px 1fr 80px 80px 60px;gap:.25rem;padding:.4rem .75rem;font-size:.72rem;font-family:'Courier New',monospace;border-bottom:1px solid rgba(255,255,255,.03)}
+.pos-row:hover{background:rgba(255,214,0,.03)}
+.sparkline{display:flex;align-items:flex-end;gap:1px;height:24px}
+.spark-bar{width:3px;border-radius:1px 1px 0 0}
+.wide-panel{grid-column:1/-1}
+.trade-history{max-height:300px;overflow-y:auto}
+.th-row{display:grid;grid-template-columns:90px 60px 80px 1fr 80px 70px;font-size:.72rem;padding:.3rem .75rem;font-family:'Courier New',monospace;border-bottom:1px solid rgba(255,255,255,.03)}
+.th-header{color:var(--txt2);font-size:.65rem;text-transform:uppercase;font-family:inherit}
+.rev-share-bar{display:flex;height:24px;border-radius:4px;overflow:hidden;margin:.5rem 0}
+.rev-share-bar .creator{background:var(--buy);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#09090d}
+.rev-share-bar .platform{background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#09090d}
+</style>
 </head>
 <body role="document">
 <a href="#main" class="skip-nav">Saltar al contenido principal</a>
 <header>
-<div class="logo"><div class="logo-icon" aria-hidden="true">📈</div><h1>Trading Dashboard</h1></div>
-<nav aria-label="Navegacion principal"><a href="#dashboard" aria-current="page">Dashboard</a><a href="#features">Modulos</a><a href="#api">API</a><a href="#pricing">Precios</a></nav>
-<span class="encrypted-badge" title="Cifrado Post-Quantum Activo"><span aria-hidden="true">⚛️</span> Quantum-Safe</span>
+<div class="logo"><div class="logo-icon" aria-hidden="true">📈</div><h1>WAMPUM Trading Deck</h1></div>
+<nav aria-label="Navegacion principal"><a href="#portfolio" aria-current="page">Portfolio</a><a href="#positions">Posiciones</a><a href="#history">Historial</a><a href="#alerts">Alertas</a><a href="#api">API</a></nav>
+<span class="encrypted-badge" title="MameyNode · Chain 574"><span aria-hidden="true">⛓️</span> Live</span>
 </header>
 <main id="main">
-<section class="hero" id="dashboard">
-<div class="badge"><span aria-hidden="true">📈</span> Dashboard de Trading Soberano</div>
-<h2><span>Trading Dashboard</span></h2>
-<p>Trading Dashboard — plataforma soberana de grado empresarial para las 35+ países del ecosistema Ierahkwa Ne Kanienke. Dashboard de Trading Soberano con cifrado post-cuántico Kyber-768, blockchain MameyNode, modo offline y soporte para 14 idiomas indígenas. Reemplazo soberano 100% libre de Big Tech.</p>
-<div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
-<a href="#features" class="btn">Explorar Módulos</a>
-<a href="#api" class="btn" style="background:transparent;border:2px solid var(--accent);color:var(--accent)">API Docs</a>
+
+<!-- Top Metrics -->
+<div class="dash-grid" id="portfolio">
+<div class="metric-card">
+<div class="metric-lbl">Portfolio Total</div>
+<div class="metric-val" style="color:var(--accent)">$247,891</div>
+<div class="metric-chg up">+$12,450 (+5.28%) hoy</div>
 </div>
-</section>
-<div class="stats" role="list" aria-label="Metricas del sistema"><div class="stat" role="listitem"><div class="val">12,847</div><div class="lbl">Transacciones/día</div></div>
-<div class="stat" role="listitem"><div class="val">99.99%</div><div class="lbl">Uptime</div></div>
-<div class="stat" role="listitem"><div class="val">< 50ms</div><div class="lbl">Latencia</div></div>
-<div class="stat" role="listitem"><div class="val">E2E</div><div class="lbl">Cifrado</div></div>
-<div class="stat" role="listitem"><div class="val">24/7</div><div class="lbl">Operación</div></div>
-<div class="stat" role="listitem"><div class="val">blockchain</div><div class="lbl">Audit Trail</div></div></div>
-<div class="section" id="architecture">
-<h2><span aria-hidden="true">🏗️</span> Arquitectura del Sistema</h2>
-<div class="sub">Infraestructura soberana de Trading Dashboard</div>
-<div class="sec-panel" style="font-family:monospace;font-size:.72rem;line-height:1.8;overflow-x:auto">
-<span style="color:var(--accent)">┌─ FRONTEND ─────────────────────────────────┐</span>
-│  PWA + WebAssembly + Service Worker          │
-│  Offline-first · 14 idiomas · WCAG 2.1 AA   │
-<span style="color:var(--accent)">└──────────────────┬────────────────────────────┘</span>
-                   │ <span style="color:#ffd600">REST + gRPC + WebSocket</span>
-<span style="color:#00bcd4">┌─ API GATEWAY ────┴────────────────────────────┐</span>
-│  Rate limiting · JWT · CSRF · mTLS · CORS     │
-│  Load balancer · Circuit breaker · Cache       │
-<span style="color:#00bcd4">└──────────────────┬────────────────────────────┘</span>
-                   │
-<span style="color:#7c4dff">┌─ MICROSERVICIOS ─┴────────────────────────────┐</span>
-│  Rust + Go · 12-factor · Event-driven          │
-│  CQRS · Saga pattern · Domain-driven design    │
-<span style="color:#7c4dff">└──────────────────┬────────────────────────────┘</span>
-                   │
-<span style="color:var(--accent)">┌─ DATA LAYER ─────┴────────────────────────────┐</span>
-│  PostgreSQL · Redis · TimescaleDB · S3          │
-│  MameyNode Blockchain · IndexedDB (offline)     │
-<span style="color:var(--accent)">└─────────────────────────────────────────────────┘</span>
+<div class="metric-card">
+<div class="metric-lbl">PnL 24h</div>
+<div class="metric-val" style="color:var(--buy)">+$8,731</div>
+<div class="metric-chg up">Win rate: 67.3%</div>
+</div>
+<div class="metric-card">
+<div class="metric-lbl">Posiciones Abiertas</div>
+<div class="metric-val">12</div>
+<div class="metric-chg">7 long · 5 short · $89,400 margin</div>
+</div>
+<div class="metric-card">
+<div class="metric-lbl">WAMPUM Balance</div>
+<div class="metric-val" style="color:var(--accent)">W 45,890</div>
+<div class="metric-chg up">= $113,487 USD</div>
 </div>
 </div>
-<div class="section-title" id="features"><h3>Módulos de la Plataforma</h3><p>10 herramientas soberanas de grado empresarial</p></div>
-<div class="grid"><article class="card"><div class="card-icon" aria-hidden="true">💰</div><h4>Motor Transaccional en Tiempo Real</h4><p>Procesamiento de operaciones financieras con settlement T+0 sobre MameyNode blockchain. Capacidad de 50,000 TPS con confirmación en < 2 segundos.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🔒</div><h4>Cifrado Grado Bancario AES-256</h4><p>Toda la información financiera protegida con cifrado AES-256 en tránsito y reposo. Claves rotadas cada 24 horas con HSM soberano dedicado.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📊</div><h4>Dashboard Analítico en Tiempo Real</h4><p>Visualización de KPIs financieros, flujos de capital, tendencias y alertas automáticas. Exporta reportes en PDF, Excel y XBRL para reguladores.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🤖</div><h4>Detección de Fraude con AI</h4><p>Motor de machine learning que analiza patrones transaccionales, detecta anomalías y bloquea fraudes en tiempo real con 99.7% de precisión.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">💱</div><h4>Multi-Moneda WAMPUM</h4><p>Soporte nativo para WAMPUM (CBDC soberana) con conversión automática a USD, EUR, BTC y 40+ monedas fiat. Tipo de cambio actualizado cada minuto.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📋</div><h4>Cumplimiento Regulatorio Automático</h4><p>Generación automática de reportes para reguladores soberanos. KYC/AML integrado, listas de sanciones, PEP screening y monitoreo continuo.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🔗</div><h4>Integración con Ecosistema BDET</h4><p>Conexión directa con BDET Bank, Tesoro Nacional, Sistema Tributario y todas las plataformas financieras del ecosistema Ierahkwa.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">📱</div><h4>App Móvil Nativa</h4><p>Aplicación nativa para iOS y Android con autenticación biométrica, notificaciones push y operaciones offline que sincronizan al reconectar.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">🏛️</div><h4>Auditoría Inmutable en Blockchain</h4><p>Cada operación registrada en MameyNode con hash SHA-256. Trail de auditoría completo, inmutable y verificable por cualquier auditor autorizado.</p></article>
-<article class="card"><div class="card-icon" aria-hidden="true">💾</div><h4>Modo Offline Resiliente</h4><p>Operaciones críticas disponibles sin conexión. Cola de transacciones pendientes con reconciliación automática al restaurar conectividad.</p></article></div>
+
+<!-- PnL Chart + Portfolio -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:0 1rem;max-width:1400px;margin:0 auto">
+<!-- PnL Chart -->
+<div>
+<div style="font-weight:700;font-size:.85rem;margin-bottom:.5rem">PnL Ultimos 30 Dias</div>
+<div class="pnl-chart" id="pnlChart"></div>
+<div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--txt2);margin-top:.3rem"><span>1 Mar</span><span>Hoy</span></div>
+</div>
+
+<!-- Portfolio Allocation -->
+<div>
+<div style="font-weight:700;font-size:.85rem;margin-bottom:.5rem">Distribucion del Portfolio</div>
+<div style="background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:1rem">
+<table class="portfolio-table">
+<thead><tr><th>Asset</th><th>Cantidad</th><th>Valor USD</th><th>% Portfolio</th><th>PnL</th></tr></thead>
+<tbody>
+<tr><td style="color:var(--accent);font-weight:700">WAMPUM (WPM)</td><td>45,890</td><td>$113,487</td><td>45.8%</td><td style="color:var(--buy)">+12.3%</td></tr>
+<tr><td style="font-weight:700">IGT-BDET</td><td>12,500</td><td>$31,250</td><td>12.6%</td><td style="color:var(--buy)">+8.7%</td></tr>
+<tr><td style="font-weight:700">IGT-TRADE</td><td>8,750</td><td>$21,875</td><td>8.8%</td><td style="color:var(--buy)">+15.2%</td></tr>
+<tr><td style="font-weight:700">SNT-GUNA</td><td>50,000</td><td>$21,050</td><td>8.5%</td><td style="color:var(--buy)">+42.1%</td></tr>
+<tr><td style="font-weight:700">IGT-DEFI</td><td>3,200</td><td>$16,000</td><td>6.5%</td><td style="color:var(--sell)">-3.2%</td></tr>
+<tr><td style="font-weight:700">SNT-EMBERA</td><td>25,000</td><td>$12,450</td><td>5.0%</td><td style="color:var(--buy)">+28.4%</td></tr>
+<tr><td style="font-weight:700">SNT-NAVAJO</td><td>10,000</td><td>$9,360</td><td>3.8%</td><td style="color:var(--buy)">+6.8%</td></tr>
+<tr><td style="font-weight:700">SNT-CHEROKEE</td><td>15,000</td><td>$7,125</td><td>2.9%</td><td style="color:var(--buy)">+18.9%</td></tr>
+<tr><td style="color:var(--txt2)">Otros (8 tokens)</td><td>—</td><td>$15,294</td><td>6.1%</td><td style="color:var(--buy)">+4.5%</td></tr>
+</tbody>
+</table>
+
+<!-- Revenue Share -->
+<div style="margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--brd)">
+<div style="font-size:.8rem;font-weight:700;margin-bottom:.3rem">Revenue Share Model</div>
+<div class="rev-share-bar">
+<div class="creator" style="width:70%">Trader 70%</div>
+<div class="platform" style="width:30%">Plataforma 30%</div>
+</div>
+<div style="font-size:.65rem;color:var(--txt2)">30% se reinvierte en infraestructura, educacion, salud y cultura de las 574 naciones</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Positions -->
+<div style="padding:1rem;max-width:1400px;margin:0 auto" id="positions">
+<div class="positions-panel">
+<div class="pos-header"><span>Posiciones Abiertas (12)</span><span style="font-size:.75rem;color:var(--txt2)">Margin total: $89,400</span></div>
+<div class="pos-row" style="color:var(--txt2);font-family:inherit;font-size:.65rem;text-transform:uppercase">
+<span>Par</span><span>Tipo</span><span>Entrada</span><span>Actual</span><span>PnL</span>
+</div>
+<div class="pos-row"><span style="color:var(--accent)">WPM/USD</span><span style="color:var(--buy)">LONG</span><span>$2.3500</span><span>$2.4731</span><span style="color:var(--buy)">+5.23%</span></div>
+<div class="pos-row"><span style="color:var(--accent)">IGT/WPM</span><span style="color:var(--buy)">LONG</span><span>W 0.7800</span><span>W 0.8450</span><span style="color:var(--buy)">+8.33%</span></div>
+<div class="pos-row"><span style="color:var(--accent)">SNT-GUNA/WPM</span><span style="color:var(--buy)">LONG</span><span>W 0.0120</span><span>W 0.0170</span><span style="color:var(--buy)">+41.67%</span></div>
+<div class="pos-row"><span>BDET/USD</span><span style="color:var(--sell)">SHORT</span><span>$1.2500</span><span>$1.1980</span><span style="color:var(--buy)">+4.16%</span></div>
+<div class="pos-row"><span>SNT-EMBERA/WPM</span><span style="color:var(--buy)">LONG</span><span>W 0.0085</span><span>W 0.0109</span><span style="color:var(--buy)">+28.24%</span></div>
+<div class="pos-row"><span>SNT-NAVAJO/WPM</span><span style="color:var(--buy)">LONG</span><span>W 0.0142</span><span>W 0.0152</span><span style="color:var(--buy)">+7.04%</span></div>
+<div class="pos-row"><span>IGT-DEFI/WPM</span><span style="color:var(--sell)">SHORT</span><span>W 2.1000</span><span>W 2.1500</span><span style="color:var(--sell)">-2.38%</span></div>
+<div class="pos-row"><span>SNT-QUECHUA/WPM</span><span style="color:var(--buy)">LONG</span><span>W 0.0210</span><span>W 0.0247</span><span style="color:var(--buy)">+17.62%</span></div>
+<div class="pos-row"><span>WPM/BTC</span><span style="color:var(--sell)">SHORT</span><span>0.0000380</span><span>0.0000365</span><span style="color:var(--buy)">+3.95%</span></div>
+<div class="pos-row"><span>SNT-MAPUCHE/WPM</span><span style="color:var(--buy)">LONG</span><span>W 0.0180</span><span>W 0.0190</span><span style="color:var(--buy)">+5.56%</span></div>
+<div class="pos-row"><span>SNT-MAYA/WPM</span><span style="color:var(--buy)">LONG</span><span>W 0.0150</span><span>W 0.0159</span><span style="color:var(--buy)">+6.00%</span></div>
+<div class="pos-row"><span>IGT-TRADE/WPM</span><span style="color:var(--sell)">SHORT</span><span>W 1.0500</span><span>W 1.0200</span><span style="color:var(--buy)">+2.86%</span></div>
+</div>
+</div>
+
+<!-- Trade History -->
+<div style="padding:1rem;max-width:1400px;margin:0 auto" id="history">
+<div class="positions-panel">
+<div class="pos-header"><span>Historial de Trades</span><span style="font-size:.75rem;color:var(--txt2)">Ultimos 50 trades</span></div>
+<div class="th-row th-header"><span>Fecha</span><span>Tipo</span><span>Par</span><span>Precio</span><span>Cantidad</span><span>PnL</span></div>
+<div class="trade-history" id="tradeHistory">
+<div class="th-row"><span>07/03 14:32</span><span style="color:var(--buy)">BUY</span><span>WPM/USD</span><span>$2.4731</span><span>1,500</span><span style="color:var(--buy)">—</span></div>
+<div class="th-row"><span>07/03 14:15</span><span style="color:var(--sell)">SELL</span><span>IGT/WPM</span><span>W 0.8450</span><span>500</span><span style="color:var(--buy)">+$125</span></div>
+<div class="th-row"><span>07/03 13:45</span><span style="color:var(--buy)">BUY</span><span>SNT-GUNA</span><span>W 0.0168</span><span>10,000</span><span style="color:var(--buy)">—</span></div>
+<div class="th-row"><span>07/03 12:20</span><span style="color:var(--sell)">SELL</span><span>WPM/USD</span><span>$2.4890</span><span>3,000</span><span style="color:var(--buy)">+$456</span></div>
+<div class="th-row"><span>07/03 11:05</span><span style="color:var(--buy)">BUY</span><span>SNT-EMBERA</span><span>W 0.0105</span><span>5,000</span><span style="color:var(--buy)">—</span></div>
+<div class="th-row"><span>06/03 22:30</span><span style="color:var(--sell)">SELL</span><span>BDET/USD</span><span>$1.2500</span><span>2,000</span><span style="color:var(--sell)">-$89</span></div>
+<div class="th-row"><span>06/03 18:15</span><span style="color:var(--buy)">BUY</span><span>WPM/BTC</span><span>0.0000380</span><span>5,000</span><span style="color:var(--buy)">—</span></div>
+<div class="th-row"><span>06/03 15:40</span><span style="color:var(--buy)">BUY</span><span>SNT-NAVAJO</span><span>W 0.0142</span><span>10,000</span><span style="color:var(--buy)">—</span></div>
+<div class="th-row"><span>06/03 10:20</span><span style="color:var(--sell)">SELL</span><span>IGT-TRADE</span><span>W 1.0500</span><span>1,000</span><span style="color:var(--buy)">+$210</span></div>
+<div class="th-row"><span>05/03 20:00</span><span style="color:var(--buy)">BUY</span><span>SNT-QUECHUA</span><span>W 0.0210</span><span>8,000</span><span style="color:var(--buy)">—</span></div>
+</div>
+</div>
+</div>
+
+<!-- Alerts -->
+<div style="padding:1rem;max-width:1400px;margin:0 auto" id="alerts">
+<div class="positions-panel">
+<div class="pos-header"><span>Alertas de Trading</span><span style="font-size:.75rem;color:var(--txt2)">7 activas</span></div>
+<div class="alert-row"><div class="alert-dot critical"></div><span style="flex:1">WPM/USD cruzo $2.50 — considerar take profit en posicion LONG</span><span style="color:var(--txt2);font-size:.65rem">hace 2m</span></div>
+<div class="alert-row"><div class="alert-dot info"></div><span style="flex:1">SNT-GUNA subio 42% esta semana — volumen inusual detectado</span><span style="color:var(--txt2);font-size:.65rem">hace 15m</span></div>
+<div class="alert-row"><div class="alert-dot warn"></div><span style="flex:1">IGT-DEFI posicion SHORT en -2.38% — stop loss en W 2.2000</span><span style="color:var(--txt2);font-size:.65rem">hace 32m</span></div>
+<div class="alert-row"><div class="alert-dot info"></div><span style="flex:1">3 nuevos SNT tokens activados: LAKOTA, OJIBWE, CREE firmaron reconocimiento</span><span style="color:var(--txt2);font-size:.65rem">hace 1h</span></div>
+<div class="alert-row"><div class="alert-dot warn"></div><span style="flex:1">Liquidez baja en par SNT-MAPUCHE/WPM — spread widening a 2.3%</span><span style="color:var(--txt2);font-size:.65rem">hace 2h</span></div>
+<div class="alert-row"><div class="alert-dot info"></div><span style="flex:1">Revenue share distribuido: W 1,247 acreditados a tu wallet (30% de comisiones)</span><span style="color:var(--txt2);font-size:.65rem">hace 4h</span></div>
+<div class="alert-row"><div class="alert-dot critical"></div><span style="flex:1">AI Guardian: Patron de wash trading detectado en IGT-DEFI — bloqueado automaticamente</span><span style="color:var(--txt2);font-size:.65rem">hace 6h</span></div>
+</div>
+</div>
+
+<!-- API Section -->
 <div class="section" id="api">
-<h2><span aria-hidden="true">🔌</span> API Endpoints</h2>
-<div class="sub">REST + gRPC + WebSocket para integraciones</div>
-<div class="sec-panel"><div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/trading_dashboard/transaction</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Crear transacción. Params: amount, currency, recipient, memo.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/trading_dashboard/balance/{account}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Consultar saldo de cuenta con historial de movimientos.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/trading_dashboard/reports/{period}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Reportes financieros del período: diario, semanal, mensual, anual.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/trading_dashboard/transfer</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Transferencia entre cuentas con validación de fondos y límites.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/trading_dashboard/analytics/dashboard</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Dashboard analítico con KPIs, tendencias y alertas configurables.</p>
-<div class="sec-check"><span class="dot ok" aria-hidden="true"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/trading_dashboard/audit-trail/{id}</code></div><p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Trail de auditoría completo para una transacción específica.</p></div>
+<h2><span aria-hidden="true">🔌</span> Trading API</h2>
+<div class="sub">API completa para trading algoritmico sobre MameyNode</div>
+<div class="sec-panel">
+<div class="sec-check"><span class="dot ok"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/trading/portfolio</code></div>
+<p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Portfolio completo con PnL, allocations, y metricas.</p>
+<div class="sec-check"><span class="dot ok"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/trading/positions</code></div>
+<p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Posiciones abiertas con entry price, current, PnL unrealized.</p>
+<div class="sec-check"><span class="dot ok"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/trading/history</code></div>
+<p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Historial de trades con filtros por fecha, par, tipo.</p>
+<div class="sec-check"><span class="dot ok"></span><code style="color:#ffd600;font-size:.7rem;margin-right:.5rem">POST</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/trading/alert/create</code></div>
+<p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Crear price alert. Params: pair, condition, price, notification.</p>
+<div class="sec-check"><span class="dot ok"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/trading/pnl/{period}</code></div>
+<p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">PnL por periodo: daily, weekly, monthly, yearly, all-time.</p>
+<div class="sec-check"><span class="dot ok"></span><code style="color:#00FF41;font-size:.7rem;margin-right:.5rem">GET</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/api/v1/trading/metrics</code></div>
+<p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">Win rate, Sharpe ratio, max drawdown, avg trade, best/worst.</p>
+<div class="sec-check"><span class="dot ok"></span><code style="color:#00bcd4;font-size:.7rem;margin-right:.5rem">WS</code><code style="color:var(--txt2);font-size:.72rem;flex:1">/ws/trading/stream</code></div>
+<p style="font-size:.75rem;color:var(--txt2);margin:0 0 .5rem 1.5rem">WebSocket: portfolio updates, position changes, alerts, PnL en tiempo real.</p>
 </div>
-<div class="section-title" id="pricing"><h3>Planes Soberanos</h3><p>Empieza gratis. Escala soberanamente.</p></div>
-<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))"><div class="card">
-<h4 style="color:var(--accent);font-size:.9rem">Básico</h4>
-<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">0 W/mes</div>
-<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ 100 transacciones/mes</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Dashboard básico</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ 1 cuenta</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Soporte comunidad</li></ul>
-</div><div class="card" style="border-color:var(--accent);box-shadow:0 0 20px rgba(0,255,65,.15)">
-<h4 style="color:var(--accent);font-size:.9rem">Profesional</h4>
-<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">25 W/mes</div>
-<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Ilimitado</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ AI fraude</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Multi-cuenta</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ API completa</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Reportes avanzados</li></ul>
-</div><div class="card">
-<h4 style="color:var(--accent);font-size:.9rem">Enterprise</h4>
-<div style="font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:700;margin:.5rem 0">199 W/mes</div>
-<ul style="list-style:none;padding:0"><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Multi-entidad</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ SLA 99.99%</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Auditor dedicado</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Soporte 24/7</li><li style="font-size:.78rem;color:var(--txt2);padding:.2rem 0">✓ Custom integrations</li></ul>
-</div></div>
+</div>
+
+<!-- Modules -->
+<div class="section-title"><h3>Modulos del Trading Deck</h3><p>10 herramientas profesionales de trading soberano</p></div>
+<div class="grid">
+<article class="card"><div class="card-icon" aria-hidden="true">📊</div><h4>Portfolio Tracker</h4><p>Tracking de portfolio multi-asset en tiempo real. WAMPUM, IGT tokens, 574 SNT nation tokens. PnL diario/semanal/mensual/anual.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📈</div><h4>Position Manager</h4><p>Gestion de posiciones long/short. Entry/exit price, stop loss, take profit, trailing stop. Margin tracking automatico.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🔔</div><h4>Smart Alerts</h4><p>Alertas por precio, volumen, PnL, liquidation risk. Notificaciones push, email, webhook. Alertas de AI agents incluidas.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🤖</div><h4>AI Trading Signals</h4><p>Senales de trading generadas por los 7 AI agents. Pattern recognition, sentiment analysis, on-chain analytics.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📉</div><h4>Risk Manager</h4><p>Value at Risk (VaR), max drawdown, exposure por asset y region. Alertas automaticas si excedes limites de riesgo.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">💰</div><h4>Revenue Tracker</h4><p>Seguimiento del 70/30 revenue share. Cuanto ganas, cuanto va a las 574 naciones. Transparencia total en blockchain.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">🏦</div><h4>SNT Nation Monitor</h4><p>Monitor los 574 SNT tokens. Cual se activo, cual esta por firmar, precio, volumen, governance votes activos.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">📋</div><h4>Tax Reports</h4><p>Reportes fiscales automaticos para cada jurisdiccion soberana. Export CSV/PDF. Calculo de gains/losses.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">⚡</div><h4>API Trading</h4><p>REST + WebSocket API para algo trading. Rate limits generosos, autenticacion con API keys, sandbox para testing.</p></article>
+<article class="card"><div class="card-icon" aria-hidden="true">💾</div><h4>Offline Mode</h4><p>Portfolio y posiciones disponibles offline via IndexedDB. Historial completo cached. Alertas sincronizadas al reconectar.</p></article>
+</div>
+
 </main>
 <footer>
-<p><span aria-hidden="true">📈</span> <strong>Trading Dashboard</strong> &mdash; Ecosistema Digital <a href="../">Ierahkwa Ne Kanienke</a></p>
-<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">233+ plataformas soberanas &middot; 17 dominios NEXUS &middot; 1B+ personas &middot; 35+ países</p>
-<div style="margin-top:.75rem"><span class="security-badge" data-grade="A+" title="Seguridad Soberana Activa"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span></div>
+<p><span aria-hidden="true">📈</span> <strong>WAMPUM Trading Deck</strong> — <a href="../">Ierahkwa Ne Kanienke</a> · <a href="../crypto-exchange/">Exchange</a></p>
+<p style="color:var(--txt2);font-size:.7rem;margin-top:.25rem">MameyNode · Chain 574 · 574 SNT + 103 IGT · BDET Bank · Revenue 70/30</p>
+<div style="margin-top:.75rem"><span class="security-badge" data-grade="A+" title="Seguridad Soberana"><span class="sec-icon" aria-hidden="true">🛡️</span> Seguro</span></div>
 </footer>
 <script src="../shared/ierahkwa.js"></script>
 <script src="../shared/ierahkwa-security.js"></script>
@@ -120,7 +225,20 @@
 <script src="../shared/ierahkwa-protocols.js"></script>
 <script src="../shared/ierahkwa-interconnect.js"></script>
 <script>
-(function(){var DB_NAME='ierahkwa-trading-dashboard';var DB_VER=1;var STORES=["transacciones-pendientes", "saldos-cache", "reportes-offline"];var db=null;function openDB(){return new Promise(function(resolve,reject){var req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=function(){var d=req.result;STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});};req.onsuccess=function(){db=req.result;resolve(db)};req.onerror=function(){reject(req.error)}})}function showOfflineBanner(show){var b=document.getElementById('offline-banner');if(!b){b=document.createElement('div');b.id='offline-banner';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--accent);color:#09090d;text-align:center;padding:8px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100%);transition:transform .3s';b.textContent='Modo Offline — Saldos y operaciones pendientes disponibles offline.';document.body.appendChild(b)}b.style.transform=show?'translateY(0)':'translateY(100%)'}function init(){openDB().then(function(){window.addEventListener('online',function(){showOfflineBanner(false)});window.addEventListener('offline',function(){showOfflineBanner(true)});if(!navigator.onLine)showOfflineBanner(true);console.log('[trading-dashboard] Offline module ready')})}init()})();
+(function(){
+// PnL Chart
+var pnlChart=document.getElementById('pnlChart');
+if(pnlChart){for(var i=0;i<30;i++){var bar=document.createElement('div');bar.className='pnl-bar';var val=(Math.random()-.3)*100;bar.style.height=Math.abs(val)+40+'px';bar.style.background=val>=0?'var(--buy)':'var(--sell)';bar.title='Dia '+(i+1)+': '+(val>=0?'+':'')+val.toFixed(0)+' USD';pnlChart.appendChild(bar)}}
+// Live metric updates
+setInterval(function(){
+  var cards=document.querySelectorAll('.metric-val');
+  if(cards[0]){var val=247891+Math.floor((Math.random()-.4)*500);cards[0].textContent='$'+val.toLocaleString()}
+},5000);
+// IndexedDB
+var DB='ierahkwa-trading-dashboard';var STORES=['portfolio-cache','posiciones','historial-trades','alertas','watchlist','pnl-diario','metricas','snt-watchlist'];
+var req=indexedDB.open(DB,2);req.onupgradeneeded=function(){var d=req.result;STORES.forEach(function(s){if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})})};
+req.onsuccess=function(){console.log('[trading-deck] DB ready, '+STORES.length+' stores')};
+})();
 </script>
 <script>if("serviceWorker"in navigator){navigator.serviceWorker.register("../shared/sw.js").catch(function(){})}</script>
 <script src="../shared/ierahkwa-api.js"></script>
